@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:v_export/constant/app_font.dart';
-import 'package:v_export/customer/views/home/package_send/driver/driver_details_screen.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/driver_details_screen.dart';
 
 class SearchingRideScreen extends StatefulWidget {
   const SearchingRideScreen({super.key});

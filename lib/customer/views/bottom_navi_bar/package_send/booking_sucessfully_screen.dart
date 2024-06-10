@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:v_export/constant/app_font.dart';
-import 'package:v_export/customer/views/home/package_send/searching_ride_screen.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/package_send/searching_ride_screen.dart';
 
 class BookingSucessfullyScreen extends StatefulWidget {
   const BookingSucessfullyScreen({super.key});

@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/customer/services/network/easebuzz_api_service.dart';
-import 'package:v_export/customer/views/home/package_send/booking_sucessfully_screen.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/package_send/booking_sucessfully_screen.dart';
 
 class EasebuszzController extends GetxController{
 

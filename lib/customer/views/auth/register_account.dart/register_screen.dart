@@ -8,8 +8,6 @@ import '../../../../constant/app_font.dart';
 import 'accounts/business_account_container.dart';
 import 'accounts/personal_account_container.dart';
 
-
-
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
@@ -34,8 +32,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: AppColors.kblue,
-      body: Obx(()=>
-         SafeArea(
+      body: Obx(
+        () => SafeArea(
           child: Stack(
             children: [
               Column(
@@ -81,9 +79,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         Padding(
                           padding: const EdgeInsets.only(top: 2),
                           child: Text(
-                            'Please enter your email & password \nto sign in',
+                            'Please create your account to register',
                             style: primaryfont.copyWith(
-                                fontSize: 14.sp,
+                                fontSize: 16.sp,
                                 fontWeight: FontWeight.w500,
                                 color: AppColors.kwhite),
                           ),
@@ -91,8 +89,47 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ],
                     ),
                   )),
+              if (authController.containerindex.value == 0)
+                Positioned(
+                    top: 180,
+                    left: 10,
+                    right: 10,
+                    child: Container(
+                      height: 600,
+                      child: ListView(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ksizedbox30,
+                              PersonalAccount(),
+                            ],
+                          ),
+                        ],
+                      ),
+                    )),
+              if (authController.containerindex.value == 1)
+                Positioned(
+                    top: 180,
+                    left: 10,
+                    right: 10,
+                    child: Container(
+                      height: 600,
+                      child: ListView(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ksizedbox30,
+                              BusinessAccount(),
+                              // ksizedbox10,
+                            ],
+                          ),
+                        ],
+                      ),
+                    )),
               Positioned(
-                top: 135,
+                top: size.height * .15,
                 left: 10,
                 right: 10,
                 child: Container(
@@ -100,7 +137,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   width: size.width,
                   decoration: BoxDecoration(
                       color: Colors.grey.shade100,
-                      borderRadius: BorderRadius.circular(25)),
+                      borderRadius: BorderRadius.circular(35)),
                   child: Center(
                     child: Obx(
                       () => Row(
@@ -110,16 +147,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             onTap: () {
                               authController.containerindex(0);
                               authController.update();
-                             
                             },
                             child: Container(
                               height: 48.h,
-                              width: 160.w,
+                              width: 200.w,
                               decoration: BoxDecoration(
-                                  color: authController.containerindex.value == 0
-                                      ? AppColors.kblue
-                                      : Colors.grey.shade100,
-                                  borderRadius: BorderRadius.circular(20)),
+                                  color:
+                                      authController.containerindex.value == 0
+                                          ? AppColors.kblue
+                                          : Colors.grey.shade100,
+                                  borderRadius: BorderRadius.circular(30)),
                               child: Center(
                                   child: Text(
                                 'Personal Account',
@@ -136,16 +173,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             onTap: () {
                               authController.containerindex(1);
                               authController.update();
-                        
                             },
                             child: Container(
                               height: 48.h,
                               width: 160.w,
                               decoration: BoxDecoration(
-                                  color: authController.containerindex.value == 1
-                                      ? AppColors.kblue
-                                      : Colors.grey.shade100,
-                                  borderRadius: BorderRadius.circular(20)),
+                                  color:
+                                      authController.containerindex.value == 1
+                                          ? AppColors.kblue
+                                          : Colors.grey.shade100,
+                                  borderRadius: BorderRadius.circular(30)),
                               child: Center(
                                   child: Text(
                                 'Business Account',
@@ -164,49 +201,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
               ),
-              if (authController.containerindex.value==0)
-                Positioned(
-                    top: 180,
-                    left: 10,
-                    right: 10,
-                    child: Container(
-                      height: 600,
-                      child: ListView(
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ksizedbox30,
-                             
-                              PersonalAccount(),
-                   
-                           
-                            ],
-                          ),
-                        ],
-                      ),
-                    )),
-                     if (authController.containerindex.value == 1)
-                Positioned(
-                    top: 180,
-                    left: 10,
-                    right: 10,
-                    child: Container(
-                      height: 600,
-                      child: ListView(
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ksizedbox30,
-                           BusinessAccount(),
-                              ksizedbox10,
-                             
-                            ],
-                          ),
-                        ],
-                      ),
-                    )),
             ],
           ),
         ),

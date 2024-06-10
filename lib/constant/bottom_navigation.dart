@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../customer/views/account/account_screen.dart';
-import '../customer/views/home/home_screen.dart';
+import '../customer/views/bottom_navi_bar/home_screen.dart';
 import '../customer/views/mylist/mylist_screen.dart';
 import '../customer/views/wallet/wallet_screen.dart';
 import 'app_colors.dart';

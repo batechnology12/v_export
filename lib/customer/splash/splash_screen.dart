@@ -8,7 +8,6 @@ import 'package:v_export/constant/bottom_navigation.dart';
 
 import '../views/auth/login/login_screen.dart';
 
-
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -17,8 +16,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
-
   @override
   void initState() {
     super.initState();
@@ -32,7 +29,6 @@ class _SplashScreenState extends State<SplashScreen> {
       const Duration(seconds: 2),
     );
 
-   
     // final prefs = await SharedPreferences.getInstance();
     // String? authtoken = prefs.getString("auth_token");
     // String? role = prefs.getString("role");
@@ -46,26 +42,22 @@ class _SplashScreenState extends State<SplashScreen> {
     //   Get.offAll(BottomNaviBar());
     // }
 
-    if(isLoading==false){
-       Get.offAll(
-         () => LoginScreen(),
-     );
-    }else{
+    if (isLoading == false) {
+      Get.offAll(
+        () => LoginScreen(),
+      );
+    } else {
       Get.offAll(BottomNaviBar());
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return  Container(
-        color: AppColors.kblue,
-        child: Animate(
-      
-          child: Image.asset('assets/images/splashimage.png',
-              
-               ),
-        ),
-      
+    return Container(
+      color: AppColors.kblue,
+      child: Animate(
+        child: Image.asset('assets/icons/veelgo.png'),
+      ),
     );
   }
 }
