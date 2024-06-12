@@ -5,16 +5,18 @@ import 'package:get/get.dart';
 import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/my_list/booking_status.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/my_list/cancel_details.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/my_list/complete_details.dart';
 import 'package:v_export/customer/views/notification/notification_view.dart';
 
-class MyList extends StatefulWidget {
-  const MyList({super.key});
+class MyOrder extends StatefulWidget {
+  const MyOrder({super.key});
 
   @override
-  State<MyList> createState() => _MyListState();
+  State<MyOrder> createState() => _MyListState();
 }
 
-class _MyListState extends State<MyList> {
+class _MyListState extends State<MyOrder> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -25,28 +27,28 @@ class _MyListState extends State<MyList> {
         body: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.only(top: 50),
+              padding: const EdgeInsets.only(top: 40, bottom: 10),
               child: Container(
-                height: size.height * 0.05,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(),
-                    Text(
-                      'My Order',
-                      style: primaryfont.copyWith(
-                          fontSize: 22.sp,
-                          color: AppColors.kwhite,
-                          fontWeight: FontWeight.w600),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10, right: 10),
-                      child: Image.asset(
+                height: 50.h,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(),
+                      Text(
+                        'My Order',
+                        style: primaryfont.copyWith(
+                            fontSize: 21.sp,
+                            color: AppColors.kwhite,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      Image.asset(
                         "assets/icons/notification_icon.png",
                         color: Colors.white,
-                      ),
-                    )
-                  ],
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -140,7 +142,7 @@ class _MyListState extends State<MyList> {
                                               ),
                                               GestureDetector(
                                                 onTap: () {
-                                                  Get.to(BookingStatus());
+                                                  //  Get.to(BookingStatus());
                                                 },
                                                 child: Container(
                                                   height: 35,
@@ -431,16 +433,21 @@ class _MyListState extends State<MyList> {
                                                     fontWeight: FontWeight.w700,
                                                     fontSize: 15.5),
                                               ),
-                                              Container(
-                                                height: 35,
-                                                width: 35,
-                                                decoration: BoxDecoration(
-                                                    color: Color(0xffF5F5F5),
-                                                    shape: BoxShape.circle),
-                                                child: Icon(
-                                                  Icons.arrow_forward_ios,
-                                                  color: Colors.black,
-                                                  size: 15,
+                                              GestureDetector(
+                                                onTap: () {
+                                                  Get.to(CompleteDetails());
+                                                },
+                                                child: Container(
+                                                  height: 35,
+                                                  width: 35,
+                                                  decoration: BoxDecoration(
+                                                      color: Color(0xffF5F5F5),
+                                                      shape: BoxShape.circle),
+                                                  child: Icon(
+                                                    Icons.arrow_forward_ios,
+                                                    color: Colors.black,
+                                                    size: 15,
+                                                  ),
                                                 ),
                                               )
                                             ],
@@ -719,16 +726,21 @@ class _MyListState extends State<MyList> {
                                                     fontWeight: FontWeight.w700,
                                                     fontSize: 15.5),
                                               ),
-                                              Container(
-                                                height: 35,
-                                                width: 35,
-                                                decoration: BoxDecoration(
-                                                    color: Color(0xffF5F5F5),
-                                                    shape: BoxShape.circle),
-                                                child: Icon(
-                                                  Icons.arrow_forward_ios,
-                                                  color: Colors.black,
-                                                  size: 15,
+                                              GestureDetector(
+                                                onTap: () {
+                                                  Get.to(CancelDetals());
+                                                },
+                                                child: Container(
+                                                  height: 35,
+                                                  width: 35,
+                                                  decoration: BoxDecoration(
+                                                      color: Color(0xffF5F5F5),
+                                                      shape: BoxShape.circle),
+                                                  child: Icon(
+                                                    Icons.arrow_forward_ios,
+                                                    color: Colors.black,
+                                                    size: 15,
+                                                  ),
                                                 ),
                                               )
                                             ],

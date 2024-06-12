@@ -64,7 +64,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               Padding(
                 padding: const EdgeInsets.only(left: 15, right: 15),
                 child: Container(
-                  height: 50.h,
+                  height: 45.h,
                   width: size.width,
                   decoration: BoxDecoration(
                       color: Colors.grey.shade200,
@@ -79,6 +79,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     },
                     controller: mobileController,
                     decoration: InputDecoration(
+                        contentPadding:
+                            EdgeInsets.only(top: 10, right: 15, left: 15),
                         hintText: 'Mobile Number*',
                         hintStyle: primaryfont.copyWith(
                             fontSize: 13.sp, color: Color(0xff7C86A2)),
@@ -93,9 +95,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         ],
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(left: 15, right: 15),
+        padding: const EdgeInsets.only(
+          left: 15,
+          right: 15,
+        ),
         child: Container(
-          height: 100.h,
+          height: 120.h,
           child: Column(
             children: [
               InkWell(
@@ -112,14 +117,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     child: Text(
                       'Reset Password',
                       style: fourthfont.copyWith(
-                          fontSize: 18.sp,
+                          fontSize: 17.sp,
                           fontWeight: FontWeight.w500,
                           color: AppColors.kwhite),
                     ),
                   ),
                 ),
               ),
-              ksizedbox20,
+              ksizedbox10,
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

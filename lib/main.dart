@@ -15,7 +15,7 @@ import 'customer/controller/easebuzz_controller.dart';
 import 'package:device_preview/device_preview.dart';
 
 void main() {
-  //runApp(const MyApp());
+  // runApp(const MyApp());
   runApp(
     DevicePreview(
       enabled: !kReleaseMode,

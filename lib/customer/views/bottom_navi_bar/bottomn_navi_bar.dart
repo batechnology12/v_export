@@ -28,7 +28,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
 
   List<Widget> _screens = [
     HomeScreen(),
-    MyList(),
+    MyOrder(),
     Wallet(),
     Account(),
   ];

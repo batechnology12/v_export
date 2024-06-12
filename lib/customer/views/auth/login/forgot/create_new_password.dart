@@ -42,97 +42,97 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
               fontSize: 17.sp, fontWeight: FontWeight.w600),
         ),
       ),
-      body: ListView(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              ksizedbox40,
-              Center(
-                  child: SvgPicture.asset(
-                      'assets/images/createpasswordimage.svg')),
-              ksizedbox40,
-              Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Create New Password',
-                      style: primaryfont.copyWith(color: Color(0xff7C86A2)),
-                    ),
-                    ksizedbox10,
-                    Container(
-                      height: 50.h,
-                      decoration: BoxDecoration(
-                          color: Colors.grey.shade200,
-                          borderRadius: BorderRadius.circular(10)),
-                      child: TextFormField(
-                        obscureText: passvisible,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please Enter the new password';
-                          }
-                          return null;
-                        },
-                        controller: passwordController,
-                        decoration: InputDecoration(
-                            suffixIcon: IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    passvisible = !passvisible;
-                                  });
-                                },
-                                icon: passvisible == true
-                                    ? Icon(Icons.visibility)
-                                    : Icon(Icons.visibility_off)),
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius: BorderRadius.circular(10))),
-                      ),
-                    ),
-                    ksizedbox30,
-                    Text(
-                      'confirm Password',
-                      style: primaryfont.copyWith(color: Color(0xff7C86A2)),
-                    ),
-                    ksizedbox10,
-                    Container(
-                      height: 50.h,
-                      decoration: BoxDecoration(
-                          color: Colors.grey.shade200,
-                          borderRadius: BorderRadius.circular(10)),
-                      child: TextFormField(
-                        obscureText: confirmvisible,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please Enter the confirm password';
-                          }
-                          return null;
-                        },
-                        controller: confirmpasswordController,
-                        decoration: InputDecoration(
-                            suffixIcon: IconButton(
-                              icon: confirmvisible == true
-                                  ? Icon(Icons.visibility)
-                                  : Icon(Icons.visibility_off),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            ksizedbox40,
+            Center(
+                child:
+                    SvgPicture.asset('assets/images/createpasswordimage.svg')),
+            ksizedbox40,
+            Padding(
+              padding: const EdgeInsets.only(left: 20, right: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Create New Password',
+                    style: primaryfont.copyWith(color: Color(0xff7C86A2)),
+                  ),
+                  ksizedbox5,
+                  Container(
+                    height: 45.h,
+                    decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: TextFormField(
+                      obscureText: passvisible,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please Enter the new password';
+                        }
+                        return null;
+                      },
+                      controller: passwordController,
+                      decoration: InputDecoration(
+                          contentPadding: EdgeInsets.only(bottom: 10, left: 10),
+                          suffixIcon: IconButton(
                               onPressed: () {
                                 setState(() {
-                                  confirmvisible = !confirmvisible;
+                                  passvisible = !passvisible;
                                 });
                               },
-                            ),
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius: BorderRadius.circular(10))),
-                      ),
+                              icon: passvisible == true
+                                  ? Icon(Icons.visibility)
+                                  : Icon(Icons.visibility_off)),
+                          border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius: BorderRadius.circular(10))),
                     ),
-                  ],
-                ),
+                  ),
+                  ksizedbox30,
+                  Text(
+                    'confirm Password',
+                    style: primaryfont.copyWith(color: Color(0xff7C86A2)),
+                  ),
+                  ksizedbox5,
+                  Container(
+                    height: 45.h,
+                    decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: TextFormField(
+                      obscureText: confirmvisible,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please Enter the confirm password';
+                        }
+                        return null;
+                      },
+                      controller: confirmpasswordController,
+                      decoration: InputDecoration(
+                          contentPadding: EdgeInsets.only(bottom: 10, left: 10),
+                          suffixIcon: IconButton(
+                            icon: confirmvisible == true
+                                ? Icon(Icons.visibility)
+                                : Icon(Icons.visibility_off),
+                            onPressed: () {
+                              setState(() {
+                                confirmvisible = !confirmvisible;
+                              });
+                            },
+                          ),
+                          border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius: BorderRadius.circular(10))),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(left: 15, right: 15),
@@ -154,7 +154,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                     child: Text(
                       'Change Password',
                       style: primaryfont.copyWith(
-                          fontSize: 15.sp,
+                          fontSize: 17.sp,
                           fontWeight: FontWeight.w500,
                           color: AppColors.kwhite),
                     ),

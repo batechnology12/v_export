@@ -214,11 +214,14 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                               Container(
                                 height: 45,
                                 width: size.width,
-                                decoration:
-                                    BoxDecoration(color: AppColors.kwhite),
+                                decoration: BoxDecoration(
+                                    color: AppColors.kwhite,
+                                    border: Border.all(
+                                        color: Colors.grey.withOpacity(.32))),
                                 child: TextFormField(
                                   controller: deliverydateController,
                                   decoration: InputDecoration(
+                                      enabledBorder: InputBorder.none,
                                       suffixIcon: GestureDetector(
                                         onTap: () {
                                           selectDate(context);

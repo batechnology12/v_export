@@ -40,7 +40,8 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
         child: Column(
           children: [
             Container(
-              height: size.height * 0.15,
+              height: size.height * 0.13,
+              padding: EdgeInsets.only(top: 40),
               child: Row(
                 children: [
                   InkWell(
@@ -120,7 +121,9 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                           width: size.width,
                                           decoration: BoxDecoration(
                                             border: Border.all(
-                                                color: Colors.grey, width: 1),
+                                                color: Colors.grey
+                                                    .withOpacity(.32),
+                                                width: 1),
                                             color: Colors.white,
                                             borderRadius:
                                                 BorderRadius.circular(5),
@@ -162,7 +165,9 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                         width: size.width,
                                         decoration: BoxDecoration(
                                           border: Border.all(
-                                              color: Colors.grey, width: 1),
+                                              color:
+                                                  Colors.grey.withOpacity(.32),
+                                              width: 1),
                                           color: Colors.white,
                                           borderRadius:
                                               BorderRadius.circular(5),

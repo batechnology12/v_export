@@ -19,6 +19,7 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
   DateTime selectedDate = DateTime.now();
   TimeOfDay pickTime = TimeOfDay.now();
   TimeOfDay dropTime = TimeOfDay.now();
+  double containerHeight = 100.0;
 
   HomeController homeController = Get.find<HomeController>();
   var datebookingController = TextEditingController();
@@ -111,15 +112,9 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Schedule your move',
-                        style: primaryfont.copyWith(
-                            fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
-                      ksizedbox10,
-                      Text(
                         'Booking Date',
                         style: primaryfont.copyWith(
-                            fontSize: 14,
+                            fontSize: 15,
                             fontWeight: FontWeight.w500,
                             color: Color(0xff455A64)),
                       ),
@@ -127,7 +122,9 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                       Container(
                         height: 45,
                         width: size.width,
-                        decoration: BoxDecoration(color: AppColors.kwhite),
+                        decoration: BoxDecoration(
+                          color: AppColors.kwhite,
+                        ),
                         child: TextFormField(
                           onTap: () {
                             selectDate(context);
@@ -137,17 +134,21 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                               suffixIcon: Image.asset("assets/icons/date.png"),
                               hintText: 'select Date',
                               hintStyle: primaryfont.copyWith(
-                                  fontSize: 12, fontWeight: FontWeight.w500),
-                              border: OutlineInputBorder()),
+                                  color: Color(0xff455A64),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500),
+                              enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.grey.withOpacity(.32)))),
                         ),
                       ),
-                      ksizedbox10,
+                      ksizedbox20,
                       Text(
                         'Select Delivery types',
                         style: primaryfont.copyWith(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xff455A64)),
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xff000000)),
                       ),
                       ksizedbox10,
                       Container(
@@ -175,22 +176,22 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                             contentPadding: EdgeInsets.only(top: 5, left: 10),
                             //  labelText: 'Select delivery type',
                             labelStyle: primaryfont.copyWith(
-                              color: Colors.black,
+                              color: Colors.grey.withOpacity(.32),
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(4),
-                              borderSide: const BorderSide(
+                              borderSide: BorderSide(
                                 width: 1,
-                                color: Colors.black,
+                                color: Colors.grey.withOpacity(.32),
                               ),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(4),
-                              borderSide: const BorderSide(
+                              borderSide: BorderSide(
                                 width: 1,
-                                color: Colors.black,
+                                color: Colors.grey.withOpacity(.32),
                               ),
                             ),
                             focusedBorder: OutlineInputBorder(
@@ -216,25 +217,26 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                           }).toList(),
                         ),
                       ),
-                      ksizedbox10,
+                      ksizedbox20,
                       Text(
-                        'Parcel size',
+                        'Parcel Size',
                         style: primaryfont.copyWith(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xff455A64)),
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xff000000)),
                       ),
                       AnimatedContainer(
-                        duration: Duration(milliseconds: 300),
-                        height: 120.h * homeController.addParcels.length,
-                        width: size.width,
-                        //   color: Colors.yellow,
+                        duration: Duration(microseconds: 300),
+                        padding: EdgeInsets.only(top: 5),
+                        height: 100.h * homeController.addParcels.length,
                         child: ListView.builder(
+                            padding: EdgeInsets.zero,
                             physics: NeverScrollableScrollPhysics(),
                             itemCount: homeController.addParcels.length,
                             itemBuilder: (context, index) {
                               return Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Row(
                                     mainAxisAlignment:
@@ -248,11 +250,37 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                                         child: TextFormField(
                                           controller: parcelsizeController,
                                           decoration: InputDecoration(
-                                              hintText: 'L x W x H',
-                                              hintStyle: primaryfont.copyWith(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w500),
-                                              border: OutlineInputBorder()),
+                                            hintText: 'L x W x H',
+                                            hintStyle: primaryfont.copyWith(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w500,
+                                                color: Color(0xff455A64)),
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                              borderSide: BorderSide(
+                                                width: 1,
+                                                color: Colors.grey
+                                                    .withOpacity(.32),
+                                              ),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                              borderSide: BorderSide(
+                                                width: 1,
+                                                color: Colors.grey
+                                                    .withOpacity(.32),
+                                              ),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                width: 1,
+                                              ),
+                                            ),
+                                          ),
                                         ),
                                       ),
                                       Container(
@@ -263,11 +291,37 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                                         child: TextFormField(
                                           controller: parcelkgController,
                                           decoration: InputDecoration(
-                                              hintText: 'Kg',
-                                              hintStyle: primaryfont.copyWith(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w500),
-                                              border: OutlineInputBorder()),
+                                            hintText: 'Kg',
+                                            hintStyle: primaryfont.copyWith(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w500,
+                                                color: Color(0xff455A64)),
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                              borderSide: BorderSide(
+                                                width: 1,
+                                                color: Colors.grey
+                                                    .withOpacity(.32),
+                                              ),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                              borderSide: BorderSide(
+                                                width: 1,
+                                                color: Colors.grey
+                                                    .withOpacity(.32),
+                                              ),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                width: 1,
+                                              ),
+                                            ),
+                                          ),
                                         ),
                                       ),
                                       Container(
@@ -278,11 +332,37 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                                         child: TextFormField(
                                           controller: quantityController,
                                           decoration: InputDecoration(
-                                              hintText: 'Qty',
-                                              hintStyle: primaryfont.copyWith(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w500),
-                                              border: OutlineInputBorder()),
+                                            hintText: 'Qty',
+                                            hintStyle: primaryfont.copyWith(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w500,
+                                                color: Color(0xff455A64)),
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                              borderSide: BorderSide(
+                                                width: 1,
+                                                color: Colors.grey
+                                                    .withOpacity(.32),
+                                              ),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                              borderSide: BorderSide(
+                                                width: 1,
+                                                color: Colors.grey
+                                                    .withOpacity(.32),
+                                              ),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                              borderSide: const BorderSide(
+                                                width: 1,
+                                              ),
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -345,13 +425,12 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                               );
                             }),
                       ),
-                      ksizedbox10,
                       Text(
-                        'Parcel items',
+                        'Parcel Items',
                         style: primaryfont.copyWith(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xff455A64)),
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xff000000)),
                       ),
                       ksizedbox10,
                       Container(
@@ -361,26 +440,47 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                         child: TextFormField(
                           controller: parcelitemController,
                           decoration: InputDecoration(
-                              hintText: 'Items',
-                              hintStyle: primaryfont.copyWith(
-                                  fontSize: 12, fontWeight: FontWeight.w500),
-                              border: OutlineInputBorder()),
+                            hintText: 'Items',
+                            hintStyle: primaryfont.copyWith(
+                                fontSize: 12, fontWeight: FontWeight.w500),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(4),
+                              borderSide: BorderSide(
+                                width: 1,
+                                color: Colors.grey.withOpacity(.32),
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(4),
+                              borderSide: BorderSide(
+                                width: 1,
+                                color: Colors.grey.withOpacity(.32),
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(4),
+                              borderSide: const BorderSide(
+                                width: 1,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 1),
                         child: Text(
                           'ex. Food/parcel/medicine',
-                          style: primaryfont.copyWith(),
+                          style: primaryfont.copyWith(
+                              color: Color(0xff455A64), fontSize: 15.sp),
                         ),
                       ),
                       ksizedbox10,
                       Text(
                         'Pickup Time',
                         style: primaryfont.copyWith(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xff455A64)),
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xff000000)),
                       ),
                       ksizedbox10,
                       Row(
@@ -393,8 +493,8 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                             decoration: BoxDecoration(
                                 color: AppColors.kwhite,
                                 border: Border.all(
-                                  width: 1,
-                                ),
+                                    width: 1,
+                                    color: Colors.grey.withOpacity(.32)),
                                 borderRadius: BorderRadius.circular(5)),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -404,7 +504,7 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                                       .toString(),
                                   style: primaryfont.copyWith(
                                       fontSize: 13,
-                                      fontWeight: FontWeight.w600,
+                                      fontWeight: FontWeight.w500,
                                       color: Color(0xff455A64)),
                                 ),
                                 IconButton(
@@ -415,7 +515,13 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                               ],
                             ),
                           ),
-                          Text('To'),
+                          Text(
+                            'To',
+                            style: primaryfont.copyWith(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xff000000)),
+                          ),
                           Container(
                             padding: EdgeInsets.only(left: 5),
                             height: 45,
@@ -423,8 +529,8 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                             decoration: BoxDecoration(
                                 color: AppColors.kwhite,
                                 border: Border.all(
-                                  width: 1,
-                                ),
+                                    width: 1,
+                                    color: Colors.grey.withOpacity(.32)),
                                 borderRadius: BorderRadius.circular(5)),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -434,7 +540,7 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                                       .toString(),
                                   style: primaryfont.copyWith(
                                       fontSize: 13,
-                                      fontWeight: FontWeight.w600,
+                                      fontWeight: FontWeight.w500,
                                       color: Color(0xff455A64)),
                                 ),
                                 IconButton(

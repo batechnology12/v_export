@@ -6,11 +6,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../customer/views/account/account_screen.dart';
 import '../customer/views/bottom_navi_bar/home_screen.dart';
-import '../customer/views/mylist/mylist_screen.dart';
+import '../customer/views/bottom_navi_bar/my_list/my_list.dart';
 import '../customer/views/wallet/wallet_screen.dart';
 import 'app_colors.dart';
 import 'app_font.dart';
-
 
 class BottomNaviBar extends StatefulWidget {
   int index;
@@ -25,26 +24,18 @@ class _BottomNaviBarState extends State<BottomNaviBar> {
   List iconsList = [
     "assets/icons/homeicon.png",
     "assets/icons/mylisticon.png",
-  //  "assets/icons/installcustomer.png",
+    //  "assets/icons/installcustomer.png",
     "assets/icons/vexportwalleticon.png",
     "assets/icons/accounticon.png",
   ];
   List screens = [
     HomeScreen(),
-    MyListScreen(),
-  //  InstallationCustomer(),
-   WalletScreen(),
+    MyOrder(),
+    //  InstallationCustomer(),
+    WalletScreen(),
     AccountScrren(),
   ];
-  List title = [
-    'Home',
-    'MyList',
-    'Wallet',
-    'Account'
-  ];
-
-
-  
+  List title = ['Home', 'MyList', 'Wallet', 'Account'];
 
   @override
   void initState() {
@@ -62,7 +53,8 @@ class _BottomNaviBarState extends State<BottomNaviBar> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope( onWillPop: () {
+    return WillPopScope(
+      onWillPop: () {
         return showExitPopup(context);
       },
       child: Scaffold(
@@ -84,10 +76,10 @@ class _BottomNaviBarState extends State<BottomNaviBar> {
                       color: bottomIndex == index
                           ? AppColors.kblue
                           : Colors.black),
-                  Text(title[index],
-                  style: thirdsfont.copyWith(
-                    fontSize: 11.5
-                  ) ,),
+                  Text(
+                    title[index],
+                    style: thirdsfont.copyWith(fontSize: 11.5),
+                  ),
                 ],
               );
             }),
@@ -100,7 +92,8 @@ class _BottomNaviBarState extends State<BottomNaviBar> {
       ),
     );
   }
-   Future<bool> showExitPopup(context) async {
+
+  Future<bool> showExitPopup(context) async {
     return await showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -110,7 +103,10 @@ class _BottomNaviBarState extends State<BottomNaviBar> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text("Do you want to exit ?",style: TextStyle(fontWeight: FontWeight.w600,fontSize: 15),),
+                  const Text(
+                    "Do you want to exit ?",
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+                  ),
                   const SizedBox(height: 20),
                   Row(
                     children: [
@@ -126,7 +122,7 @@ class _BottomNaviBarState extends State<BottomNaviBar> {
                           //     primary: Colors.red.shade800),
                           child: Text(
                             "Yes",
-                          //  style: primaryfont.copyWith(color: Colors.white),
+                            //  style: primaryfont.copyWith(color: Colors.white),
                           ),
                         ),
                       ),
@@ -149,7 +145,6 @@ class _BottomNaviBarState extends State<BottomNaviBar> {
               ),
             ),
           );
-        }
-        );
+        });
   }
 }

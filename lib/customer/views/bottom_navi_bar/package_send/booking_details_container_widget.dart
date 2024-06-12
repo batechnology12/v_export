@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:v_export/constant/common_container.dart';
 import 'package:v_export/customer/controller/easebuzz_controller.dart';
@@ -290,7 +291,7 @@ class _BookingDetailsContainerWidgetState
                 ),
                 ksizedbox20,
                 Container(
-                  height: 300,
+                  height: 300.h,
                   width: size.width,
                   decoration: BoxDecoration(
                       color: AppColors.kwhite,

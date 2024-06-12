@@ -49,9 +49,12 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             children: [
               Container(
-                height: size.height * 0.18,
+                height: size.height * 0.15,
                 child: Center(
-                  child: Image.asset('assets/icons/veelgo.png'),
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 25),
+                    child: Image.asset('assets/icons/veelgo.png'),
+                  ),
                 ),
               ),
               Expanded(
@@ -74,7 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Text(
                             'Welcome Back',
                             style: primaryfont.copyWith(
-                                fontSize: 25.sp, fontWeight: FontWeight.w900),
+                                fontSize: 21.sp, fontWeight: FontWeight.w900),
                           ),
                           SizedBox(
                             height: 6.h,
@@ -82,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Text(
                             'Please enter your Mobile Number \nto sign in',
                             style: primaryfont.copyWith(
-                                fontWeight: FontWeight.w500, fontSize: 18),
+                                fontWeight: FontWeight.w500, fontSize: 14.sp),
                           ),
                           SizedBox(
                             height: 20.h,
@@ -90,11 +93,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           Text(
                             'Mobile Number*',
                             style: primaryfont.copyWith(
-                                color: Color(0xff7C86A2), fontSize: 16),
+                                color: Color(0xff7C86A2), fontSize: 14.sp),
                           ),
-                          ksizedbox10,
+                          ksizedbox5,
                           Container(
-                            height: 50.h,
+                            height: 45.h,
                             decoration: BoxDecoration(
                                 color: Colors.grey.shade200,
                                 borderRadius: BorderRadius.circular(10)),
@@ -119,11 +122,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           Text(
                             'Password',
                             style: primaryfont.copyWith(
-                                color: Color(0xff7C86A2), fontSize: 16),
+                                color: Color(0xff7C86A2), fontSize: 14.sp),
                           ),
-                          ksizedbox10,
+                          ksizedbox5,
                           Container(
-                            height: 50.h,
+                            height: 45.h,
                             decoration: BoxDecoration(
                                 color: Colors.grey.shade200,
                                 borderRadius: BorderRadius.circular(10)),
@@ -180,6 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   'Forgot Password?',
                                   style: primaryfont.copyWith(
                                       fontWeight: FontWeight.w500,
+                                      fontSize: 13,
                                       color: AppColors.kblue),
                                 ),
                               )
@@ -200,7 +204,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 child: Text(
                                   'Login',
                                   style: primaryfont.copyWith(
-                                      fontSize: 18,
+                                      fontSize: 17,
                                       fontWeight: FontWeight.w500,
                                       color: AppColors.kwhite),
                                 ),
@@ -220,12 +224,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                       style: secondoryfont.copyWith(
                                           color: Colors.black,
                                           fontWeight: FontWeight.w500,
-                                          fontSize: 16.sp)),
+                                          fontSize: 15.sp)),
                                   TextSpan(
                                       text: 'Sign Up',
                                       style: secondoryfont.copyWith(
                                           decoration: TextDecoration.underline,
-                                          fontSize: 16.sp,
+                                          fontSize: 15.sp,
                                           color: AppColors.kblue,
                                           fontWeight: FontWeight.w500))
                                 ]),

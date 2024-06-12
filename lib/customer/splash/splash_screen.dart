@@ -29,19 +29,6 @@ class _SplashScreenState extends State<SplashScreen> {
       const Duration(seconds: 2),
     );
 
-    // final prefs = await SharedPreferences.getInstance();
-    // String? authtoken = prefs.getString("auth_token");
-    // String? role = prefs.getString("role");
-    // print("Token is here");
-    // print(authtoken);
-    // if (authtoken == "null" || authtoken == null) {
-    //   Get.offAll(
-    //     () => Onbording(),
-    //   );
-    // } else {
-    //   Get.offAll(BottomNaviBar());
-    // }
-
     if (isLoading == false) {
       Get.offAll(
         () => LoginScreen(),
@@ -54,10 +41,10 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColors.kblue,
-      child: Animate(
-        child: Image.asset('assets/icons/veelgo.png'),
-      ),
-    );
+        color: AppColors.kblue,
+        child: Image.asset('assets/icons/veelgo.png').animate().fade().slide(
+            begin: Offset(0, 0.5),
+            end: Offset(0, 0),
+            duration: Duration(seconds: 2)));
   }
 }
