@@ -22,8 +22,7 @@ class _DriverContainerWidgetState extends State<DriverContainerWidget> {
         Container(
           child: Padding(
             padding: const EdgeInsets.only(left: 5, right: 5),
-            child:
-             Container(
+            child: Container(
               width: size.width,
               decoration: BoxDecoration(
                   color: AppColors.kwhite,
@@ -38,7 +37,8 @@ class _DriverContainerWidgetState extends State<DriverContainerWidget> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(top: 5, left: 5, right: 5),
-                    child: Container(
+                    child: 
+                    Container(
                       width: size.width,
                       decoration: BoxDecoration(color: AppColors.kwhite),
                       child: Column(

@@ -104,7 +104,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
             ),
             BottomNavigationBarItem(
               icon: Image.asset(
-                "assets/icons/li_clock.png",
+                "assets/icons/time.png",
                 color: _selectedIndex == 1 ? Colors.blue : Colors.black,
               ),
               label: 'My List',
@@ -118,7 +118,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
             ),
             BottomNavigationBarItem(
               icon: Image.asset(
-                "assets/icons/li_user.png",
+                "assets/icons/account.png",
                 color: _selectedIndex == 3 ? Colors.blue : Colors.black,
               ),
               label: 'Account',

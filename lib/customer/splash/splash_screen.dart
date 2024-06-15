@@ -43,8 +43,8 @@ class _SplashScreenState extends State<SplashScreen> {
     return Container(
         color: AppColors.kblue,
         child: Image.asset('assets/icons/veelgo.png').animate().fade().slide(
-            begin: Offset(0, 0.5),
-            end: Offset(0, 0),
+            begin: Offset(0, 0),
+            end: Offset(0, -0.5),
             duration: Duration(seconds: 2)));
   }
 }

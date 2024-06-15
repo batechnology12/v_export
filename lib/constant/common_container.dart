@@ -18,6 +18,7 @@ class _CommonContainerState extends State<CommonContainer> {
     final size = MediaQuery.of(context).size;
     return Container(
       child: Container(
+        margin: EdgeInsets.only(bottom: 5),
         height: 45.h,
         width: size.width,
         decoration: BoxDecoration(

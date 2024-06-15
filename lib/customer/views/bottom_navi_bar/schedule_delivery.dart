@@ -21,6 +21,7 @@ class ScheduleDeliveryScreen extends StatefulWidget {
 }
 
 class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
+  
   bool ischeck = false;
   bool manpowercheck = false;
   bool postinvoicecheck = false;

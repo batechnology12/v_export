@@ -26,7 +26,7 @@ class _CancelDetalsState extends State<CancelDetals> {
           onTap: () {
             Get.back();
           },
-          child: Icon(
+          child: const Icon(
             Icons.arrow_back_ios_new_sharp,
             color: AppColors.kwhite,
           ),
@@ -45,7 +45,7 @@ class _CancelDetalsState extends State<CancelDetals> {
             child: Container(
               height: size.height,
               width: size.width,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Color(0xffF4F8FF),
                 //  color: Color.fromARGB(255, 235, 232, 232),
                 borderRadius: BorderRadius.only(
@@ -71,7 +71,8 @@ class _CancelDetalsState extends State<CancelDetals> {
                             //       color: AppColors.kgrey)
                             // ],
                             borderRadius: BorderRadius.circular(10)),
-                        child: Row(
+                        child: 
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Row(
@@ -105,7 +106,7 @@ class _CancelDetalsState extends State<CancelDetals> {
                                     ),
                                     Row(
                                       children: [
-                                        Icon(
+                                        const Icon(
                                           Icons.star,
                                           color: Colors.yellow,
                                         ),
@@ -162,7 +163,8 @@ class _CancelDetalsState extends State<CancelDetals> {
                         child: Padding(
                           padding: const EdgeInsets.only(
                               left: 10, right: 10, top: 10),
-                          child: Column(
+                          child:
+                           Column(
                             children: [
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
@@ -180,7 +182,8 @@ class _CancelDetalsState extends State<CancelDetals> {
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Column(
+                                  const
+                                   Column(
                                     children: [
                                       Icon(
                                         Icons.location_on,

@@ -6,12 +6,16 @@ var primaryfont = GoogleFonts.inter();
 var secondoryfont = GoogleFonts.nunito();
 var thirdsfont = GoogleFonts.poppins();
 var fourthfont = GoogleFonts.dmSans();
+var fifthfont = GoogleFonts.urbanist();
 
 var ksizedbox5 = SizedBox(
   height: 5.h,
 );
 var ksizedbox10 = SizedBox(
   height: 10.h,
+);
+var ksizedbox15 = SizedBox(
+  height: 15.h,
 );
 var ksizedbox20 = SizedBox(
   height: 20.h,

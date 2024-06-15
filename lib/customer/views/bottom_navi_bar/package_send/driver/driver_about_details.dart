@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/driver_message.dart';
 
 class DriverAboutDetails extends StatefulWidget {
   const DriverAboutDetails({super.key});
@@ -342,8 +343,13 @@ class _DriverAboutDetailsState extends State<DriverAboutDetails> {
                                             Image.asset(
                                                 'assets/icons/Layer 2.png'),
                                             Ksizedboxw10,
-                                            Image.asset(
-                                                'assets/icons/Group 50.png'),
+                                            GestureDetector(
+                                              onTap: () {
+                                                Get.to(DriverMessage());
+                                              },
+                                              child: Image.asset(
+                                                  'assets/icons/Group 50.png'),
+                                            ),
                                             Ksizedboxw10,
                                             Image.asset(
                                                 'assets/icons/Group 42029.png'),
