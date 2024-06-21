@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dash/flutter_dash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:svg_flutter/svg.dart';
 import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
 import 'package:v_export/customer/views/notification/notification_view.dart';
@@ -39,7 +40,7 @@ class _WalletState extends State<Wallet> {
               fontWeight: FontWeight.w600),
         ),
         actions: [
-          InkWell(
+          GestureDetector(
               onTap: () {
                 Get.to(NotificationView());
               },
@@ -608,18 +609,25 @@ class _WalletState extends State<Wallet> {
                           ],
                         ),
                         Container(
-                          height: 55.h,
-                          width: 55.w,
+                          height: 50.h,
+                          width: 50.w,
                           decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(15)),
-                          child: Image.asset(
-                            "assets/icons/Group (2).png",
-                            color: AppColors.kblue,
+                          child: Center(
+                            child: Container(
+                              height: 35.h,
+                              width: 35.w,
+                              child: SvgPicture.asset(
+                                "assets/icons/Group 56.svg",
+                                fit: BoxFit.contain,
+                              ),
+                            ),
                           ),
-                        )
+                        ),
                       ],
                     ),
+                    ksizedbox10,
                     Container(
                       height: 45.h,
                       width: size.width,
@@ -799,16 +807,22 @@ class _WalletState extends State<Wallet> {
                           ],
                         ),
                         Container(
-                          height: 55.h,
-                          width: 55.w,
+                          height: 50.h,
+                          width: 50.w,
                           decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(15)),
-                          child: Image.asset(
-                            "assets/icons/Group (2).png",
-                            color: AppColors.kblue,
+                          child: Center(
+                            child: Container(
+                              height: 35.h,
+                              width: 35.w,
+                              child: SvgPicture.asset(
+                                "assets/icons/Group 56.svg",
+                                fit: BoxFit.contain,
+                              ),
+                            ),
                           ),
-                        )
+                        ),
                       ],
                     ),
                     Row(
@@ -816,7 +830,6 @@ class _WalletState extends State<Wallet> {
                       children: [
                         InkWell(
                           onTap: () {
-                            
                             setState(() {
                               isTopup = true;
                             });

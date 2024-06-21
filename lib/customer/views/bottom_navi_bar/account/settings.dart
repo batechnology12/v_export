@@ -127,10 +127,10 @@ class _SettingsState extends State<Settings> {
                         ksizedbox20,
                         GestureDetector(
                           onTap: () {
-                           
-                         
+                            popUp();
                           },
                           child: Container(
+                            color: Colors.white,
                             child: Column(
                               children: [
                                 Row(
@@ -189,93 +189,93 @@ class _SettingsState extends State<Settings> {
   }
 
   popUp() {
+    var size1 = MediaQuery.of(context).size;
     return showModalBottomSheet(
         context: context,
         isScrollControlled: true,
         builder: (BuildContext context) {
           return Container(
-            height: 170.h,
+            padding: EdgeInsets.only(bottom: 10),
             decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
                     topRight: Radius.circular(25),
                     topLeft: Radius.circular(25))),
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Delete Account",
-                      style: primaryfont.copyWith(
-                          fontSize: 19.sp,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black),
-                    ),
-                    ksizedbox10,
-                    Text(
-                      "Are you sure you want to Delete Account?",
-                      style: primaryfont.copyWith(
-                          fontSize: 17.sp,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xff949599)),
-                    ),
-                    ksizedbox10,
-                    Row(
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            Get.back();
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 20, left: 20),
-                            child: Container(
-                              height: 50.h,
-                              width: 130.w,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
-                                  border: Border.all(
-                                      width: 1, color: Color(0xff0072E8)),
-                                  color: Colors.white),
-                              child: Center(
-                                child: Text(
-                                  "Cancel",
-                                  style: primaryfont.copyWith(
-                                      fontSize: 18.sp,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xff0072E8)),
-                                ),
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Delete Account",
+                    style: primaryfont.copyWith(
+                        fontSize: 19.sp,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black),
+                  ),
+                  ksizedbox10,
+                  Text(
+                    "Are you sure you want to Delete Account?",
+                    style: primaryfont.copyWith(
+                        fontSize: 17.sp,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xff949599)),
+                  ),
+                  ksizedbox10,
+                  Row(
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          Get.back();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 20, left: 20),
+                          child: Container(
+                            height: 50.h,
+                            width: 130.w,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                                border: Border.all(
+                                    width: 1, color: Color(0xff0072E8)),
+                                color: Colors.white),
+                            child: Center(
+                              child: Text(
+                                "Cancel",
+                                style: primaryfont.copyWith(
+                                    fontSize: 18.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xff0072E8)),
                               ),
                             ),
                           ),
                         ),
-                        InkWell(
-                          onTap: () {},
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 20, left: 20),
-                            child: Container(
-                              height: 50.h,
-                              width: 140.w,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
-                                  color: Colors.blue),
-                              child: Center(
-                                child: Text(
-                                  "Yes, Delete",
-                                  style: primaryfont.copyWith(
-                                      fontSize: 18.sp,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xffFFFFFF)),
-                                ),
+                      ),
+                      InkWell(
+                        onTap: () {},
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 20, left: 20),
+                          child: Container(
+                            height: 50.h,
+                            width: 140.w,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                                color: Colors.blue),
+                            child: Center(
+                              child: Text(
+                                "Yes, Delete",
+                                style: primaryfont.copyWith(
+                                    fontSize: 18.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xffFFFFFF)),
                               ),
                             ),
                           ),
                         ),
-                      ],
-                    )
-                  ],
-                ),
+                      ),
+                    ],
+                  )
+                ],
               ),
             ),
           );

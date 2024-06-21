@@ -38,15 +38,13 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
     final DateTime? picked = await showDatePicker(
         context: context,
         initialDate: selectedDate,
-        firstDate: DateTime(1901, 1),
+        firstDate: DateTime.now(),
         lastDate: DateTime(2100));
     if (picked != null && picked != selectedDate)
       setState(() {
         selectedDate = picked;
-        datebookingController.value =
-            TextEditingValue(text: formatDateTime.toString());
+        formatDateTime = formatDate(selectedDate, [dd, '-', mm, '-', yyyy]);
       });
-    formatDateTime = formatDate(selectedDate, [dd, '-', mm, '-', yyyy]);
   }
 
   Future displayTimePicker(BuildContext context) async {
@@ -114,46 +112,86 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                       Text(
                         'Booking Date',
                         style: primaryfont.copyWith(
-                            fontSize: 15,
+                            fontSize: 16.sp,
                             fontWeight: FontWeight.w500,
                             color: Color(0xff455A64)),
                       ),
                       ksizedbox10,
                       Container(
-                        height: 45,
-                        width: size.width,
-                        decoration: BoxDecoration(
-                          color: AppColors.kwhite,
-                        ),
-                        child: TextFormField(
-                          onTap: () {
-                            selectDate(context);
-                          },
-                          controller: datebookingController,
-                          decoration: InputDecoration(
-                              suffixIcon: Image.asset("assets/icons/date.png"),
-                              hintText: 'select Date',
-                              hintStyle: primaryfont.copyWith(
-                                  color: Color(0xff455A64),
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500),
-                              enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Colors.grey.withOpacity(.32)))),
-                        ),
-                      ),
+                          padding: EdgeInsets.symmetric(horizontal: 15),
+                          height: 50.h,
+                          width: size.width,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              width: 1,
+                              color: Color(0xff444444).withOpacity(.32),
+                            ),
+                            color: AppColors.kwhite,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                formatDateTime.isEmpty
+                                    ? 'Select Date'
+                                    : formatDateTime,
+                                style: primaryfont.copyWith(
+                                    color: Color(0xff455A64),
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                              GestureDetector(
+                                  onTap: () {
+                                    selectDate(context);
+                                  },
+                                  child: Image.asset("assets/icons/date.png")),
+                            ],
+                          )),
+                      // Container(
+                      //   height: 50.h,
+                      //   width: size.width,
+                      //   decoration: BoxDecoration(
+                      //     color: AppColors.kwhite,
+                      //   ),
+                      //   child: TextFormField(
+                      //     onTap: () {
+                      //       setState(() {
+                      //         selectDate(context);
+                      //       });
+                      //     },
+                      //     controller: datebookingController,
+                      //     decoration: InputDecoration(
+                      //         suffixIcon: Image.asset("assets/icons/date.png"),
+                      //         hintText: 'DD/MM/YYYY',
+                      //         hintStyle: primaryfont.copyWith(
+                      //             color: Color(0xff455A64),
+                      //             fontSize: 12,
+                      //             fontWeight: FontWeight.w500),
+                      //         border: const OutlineInputBorder(
+                      //             borderSide: BorderSide(
+                      //           width: 1,
+                      //           color: Color(0xff455A64),
+                      //         )),
+                      //         enabledBorder: const OutlineInputBorder(
+                      //             borderSide: BorderSide(
+                      //           width: 1,
+                      //           color: Color(0xff455A64),
+                      //         ))),
+                      //   ),
+                      // ),
                       ksizedbox20,
                       Text(
                         'Select Delivery types',
                         style: primaryfont.copyWith(
-                            fontSize: 15.sp,
+                            fontSize: 16.sp,
                             fontWeight: FontWeight.w600,
                             color: Color(0xff000000)),
                       ),
                       ksizedbox10,
                       Container(
                         margin: EdgeInsets.only(right: 0),
-                        height: 45.h,
+                        height: 50.h,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(4),
                         ),
@@ -163,7 +201,6 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                           onChanged: (newValue) {
                             setState(() {
                               signageItems = newValue!;
-                              // calculateSquareFeet();
                             });
                           },
                           validator: (value) {
@@ -174,10 +211,10 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                           },
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.only(top: 5, left: 10),
-                            //  labelText: 'Select delivery type',
-                            labelStyle: primaryfont.copyWith(
-                              color: Colors.grey.withOpacity(.32),
-                              fontSize: 14,
+                            hintText: 'Select delivery type',
+                            hintStyle: primaryfont.copyWith(
+                              color: Color(0xff455A64),
+                              fontSize: 14.sp,
                               fontWeight: FontWeight.w500,
                             ),
                             border: OutlineInputBorder(
@@ -221,10 +258,11 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                       Text(
                         'Parcel Size',
                         style: primaryfont.copyWith(
-                            fontSize: 15.sp,
+                            fontSize: 17.sp,
                             fontWeight: FontWeight.w600,
                             color: Color(0xff000000)),
                       ),
+                      ksizedbox5,
                       AnimatedContainer(
                         duration: Duration(microseconds: 300),
                         padding: EdgeInsets.only(top: 5),
@@ -245,14 +283,17 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                                       Container(
                                         height: 45.h,
                                         width: 140.w,
-                                        decoration: BoxDecoration(
+                                        decoration: const BoxDecoration(
                                             color: AppColors.kwhite),
                                         child: TextFormField(
                                           controller: parcelsizeController,
                                           decoration: InputDecoration(
+                                            contentPadding:
+                                                const EdgeInsets.only(
+                                                    top: 5, left: 10),
                                             hintText: 'L x W x H',
                                             hintStyle: primaryfont.copyWith(
-                                                fontSize: 12,
+                                                fontSize: 14.sp,
                                                 fontWeight: FontWeight.w500,
                                                 color: Color(0xff455A64)),
                                             border: OutlineInputBorder(
@@ -286,14 +327,17 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                                       Container(
                                         height: 45.h,
                                         width: 80.w,
-                                        decoration: BoxDecoration(
+                                        decoration: const BoxDecoration(
                                             color: AppColors.kwhite),
                                         child: TextFormField(
                                           controller: parcelkgController,
                                           decoration: InputDecoration(
+                                            contentPadding:
+                                                const EdgeInsets.only(
+                                                    top: 5, left: 10),
                                             hintText: 'Kg',
                                             hintStyle: primaryfont.copyWith(
-                                                fontSize: 12,
+                                                fontSize: 14.sp,
                                                 fontWeight: FontWeight.w500,
                                                 color: Color(0xff455A64)),
                                             border: OutlineInputBorder(
@@ -327,14 +371,17 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                                       Container(
                                         height: 45.h,
                                         width: 80.w,
-                                        decoration: BoxDecoration(
+                                        decoration: const BoxDecoration(
                                             color: AppColors.kwhite),
                                         child: TextFormField(
                                           controller: quantityController,
                                           decoration: InputDecoration(
+                                            contentPadding:
+                                                const EdgeInsets.only(
+                                                    top: 5, left: 10),
                                             hintText: 'Qty',
                                             hintStyle: primaryfont.copyWith(
-                                                fontSize: 12,
+                                                fontSize: 14.sp,
                                                 fontWeight: FontWeight.w500,
                                                 color: Color(0xff455A64)),
                                             border: OutlineInputBorder(
@@ -383,7 +430,7 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                                               child: const Icon(
                                                 Icons.add,
                                                 color: AppColors.kblue,
-                                                size: 19,
+                                                size: 17,
                                               ),
                                             ),
                                             GestureDetector(
@@ -396,7 +443,7 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                                               child: Text(
                                                 'Add Parcel',
                                                 style: primaryfont.copyWith(
-                                                    fontSize: 15,
+                                                    fontSize: 17.sp,
                                                     fontWeight: FontWeight.w500,
                                                     color: AppColors.kblue),
                                               ),
@@ -428,21 +475,23 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                       Text(
                         'Parcel Items',
                         style: primaryfont.copyWith(
-                            fontSize: 15.sp,
+                            fontSize: 17.sp,
                             fontWeight: FontWeight.w600,
                             color: Color(0xff000000)),
                       ),
                       ksizedbox10,
                       Container(
-                        height: 45,
+                        height: 50.h,
                         width: size.width,
                         decoration: BoxDecoration(color: AppColors.kwhite),
                         child: TextFormField(
                           controller: parcelitemController,
                           decoration: InputDecoration(
+                            contentPadding:
+                                const EdgeInsets.only(top: 5, left: 10),
                             hintText: 'Items',
                             hintStyle: primaryfont.copyWith(
-                                fontSize: 12, fontWeight: FontWeight.w500),
+                                fontSize: 15.sp, fontWeight: FontWeight.w500),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(4),
                               borderSide: BorderSide(
@@ -474,28 +523,28 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                               color: Color(0xff455A64), fontSize: 15.sp),
                         ),
                       ),
-                      ksizedbox10,
+                      ksizedbox20,
                       Text(
                         'Pickup Time',
                         style: primaryfont.copyWith(
                             fontSize: 15.sp,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xff000000)),
+                            color: Color(0xff455A64)),
                       ),
-                      ksizedbox10,
+                      ksizedbox20,
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
                             padding: EdgeInsets.only(left: 5),
-                            height: 45,
-                            width: 130,
+                            height: 50.h,
+                            width: 130.w,
                             decoration: BoxDecoration(
                                 color: AppColors.kwhite,
                                 border: Border.all(
                                     width: 1,
                                     color: Colors.grey.withOpacity(.32)),
-                                borderRadius: BorderRadius.circular(5)),
+                                borderRadius: BorderRadius.circular(10)),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -503,7 +552,7 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                                   "${pickTime.hour < 10 ? "0${pickTime.hour}" : pickTime.hour}:${pickTime.minute.remainder(60) < 10 ? "0${pickTime.minute.remainder(60)}" : '${pickTime.minute.remainder(60)}'}:00"
                                       .toString(),
                                   style: primaryfont.copyWith(
-                                      fontSize: 13,
+                                      fontSize: 14.sp,
                                       fontWeight: FontWeight.w500,
                                       color: Color(0xff455A64)),
                                 ),
@@ -511,7 +560,9 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                                     onPressed: () {
                                       displayTimePicker(context);
                                     },
-                                    icon: Image.asset("assets/icons/time.png"))
+                                    icon: Image.asset(
+                                        "assets/icons/mylisticon.png",
+                                        color: Colors.grey))
                               ],
                             ),
                           ),
@@ -524,14 +575,14 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                           ),
                           Container(
                             padding: EdgeInsets.only(left: 5),
-                            height: 45,
-                            width: 130,
+                            height: 50.h,
+                            width: 130.w,
                             decoration: BoxDecoration(
                                 color: AppColors.kwhite,
                                 border: Border.all(
                                     width: 1,
                                     color: Colors.grey.withOpacity(.32)),
-                                borderRadius: BorderRadius.circular(5)),
+                                borderRadius: BorderRadius.circular(10)),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -539,7 +590,7 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                                   "${dropTime.hour < 10 ? "0${dropTime.hour}" : dropTime.hour}:${dropTime.minute.remainder(60) < 10 ? "0${dropTime.minute.remainder(60)}" : '${dropTime.minute.remainder(60)}'}:00"
                                       .toString(),
                                   style: primaryfont.copyWith(
-                                      fontSize: 13,
+                                      fontSize: 14.sp,
                                       fontWeight: FontWeight.w500,
                                       color: Color(0xff455A64)),
                                 ),
@@ -547,7 +598,10 @@ class _ScheduleContainerWidgetState extends State<ScheduleContainerWidget> {
                                     onPressed: () {
                                       dropTimePicker(context);
                                     },
-                                    icon: Image.asset("assets/icons/time.png"))
+                                    icon: Image.asset(
+                                      "assets/icons/mylisticon.png",
+                                      color: Colors.grey,
+                                    ))
                               ],
                             ),
                           ),

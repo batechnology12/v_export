@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:svg_flutter/svg.dart';
 import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
 import 'package:v_export/constant/chat_class.dart';
@@ -17,7 +18,6 @@ class _DriverMessageState extends State<DriverMessage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
@@ -67,16 +67,12 @@ class _DriverMessageState extends State<DriverMessage> {
           Padding(
             padding: const EdgeInsets.only(right: 20),
             child: Container(
-              height: 45,
-              width: 45,
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.yellow,
-                  image: DecorationImage(
-                      image: AssetImage(
-                        "assets/icons/whatsappicon.png",
-                      ),
-                      fit: BoxFit.cover)),
+              height: 40.h,
+              width: 40.w,
+              child: SvgPicture.asset(
+                'assets/icons/08.whatsapp.svg',
+                fit: BoxFit.contain,
+              ),
             ),
           )
         ],

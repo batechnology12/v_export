@@ -24,34 +24,33 @@ class _MyListState extends State<MyOrder> {
       length: 3,
       child: Scaffold(
         backgroundColor: AppColors.kblue,
+        appBar: AppBar(
+          backgroundColor: AppColors.kblue,
+          centerTitle: true,
+          leading: Container(),
+          title: Text(
+            'My Order',
+            style: primaryfont.copyWith(
+                fontSize: 21.sp,
+                color: AppColors.kwhite,
+                fontWeight: FontWeight.w600),
+          ),
+          actions: [
+            InkWell(
+                onTap: () {
+                  Get.to(NotificationView());
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 20),
+                  child: Image.asset(
+                    'assets/icons/notification_icon.png',
+                    color: Colors.white,
+                  ),
+                ))
+          ],
+        ),
         body: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 40, bottom: 10),
-              child: Container(
-                height: 50.h,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(),
-                      Text(
-                        'My Order',
-                        style: primaryfont.copyWith(
-                            fontSize: 21.sp,
-                            color: AppColors.kwhite,
-                            fontWeight: FontWeight.w600),
-                      ),
-                      Image.asset(
-                        "assets/icons/notification_icon.png",
-                        color: Colors.white,
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            ),
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -113,279 +112,299 @@ class _MyListState extends State<MyOrder> {
                                   padding: const EdgeInsets.only(
                                       left: 10, right: 10),
                                   child: Container(
-                                    margin: EdgeInsets.only(top: 10),
-                                    width: size.width,
+                                    padding: EdgeInsets.all(5),
                                     decoration: BoxDecoration(
-                                        color: AppColors.kwhite,
-                                        boxShadow: <BoxShadow>[
-                                          BoxShadow(
-                                              offset: Offset(0.0, 0.95),
-                                              blurRadius: 4,
-                                              color: AppColors.kgrey)
-                                        ],
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 10, right: 10, top: 10),
-                                      child: Column(
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(
-                                                'Booking ID : #ZAG01',
-                                                style: primaryfont.copyWith(
-                                                    fontWeight: FontWeight.w700,
-                                                    fontSize: 15.5),
-                                              ),
-                                              GestureDetector(
-                                                onTap: () {
-                                                  Get.to(BookingStatus());
-                                                },
-                                                child: Container(
-                                                  height: 35,
-                                                  width: 35,
-                                                  decoration: BoxDecoration(
-                                                      color: Color(0xffF5F5F5),
-                                                      shape: BoxShape.circle),
-                                                  child: Icon(
-                                                    Icons.arrow_forward_ios,
-                                                    color: Colors.black,
-                                                    size: 15,
-                                                  ),
+                                      color: Colors.grey.withOpacity(.09),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    margin: EdgeInsets.only(bottom: 10, top: 8),
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              'Booking ID : #ZAG01',
+                                              style: primaryfont.copyWith(
+                                                  fontWeight: FontWeight.w700,
+                                                  fontSize: 15.5),
+                                            ),
+                                            GestureDetector(
+                                              onTap: () {
+                                                Get.to(BookingStatus());
+                                              },
+                                              child: Container(
+                                                height: 35,
+                                                width: 35,
+                                                decoration: const BoxDecoration(
+                                                    color: Color(0xffF5F5F5),
+                                                    shape: BoxShape.circle),
+                                                child: Icon(
+                                                  Icons.arrow_forward_ios,
+                                                  color: Colors.black,
+                                                  size: 15,
                                                 ),
-                                              )
-                                            ],
-                                          ),
-                                          Divider(),
-                                          ksizedbox10,
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.location_on,
-                                                    color: Color(0xff038484),
-                                                  ),
-                                                  Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        'Pickup Address',
-                                                        style: primaryfont
-                                                            .copyWith(
-                                                                fontSize: 14.sp,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600,
-                                                                color: Color(
-                                                                    0xff455A64)),
-                                                      ),
-                                                      Text(
-                                                        '338C Anchorvale Cresent',
-                                                        style: primaryfont
-                                                            .copyWith(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w700,
-                                                                fontSize:
-                                                                    15.sp),
-                                                      )
-                                                    ],
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 11,
-                                                            bottom: 13),
-                                                    child: Text('2PM to 5PM'),
-                                                  ),
-                                                ],
                                               ),
-                                              const Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 11),
-                                                child: Dash(
-                                                    direction: Axis.vertical,
-                                                    length: 50,
-                                                    dashLength: 5,
-                                                    dashColor: AppColors.kgrey),
-                                              ),
-                                              Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.location_on,
-                                                    color: Color(0xffF74354),
-                                                  ),
-                                                  Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Row(
-                                                        children: [
-                                                          Text(
-                                                            'Delivery Address',
+                                            )
+                                          ],
+                                        ),
+                                        Divider(),
+                                        ksizedbox10,
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                const Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.location_on,
+                                                      color: Color(0xff038484),
+                                                    ),
+                                                    Dash(
+                                                        direction:
+                                                            Axis.vertical,
+                                                        length: 60,
+                                                        dashLength: 5,
+                                                        dashColor:
+                                                            AppColors.kgrey),
+                                                    Icon(
+                                                      Icons.location_on,
+                                                      color: Color(0xffF74354),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  width: 5.w,
+                                                ),
+                                                Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          'Pickup Details',
+                                                          style: primaryfont
+                                                              .copyWith(
+                                                                  fontSize:
+                                                                      15.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  color: Color(
+                                                                      0xff455A64)),
+                                                        ),
+                                                        Container(
+                                                          width: 250.h,
+                                                          child: Text(
+                                                            '338 Serangoon North',
                                                             style: primaryfont.copyWith(
-                                                                fontSize: 14.sp,
+                                                                color: Color(
+                                                                    0xff1E1E1E),
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                                fontSize:
+                                                                    15.sp),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    SizedBox(
+                                                      height: 40.h,
+                                                    ),
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          'Delivery details',
+                                                          style: primaryfont
+                                                              .copyWith(
+                                                                  fontSize:
+                                                                      15.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  color: Color(
+                                                                      0xff455A64)),
+                                                        ),
+                                                        Container(
+                                                          width: 250.h,
+                                                          child: Text(
+                                                            '338 Serangoon North ave 6',
+                                                            style: primaryfont.copyWith(
+                                                                color: Color(
+                                                                    0xff1E1E1E),
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                                fontSize:
+                                                                    15.sp),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    )
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                Container(
+                                                  height: size.height * .12,
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Text(
+                                                        '2PM to 5PM',
+                                                        style: primaryfont
+                                                            .copyWith(
+                                                                fontSize: 13.sp,
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w600,
                                                                 color: Color(
                                                                     0xff455A64)),
-                                                          ),
-                                                        ],
                                                       ),
                                                       Text(
-                                                        '338 Serangoon North ave 6',
+                                                        '3PM to 6PM',
                                                         style: primaryfont
                                                             .copyWith(
+                                                                fontSize: 13.sp,
                                                                 fontWeight:
                                                                     FontWeight
-                                                                        .w700,
-                                                                fontSize:
-                                                                    15.sp),
-                                                      )
+                                                                        .w600,
+                                                                color: Color(
+                                                                    0xff455A64)),
+                                                      ),
                                                     ],
                                                   ),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 1,
-                                                            bottom: 13),
-                                                    child: Text('3PM to 6PM'),
+                                                )
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                        ksizedbox10,
+                                        Divider(),
+                                        ksizedbox10,
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Container(
+                                              height: 65.h,
+                                              width: 100.w,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.grey.shade200,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          15)),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    'Pickup Date',
+                                                    style: primaryfont.copyWith(
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontSize: 12.sp),
                                                   ),
+                                                  SizedBox(
+                                                    height: 2.h,
+                                                  ),
+                                                  Text(
+                                                    '25/04/2024',
+                                                    style: primaryfont.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  )
                                                 ],
                                               ),
-                                            ],
-                                          ),
-                                          ksizedbox10,
-                                          Divider(),
-                                          ksizedbox10,
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Container(
-                                                height: 65,
-                                                width: 100,
-                                                decoration: BoxDecoration(
-                                                    color: Colors.grey.shade200,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            15)),
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                      'Pickup Date',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                              fontSize: 12),
+                                            ),
+                                            Container(
+                                              height: 65.h,
+                                              width: 100.w,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.grey.shade200,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          15)),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    'Delivery Date',
+                                                    style: primaryfont.copyWith(
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontSize: 12.sp),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 2.h,
+                                                  ),
+                                                  Text(
+                                                    '25/04/2024',
+                                                    style: primaryfont.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w600,
                                                     ),
-                                                    SizedBox(
-                                                      height: 2,
-                                                    ),
-                                                    Text(
-                                                      '25/04/2024',
-                                                      style:
-                                                          primaryfont.copyWith(
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                            Container(
+                                              height: 65.h,
+                                              width: 100.w,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.grey.shade200,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          15)),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    'Status',
+                                                    style: primaryfont.copyWith(
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontSize: 12,
+                                                        color:
+                                                            Color(0xff455A64)),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 2.h,
+                                                  ),
+                                                  Text(
+                                                    'Assigned',
+                                                    style: primaryfont.copyWith(
                                                         fontWeight:
                                                             FontWeight.w600,
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
+                                                        color: AppColors.kblue),
+                                                  )
+                                                ],
                                               ),
-                                              Container(
-                                                height: 65,
-                                                width: 100,
-                                                decoration: BoxDecoration(
-                                                    color: Colors.grey.shade200,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            15)),
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                      'Delivery Date',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                              fontSize: 12),
-                                                    ),
-                                                    SizedBox(
-                                                      height: 2,
-                                                    ),
-                                                    Text(
-                                                      '25/04/2024',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                              Container(
-                                                height: 65,
-                                                width: 100,
-                                                decoration: BoxDecoration(
-                                                    color: Colors.grey.shade200,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            15)),
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                      'Status',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                              fontSize: 12,
-                                                              color: Color(
-                                                                  0xff455A64)),
-                                                    ),
-                                                    SizedBox(
-                                                      height: 2,
-                                                    ),
-                                                    Text(
-                                                      'Assigned',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                              color: AppColors
-                                                                  .kblue),
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          ksizedbox10,
-                                        ],
-                                      ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 );
@@ -406,279 +425,300 @@ class _MyListState extends State<MyOrder> {
                                   padding: const EdgeInsets.only(
                                       left: 10, right: 10),
                                   child: Container(
-                                    margin: EdgeInsets.only(top: 10),
-                                    width: size.width,
+                                    padding: EdgeInsets.all(5),
                                     decoration: BoxDecoration(
-                                        color: AppColors.kwhite,
-                                        boxShadow: <BoxShadow>[
-                                          BoxShadow(
-                                              offset: Offset(0.0, 0.95),
-                                              blurRadius: 4,
-                                              color: AppColors.kgrey)
-                                        ],
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 10, right: 10, top: 10),
-                                      child: Column(
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(
-                                                'Booking ID : #ZAG01',
-                                                style: primaryfont.copyWith(
-                                                    fontWeight: FontWeight.w700,
-                                                    fontSize: 15.5),
-                                              ),
-                                              GestureDetector(
-                                                onTap: () {
-                                                  Get.to(CompleteDetails());
-                                                },
-                                                child: Container(
-                                                  height: 35,
-                                                  width: 35,
-                                                  decoration: BoxDecoration(
-                                                      color: Color(0xffF5F5F5),
-                                                      shape: BoxShape.circle),
-                                                  child: Icon(
-                                                    Icons.arrow_forward_ios,
-                                                    color: Colors.black,
-                                                    size: 15,
-                                                  ),
+                                      color: Colors.grey.withOpacity(.09),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    margin: EdgeInsets.only(bottom: 10, top: 8),
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              'Booking ID : #ZAG01',
+                                              style: primaryfont.copyWith(
+                                                  fontWeight: FontWeight.w700,
+                                                  fontSize: 15.5),
+                                            ),
+                                            GestureDetector(
+                                              onTap: () {
+                                                Get.to(CompleteDetails());
+                                              },
+                                              child: Container(
+                                                height: 35,
+                                                width: 35,
+                                                decoration: const BoxDecoration(
+                                                    color: Color(0xffF5F5F5),
+                                                    shape: BoxShape.circle),
+                                                child: const Icon(
+                                                  Icons.arrow_forward_ios,
+                                                  color: Colors.black,
+                                                  size: 15,
                                                 ),
-                                              )
-                                            ],
-                                          ),
-                                          Divider(),
-                                          ksizedbox10,
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.location_on,
-                                                    color: Color(0xff038484),
-                                                  ),
-                                                  Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        'Pickup Address',
-                                                        style: primaryfont
-                                                            .copyWith(
-                                                                fontSize: 14.sp,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600,
-                                                                color: Color(
-                                                                    0xff455A64)),
-                                                      ),
-                                                      Text(
-                                                        '338C Anchorvale Cresent',
-                                                        style: primaryfont
-                                                            .copyWith(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w700,
-                                                                fontSize:
-                                                                    15.sp),
-                                                      )
-                                                    ],
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 11,
-                                                            bottom: 13),
-                                                    child: Text('2PM to 5PM'),
-                                                  ),
-                                                ],
                                               ),
-                                              const Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 11),
-                                                child: Dash(
-                                                    direction: Axis.vertical,
-                                                    length: 50,
-                                                    dashLength: 5,
-                                                    dashColor: AppColors.kgrey),
-                                              ),
-                                              Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.location_on,
-                                                    color: Color(0xffF74354),
-                                                  ),
-                                                  Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Row(
-                                                        children: [
-                                                          Text(
-                                                            'Delivery Address',
+                                            )
+                                          ],
+                                        ),
+                                        Divider(),
+                                        ksizedbox10,
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                const Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.location_on,
+                                                      color: Color(0xff038484),
+                                                    ),
+                                                    Dash(
+                                                        direction:
+                                                            Axis.vertical,
+                                                        length: 60,
+                                                        dashLength: 5,
+                                                        dashColor:
+                                                            AppColors.kgrey),
+                                                    Icon(
+                                                      Icons.location_on,
+                                                      color: Color(0xffF74354),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  width: 5.w,
+                                                ),
+                                                Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          'Pickup Details',
+                                                          style: primaryfont
+                                                              .copyWith(
+                                                                  fontSize:
+                                                                      15.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  color: Color(
+                                                                      0xff455A64)),
+                                                        ),
+                                                        Container(
+                                                          width: 250.h,
+                                                          child: Text(
+                                                            '338 Serangoon North',
                                                             style: primaryfont.copyWith(
-                                                                fontSize: 14.sp,
+                                                                color: Color(
+                                                                    0xff1E1E1E),
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                                fontSize:
+                                                                    15.sp),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    SizedBox(
+                                                      height: 40.h,
+                                                    ),
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          'Delivery details',
+                                                          style: primaryfont
+                                                              .copyWith(
+                                                                  fontSize:
+                                                                      15.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  color: Color(
+                                                                      0xff455A64)),
+                                                        ),
+                                                        Container(
+                                                          width: 250.h,
+                                                          child: Text(
+                                                            '338 Serangoon North ave 6',
+                                                            style: primaryfont.copyWith(
+                                                                color: Color(
+                                                                    0xff1E1E1E),
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                                fontSize:
+                                                                    15.sp),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    )
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                Container(
+                                                  height: size.height * .12,
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Text(
+                                                        '2PM to 5PM',
+                                                        style: primaryfont
+                                                            .copyWith(
+                                                                fontSize: 13.sp,
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w600,
                                                                 color: Color(
                                                                     0xff455A64)),
-                                                          ),
-                                                        ],
                                                       ),
                                                       Text(
-                                                        '338 Serangoon North ave 6',
+                                                        '3PM to 6PM',
                                                         style: primaryfont
                                                             .copyWith(
+                                                                fontSize: 13.sp,
                                                                 fontWeight:
                                                                     FontWeight
-                                                                        .w700,
-                                                                fontSize:
-                                                                    15.sp),
-                                                      )
+                                                                        .w600,
+                                                                color: Color(
+                                                                    0xff455A64)),
+                                                      ),
                                                     ],
                                                   ),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 1,
-                                                            bottom: 13),
-                                                    child: Text('3PM to 6PM'),
+                                                )
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                        ksizedbox10,
+                                        Divider(),
+                                        ksizedbox10,
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Container(
+                                              height: 65.h,
+                                              width: 100.w,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.grey.shade200,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          15)),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    'Pickup Date',
+                                                    style: primaryfont.copyWith(
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontSize: 12.sp),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 2.h,
+                                                  ),
+                                                  Text(
+                                                    '25/04/2024',
+                                                    style: primaryfont.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                            Container(
+                                              height: 65.h,
+                                              width: 100.w,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.grey.shade200,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          15)),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    'Delivery Date',
+                                                    style: primaryfont.copyWith(
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontSize: 12.sp),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 2.h,
+                                                  ),
+                                                  Text(
+                                                    '25/04/2024',
+                                                    style: primaryfont.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                            Container(
+                                              height: 65.h,
+                                              width: 100.w,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.grey.shade200,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          15)),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    'Status',
+                                                    style: primaryfont.copyWith(
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontSize: 12,
+                                                        color:
+                                                            Color(0xff455A64)),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 2.h,
+                                                  ),
+                                                  Text(
+                                                    'Delivered',
+                                                    style: primaryfont.copyWith(
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        color:
+                                                            Color(0xff009200)),
                                                   ),
                                                 ],
                                               ),
-                                            ],
-                                          ),
-                                          ksizedbox10,
-                                          Divider(),
-                                          ksizedbox10,
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Container(
-                                                height: 65,
-                                                width: 100,
-                                                decoration: BoxDecoration(
-                                                    color: Colors.grey.shade200,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            15)),
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                      'Pickup Date',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                              fontSize: 12),
-                                                    ),
-                                                    SizedBox(
-                                                      height: 2,
-                                                    ),
-                                                    Text(
-                                                      '25/04/2024',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                              Container(
-                                                height: 65,
-                                                width: 100,
-                                                decoration: BoxDecoration(
-                                                    color: Colors.grey.shade200,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            15)),
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                      'Delivery Date',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                              fontSize: 12),
-                                                    ),
-                                                    SizedBox(
-                                                      height: 2,
-                                                    ),
-                                                    Text(
-                                                      '25/04/2024',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                              Container(
-                                                height: 65,
-                                                width: 100,
-                                                decoration: BoxDecoration(
-                                                    color: Colors.grey.shade200,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            15)),
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                      'Status',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                              fontSize: 12,
-                                                              color: Color(
-                                                                  0xff455A64)),
-                                                    ),
-                                                    SizedBox(
-                                                      height: 2,
-                                                    ),
-                                                    Text(
-                                                      'Delivered',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                              color: Color(
-                                                                  0xff009200)),
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          ksizedbox10,
-                                        ],
-                                      ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 );
@@ -699,279 +739,299 @@ class _MyListState extends State<MyOrder> {
                                   padding: const EdgeInsets.only(
                                       left: 10, right: 10),
                                   child: Container(
-                                    margin: EdgeInsets.only(top: 10),
-                                    width: size.width,
+                                    padding: EdgeInsets.all(5),
                                     decoration: BoxDecoration(
-                                        color: AppColors.kwhite,
-                                        boxShadow: <BoxShadow>[
-                                          BoxShadow(
-                                              offset: Offset(0.0, 0.95),
-                                              blurRadius: 4,
-                                              color: AppColors.kgrey)
-                                        ],
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 10, right: 10, top: 10),
-                                      child: Column(
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(
-                                                'Booking ID : #ZAG01',
-                                                style: primaryfont.copyWith(
-                                                    fontWeight: FontWeight.w700,
-                                                    fontSize: 15.5),
-                                              ),
-                                              GestureDetector(
-                                                onTap: () {
-                                                  Get.to(CancelDetals());
-                                                },
-                                                child: Container(
-                                                  height: 35,
-                                                  width: 35,
-                                                  decoration: BoxDecoration(
-                                                      color: Color(0xffF5F5F5),
-                                                      shape: BoxShape.circle),
-                                                  child: Icon(
-                                                    Icons.arrow_forward_ios,
-                                                    color: Colors.black,
-                                                    size: 15,
-                                                  ),
+                                      color: Colors.grey.withOpacity(.09),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    margin: EdgeInsets.only(bottom: 10, top: 8),
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              'Booking ID : #ZAG01',
+                                              style: primaryfont.copyWith(
+                                                  fontWeight: FontWeight.w700,
+                                                  fontSize: 15.5),
+                                            ),
+                                            GestureDetector(
+                                              onTap: () {
+                                                Get.to(CancelDetals());
+                                              },
+                                              child: Container(
+                                                height: 35,
+                                                width: 35,
+                                                decoration: const BoxDecoration(
+                                                    color: Color(0xffF5F5F5),
+                                                    shape: BoxShape.circle),
+                                                child: const Icon(
+                                                  Icons.arrow_forward_ios,
+                                                  color: Colors.black,
+                                                  size: 15,
                                                 ),
-                                              )
-                                            ],
-                                          ),
-                                          Divider(),
-                                          ksizedbox10,
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.location_on,
-                                                    color: Color(0xff038484),
-                                                  ),
-                                                  Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        'Pickup Address',
-                                                        style: primaryfont
-                                                            .copyWith(
-                                                                fontSize: 14.sp,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600,
-                                                                color: Color(
-                                                                    0xff455A64)),
-                                                      ),
-                                                      Text(
-                                                        '338C Anchorvale Cresent',
-                                                        style: primaryfont
-                                                            .copyWith(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w700,
-                                                                fontSize:
-                                                                    15.sp),
-                                                      )
-                                                    ],
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 11,
-                                                            bottom: 13),
-                                                    child: Text('2PM to 5PM'),
-                                                  ),
-                                                ],
                                               ),
-                                              const Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 11),
-                                                child: Dash(
-                                                    direction: Axis.vertical,
-                                                    length: 50,
-                                                    dashLength: 5,
-                                                    dashColor: AppColors.kgrey),
-                                              ),
-                                              Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.location_on,
-                                                    color: Color(0xffF74354),
-                                                  ),
-                                                  Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Row(
-                                                        children: [
-                                                          Text(
-                                                            'Delivery Address',
+                                            )
+                                          ],
+                                        ),
+                                        Divider(),
+                                        ksizedbox10,
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                const Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.location_on,
+                                                      color: Color(0xff038484),
+                                                    ),
+                                                    Dash(
+                                                        direction:
+                                                            Axis.vertical,
+                                                        length: 60,
+                                                        dashLength: 5,
+                                                        dashColor:
+                                                            AppColors.kgrey),
+                                                    Icon(
+                                                      Icons.location_on,
+                                                      color: Color(0xffF74354),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  width: 5.w,
+                                                ),
+                                                Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          'Pickup Details',
+                                                          style: primaryfont
+                                                              .copyWith(
+                                                                  fontSize:
+                                                                      15.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  color: Color(
+                                                                      0xff455A64)),
+                                                        ),
+                                                        Container(
+                                                          width: 250.h,
+                                                          child: Text(
+                                                            '338 Serangoon North',
                                                             style: primaryfont.copyWith(
-                                                                fontSize: 14.sp,
+                                                                color: Color(
+                                                                    0xff1E1E1E),
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                                fontSize:
+                                                                    15.sp),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    SizedBox(
+                                                      height: 40.h,
+                                                    ),
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          'Delivery details',
+                                                          style: primaryfont
+                                                              .copyWith(
+                                                                  fontSize:
+                                                                      15.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  color: Color(
+                                                                      0xff455A64)),
+                                                        ),
+                                                        Container(
+                                                          width: 250.h,
+                                                          child: Text(
+                                                            '338 Serangoon North ave 6',
+                                                            style: primaryfont.copyWith(
+                                                                color: Color(
+                                                                    0xff1E1E1E),
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                                fontSize:
+                                                                    15.sp),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    )
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                Container(
+                                                  height: size.height * .12,
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Text(
+                                                        '2PM to 5PM',
+                                                        style: primaryfont
+                                                            .copyWith(
+                                                                fontSize: 13.sp,
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w600,
                                                                 color: Color(
                                                                     0xff455A64)),
-                                                          ),
-                                                        ],
                                                       ),
                                                       Text(
-                                                        '338 Serangoon North ave 6',
+                                                        '3PM to 6PM',
                                                         style: primaryfont
                                                             .copyWith(
+                                                                fontSize: 13.sp,
                                                                 fontWeight:
                                                                     FontWeight
-                                                                        .w700,
-                                                                fontSize:
-                                                                    15.sp),
-                                                      )
+                                                                        .w600,
+                                                                color: Color(
+                                                                    0xff455A64)),
+                                                      ),
                                                     ],
                                                   ),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 1,
-                                                            bottom: 13),
-                                                    child: Text('3PM to 6PM'),
+                                                )
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                        ksizedbox10,
+                                        Divider(),
+                                        ksizedbox10,
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Container(
+                                              height: 65.h,
+                                              width: 100.w,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.grey.shade200,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          15)),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    'Pickup Date',
+                                                    style: primaryfont.copyWith(
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontSize: 12.sp),
                                                   ),
+                                                  SizedBox(
+                                                    height: 2.h,
+                                                  ),
+                                                  Text(
+                                                    '25/04/2024',
+                                                    style: primaryfont.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  )
                                                 ],
                                               ),
-                                            ],
-                                          ),
-                                          ksizedbox10,
-                                          Divider(),
-                                          ksizedbox10,
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Container(
-                                                height: 65,
-                                                width: 100,
-                                                decoration: BoxDecoration(
-                                                    color: Colors.grey.shade200,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            15)),
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                      'Pickup Date',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                              fontSize: 12),
+                                            ),
+                                            Container(
+                                              height: 65.h,
+                                              width: 100.w,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.grey.shade200,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          15)),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    'Delivery Date',
+                                                    style: primaryfont.copyWith(
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontSize: 12.sp),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 2.h,
+                                                  ),
+                                                  Text(
+                                                    '25/04/2024',
+                                                    style: primaryfont.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w600,
                                                     ),
-                                                    SizedBox(
-                                                      height: 2,
-                                                    ),
-                                                    Text(
-                                                      '25/04/2024',
-                                                      style:
-                                                          primaryfont.copyWith(
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                            Container(
+                                              height: 65.h,
+                                              width: 100.w,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.grey.shade200,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          15)),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    'Status',
+                                                    style: primaryfont.copyWith(
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontSize: 12,
+                                                        color:
+                                                            Color(0xff455A64)),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 2.h,
+                                                  ),
+                                                  Text(
+                                                    'Cancelled',
+                                                    style: primaryfont.copyWith(
                                                         fontWeight:
                                                             FontWeight.w600,
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
+                                                        color: Colors.red),
+                                                  )
+                                                ],
                                               ),
-                                              Container(
-                                                height: 65,
-                                                width: 100,
-                                                decoration: BoxDecoration(
-                                                    color: Colors.grey.shade200,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            15)),
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                      'Delivery Date',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                              fontSize: 12),
-                                                    ),
-                                                    SizedBox(
-                                                      height: 2,
-                                                    ),
-                                                    Text(
-                                                      '25/04/2024',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                              Container(
-                                                height: 65,
-                                                width: 100,
-                                                decoration: BoxDecoration(
-                                                    color: Colors.grey.shade200,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            15)),
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                      'Status',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                              fontSize: 12,
-                                                              color: Color(
-                                                                  0xff455A64)),
-                                                    ),
-                                                    SizedBox(
-                                                      height: 2,
-                                                    ),
-                                                    Text(
-                                                      'Cancelled',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                              color:
-                                                                  Colors.red),
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          ksizedbox10,
-                                        ],
-                                      ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 );

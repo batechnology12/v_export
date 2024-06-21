@@ -38,10 +38,10 @@ class _ChatScreenState extends State<ChatScreen> {
             Get.back();
           },
           child: Padding(
-            padding: const EdgeInsets.only(left: 10),
+            padding: const EdgeInsets.only(left: 20),
             child: Container(
-              height: 35,
-              width: 35,
+              height: 10.h,
+              width: 10.w,
               decoration: BoxDecoration(
                 color: AppColors.kblue,
                 shape: BoxShape.circle,
@@ -151,20 +151,19 @@ class _ChatScreenState extends State<ChatScreen> {
                                               border: Border.all(
                                                   color: Color(0xffFFFFFF)),
                                               borderRadius: BorderRadius.only(
-                                                  topRight: messages[index]
-                                                              .messageType ==
-                                                          "receiver"
-                                                      ? Radius.circular(20)
-                                                      : Radius.circular(0),
-                                                  bottomLeft:
-                                                      Radius.circular(20),
-                                                  bottomRight:
-                                                      Radius.circular(20),
-                                                  topLeft: messages[index]
-                                                              .messageType ==
-                                                          "receiver"
-                                                      ? Radius.circular(0)
-                                                      : Radius.circular(20)),
+                                                topRight: Radius.circular(20),
+                                                bottomLeft: messages[index]
+                                                            .messageType ==
+                                                        "receiver"
+                                                    ? Radius.circular(0)
+                                                    : Radius.circular(20),
+                                                bottomRight: messages[index]
+                                                            .messageType ==
+                                                        "receiver"
+                                                    ? Radius.circular(20)
+                                                    : Radius.circular(0),
+                                                topLeft: Radius.circular(20),
+                                              ),
                                               color: Color(0xffFFFFFF)),
                                           padding: EdgeInsets.all(16),
                                           margin:

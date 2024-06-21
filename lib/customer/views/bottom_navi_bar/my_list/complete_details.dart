@@ -153,12 +153,6 @@ class _CompleteDetailsState extends State<CompleteDetails> {
                         width: size.width,
                         decoration: BoxDecoration(
                             color: AppColors.kwhite,
-                            // boxShadow: <BoxShadow>[
-                            //   BoxShadow(
-                            //       offset: Offset(0.0, 0.95),
-                            //       blurRadius: 4,
-                            //       color: AppColors.kgrey)
-                            // ],
                             borderRadius: BorderRadius.circular(10)),
                         child: Padding(
                           padding: const EdgeInsets.only(

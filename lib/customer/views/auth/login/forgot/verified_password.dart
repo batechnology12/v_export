@@ -43,7 +43,9 @@ class _VerifiedPasswordScreenState extends State<VerifiedPasswordScreen> {
         title: Text(
           'Verification',
           style: primaryfont.copyWith(
-              fontSize: 17.sp, fontWeight: FontWeight.w600),
+              color: Colors.black,
+              fontSize: 19.sp,
+              fontWeight: FontWeight.w600),
         ),
       ),
       body: Column(
@@ -55,10 +57,11 @@ class _VerifiedPasswordScreenState extends State<VerifiedPasswordScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                ksizedbox40,
                 Text(
                   'Phone Verification',
                   style: primaryfont.copyWith(
-                      fontSize: 21.sp, fontWeight: FontWeight.w700),
+                      fontSize: 28.sp, fontWeight: FontWeight.w600),
                 ),
                 ksizedbox5,
                 RichText(
@@ -82,66 +85,71 @@ class _VerifiedPasswordScreenState extends State<VerifiedPasswordScreen> {
                 ),
                 ksizedbox40,
                 ksizedbox40,
-                PinCodeTextField(
-                  appContext: context,
-                  pastedTextStyle: primaryfont.copyWith(
-                    color: Color(0xffF8F8F8),
-                    fontWeight: FontWeight.bold,
-                  ),
-                  length: 4,
-                  obscureText: false,
-                  obscuringCharacter: '*',
-                  animationType: AnimationType.fade,
-                  // autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (v) {
-                    if (v!.length < 4) {
-                      hasError = true;
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: 
+                  PinCodeTextField(
+                    appContext: context,
+                    pastedTextStyle: primaryfont.copyWith(
+                      color: Color(0xffF8F8F8),
+                      // color: Colors.grey,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    length: 4,
+                    obscureText: false,
+                    obscuringCharacter: '*',
+                    animationType: AnimationType.fade,
+                    // autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: (v) {
+                      if (v!.length < 4) {
+                        hasError = true;
 
-                      return "";
-                    } else {
-                      hasError = false;
+                        return "";
+                      } else {
+                        hasError = false;
 
-                      return null;
-                    }
-                  },
-                  pinTheme: PinTheme(
-                    selectedFillColor: Color(0xffF8F8F8),
-                    activeColor: AppColors.kblue,
-                    inactiveColor: Color(0xffF8F8F8),
-                    selectedColor: Color(0xffF8F8F8),
-                    inactiveFillColor: Color(0xffF8F8F8),
-                    shape: PinCodeFieldShape.box,
-                    borderRadius: BorderRadius.circular(9),
-                    fieldHeight: 55,
-                    fieldWidth: 57,
-                    activeFillColor:
-                        hasError ? Color(0xffF8F8F8) : Color(0xffF8F8F8),
+                        return null;
+                      }
+                    },
+                    pinTheme: PinTheme(
+                      selectedFillColor: Color(0xffF8F8F8),
+                      activeColor: AppColors.kblue,
+                      inactiveColor: Color(0xffF8F8F8),
+                      selectedColor: Color(0xffF8F8F8),
+                      inactiveFillColor: Colors.grey[200],
+                      shape: PinCodeFieldShape.box,
+                      borderRadius: BorderRadius.circular(9),
+                      fieldHeight: 60,
+                      fieldWidth: 60,
+                      activeFillColor:
+                          hasError ? Color(0xffF8F8F8) : Color(0xffF8F8F8),
+                    ),
+                    cursorColor: Colors.black,
+                    animationDuration: const Duration(milliseconds: 300),
+                    textStyle: primaryfont.copyWith(
+                      color: Colors.black,
+                      fontSize: 32.sp,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    enableActiveFill: true,
+                    //    errorAnimationController: errorController,
+                    controller: otpController,
+                    keyboardType: TextInputType.number,
+                    onCompleted: (v) {
+                      print("Completed");
+                    },
+                    onChanged: (value) {
+                      print(value);
+                      setState(() {
+                        currentText = value;
+                        hasError = false;
+                      });
+                    },
+                    beforeTextPaste: (text) {
+                      print("Allowing to paste $text");
+                      return true;
+                    },
                   ),
-                  cursorColor: Colors.black,
-                  animationDuration: const Duration(milliseconds: 300),
-                  textStyle: primaryfont.copyWith(
-                    color: Colors.black,
-                    fontSize: 32.sp,
-                    fontWeight: FontWeight.w700,
-                  ),
-                  enableActiveFill: true,
-                  //    errorAnimationController: errorController,
-                  controller: otpController,
-                  keyboardType: TextInputType.number,
-                  onCompleted: (v) {
-                    print("Completed");
-                  },
-                  onChanged: (value) {
-                    print(value);
-                    setState(() {
-                      currentText = value;
-                      hasError = false;
-                    });
-                  },
-                  beforeTextPaste: (text) {
-                    print("Allowing to paste $text");
-                    return true;
-                  },
                 ),
                 // Container(
                 //   padding: EdgeInsets.all(10),

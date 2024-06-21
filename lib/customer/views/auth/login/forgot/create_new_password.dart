@@ -20,6 +20,8 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
 
   var passwordController = TextEditingController();
   var confirmpasswordController = TextEditingController();
+
+  final formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -39,82 +41,92 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
         title: Text(
           'Create New Password',
           style: primaryfont.copyWith(
-              fontSize: 17.sp, fontWeight: FontWeight.w600),
+              color: Colors.black,
+              fontSize: 19.sp,
+              fontWeight: FontWeight.w600),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            ksizedbox40,
-            Center(
-                child:
-                    SvgPicture.asset('assets/images/createpasswordimage.svg')),
-            ksizedbox40,
-            Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Create New Password',
-                    style: primaryfont.copyWith(color: Color(0xff7C86A2)),
-                  ),
-                  ksizedbox5,
-                  Container(
-                    height: 45.h,
-                    decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
-                        borderRadius: BorderRadius.circular(10)),
-                    child: TextFormField(
-                      obscureText: passvisible,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please Enter the new password';
-                        }
-                        return null;
-                      },
-                      controller: passwordController,
-                      decoration: InputDecoration(
-                          contentPadding: EdgeInsets.only(bottom: 10, left: 10),
-                          suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  passvisible = !passvisible;
-                                });
-                              },
-                              icon: passvisible == true
-                                  ? Icon(Icons.visibility)
-                                  : Icon(Icons.visibility_off)),
-                          border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(10))),
+      body: Form(
+        key: formKey,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ksizedbox40,
+              Center(
+                  child: SvgPicture.asset(
+                      'assets/images/createpasswordimage.svg')),
+              ksizedbox40,
+              Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Create New Password',
+                      style: primaryfont.copyWith(color: Color(0xff7C86A2)),
                     ),
-                  ),
-                  ksizedbox30,
-                  Text(
-                    'confirm Password',
-                    style: primaryfont.copyWith(color: Color(0xff7C86A2)),
-                  ),
-                  ksizedbox5,
-                  Container(
-                    height: 45.h,
-                    decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
-                        borderRadius: BorderRadius.circular(10)),
-                    child: TextFormField(
-                      obscureText: confirmvisible,
+                    ksizedbox5,
+                    TextFormField(
+                      obscureText: passvisible,
+                      controller: passwordController,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please Enter the confirm password';
+                          return 'Please enter the new password';
+                        } else {
+                          return null;
                         }
-                        return null;
                       },
-                      controller: confirmpasswordController,
                       decoration: InputDecoration(
-                          contentPadding: EdgeInsets.only(bottom: 10, left: 10),
-                          suffixIcon: IconButton(
-                            icon: confirmvisible == true
+                        contentPadding: EdgeInsets.only(bottom: 5, left: 10),
+                        suffixIcon: Padding(
+                          padding: const EdgeInsets.only(top: 3),
+                          child: IconButton(
+                            icon: passvisible
+                                ? Icon(Icons.visibility)
+                                : Icon(Icons.visibility_off),
+                            onPressed: () {
+                              setState(() {
+                                passvisible = !passvisible;
+                              });
+                            },
+                          ),
+                        ),
+                        fillColor: Color(0xffF8F8F8),
+                        filled: true,
+                        border: InputBorder.none,
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                      ),
+                    ),
+                    ksizedbox30,
+                    Text(
+                      'confirm Password',
+                      style: primaryfont.copyWith(color: Color(0xff7C86A2)),
+                    ),
+                    ksizedbox5,
+                    TextFormField(
+                      obscureText: confirmvisible,
+                      controller: confirmpasswordController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter the confirm password';
+                        } else {
+                          return null;
+                        }
+                      },
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.only(bottom: 5, left: 10),
+                        suffixIcon: Padding(
+                          padding: const EdgeInsets.only(top: 3),
+                          child: IconButton(
+                            icon: confirmvisible
                                 ? Icon(Icons.visibility)
                                 : Icon(Icons.visibility_off),
                             onPressed: () {
@@ -123,15 +135,25 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                               });
                             },
                           ),
-                          border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(10))),
+                        ),
+                        fillColor: Color(0xffF8F8F8),
+                        filled: true,
+                        border: InputBorder.none,
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: Padding(
@@ -142,7 +164,9 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
             children: [
               InkWell(
                 onTap: () {
-                  Get.to(LoginScreen());
+                  if (formKey.currentState!.validate()) {
+                    Get.to(LoginScreen());
+                  }
                 },
                 child: Container(
                   height: 50.h,

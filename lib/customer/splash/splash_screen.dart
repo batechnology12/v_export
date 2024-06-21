@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:svg_flutter/svg_flutter.dart';
 import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/bottom_navigation.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/bottomn_navi_bar.dart';
 
 import '../views/auth/login/login_screen.dart';
 
@@ -26,7 +27,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   toHomePage() async {
     await Future.delayed(
-      const Duration(seconds: 2),
+      const Duration(milliseconds: 1900),
     );
 
     if (isLoading == false) {
@@ -34,7 +35,7 @@ class _SplashScreenState extends State<SplashScreen> {
         () => LoginScreen(),
       );
     } else {
-      Get.offAll(BottomNaviBar());
+      Get.offAll(BottomNavigationScreen());
     }
   }
 
@@ -43,8 +44,9 @@ class _SplashScreenState extends State<SplashScreen> {
     return Container(
         color: AppColors.kblue,
         child: Image.asset('assets/icons/veelgo.png').animate().fade().slide(
-            begin: Offset(0, 0),
-            end: Offset(0, -0.5),
-            duration: Duration(seconds: 2)));
+              begin: Offset(0, 0),
+              end: Offset(0, -0.5),
+              duration: Duration(milliseconds: 1900),
+            ));
   }
 }

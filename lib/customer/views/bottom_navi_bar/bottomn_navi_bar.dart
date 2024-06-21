@@ -60,7 +60,6 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
                     borderRadius: BorderRadius.circular(20), color: Colors.red),
                 child: TextButton(
                   onPressed: () => exit(0),
-                  //     Navigator.of(context).pop(true),
                   child: Text(
                     'Exit',
                     style: TextStyle(color: Colors.white),
@@ -88,44 +87,58 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
         body: Center(
           child: _screens[_selectedIndex],
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          landscapeLayout: BottomNavigationBarLandscapeLayout.centered,
-          backgroundColor: Color(0xffffffff),
-          selectedItemColor: Colors.blue,
-          unselectedItemColor: Color(0xff484C52),
-          items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Image.asset(
-                "assets/icons/Vector (1).png",
-                color: _selectedIndex == 0 ? Colors.blue : Colors.black,
+        bottomNavigationBar: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(15),
+            topRight: Radius.circular(15),
+          ),
+          child: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            landscapeLayout: BottomNavigationBarLandscapeLayout.centered,
+            backgroundColor: Color(0xffF5F6F7),
+            selectedItemColor: Colors.blue,
+            unselectedItemColor: Color(0xff484C52),
+            items: <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: _selectedIndex == 0
+                    ? Image.asset(
+                        "assets/icons/homeicon.png",
+                      )
+                    : Image.asset("assets/icons/home.png"),
+                label: 'Home',
               ),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Image.asset(
-                "assets/icons/time.png",
-                color: _selectedIndex == 1 ? Colors.blue : Colors.black,
+              BottomNavigationBarItem(
+                icon: _selectedIndex == 1
+                    ? Image.asset(
+                        "assets/icons/Group 42303.png",
+                      )
+                    : Image.asset("assets/icons/mylisticon.png"),
+                label: 'My List',
               ),
-              label: 'My List',
-            ),
-            BottomNavigationBarItem(
-              icon: Image.asset(
-                "assets/icons/Group (2).png",
-                color: _selectedIndex == 2 ? Colors.blue : Colors.black,
+              BottomNavigationBarItem(
+                icon: _selectedIndex == 2
+                    ? Image.asset(
+                        "assets/icons/Group (3).png",
+                        color: Colors.blue,
+                      )
+                    : Image.asset(
+                        "assets/icons/waleet.png",
+                      ),
+                label: 'Wallet',
               ),
-              label: 'Wallet',
-            ),
-            BottomNavigationBarItem(
-              icon: Image.asset(
-                "assets/icons/account.png",
-                color: _selectedIndex == 3 ? Colors.blue : Colors.black,
+              BottomNavigationBarItem(
+                icon: _selectedIndex == 3
+                    ? Image.asset(
+                        "assets/icons/Group 42304.png",
+                        color: Colors.blue,
+                      )
+                    : Image.asset("assets/icons/accounticon.png"),
+                label: 'Account',
               ),
-              label: 'Account',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
+            ],
+            currentIndex: _selectedIndex,
+            onTap: _onItemTapped,
+          ),
         ),
       ),
     );

@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_dash/flutter_dash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:location/location.dart';
 import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -13,12 +14,61 @@ class BookingStatus extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<BookingStatus> {
-  GoogleMapController? myController;
+  late GoogleMapController _controller;
+  final Set<Marker> _markers = {};
+  late LocationData _currentPosition;
+  Location location = Location();
 
-  final LatLng _center = const LatLng(45.521563, -122.677433);
+  static const CameraPosition _initialPosition = CameraPosition(
+    target: LatLng(37.7749, -122.4194), // San Francisco
+    zoom: 12,
+  );
 
-  void _onMapCreated(GoogleMapController controller) {
-    myController = controller;
+  @override
+  void initState() {
+    super.initState();
+    _getLocation();
+  }
+
+  void _getLocation() async {
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    _currentPosition = await location.getLocation();
+    location.onLocationChanged.listen((LocationData currentLocation) {
+      _currentPosition = currentLocation;
+      _controller.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target:
+              LatLng(_currentPosition.latitude!, _currentPosition.longitude!),
+          zoom: 14.0,
+        ),
+      ));
+      setState(() {
+        _markers.add(Marker(
+          markerId: MarkerId('currentLocation'),
+          position:
+              LatLng(_currentPosition.latitude!, _currentPosition.longitude!),
+          infoWindow: InfoWindow(title: 'Your Location'),
+        ));
+      });
+    });
   }
 
   @override
@@ -74,13 +124,14 @@ class _MyHomePageState extends State<BookingStatus> {
             child: Container(
               height: size.height,
               width: size.width,
-              color: Colors.yellow,
+              //  color: Colors.yellow,
               child: GoogleMap(
-                onMapCreated: _onMapCreated,
-                initialCameraPosition: CameraPosition(
-                  target: _center,
-                  zoom: 10.0,
-                ),
+                initialCameraPosition: _initialPosition,
+                markers: _markers,
+                myLocationEnabled: true,
+                onMapCreated: (GoogleMapController controller) {
+                  _controller = controller;
+                },
               ),
             ),
           ),
@@ -120,8 +171,7 @@ class _MyHomePageState extends State<BookingStatus> {
                           return Padding(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 10),
-                            child:
-                             ClipRRect(
+                            child: ClipRRect(
                               borderRadius: BorderRadius.circular(10),
                               child: Container(
                                 padding: const EdgeInsets.only(

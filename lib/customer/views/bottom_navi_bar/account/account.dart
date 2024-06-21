@@ -8,6 +8,7 @@ import 'package:v_export/constant/app_font.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/account/chat.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/account/corporate_account.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/account/edit_profile.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/account/refer_friends.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/account/settings.dart';
 import 'package:v_export/customer/views/notification/notification_view.dart';
 
@@ -50,6 +51,7 @@ class _AccountState extends State<Account> {
         ],
       ),
       body: Stack(
+        alignment: Alignment.topCenter,
         children: [
           Column(
             children: [
@@ -78,6 +80,7 @@ class _AccountState extends State<Account> {
                                 Get.to(EditProfile());
                               },
                               child: Container(
+                                color: Color(0xffF4F8FF),
                                 child: Column(
                                   children: [
                                     Row(
@@ -124,10 +127,11 @@ class _AccountState extends State<Account> {
                                 ),
                               ),
                             ),
-                            ksizedbox10,
+                            ksizedbox15,
                             GestureDetector(
                               onTap: () {},
                               child: Container(
+                                color: Color(0xffF4F8FF),
                                 child: Column(
                                   children: [
                                     Row(
@@ -173,12 +177,13 @@ class _AccountState extends State<Account> {
                                 ),
                               ),
                             ),
-                            ksizedbox10,
+                            ksizedbox15,
                             GestureDetector(
                               onTap: () {
                                 Get.to(CorporateAccount());
                               },
                               child: Container(
+                                color: Color(0xffF4F8FF),
                                 child: Column(
                                   children: [
                                     Row(
@@ -224,12 +229,13 @@ class _AccountState extends State<Account> {
                                 ),
                               ),
                             ),
-                            ksizedbox10,
+                            ksizedbox15,
                             GestureDetector(
                               onTap: () {
                                 Get.to(Settings());
                               },
                               child: Container(
+                                color: Color(0xffF4F8FF),
                                 child: Column(
                                   children: [
                                     Row(
@@ -276,13 +282,13 @@ class _AccountState extends State<Account> {
                                 ),
                               ),
                             ),
-                            ksizedbox10,
+                            ksizedbox15,
                             GestureDetector(
                               onTap: () {
                                 Get.to(ChatScreen());
                               },
                               child: Container(
-                                // color: Colors.amber,
+                                color: Color(0xffF4F8FF),
                                 child: Column(
                                   children: [
                                     Row(
@@ -329,58 +335,66 @@ class _AccountState extends State<Account> {
                                 ),
                               ),
                             ),
-                            ksizedbox10,
-                            Container(
-                              child: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Image.asset("assets/icons/refer.png"),
-                                          const SizedBox(
-                                            width: 20,
-                                          ),
-                                          Text(
-                                            "Refer Friends",
-                                            style: primaryfont.copyWith(
-                                                fontSize: 15.sp,
-                                                fontWeight: FontWeight.w600,
-                                                color: Color(0xff212121)),
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          InkWell(
-                                            onTap: () {},
-                                            child: const Icon(
-                                              Icons.arrow_forward_ios,
-                                              size: 20,
-                                              color: Color(0XFF0072E8),
+                            ksizedbox15,
+                            GestureDetector(
+                              onTap: () {
+                                Get.to(ReferFriends());
+                              },
+                              child: Container(
+                                color: Color(0xffF4F8FF),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Image.asset(
+                                                "assets/icons/refer.png"),
+                                            const SizedBox(
+                                              width: 20,
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                  ksizedbox10,
-                                  Container(
-                                    height: 2,
-                                    width: size.width,
-                                    color: Color(0xff000000).withOpacity(.20),
-                                  )
-                                ],
+                                            Text(
+                                              "Refer Friends",
+                                              style: primaryfont.copyWith(
+                                                  fontSize: 15.sp,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Color(0xff212121)),
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            InkWell(
+                                              onTap: () {},
+                                              child: const Icon(
+                                                Icons.arrow_forward_ios,
+                                                size: 20,
+                                                color: Color(0XFF0072E8),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    ksizedbox10,
+                                    Container(
+                                      height: 2,
+                                      width: size.width,
+                                      color: Color(0xff000000).withOpacity(.20),
+                                    )
+                                  ],
+                                ),
                               ),
                             ),
-                            ksizedbox10,
+                            ksizedbox15,
                             GestureDetector(
                               onTap: () {
                                 ratingPopup();
                               },
                               child: Container(
+                                color: Color(0xffF4F8FF),
                                 child: Column(
                                   children: [
                                     Row(
@@ -427,12 +441,13 @@ class _AccountState extends State<Account> {
                                 ),
                               ),
                             ),
-                            ksizedbox10,
+                            ksizedbox15,
                             GestureDetector(
                               onTap: () {
                                 popUp();
                               },
                               child: Container(
+                                color: Color(0xffF4F8FF),
                                 child: Column(
                                   children: [
                                     Row(
@@ -486,40 +501,39 @@ class _AccountState extends State<Account> {
             ],
           ),
           Positioned(
-            top: 5.h,
-            left: 120.w,
-            child: SvgPicture.asset(
-              "assets/images/profile.svg",
-            ),
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 200,
+            child: Container(),
           ),
-          Positioned(
-            top: 115.h,
-            left: 170.w,
-            child: Column(
-              children: [
-                Container(
-                  height: 50,
-                  width: 50,
-                  decoration: BoxDecoration(
-                      color: AppColors.kblue,
-                      shape: BoxShape.circle,
-                      border: Border.all(width: 2, color: Colors.white)),
-                  child: Image.asset(
-                    "assets/icons/pen.png",
-                    height: 150,
-                    width: 150,
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              const Stack(
+                alignment: Alignment.bottomRight,
+                children: <Widget>[
+                  CircleAvatar(
+                    radius: 75,
+                    backgroundImage: AssetImage(
+                        'assets/images/Ellipse 1.png'), // Replace with your image asset path
                   ),
-                ),
-                ksizedbox10,
-                Text(
-                  'Jhon',
-                  style: fifthfont.copyWith(
-                      color: Colors.black,
-                      fontSize: 17.sp,
-                      fontWeight: FontWeight.w600),
-                ),
-              ],
-            ),
+                  CircleAvatar(
+                    radius: 25,
+                    backgroundColor: Colors.white,
+                    child: Icon(Icons.edit, color: Colors.blue, size: 22),
+                  ),
+                ],
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Jhon Doe',
+                style: primaryfont.copyWith(
+                    color: Colors.black,
+                    fontSize: 17.sp,
+                    fontWeight: FontWeight.w600),
+              ),
+            ],
           ),
         ],
       ),
@@ -661,86 +675,84 @@ class _AccountState extends State<Account> {
         builder: (BuildContext context) {
           return Container(
             padding: EdgeInsets.only(top: 10),
-            height: 180.h,
             decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
                     topRight: Radius.circular(25),
                     topLeft: Radius.circular(25))),
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Logout",
-                      style: primaryfont.copyWith(
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xff212121)),
-                    ),
-                    ksizedbox5,
-                    Text(
-                      "Are you sure you want to Logout?",
-                      style: primaryfont.copyWith(
-                          fontSize: 17.sp,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xff949599)),
-                    ),
-                    ksizedbox20,
-                    Padding(
-                      padding: const EdgeInsets.only(left: 20, right: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              Get.back();
-                            },
-                            child: Container(
-                              height: 50.h,
-                              width: 130.w,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
-                                  border: Border.all(
-                                      width: 1, color: Color(0xff0072E8)),
-                                  color: Colors.white),
-                              child: Center(
-                                child: Text(
-                                  "Cancel",
-                                  style: primaryfont.copyWith(
-                                      fontSize: 18.sp,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xff0072E8)),
-                                ),
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Logout",
+                    style: primaryfont.copyWith(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xff212121)),
+                  ),
+                  ksizedbox5,
+                  Text(
+                    "Are you sure you want to Logout?",
+                    style: primaryfont.copyWith(
+                        fontSize: 17.sp,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xff949599)),
+                  ),
+                  ksizedbox20,
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20, right: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            Get.back();
+                          },
+                          child: Container(
+                            height: 50.h,
+                            width: 130.w,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                                border: Border.all(
+                                    width: 1, color: Color(0xff0072E8)),
+                                color: Colors.white),
+                            child: Center(
+                              child: Text(
+                                "Cancel",
+                                style: primaryfont.copyWith(
+                                    fontSize: 18.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xff0072E8)),
                               ),
                             ),
                           ),
-                          InkWell(
-                            onTap: () {},
-                            child: Container(
-                              height: 50.h,
-                              width: 140.w,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
-                                  color: Colors.blue),
-                              child: Center(
-                                child: Text(
-                                  "Yes, Logout",
-                                  style: primaryfont.copyWith(
-                                      fontSize: 18.sp,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xffFFFFFF)),
-                                ),
+                        ),
+                        InkWell(
+                          onTap: () {},
+                          child: Container(
+                            height: 50.h,
+                            width: 140.w,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                                color: Colors.blue),
+                            child: Center(
+                              child: Text(
+                                "Yes, Logout",
+                                style: primaryfont.copyWith(
+                                    fontSize: 18.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xffFFFFFF)),
                               ),
                             ),
                           ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
               ),
             ),
           );

@@ -118,21 +118,21 @@ class _EditProfileState extends State<EditProfile> {
                                       fontWeight: FontWeight.w500,
                                       color: Color(0xff455A64)),
                                   border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(4),
+                                    borderRadius: BorderRadius.circular(10),
                                     borderSide: BorderSide(
                                       width: 1,
                                       color: Color(0xff5C5C5C),
                                     ),
                                   ),
                                   enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(4),
+                                    borderRadius: BorderRadius.circular(10),
                                     borderSide: BorderSide(
                                       width: 1,
                                       color: Color(0xff5C5C5C),
                                     ),
                                   ),
                                   focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(4),
+                                    borderRadius: BorderRadius.circular(10),
                                     borderSide: const BorderSide(
                                       width: 1,
                                     ),
@@ -169,21 +169,21 @@ class _EditProfileState extends State<EditProfile> {
                                       fontWeight: FontWeight.w500,
                                       color: Color(0xff455A64)),
                                   border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(4),
+                                    borderRadius: BorderRadius.circular(10),
                                     borderSide: BorderSide(
                                       width: 1,
                                       color: Color(0xff5C5C5C),
                                     ),
                                   ),
                                   enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(4),
+                                    borderRadius: BorderRadius.circular(10),
                                     borderSide: BorderSide(
                                       width: 1,
                                       color: Color(0xff5C5C5C),
                                     ),
                                   ),
                                   focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(4),
+                                    borderRadius: BorderRadius.circular(10),
                                     borderSide: const BorderSide(
                                       width: 1,
                                     ),
@@ -220,21 +220,21 @@ class _EditProfileState extends State<EditProfile> {
                                       fontWeight: FontWeight.w500,
                                       color: Color(0xff455A64)),
                                   border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(4),
+                                    borderRadius: BorderRadius.circular(10),
                                     borderSide: BorderSide(
                                       width: 1,
                                       color: Color(0xff5C5C5C),
                                     ),
                                   ),
                                   enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(4),
+                                    borderRadius: BorderRadius.circular(10),
                                     borderSide: BorderSide(
                                       width: 1,
                                       color: Color(0xff5C5C5C),
                                     ),
                                   ),
                                   focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(4),
+                                    borderRadius: BorderRadius.circular(10),
                                     borderSide: const BorderSide(
                                       width: 1,
                                     ),
