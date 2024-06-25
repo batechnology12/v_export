@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 var primaryfont = GoogleFonts.inter();
@@ -33,3 +34,20 @@ var Ksizedboxw5 = SizedBox(
 var Ksizedboxw10 = SizedBox(
   width: 10.h,
 );
+
+class AppSnackBar {
+  static showSnackbar({
+    required String headText,
+    required String content,
+    required SnackPosition position,
+  }) {
+    return Get.snackbar(
+      headText,
+      content,
+      duration: const Duration(seconds: 3),
+      snackPosition: position,
+      backgroundColor: Colors.green, // Change background color here
+      colorText: Colors.white, // Change text color here
+    );
+  }
+}

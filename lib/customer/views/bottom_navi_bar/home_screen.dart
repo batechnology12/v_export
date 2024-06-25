@@ -9,6 +9,7 @@ import 'package:svg_flutter/svg_flutter.dart';
 import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
 import 'package:v_export/customer/controller/home_controller.dart';
+import 'package:v_export/customer/controller/home_screen_controller.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/book_vehicle/book_vehicle_screen.dart';
 import 'package:v_export/customer/views/notification/notification_view.dart';
 
@@ -28,6 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isPageViewEnabled = false;
 
   final homeController = Get.find<HomeController>();
+  HomeScreenController homeScreenController = Get.find<HomeScreenController>();
   final CarouselController controller = CarouselController();
 
   List carosalimage = [
@@ -41,6 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // TODO: implement initState
     super.initState();
     _pageController = PageController(initialPage: 0);
+    homeScreenController.getSlider();
   }
 
   @override
@@ -80,12 +83,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               style: secondoryfont.copyWith(
                                   fontSize: 15.sp, fontWeight: FontWeight.w500),
                             ),
-                            //  Obx(()=> Text(homeController.locationvalue.value,
-                            //     style: primaryfont.copyWith(
-                            //             fontSize: 11,
-                            //             fontWeight: FontWeight.w400,
-                            //             ),))
-
                             Text(
                               'Syed',
                               style: primaryfont.copyWith(
@@ -111,16 +108,20 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               ksizedbox10,
               CarouselSlider(
-                items: carosalimage
-                    .map((item) => Container(
-                        width: 450.0, // Set the width
-                        height: 200.0, // Set the height
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(item),
-                            fit: BoxFit.fill,
+                items: homeScreenController.sliderData
+                    .map((item) => ClipRRect(
+                          borderRadius: BorderRadius.circular(15),
+                          child: Container(
+                            width: 450.0,
+                            height: 200.0,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15)),
+                            child: Image.network(
+                              item.image,
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                        )))
+                        ))
                     .toList(),
                 carouselController: controller,
                 options: CarouselOptions(
@@ -136,14 +137,14 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: carosalimage.asMap().entries.map(
+                children: homeScreenController.sliderData.asMap().entries.map(
                   (entry) {
                     return GestureDetector(
                       onTap: () => controller.animateToPage(entry.key),
                       child: Container(
                         width: 12.0.w,
                         height: 12.0.h,
-                        margin: EdgeInsets.symmetric(
+                        margin: const EdgeInsets.symmetric(
                             vertical: 8.0, horizontal: 4.0),
                         decoration: BoxDecoration(
                             shape: BoxShape.circle,

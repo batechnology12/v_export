@@ -79,6 +79,7 @@ class _SettingsState extends State<Settings> {
                             Get.to(PasswordManager());
                           },
                           child: Container(
+                            color: Colors.white,
                             child: Column(
                               children: [
                                 Row(

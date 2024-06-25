@@ -9,26 +9,29 @@ import 'package:v_export/customer/controller/auth_controller.dart';
 
 import '../../../../../constant/app_colors.dart';
 import '../../../../../constant/app_font.dart';
-import 'create_new_password.dart';
 
-class VerifiedPasswordScreen extends StatefulWidget {
-  String mobileNumber;
-  VerifiedPasswordScreen({super.key, required this.mobileNumber});
+class RegisterBusinessOtpScreen extends StatefulWidget {
+  String mobile;
+  RegisterBusinessOtpScreen({super.key, required this.mobile});
 
   @override
-  State<VerifiedPasswordScreen> createState() => _VerifiedPasswordScreenState();
+  State<RegisterBusinessOtpScreen> createState() =>
+      _VerifiedPasswordScreenState();
 }
 
-class _VerifiedPasswordScreenState extends State<VerifiedPasswordScreen> {
+class _VerifiedPasswordScreenState extends State<RegisterBusinessOtpScreen> {
   var mobileController = TextEditingController();
-  // late StreamController<ErrorAnimationType> errorController;
-  AuthController authController = Get.find<AuthController>();
+
+  final authController = Get.find<AuthController>();
+
   TextEditingController otpController = TextEditingController();
+
+  String currentText = "";
+
+  bool hasError = false;
 
   final formKey = GlobalKey<FormState>();
 
-  String currentText = "";
-  bool hasError = false;
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -40,7 +43,7 @@ class _VerifiedPasswordScreenState extends State<VerifiedPasswordScreen> {
           onTap: () {
             Get.back();
           },
-          child: const Icon(
+          child: Icon(
             Icons.arrow_back_ios_new_outlined,
             size: 19,
           ),
@@ -81,7 +84,7 @@ class _VerifiedPasswordScreenState extends State<VerifiedPasswordScreen> {
                               FontWeight.w500), // inherit default text style
                       children: <TextSpan>[
                         TextSpan(
-                          text: widget.mobileNumber,
+                          text: widget.mobile,
                           style: primaryfont.copyWith(
                               fontSize: 16.sp,
                               color: AppColors.kblue,
@@ -113,7 +116,6 @@ class _VerifiedPasswordScreenState extends State<VerifiedPasswordScreen> {
                           return "";
                         } else {
                           hasError = false;
-
                           return null;
                         }
                       },
@@ -184,42 +186,42 @@ class _VerifiedPasswordScreenState extends State<VerifiedPasswordScreen> {
           height: 70.h,
           child: Column(
             children: [
-              authController.verificationOtpLoading.isTrue
+             authController.businessOtpLoading.isTrue
                   ? Container(
                       height: 50.h,
                       width: size.width,
                       decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(30)),
-                      child: const Center(
+                      child: Center(
                           child: CircularProgressIndicator(
                         color: AppColors.kblue,
                       )),
                     )
-                  : InkWell(
-                      onTap: () {
-                        if (formKey.currentState!.validate()) {
-                          authController.verificationOtp(
-                              widget.mobileNumber, otpController.text);
-                        }
-                      },
-                      child: Container(
-                        height: 50.h,
-                        width: size.width,
-                        decoration: BoxDecoration(
-                            color: AppColors.kblue,
-                            borderRadius: BorderRadius.circular(30)),
-                        child: Center(
-                          child: Text(
-                            'Verify',
-                            style: primaryfont.copyWith(
-                                fontSize: 18.sp,
-                                fontWeight: FontWeight.w500,
-                                color: AppColors.kwhite),
-                          ),
-                        ),
-                      ),
+                  :
+              GestureDetector(
+                onTap: () {
+                  if (formKey.currentState!.validate()) {
+                  authController.registerBusinessOtpUser(widget.mobile,otpController.text);
+                  }
+                },
+                child: Container(
+                  height: 50.h,
+                  width: size.width,
+                  decoration: BoxDecoration(
+                      color: AppColors.kblue,
+                      borderRadius: BorderRadius.circular(30)),
+                  child: Center(
+                    child: Text(
+                      'Verify',
+                      style: primaryfont.copyWith(
+                          fontSize: 18.sp,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.kwhite),
                     ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),

@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:svg_flutter/svg_flutter.dart';
 
 import 'package:v_export/constant/app_colors.dart';
+import 'package:v_export/customer/controller/auth_controller.dart';
 import 'package:v_export/customer/views/auth/login/forgot/forgot_password.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/bottomn_navi_bar.dart';
 
@@ -21,13 +25,54 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  bool ishide = false;
-  bool isCheck = false;
+  final RoundedLoadingButtonController _btnController =
+      RoundedLoadingButtonController();
 
-  var mobileController = TextEditingController();
+  final RoundedLoadingButtonController _btnControllerSucess =
+      RoundedLoadingButtonController();
+
+  final authController = Get.find<AuthController>();
+  bool ishide = true;
+  bool isCheck = false;
+  bool isRemember = false;
+
+  var emailOrmobileController = TextEditingController();
+
   var passwordController = TextEditingController();
 
   final formkey = GlobalKey<FormState>();
+  void _doSomething() async {
+    // Simulate a time-consuming task, e.g., network request
+    await Future.delayed(Duration(seconds: 3));
+
+    // On success, stop the loading animation and show a success icon
+    _btnController.success();
+  }
+
+  void _onLoginPressed() {
+    if (formkey.currentState!.validate()) {
+      _btnController.start();
+      authController
+          .loginApi(
+        emailOrmobileNmuber: emailOrmobileController.text,
+        password: passwordController.text,
+      )
+          .then((success) {
+        if (success) {
+          _btnController.success();
+        } else {
+          _btnController.error();
+        }
+      }).catchError((error) {
+        _btnController.error();
+      }).whenComplete(() {
+        // Reset the button controller after some delay
+        Future.delayed(Duration(seconds: 2), () {
+          _btnController.reset();
+        });
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,36 +140,48 @@ class _LoginScreenState extends State<LoginScreen> {
                             height: 20.h,
                           ),
                           Text(
-                            'Mobile Number*',
+                            'Mobile Number or Email ID*',
                             style: primaryfont.copyWith(
                                 color: Color(0xff7C86A2), fontSize: 15.sp),
                           ),
                           ksizedbox5,
                           TextFormField(
-                            keyboardType: TextInputType.phone,
+                            keyboardType: TextInputType.emailAddress,
                             inputFormatters: [
-                              LengthLimitingTextInputFormatter(8),
-                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(10),
                             ],
                             validator: (value) {
-                              if (value!.length < 8 || value.length > 8) {
-                                return 'Mobile number should be in 8 digits';
+                              if (value!.length < 10 || value.length > 10) {
+                                return 'Mobile number should be in 10 digits';
                               } else {
                                 return null;
                               }
                             },
-                            controller: mobileController,
+                            controller: emailOrmobileController,
                             decoration: InputDecoration(
+                              errorStyle:
+                                  primaryfont.copyWith(color: Colors.red),
                               contentPadding:
                                   EdgeInsets.only(bottom: 5, left: 20),
                               fillColor: Color(0xffF8F8F8),
                               filled: true,
-                              border: InputBorder.none,
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.circular(25.0),
+                              ),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide.none,
                                 borderRadius: BorderRadius.circular(25.0),
                               ),
+                              errorBorder: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.circular(25),
+                              ),
                               focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.circular(25.0),
+                              ),
+                              focusedErrorBorder: OutlineInputBorder(
                                 borderSide: BorderSide.none,
                                 borderRadius: BorderRadius.circular(25.0),
                               ),
@@ -148,14 +205,16 @@ class _LoginScreenState extends State<LoginScreen> {
                               }
                             },
                             decoration: InputDecoration(
+                              errorStyle:
+                                  primaryfont.copyWith(color: Colors.red),
                               contentPadding:
                                   EdgeInsets.only(bottom: 5, left: 20),
                               suffixIcon: Padding(
                                 padding: const EdgeInsets.only(top: 3),
                                 child: IconButton(
                                   icon: ishide
-                                      ? Icon(Icons.visibility)
-                                      : Icon(Icons.visibility_off),
+                                      ? Icon(Icons.visibility_off)
+                                      : Icon(Icons.visibility),
                                   onPressed: () {
                                     setState(() {
                                       ishide = !ishide;
@@ -165,14 +224,25 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               fillColor: Color(0xffF8F8F8),
                               filled: true,
-                              border: InputBorder.none,
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.circular(25.0),
+                              ),
                               enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.circular(25.0),
+                              ),
+                              errorBorder: OutlineInputBorder(
                                 borderSide: BorderSide.none,
                                 borderRadius: BorderRadius.circular(25),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderSide: BorderSide.none,
-                                borderRadius: BorderRadius.circular(25),
+                                borderRadius: BorderRadius.circular(25.0),
+                              ),
+                              focusedErrorBorder: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.circular(25.0),
                               ),
                             ),
                           ),
@@ -187,6 +257,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                       setState(
                                         () {
                                           isCheck = !isCheck;
+                                          if (isCheck == true) {
+                                            isRemember = false;
+                                          }
                                         },
                                       );
                                     },
@@ -226,31 +299,71 @@ class _LoginScreenState extends State<LoginScreen> {
                               )
                             ],
                           ),
+                          ksizedbox10,
+                          // Visibility(
+                          //   visible: isRemember == true,
+                          //   child: const Text(
+                          //     "Please agree the remember me",
+                          //     style: TextStyle(color: Colors.red),
+                          //   ),
+                          // ),
                           ksizedbox40,
-                          ksizedbox20,
-                          InkWell(
-                            onTap: () {
-                              if (formkey.currentState!.validate()) {
-                                Get.to(BottomNavigationScreen());
-                              }
-                            },
-                            child: Container(
-                              height: 50,
-                              width: size.width,
-                              decoration: BoxDecoration(
-                                  color: AppColors.kblue,
-                                  borderRadius: BorderRadius.circular(8)),
-                              child: Center(
-                                child: Text(
-                                  'Login',
-                                  style: primaryfont.copyWith(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w500,
-                                      color: AppColors.kwhite),
-                                ),
-                              ),
-                            ),
-                          ),
+                          ksizedbox10,
+                          Obx(() {
+                            return Container(
+                              height: 50.h,
+                              width: MediaQuery.of(context).size.width,
+                              child: authController.loginLoading.isTrue
+                                  ? RoundedLoadingButton(
+                                      controller: _btnController,
+                                      onPressed: _onLoginPressed,
+                                      child: Text(
+                                        'Login',
+                                        style: TextStyle(
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      color: Colors.blue,
+                                      successIcon: Icons.check,
+                                      successColor: Colors.green,
+                                      errorColor: Colors.red,
+                                    )
+                                  : GestureDetector(
+                                      onTap: _onLoginPressed,
+                                      child: Container(
+                                        height: 50,
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        decoration: BoxDecoration(
+                                          color: Colors.blue,
+                                          borderRadius:
+                                              BorderRadius.circular(30),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            'Login',
+                                            style: TextStyle(
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                            );
+                          }),
+
+                          // ksizedbox20,
+                          // RoundedLoadingButton(
+                          //   child: Text('Press me',
+                          //       style: TextStyle(color: Colors.white)),
+                          //   controller: _btnController,
+                          //   onPressed: _doSomething,
+                          //   color: Colors.blue,
+                          // ),
                           ksizedbox20,
                           Center(
                             child: InkWell(

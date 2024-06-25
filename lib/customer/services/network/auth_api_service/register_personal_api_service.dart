@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:v_export/customer/model/register_person_account_model.dart';
+import 'package:v_export/customer/model/register_person_business_account_model.dart';
 import 'package:v_export/customer/services/utils/base_url_api.dart';
 import 'package:dio/dio.dart';
 
@@ -10,7 +10,7 @@ class RegisterPersonalApiService extends BaseApiServices {
     dynamic responsJson;
     try {
       var dio = Dio();
-      var response = dio.post(registerPersonalAccoutUrl,
+      var response =await  dio.post(registerPersonalAccoutUrl,
           options: Options(
               headers: {'Content-Type': 'application/json'},
               followRedirects: false,

@@ -60,6 +60,8 @@ dependencies:
   pin_code_fields: ^8.0.1
   get_storage: ^2.1.1
   dio: ^5.4.3+1
+  shared_preferences: ^2.2.3
+  rounded_loading_button: ^2.1.0
   
 
   

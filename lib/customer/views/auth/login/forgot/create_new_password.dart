@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:svg_flutter/svg_flutter.dart';
+import 'package:v_export/customer/controller/auth_controller.dart';
 
 import '../../../../../constant/app_colors.dart';
 import '../../../../../constant/app_font.dart';
@@ -18,6 +19,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
   bool passvisible = false;
   bool confirmvisible = false;
 
+  AuthController authController = Get.find<AuthController>();
   var passwordController = TextEditingController();
   var confirmpasswordController = TextEditingController();
 
@@ -78,7 +80,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                         }
                       },
                       decoration: InputDecoration(
-                        contentPadding: EdgeInsets.only(bottom: 5, left: 10),
+                        contentPadding: EdgeInsets.only(bottom: 5, left: 20),
                         suffixIcon: Padding(
                           padding: const EdgeInsets.only(top: 3),
                           child: IconButton(
@@ -94,14 +96,25 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                         ),
                         fillColor: Color(0xffF8F8F8),
                         filled: true,
-                        border: InputBorder.none,
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(25.0),
+                        ),
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.circular(10.0),
+                          borderRadius: BorderRadius.circular(25.0),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(25),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.circular(10.0),
+                          borderRadius: BorderRadius.circular(25.0),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(25.0),
                         ),
                       ),
                     ),
@@ -122,7 +135,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                         }
                       },
                       decoration: InputDecoration(
-                        contentPadding: EdgeInsets.only(bottom: 5, left: 10),
+                        contentPadding: EdgeInsets.only(bottom: 5, left: 20),
                         suffixIcon: Padding(
                           padding: const EdgeInsets.only(top: 3),
                           child: IconButton(
@@ -138,14 +151,25 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                         ),
                         fillColor: Color(0xffF8F8F8),
                         filled: true,
-                        border: InputBorder.none,
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(25.0),
+                        ),
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.circular(10.0),
+                          borderRadius: BorderRadius.circular(25.0),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(25),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.circular(10.0),
+                          borderRadius: BorderRadius.circular(25.0),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(25.0),
                         ),
                       ),
                     ),
@@ -162,29 +186,42 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
           height: 70.h,
           child: Column(
             children: [
-              InkWell(
-                onTap: () {
-                  if (formKey.currentState!.validate()) {
-                    Get.to(LoginScreen());
-                  }
-                },
-                child: Container(
-                  height: 50.h,
-                  width: size.width,
-                  decoration: BoxDecoration(
-                      color: AppColors.kblue,
-                      borderRadius: BorderRadius.circular(8)),
-                  child: Center(
-                    child: Text(
-                      'Change Password',
-                      style: primaryfont.copyWith(
-                          fontSize: 17.sp,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.kwhite),
+              authController.newPasswordLoading.isTrue
+                  ? Container(
+                      height: 50.h,
+                      width: size.width,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(30)),
+                      child: const Center(
+                          child: CircularProgressIndicator(
+                        color: AppColors.kblue,
+                      )),
+                    )
+                  : InkWell(
+                      onTap: () {
+                        if (formKey.currentState!.validate()) {
+                          authController.newPassword(passwordController.text,
+                              confirmpasswordController.text);
+                        }
+                      },
+                      child: Container(
+                        height: 50.h,
+                        width: size.width,
+                        decoration: BoxDecoration(
+                            color: AppColors.kblue,
+                            borderRadius: BorderRadius.circular(30)),
+                        child: Center(
+                          child: Text(
+                            'Change Password',
+                            style: primaryfont.copyWith(
+                                fontSize: 17.sp,
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.kwhite),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
             ],
           ),
         ),

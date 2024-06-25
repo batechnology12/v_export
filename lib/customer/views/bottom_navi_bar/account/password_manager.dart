@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
 import 'package:v_export/constant/common_container.dart';
+import 'package:v_export/customer/controller/account_controller.dart';
+import 'package:v_export/customer/controller/home_screen_controller.dart';
 
 class PasswordManager extends StatefulWidget {
   const PasswordManager({super.key});
@@ -13,6 +15,7 @@ class PasswordManager extends StatefulWidget {
 }
 
 class _PasswordManagerState extends State<PasswordManager> {
+  HomeScreenController homeScreenController = Get.find<HomeScreenController>();
   bool curentPassword = true;
   bool newPassword = true;
   bool confirmPassword = true;
@@ -94,35 +97,63 @@ class _PasswordManagerState extends State<PasswordManager> {
                           ),
                           ksizedbox5,
                           Container(
-                            height: 45.h,
                             decoration: BoxDecoration(
-                                color: Colors.grey.shade200,
-                                borderRadius: BorderRadius.circular(10)),
+                                borderRadius: BorderRadius.circular(30),
+                                border: Border.all(
+                                  width: 1,
+                                  color: Color(0xff444444).withOpacity(.32),
+                                )),
                             child: TextFormField(
                               obscureText: curentPassword,
                               controller: curentPasswordController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter the current Password';
+                                } else {
+                                  return null;
+                                }
+                              },
                               decoration: InputDecoration(
-                                  contentPadding: const EdgeInsets.only(
-                                    bottom: 5,
-                                    left: 10,
+                                errorStyle:
+                                    primaryfont.copyWith(color: Colors.red),
+                                contentPadding:
+                                    EdgeInsets.only(bottom: 5, left: 20),
+                                suffixIcon: Padding(
+                                  padding: const EdgeInsets.only(top: 3),
+                                  child: IconButton(
+                                    icon: curentPassword
+                                        ? Icon(Icons.visibility_off)
+                                        : Icon(Icons.visibility),
+                                    onPressed: () {
+                                      setState(() {
+                                        curentPassword = !curentPassword;
+                                      });
+                                    },
                                   ),
-                                  suffixIcon: Padding(
-                                    padding: const EdgeInsets.only(bottom: 5),
-                                    child: IconButton(
-                                      icon: curentPassword
-                                          ? Icon(Icons.visibility_off)
-                                          : Icon(Icons.visibility),
-                                      onPressed: () {
-                                        setState(() {
-                                          curentPassword = !curentPassword;
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderSide: BorderSide.none,
-                                    borderRadius: BorderRadius.circular(10),
-                                  )),
+                                ),
+                                fillColor: Color(0xffF8F8F8),
+                                filled: true,
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.circular(25.0),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.circular(25.0),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.circular(25),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.circular(25.0),
+                                ),
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.circular(25.0),
+                                ),
+                              ),
                             ),
                           ),
                           ksizedbox20,
@@ -135,35 +166,63 @@ class _PasswordManagerState extends State<PasswordManager> {
                           ),
                           ksizedbox5,
                           Container(
-                            height: 45.h,
                             decoration: BoxDecoration(
-                                color: Colors.grey.shade200,
-                                borderRadius: BorderRadius.circular(10)),
+                                borderRadius: BorderRadius.circular(30),
+                                border: Border.all(
+                                  width: 1,
+                                  color: Color(0xff444444).withOpacity(.32),
+                                )),
                             child: TextFormField(
                               obscureText: newPassword,
                               controller: newPasswordController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter the New Password';
+                                } else {
+                                  return null;
+                                }
+                              },
                               decoration: InputDecoration(
-                                  contentPadding: const EdgeInsets.only(
-                                    bottom: 5,
-                                    left: 10,
+                                errorStyle:
+                                    primaryfont.copyWith(color: Colors.red),
+                                contentPadding:
+                                    EdgeInsets.only(bottom: 5, left: 20),
+                                suffixIcon: Padding(
+                                  padding: const EdgeInsets.only(top: 3),
+                                  child: IconButton(
+                                    icon: newPassword
+                                        ? Icon(Icons.visibility_off)
+                                        : Icon(Icons.visibility),
+                                    onPressed: () {
+                                      setState(() {
+                                        newPassword = !newPassword;
+                                      });
+                                    },
                                   ),
-                                  suffixIcon: Padding(
-                                    padding: const EdgeInsets.only(bottom: 5),
-                                    child: IconButton(
-                                      icon: newPassword
-                                          ? Icon(Icons.visibility_off)
-                                          : Icon(Icons.visibility),
-                                      onPressed: () {
-                                        setState(() {
-                                          newPassword = !newPassword;
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderSide: BorderSide.none,
-                                    borderRadius: BorderRadius.circular(10),
-                                  )),
+                                ),
+                                fillColor: Color(0xffF8F8F8),
+                                filled: true,
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.circular(25.0),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.circular(25.0),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.circular(25),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.circular(25.0),
+                                ),
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.circular(25.0),
+                                ),
+                              ),
                             ),
                           ),
                           ksizedbox20,
@@ -176,35 +235,64 @@ class _PasswordManagerState extends State<PasswordManager> {
                           ),
                           ksizedbox5,
                           Container(
-                            height: 45.h,
+                            
                             decoration: BoxDecoration(
-                                color: Colors.grey.shade200,
-                                borderRadius: BorderRadius.circular(10)),
+                                borderRadius: BorderRadius.circular(30),
+                                border: Border.all(
+                                  width: 1,
+                                  color: Color(0xff444444).withOpacity(.32),
+                                )),
                             child: TextFormField(
                               obscureText: confirmPassword,
                               controller: confirmPasswordController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter the confirm Password';
+                                } else {
+                                  return null;
+                                }
+                              },
                               decoration: InputDecoration(
-                                  contentPadding: const EdgeInsets.only(
-                                    bottom: 5,
-                                    left: 10,
+                                errorStyle:
+                                    primaryfont.copyWith(color: Colors.red),
+                                contentPadding:
+                                    EdgeInsets.only(bottom: 5, left: 20),
+                                suffixIcon: Padding(
+                                  padding: const EdgeInsets.only(top: 3),
+                                  child: IconButton(
+                                    icon: confirmPassword
+                                        ? Icon(Icons.visibility_off)
+                                        : Icon(Icons.visibility),
+                                    onPressed: () {
+                                      setState(() {
+                                        confirmPassword = !confirmPassword;
+                                      });
+                                    },
                                   ),
-                                  suffixIcon: Padding(
-                                    padding: const EdgeInsets.only(bottom: 5),
-                                    child: IconButton(
-                                      icon: confirmPassword
-                                          ? Icon(Icons.visibility_off)
-                                          : Icon(Icons.visibility),
-                                      onPressed: () {
-                                        setState(() {
-                                          confirmPassword = !confirmPassword;
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderSide: BorderSide.none,
-                                    borderRadius: BorderRadius.circular(10),
-                                  )),
+                                ),
+                                fillColor: Color(0xffF8F8F8),
+                                filled: true,
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.circular(25.0),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.circular(25.0),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.circular(25),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.circular(25.0),
+                                ),
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.circular(25.0),
+                                ),
+                              ),
                             ),
                           ),
                         ],
@@ -219,8 +307,16 @@ class _PasswordManagerState extends State<PasswordManager> {
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: CommonContainer(
-          name: "Password Manager",
+        child: GestureDetector(
+          onTap: () {
+            if (formkey.currentState!.validate()) {
+              homeScreenController.updatePassword(curentPasswordController.text,
+                  newPasswordController.text, confirmPasswordController.text);
+            }
+          },
+          child: CommonContainer(
+            name: "Password Manager",
+          ),
         ),
       ),
     );

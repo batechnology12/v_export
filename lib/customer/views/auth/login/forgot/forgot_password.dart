@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:svg_flutter/svg_flutter.dart';
+import 'package:v_export/customer/controller/auth_controller.dart';
 
 import '../../../../../constant/app_colors.dart';
 import '../../../../../constant/app_font.dart';
@@ -17,7 +18,9 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  var mobileController = TextEditingController();
+  var emailOrmobileController = TextEditingController();
+
+  AuthController authController = Get.find<AuthController>();
 
   final formKey = GlobalKey<FormState>();
   @override
@@ -72,10 +75,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 Padding(
                   padding: const EdgeInsets.only(left: 15, right: 15),
                   child: TextFormField(
-                    keyboardType: TextInputType.phone,
+                    keyboardType: TextInputType.emailAddress,
                     inputFormatters: [
                       LengthLimitingTextInputFormatter(10),
-                      FilteringTextInputFormatter.digitsOnly,
                     ],
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -84,24 +86,35 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         return null;
                       }
                     },
-                    controller: mobileController,
+                    controller: emailOrmobileController,
                     decoration: InputDecoration(
                       hintText: "Enter Mobile Number or Email ID",
                       hintStyle: primaryfont.copyWith(
                           fontSize: 15.sp,
                           fontWeight: FontWeight.w600,
                           color: Color(0xff7C86A2)),
-                      contentPadding: EdgeInsets.only(bottom: 5, left: 10),
+                      contentPadding: EdgeInsets.only(bottom: 5, left: 20),
                       fillColor: Color(0xffF8F8F8),
                       filled: true,
-                      border: InputBorder.none,
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(25.0),
+                      ),
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(10.0),
+                        borderRadius: BorderRadius.circular(25.0),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(25),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(10.0),
+                        borderRadius: BorderRadius.circular(25.0),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(25.0),
                       ),
                     ),
                   ),
@@ -120,29 +133,42 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           height: 120.h,
           child: Column(
             children: [
-              InkWell(
-                onTap: () {
-                  if (formKey.currentState!.validate()) {
-                    Get.to(VerifiedPasswordScreen());
-                  }
-                },
-                child: Container(
-                  height: 50.h,
-                  width: size.width,
-                  decoration: BoxDecoration(
-                      color: AppColors.kblue,
-                      borderRadius: BorderRadius.circular(8)),
-                  child: Center(
-                    child: Text(
-                      'Reset Password',
-                      style: fourthfont.copyWith(
-                          fontSize: 17.sp,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.kwhite),
+              authController.forgetPasswordLoading.isTrue
+                  ? Container(
+                      height: 50.h,
+                      width: size.width,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(30)),
+                      child: const Center(
+                          child: CircularProgressIndicator(
+                        color: AppColors.kblue,
+                      )),
+                    )
+                  : InkWell(
+                      onTap: () {
+                        if (formKey.currentState!.validate()) {
+                          authController
+                              .forgetPassword(emailOrmobileController.text);
+                        }
+                      },
+                      child: Container(
+                        height: 50.h,
+                        width: size.width,
+                        decoration: BoxDecoration(
+                            color: AppColors.kblue,
+                            borderRadius: BorderRadius.circular(30)),
+                        child: Center(
+                          child: Text(
+                            'Reset Password',
+                            style: fourthfont.copyWith(
+                                fontSize: 17.sp,
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.kwhite),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
               ksizedbox10,
               RichText(
                 text: TextSpan(children: [
