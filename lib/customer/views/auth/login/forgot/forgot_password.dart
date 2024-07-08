@@ -133,42 +133,48 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           height: 120.h,
           child: Column(
             children: [
-              authController.forgetPasswordLoading.isTrue
-                  ? Container(
-                      height: 50.h,
-                      width: size.width,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(30)),
-                      child: const Center(
-                          child: CircularProgressIndicator(
-                        color: AppColors.kblue,
-                      )),
-                    )
-                  : InkWell(
-                      onTap: () {
-                        if (formKey.currentState!.validate()) {
-                          authController
-                              .forgetPassword(emailOrmobileController.text);
-                        }
-                      },
-                      child: Container(
-                        height: 50.h,
-                        width: size.width,
-                        decoration: BoxDecoration(
+              Obx(() {
+                return Container(
+                  height: 50.h,
+                  width: MediaQuery.of(context).size.width,
+                  child: authController.forgetPasswordLoading.isTrue
+                      ? Container(
+                          height: 50.h,
+                          width: size.width,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(30)),
+                          child: const Center(
+                              child: CircularProgressIndicator(
                             color: AppColors.kblue,
-                            borderRadius: BorderRadius.circular(30)),
-                        child: Center(
-                          child: Text(
-                            'Reset Password',
-                            style: fourthfont.copyWith(
-                                fontSize: 17.sp,
-                                fontWeight: FontWeight.w500,
-                                color: AppColors.kwhite),
+                          )),
+                        )
+                      : InkWell(
+                          onTap: () {
+                            if (formKey.currentState!.validate()) {
+                              authController
+                                  .forgetPassword(emailOrmobileController.text);
+                            }
+                          },
+                          child: Container(
+                            height: 50.h,
+                            width: size.width,
+                            decoration: BoxDecoration(
+                                color: AppColors.kblue,
+                                borderRadius: BorderRadius.circular(30)),
+                            child: Center(
+                              child: Text(
+                                'Reset Password',
+                                style: fourthfont.copyWith(
+                                    fontSize: 17.sp,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.kwhite),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
+                );
+              }),
               ksizedbox10,
               RichText(
                 text: TextSpan(children: [

@@ -5,6 +5,7 @@ import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
 import 'package:v_export/constant/chat_class.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/bottomn_navi_bar.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -35,7 +36,7 @@ class _ChatScreenState extends State<ChatScreen> {
         centerTitle: true,
         leading: GestureDetector(
           onTap: () {
-            Get.back();
+       Get.back();
           },
           child: Padding(
             padding: const EdgeInsets.only(left: 20),

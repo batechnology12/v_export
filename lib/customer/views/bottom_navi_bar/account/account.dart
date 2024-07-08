@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:svg_flutter/svg_flutter.dart';
 import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
+import 'package:v_export/customer/controller/account_controller.dart';
+import 'package:v_export/customer/controller/auth_controller.dart';
 import 'package:v_export/customer/views/auth/login/login_screen.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/account/chat.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/account/corporate_account.dart';
@@ -21,6 +23,14 @@ class Account extends StatefulWidget {
 }
 
 class _AccountState extends State<Account> {
+  // AccountController accountController = Get.find<AccountController>();
+  final AccountController accountController = Get.put(AccountController());
+  @override
+  void initState() {
+    accountController.getProfile();
+    super.initState();
+  }
+
   List accountList = [
     {
       "accountNames": "Your Profile",
@@ -230,12 +240,23 @@ class _AccountState extends State<Account> {
                 ],
               ),
               SizedBox(height: 8),
-              Text(
-                'Jhon Doe',
-                style: primaryfont.copyWith(
-                    color: Colors.black,
-                    fontSize: 17.sp,
-                    fontWeight: FontWeight.w600),
+              //  accountController.imageLoading.isTrue ? :
+
+              GetBuilder<AccountController>(
+                builder: (controller) {
+                  return controller.imageLoading.value
+                      ? CircularProgressIndicator()
+                      : Text(
+                          controller.getUserData != null
+                              ? controller.getUserData!.firstName
+                              : " ",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 17.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        );
+                },
               ),
             ],
           ),

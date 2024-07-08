@@ -186,42 +186,49 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
           height: 70.h,
           child: Column(
             children: [
-              authController.newPasswordLoading.isTrue
-                  ? Container(
-                      height: 50.h,
-                      width: size.width,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(30)),
-                      child: const Center(
-                          child: CircularProgressIndicator(
-                        color: AppColors.kblue,
-                      )),
-                    )
-                  : InkWell(
-                      onTap: () {
-                        if (formKey.currentState!.validate()) {
-                          authController.newPassword(passwordController.text,
-                              confirmpasswordController.text);
-                        }
-                      },
-                      child: Container(
-                        height: 50.h,
-                        width: size.width,
-                        decoration: BoxDecoration(
+              Obx(() {
+                return Container(
+                  height: 50.h,
+                  width: MediaQuery.of(context).size.width,
+                  child: authController.newPasswordLoading.isTrue
+                      ? Container(
+                          height: 50.h,
+                          width: size.width,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(30)),
+                          child: const Center(
+                              child: CircularProgressIndicator(
                             color: AppColors.kblue,
-                            borderRadius: BorderRadius.circular(30)),
-                        child: Center(
-                          child: Text(
-                            'Change Password',
-                            style: primaryfont.copyWith(
-                                fontSize: 17.sp,
-                                fontWeight: FontWeight.w500,
-                                color: AppColors.kwhite),
+                          )),
+                        )
+                      : InkWell(
+                          onTap: () {
+                            if (formKey.currentState!.validate()) {
+                              authController.newPassword(
+                                  passwordController.text,
+                                  confirmpasswordController.text);
+                            }
+                          },
+                          child: Container(
+                            height: 50.h,
+                            width: size.width,
+                            decoration: BoxDecoration(
+                                color: AppColors.kblue,
+                                borderRadius: BorderRadius.circular(30)),
+                            child: Center(
+                              child: Text(
+                                'Change Password',
+                                style: primaryfont.copyWith(
+                                    fontSize: 17.sp,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.kwhite),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
+                );
+              }),
             ],
           ),
         ),

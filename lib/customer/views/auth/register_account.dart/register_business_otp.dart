@@ -186,42 +186,48 @@ class _VerifiedPasswordScreenState extends State<RegisterBusinessOtpScreen> {
           height: 70.h,
           child: Column(
             children: [
-             authController.businessOtpLoading.isTrue
-                  ? Container(
-                      height: 50.h,
-                      width: size.width,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(30)),
-                      child: Center(
-                          child: CircularProgressIndicator(
-                        color: AppColors.kblue,
-                      )),
-                    )
-                  :
-              GestureDetector(
-                onTap: () {
-                  if (formKey.currentState!.validate()) {
-                  authController.registerBusinessOtpUser(widget.mobile,otpController.text);
-                  }
-                },
-                child: Container(
+              Obx(() {
+                return Container(
                   height: 50.h,
-                  width: size.width,
-                  decoration: BoxDecoration(
-                      color: AppColors.kblue,
-                      borderRadius: BorderRadius.circular(30)),
-                  child: Center(
-                    child: Text(
-                      'Verify',
-                      style: primaryfont.copyWith(
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.kwhite),
-                    ),
-                  ),
-                ),
-              ),
+                  width: MediaQuery.of(context).size.width,
+                  child: authController.businessOtpLoading.isTrue
+                      ? Container(
+                          height: 50.h,
+                          width: size.width,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(30)),
+                          child: Center(
+                              child: CircularProgressIndicator(
+                            color: AppColors.kblue,
+                          )),
+                        )
+                      : GestureDetector(
+                          onTap: () {
+                            if (formKey.currentState!.validate()) {
+                              authController.registerBusinessOtpUser(
+                                  widget.mobile, otpController.text);
+                            }
+                          },
+                          child: Container(
+                            height: 50.h,
+                            width: size.width,
+                            decoration: BoxDecoration(
+                                color: AppColors.kblue,
+                                borderRadius: BorderRadius.circular(30)),
+                            child: Center(
+                              child: Text(
+                                'Verify',
+                                style: primaryfont.copyWith(
+                                    fontSize: 18.sp,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.kwhite),
+                              ),
+                            ),
+                          ),
+                        ),
+                );
+              }),
             ],
           ),
         ),

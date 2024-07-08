@@ -3,7 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/account/account.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/account/password_manager.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/bottomn_navi_bar.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -25,7 +27,7 @@ class _SettingsState extends State<Settings> {
         centerTitle: true,
         leading: GestureDetector(
           onTap: () {
-            Get.back();
+          Get.back();
           },
           child: const Icon(
             Icons.arrow_back_ios_new_sharp,

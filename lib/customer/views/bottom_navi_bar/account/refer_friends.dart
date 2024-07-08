@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:svg_flutter/svg.dart';
 import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/bottomn_navi_bar.dart';
 
 class ReferFriends extends StatefulWidget {
   const ReferFriends({super.key});

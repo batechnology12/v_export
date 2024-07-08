@@ -8,7 +8,7 @@ package="com.example.v_export"
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <application
         tools:replace="android:label"
-        android:label="v_export"
+        android:label="Veelgo \nBooking"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 

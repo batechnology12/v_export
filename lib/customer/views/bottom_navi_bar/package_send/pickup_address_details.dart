@@ -3,37 +3,57 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_dash/flutter_dash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:location/location.dart';
+import 'package:location/location.dart' as loc; // Alias for location package
 import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:v_export/constant/common_container.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:v_export/customer/controller/account_controller.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/package_send/package_send_screen.dart';
 
-class AddressDetails extends StatefulWidget {
+class PickupAddressDetails extends StatefulWidget {
   @override
-  State<AddressDetails> createState() => _MyHomePageState();
+  State<PickupAddressDetails> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<AddressDetails> {
+class _MyHomePageState extends State<PickupAddressDetails> {
+  AccountController accountController = Get.find<AccountController>();
+
   late GoogleMapController _controller;
   final Set<Marker> _markers = {};
-  late LocationData _currentPosition;
-  Location location = Location();
+  late loc.LocationData _currentPosition;
+  loc.Location location = loc.Location(); // Use the alias
 
   static const CameraPosition _initialPosition = CameraPosition(
     target: LatLng(37.7749, -122.4194), // San Francisco
     zoom: 12,
   );
 
+  final TextEditingController _postalCodeController = TextEditingController();
+  final TextEditingController _blockUnitController = TextEditingController();
+  final TextEditingController _senderNameController = TextEditingController();
+  final TextEditingController _receiverNameController = TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
-    _getLocation();
+    getData();
+  }
+
+  getData() async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _getLocation();
+      await accountController.getProfile();
+      _fetchAddress();
+      accountController.update();
+    });
   }
 
   void _getLocation() async {
     bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
+    loc.PermissionStatus _permissionGranted;
 
     _serviceEnabled = await location.serviceEnabled();
     if (!_serviceEnabled) {
@@ -44,16 +64,15 @@ class _MyHomePageState extends State<AddressDetails> {
     }
 
     _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
+    if (_permissionGranted == loc.PermissionStatus.denied) {
       _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
+      if (_permissionGranted != loc.PermissionStatus.granted) {
         return;
       }
     }
 
-
     _currentPosition = await location.getLocation();
-    location.onLocationChanged.listen((LocationData currentLocation) {
+    location.onLocationChanged.listen((loc.LocationData currentLocation) {
       _currentPosition = currentLocation;
       _controller.animateCamera(CameraUpdate.newCameraPosition(
         CameraPosition(
@@ -69,9 +88,44 @@ class _MyHomePageState extends State<AddressDetails> {
               LatLng(_currentPosition.latitude!, _currentPosition.longitude!),
           infoWindow: InfoWindow(title: 'Your Location'),
         ));
+        _fetchAddress();
       });
     });
   }
+
+  Future<void> _fetchAddress() async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+          _currentPosition.latitude!, _currentPosition.longitude!);
+      Placemark place = placemarks[0];
+      setState(() {
+        _postalCodeController.text =
+            "${place.name},${place.subLocality},${place.locality},${place.postalCode}" ??
+                '';
+        _blockUnitController.text = place.street ?? '';
+        _senderNameController.text = accountController.getUserData != null
+            ? accountController.getUserData!.firstName
+            : "";
+        _phoneNumberController.text = place.country ?? '';
+
+        print("------location address");
+        print(place.name ?? '');
+        print(place.street ?? '');
+        // print(place.subAdministrativeArea ?? '');
+        print(place.administrativeArea ?? '');
+        // print(place.subThoroughfare ?? '');
+        print(place.thoroughfare ?? '');
+        print(place.subLocality ?? '');
+        print(place.locality ?? '');
+        print(place.administrativeArea ?? '');
+        print(place.country ?? '');
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  bool ischecked = false;
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +146,7 @@ class _MyHomePageState extends State<AddressDetails> {
           ),
         ),
         title: Text(
-          'Address Details',
+          'Pickup Address Details',
           style: primaryfont.copyWith(
               fontSize: 20.sp,
               color: AppColors.kwhite,
@@ -109,7 +163,6 @@ class _MyHomePageState extends State<AddressDetails> {
             child: Container(
               height: size.height,
               width: size.width,
-              color: Colors.yellow,
               child: GoogleMap(
                 initialCameraPosition: _initialPosition,
                 markers: _markers,
@@ -121,8 +174,8 @@ class _MyHomePageState extends State<AddressDetails> {
             ),
           ),
           DraggableScrollableSheet(
-            initialChildSize: 0.4,
-            minChildSize: 0.4,
+            initialChildSize: 0.3,
+            minChildSize: 0.3,
             maxChildSize: 1.0,
             builder: (BuildContext context, ScrollController scrollController) {
               return Container(
@@ -167,19 +220,24 @@ class _MyHomePageState extends State<AddressDetails> {
                               color: AppColors.kwhite,
                             ),
                             child: TextFormField(
-                                // controller: parcelitemController,
-                                decoration: InputDecoration(
-                                    hintText: 'Enter postal code',
-                                    hintStyle: primaryfont.copyWith(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        width: 1,
-                                        color: Color(0xff444444),
-                                      ),
-                                    ))),
+                              maxLines: 1,
+                              minLines: 1,
+                              controller: _postalCodeController,
+                              decoration: InputDecoration(
+                                hintText: 'Enter address',
+                                hintStyle: primaryfont.copyWith(
+                                    fontSize: 14, fontWeight: FontWeight.w500),
+                                contentPadding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: const BorderSide(
+                                    width: 1,
+                                    color: Color(0xff444444),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                           ksizedbox20,
                           Text(
@@ -197,7 +255,7 @@ class _MyHomePageState extends State<AddressDetails> {
                               color: AppColors.kwhite,
                             ),
                             child: TextFormField(
-                                // controller: parcelitemController,
+                                controller: _blockUnitController,
                                 decoration: InputDecoration(
                                     hintText: 'Enter Block no / Unit no',
                                     hintStyle: primaryfont.copyWith(
@@ -213,7 +271,7 @@ class _MyHomePageState extends State<AddressDetails> {
                           ),
                           ksizedbox20,
                           Text(
-                            "Customer Name",
+                            "Sender Name",
                             style: primaryfont.copyWith(
                                 fontSize: 17,
                                 color: Colors.black,
@@ -227,15 +285,45 @@ class _MyHomePageState extends State<AddressDetails> {
                               color: AppColors.kwhite,
                             ),
                             child: TextFormField(
-                                // controller: parcelitemController,
+                                controller: _senderNameController,
                                 decoration: InputDecoration(
-                                    hintText: 'Enter postal code',
+                                    hintText: 'Enter Sender Name',
                                     hintStyle: primaryfont.copyWith(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w500),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10),
                                       borderSide: BorderSide(
+                                        width: 1,
+                                        color: Color(0xff444444),
+                                      ),
+                                    ))),
+                          ),
+                          ksizedbox20,
+                          Text(
+                            "Receiver Name",
+                            style: primaryfont.copyWith(
+                                fontSize: 17,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          ksizedbox5,
+                          Container(
+                            height: 45,
+                            width: size.width,
+                            decoration: BoxDecoration(
+                              color: AppColors.kwhite,
+                            ),
+                            child: TextFormField(
+                                controller: _receiverNameController,
+                                decoration: InputDecoration(
+                                    hintText: 'Enter Receiver Name',
+                                    hintStyle: primaryfont.copyWith(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: const BorderSide(
                                         width: 1,
                                         color: Color(0xff444444),
                                       ),
@@ -257,7 +345,7 @@ class _MyHomePageState extends State<AddressDetails> {
                               color: AppColors.kwhite,
                             ),
                             child: TextFormField(
-                                // controller: parcelitemController,
+                                controller: _phoneNumberController,
                                 decoration: InputDecoration(
                                     hintText: 'Enter Phone Number',
                                     hintStyle: primaryfont.copyWith(
@@ -271,10 +359,46 @@ class _MyHomePageState extends State<AddressDetails> {
                                       ),
                                     ))),
                           ),
-                          ksizedbox30,
+                          ksizedbox20,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  setState(
+                                    () {
+                                      ischecked = !ischecked;
+                                    },
+                                  );
+                                },
+                                child: Container(
+                                  height: 20.h,
+                                  width: 20.w,
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          width: 1, color: AppColors.kblue),
+                                      borderRadius: BorderRadius.circular(5)),
+                                  child: ischecked == true
+                                      ? Image.asset("assets/icons/7-Check.png")
+                                      : Text(""),
+                                ),
+                              ),
+                              Ksizedboxw10,
+                              Text(
+                                "Save Address",
+                                style: primaryfont.copyWith(
+                                    fontSize: 14.sp,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w600),
+                              ),
+                            ],
+                          ),
+                          ksizedbox20,
                           InkWell(
                               onTap: () {
-                                Get.back();
+                                // await _fetchAddress();
+                                Get.to(PackageSendScreen(
+                                    pickupAdress: _postalCodeController.text));
                               },
                               child: CommonContainer(
                                 name: 'Confirm',

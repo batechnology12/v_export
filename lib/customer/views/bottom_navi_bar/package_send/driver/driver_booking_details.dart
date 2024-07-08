@@ -324,7 +324,7 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
                                         decoration: BoxDecoration(
                                             color: Colors.grey.shade200,
                                             borderRadius:
-                                                BorderRadius.circular(5)),
+                                                BorderRadius.circular(10)),
                                         child: TextField(
                                           controller: couponController,
                                           decoration: InputDecoration(
@@ -333,9 +333,9 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
                                                     bottom: 9),
                                                 child: Container(
                                                   height: 40.h,
-                                                  width: 100.w,
+                                                  width: 90.w,
                                                   decoration: BoxDecoration(
-                                                      color: Colors.black,
+                                                      color: AppColors.kblue,
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               12)),

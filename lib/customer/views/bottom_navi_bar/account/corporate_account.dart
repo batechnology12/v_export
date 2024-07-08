@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
 import 'package:v_export/constant/common_container.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/bottomn_navi_bar.dart';
 
 class CorporateAccount extends StatefulWidget {
   const CorporateAccount({super.key});
@@ -252,7 +253,7 @@ class _CorporateAccountState extends State<CorporateAccount> {
                         ),
                         ksizedbox20,
                         Text(
-                          'Email',
+                          'Business Email',
                           style: primaryfont.copyWith(
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w500,

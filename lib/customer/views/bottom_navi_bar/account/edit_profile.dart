@@ -6,6 +6,7 @@ import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
 import 'package:v_export/constant/common_container.dart';
 import 'package:v_export/customer/controller/account_controller.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/bottomn_navi_bar.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({super.key});
@@ -19,7 +20,7 @@ class _EditProfileState extends State<EditProfile> {
   var nameController = TextEditingController();
   var mobileController = TextEditingController();
   var emailController = TextEditingController();
-
+  var addressController = TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -39,10 +40,9 @@ class _EditProfileState extends State<EditProfile> {
       nameController.text = accountController.getUserData!.firstName;
       mobileController.text = accountController.getUserData!.phone;
       emailController.text = accountController.getUserData!.email;
+      //  addressController.text = accountController.getUserData!.addresses;
     }
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -153,6 +153,7 @@ class _EditProfileState extends State<EditProfile> {
                           decoration: BoxDecoration(color: AppColors.kwhite),
                           child: TextFormField(
                             controller: nameController,
+                            textCapitalization: TextCapitalization.words,
                             validator: (value) {
                               if (value == null) {
                                 return 'Please Enter Name';
@@ -288,6 +289,56 @@ class _EditProfileState extends State<EditProfile> {
                             ),
                           ),
                         ),
+                        ksizedbox20,
+                        // Text(
+                        //   'Address',
+                        //   style: primaryfont.copyWith(
+                        //       fontSize: 14.sp,
+                        //       fontWeight: FontWeight.w500,
+                        //       color: Color(0xff455A64)),
+                        // ),
+                        // ksizedbox10,
+                        // Container(
+                        //   height: 45.h,
+                        //   width: size.width,
+                        //   decoration: BoxDecoration(color: AppColors.kwhite),
+                        //   child: TextFormField(
+                        //     controller: addressController,
+                        //     validator: (value) {
+                        //       if (value == null) {
+                        //         return 'Please Enter Address';
+                        //       }
+                        //       return null; // Return null if the input is valid
+                        //     },
+                        //     decoration: InputDecoration(
+                        //       hintText: 'Enter Address',
+                        //       hintStyle: primaryfont.copyWith(
+                        //           fontSize: 13.sp,
+                        //           fontWeight: FontWeight.w500,
+                        //           color: Color(0xff455A64)),
+                        //       border: OutlineInputBorder(
+                        //         borderRadius: BorderRadius.circular(10),
+                        //         borderSide: BorderSide(
+                        //           width: 1,
+                        //           color: Color(0xff5C5C5C),
+                        //         ),
+                        //       ),
+                        //       enabledBorder: OutlineInputBorder(
+                        //         borderRadius: BorderRadius.circular(10),
+                        //         borderSide: BorderSide(
+                        //           width: 1,
+                        //           color: Color(0xff5C5C5C),
+                        //         ),
+                        //       ),
+                        //       focusedBorder: OutlineInputBorder(
+                        //         borderRadius: BorderRadius.circular(10),
+                        //         borderSide: const BorderSide(
+                        //           width: 1,
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),

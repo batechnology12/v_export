@@ -62,6 +62,8 @@ dependencies:
   dio: ^5.4.3+1
   shared_preferences: ^2.2.3
   rounded_loading_button: ^2.1.0
+  shimmer: ^3.0.0
+  geocoding: ^3.0.0
   
 
   
@@ -82,7 +84,7 @@ dev_dependencies:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/icons/logo.png"
+  image_path: "assets/icons/logo1.png"
   remove_alpha_ios: true
 # The following section is specific to Flutter packages.
 flutter:

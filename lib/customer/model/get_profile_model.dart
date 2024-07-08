@@ -200,6 +200,7 @@ class UserData {
         media: List<String>.from(json["media"].map((x) => x)),
       );
 
+
   Map<String, dynamic> toJson() => {
         "id": id,
         "first_name": firstName,

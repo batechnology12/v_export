@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:v_export/customer/model/get_profile_model.dart';
-import 'package:v_export/customer/services/network/Account_api_service.dart/edit_profile_api_service.dart';
+import 'package:v_export/customer/services/network/Account_api_service/edit_profile_api_service.dart';
 
 class AccountController extends GetxController {
   ProfileApiServices profileApiServices = ProfileApiServices();

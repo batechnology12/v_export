@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,7 +10,9 @@ import 'package:v_export/customer/controller/account_controller.dart';
 import 'package:v_export/customer/controller/auth_controller.dart';
 import 'package:v_export/customer/controller/home_controller.dart';
 import 'package:v_export/customer/controller/home_screen_controller.dart';
+import 'package:v_export/customer/controller/parcel_controller.dart';
 import 'package:v_export/customer/splash/splash_screen.dart';
+import 'package:v_export/customer/views/auth/login/login_screen.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/account/account.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/bottomn_navi_bar.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/booking_sucessfully_screen.dart';
@@ -21,17 +25,19 @@ import 'package:device_preview/device_preview.dart';
 
 void main() {
   runApp(const MyApp());
-//   runApp(
-//     DevicePreview(
-//       enabled: !kReleaseMode,
-//       builder: (context) => MyApp(),
-//     ),
-//  );
+  // runApp(
+  //   DevicePreview(
+  //     enabled: !kReleaseMode,
+  //     builder: (context) => MyApp(),
+  //   ),
+  // );
+
   Get.put(AuthController());
   Get.put(HomeController());
   Get.put(AccountController());
   Get.put(HomeScreenController());
   Get.put(EasebuszzController());
+  Get.put(ParcelController());
 }
 
 class MyApp extends StatelessWidget {
@@ -46,7 +52,7 @@ class MyApp extends StatelessWidget {
       ),
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'V Export',
+        title: 'VEELGO BOOKING',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
           useMaterial3: true,

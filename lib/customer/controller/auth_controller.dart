@@ -160,11 +160,11 @@ class AuthController extends GetxController {
     print(response.data);
     loginLoading(false);
     if (response.data["status"] == true) {
-      AppSnackBar.showSnackbar(
-        headText: response.data['message'],
-        content: "Signing in...",
-        position: SnackPosition.BOTTOM,
-      );
+      // AppSnackBar.showSnackbar(
+      //   headText: response.data['message'],
+      //   content: "Signing in...",
+      //   position: SnackPosition.BOTTOM,
+      // );
       Get.offAll(BottomNavigationScreen());
       print("----auth_token-------------");
       print(response.data["data"]["token"]);
@@ -274,28 +274,28 @@ class AuthController extends GetxController {
 
   // RxBool isLoading = false.obs;
 
-  void personalAccount({
-    required String type,
-    required String name,
-    required String email,
-    required String mobile,
-    required String password,
-    required String confirmPassword,
-  }) {
-    StartupServices.networkProvider!.getCommonnormalcell(AppPath.register, {
-      "type": type,
-      "name": name,
-      "email": email,
-      "mobile": mobile,
-      "password": password,
-      "password_confirmation": confirmPassword
-    }).then((value) {
-      Get.log("response ${value.body}");
-      if (value.statusCode == 200) {
-        print("TRUE");
-      } else {
-        print("FALSE");
-      }
-    });
-  }
+  // void personalAccount({
+  //   required String type,
+  //   required String name,
+  //   required String email,
+  //   required String mobile,
+  //   required String password,
+  //   required String confirmPassword,
+  // }) {
+  //   StartupServices.networkProvider!.getCommonnormalcell(AppPath.register, {
+  //     "type": type,
+  //     "name": name,
+  //     "email": email,
+  //     "mobile": mobile,
+  //     "password": password,
+  //     "password_confirmation": confirmPassword
+  //   }).then((value) {
+  //     Get.log("response ${value.body}");
+  //     if (value.statusCode == 200) {
+  //       print("TRUE");
+  //     } else {
+  //       print("FALSE");
+  //     }
+  //   });
+  // }
 }

@@ -16,7 +16,6 @@ class BookingDetailsScreen extends StatefulWidget {
 }
 
 class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
-  
   var couponController = TextEditingController();
 
   final easebuzzController = Get.find<EasebuszzController>();
@@ -365,7 +364,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                         decoration: BoxDecoration(
                                             color: Colors.grey.shade200,
                                             borderRadius:
-                                                BorderRadius.circular(5)),
+                                                BorderRadius.circular(10)),
                                         child: TextField(
                                           controller: couponController,
                                           decoration: InputDecoration(
@@ -373,10 +372,10 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                                 padding: const EdgeInsets.only(
                                                     bottom: 9),
                                                 child: Container(
-                                                  height: 40.h,
-                                                  width: 100.w,
+                                                  height: 38.h,
+                                                  width: 80.w,
                                                   decoration: BoxDecoration(
-                                                      color: Colors.black,
+                                                      color: AppColors.kblue,
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               12)),

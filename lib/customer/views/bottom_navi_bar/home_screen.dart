@@ -1,15 +1,18 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:date_format/date_format.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dash/flutter_dash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:svg_flutter/svg_flutter.dart';
 import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
 import 'package:v_export/customer/controller/home_controller.dart';
 import 'package:v_export/customer/controller/home_screen_controller.dart';
+import 'package:v_export/customer/controller/parcel_controller.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/book_vehicle/book_vehicle_screen.dart';
 import 'package:v_export/customer/views/notification/notification_view.dart';
 
@@ -30,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final homeController = Get.find<HomeController>();
   HomeScreenController homeScreenController = Get.find<HomeScreenController>();
+  ParcelController parcelController = Get.find<ParcelController>();
   final CarouselController controller = CarouselController();
 
   List carosalimage = [
@@ -38,19 +42,30 @@ class _HomeScreenState extends State<HomeScreen> {
     'assets/images/banners.png',
   ];
 
+  String formateTimePickAddress = "";
+  String formateTimeDropAddress = "";
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _pageController = PageController(initialPage: 0);
-    homeScreenController.getSlider();
+    getData();
   }
 
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
+  getData() async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await homeScreenController.getSlider();
+      await parcelController.getonGoingOrders();
+      homeScreenController.update();
+    });
   }
+
+  // @override
+  // void dispose() {
+  //   _pageController.dispose();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -107,34 +122,93 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               ksizedbox10,
-              CarouselSlider(
-                items: homeScreenController.sliderData
-                    .map((item) => ClipRRect(
-                          borderRadius: BorderRadius.circular(15),
-                          child: Container(
-                            width: 450.0,
-                            height: 200.0,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15)),
-                            child: Image.network(
-                              item.image,
-                              fit: BoxFit.cover,
+              Obx(() {
+                return homeScreenController.sliderLoading.isTrue
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(
+                            width: 20.w,
+                            height: 170.h,
+                            child: Shimmer.fromColors(
+                              baseColor: Colors.grey.shade300,
+                              highlightColor: Colors.grey.shade300,
+                              child: Container(
+                                width: 20.0,
+                                height: 170.0,
+                                decoration: const BoxDecoration(
+                                    color: Colors.grey,
+                                    borderRadius: BorderRadius.only(
+                                        topRight: Radius.circular(15),
+                                        bottomRight: Radius.circular(15))),
+                              ),
                             ),
                           ),
-                        ))
-                    .toList(),
-                carouselController: controller,
-                options: CarouselOptions(
-                    height: 160.h,
-                    autoPlay: true,
-                    enlargeCenterPage: true,
-                    aspectRatio: 4.0,
-                    onPageChanged: (index, reason) {
-                      setState(() {
-                        _current = index;
-                      });
-                    }),
-              ),
+                          SizedBox(
+                            width: 300.w,
+                            height: 170.h,
+                            child: Shimmer.fromColors(
+                              baseColor: Colors.grey.shade300,
+                              highlightColor: Colors.white,
+                              child: Container(
+                                width: 300.0,
+                                height: 170.0,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey,
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 20.w,
+                            height: 170.h,
+                            child: Shimmer.fromColors(
+                              baseColor: Colors.grey.shade300,
+                              highlightColor: Colors.grey.shade300,
+                              child: Container(
+                                width: 20.0,
+                                height: 170.0,
+                                decoration: const BoxDecoration(
+                                    color: Colors.grey,
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(15),
+                                        bottomLeft: Radius.circular(15))),
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    : CarouselSlider(
+                        items: homeScreenController.sliderData
+                            .map((item) => ClipRRect(
+                                  borderRadius: BorderRadius.circular(15),
+                                  child: Container(
+                                    width: 450.0,
+                                    height: 200.0,
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(15)),
+                                    child: Image.network(
+                                      item.image,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ))
+                            .toList(),
+                        carouselController: controller,
+                        options: CarouselOptions(
+                            height: 160.h,
+                            autoPlay: true,
+                            enlargeCenterPage: true,
+                            aspectRatio: 4.0,
+                            onPageChanged: (index, reason) {
+                              setState(() {
+                                _current = index;
+                              });
+                            }),
+                      );
+              }),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: homeScreenController.sliderData.asMap().entries.map(
@@ -165,7 +239,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   InkWell(
                     onTap: () {
-                      Get.to(PackageSendScreen());
+                      Get.to(PackageSendScreen(pickupAdress: "pickup",));
                     },
                     child: Container(
                       alignment: Alignment.center,
@@ -188,7 +262,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           InkWell(
                             onTap: () {
-                              Get.to(PackageSendScreen());
+                              Get.to(PackageSendScreen(
+                                pickupAdress: "pickup",
+                              ));
                             },
                             child: Container(
                               alignment: Alignment.center,
@@ -226,7 +302,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           Image.asset('assets/icons/Group.png'),
                           Text(
-                            'Book Vehicle',
+                            'Moving Vehicle',
                             style: secondoryfont.copyWith(
                                 fontSize: 16.sp,
                                 color: AppColors.kwhite,
@@ -234,7 +310,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           InkWell(
                             onTap: () {
-                              Get.to(PackageSendScreen());
+                              Get.to(BookVehicleScreen());
                             },
                             child: Container(
                               alignment: Alignment.center,
@@ -296,166 +372,217 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: AppColors.kwhite),
                 child: Padding(
                     padding: EdgeInsets.only(left: 7, right: 7, top: 10),
-                    child: ListView.builder(
-                        padding: EdgeInsets.zero,
-                        physics: NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: 2,
-                        itemBuilder: (context, index) {
-                          return Container(
-                            padding: EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              color: Colors.grey.withOpacity(.09),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            margin: EdgeInsets.only(bottom: 10),
-                            child: Column(
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Booking ID : #ZAG01',
-                                      style: primaryfont.copyWith(
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 15.5),
-                                    ),
-                                    Text(
-                                      'Booking ID : #ZAG01',
-                                      style: primaryfont.copyWith(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 14.sp),
-                                    )
-                                  ],
-                                ),
-                                Divider(),
-                                ksizedbox10,
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        const Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Icon(
-                                              Icons.location_on,
-                                              color: Color(0xff038484),
-                                            ),
-                                            Dash(
-                                                direction: Axis.vertical,
-                                                length: 60,
-                                                dashLength: 5,
-                                                dashColor: AppColors.kgrey),
-                                            Icon(
-                                              Icons.location_on,
-                                              color: Color(0xffF74354),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          width: 5.w,
-                                        ),
-                                        Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  'Pickup Address',
-                                                  style: primaryfont.copyWith(
-                                                      fontSize: 15.sp,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      color: Color(0xff455A64)),
-                                                ),
-                                                Container(
-                                                  width: 250.h,
-                                                  child: Text(
-                                                    '338 Serangoon North ave 6',
-                                                    style: primaryfont.copyWith(
-                                                        color:
-                                                            Color(0xff1E1E1E),
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        fontSize: 15.sp),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            SizedBox(
-                                              height: 40.h,
-                                            ),
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  'Drop Address',
-                                                  style: primaryfont.copyWith(
-                                                      fontSize: 15.sp,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      color: Color(0xff455A64)),
-                                                ),
-                                                Container(
-                                                  width: 250.h,
-                                                  child: Text(
-                                                    '338 Serangoon North ave 6',
-                                                    style: primaryfont.copyWith(
-                                                        color:
-                                                            Color(0xff1E1E1E),
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        fontSize: 15.sp),
-                                                  ),
-                                                ),
-                                              ],
-                                            )
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        Container(
-                                          height: size.height * .12,
-                                          child: Column(
+                    child: GetBuilder<ParcelController>(builder: (_) {
+                      return ListView.builder(
+                          padding: EdgeInsets.zero,
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: parcelController.ongoingOrdersData.length,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              padding: EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.withOpacity(.09),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              margin: EdgeInsets.only(bottom: 10),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Ongoing Order',
+                                        style: primaryfont.copyWith(
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 15.sp),
+                                      ),
+                                      Text(
+                                        parcelController
+                                            .ongoingOrdersData[index].bookingId,
+                                        style: primaryfont.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 14.sp),
+                                      )
+                                    ],
+                                  ),
+                                  Divider(),
+                                  ksizedbox10,
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          const Column(
                                             mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
+                                                MainAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                '2:30 PM',
-                                                style: primaryfont.copyWith(
-                                                    fontSize: 13,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Color(0xff455A64)),
+                                              Icon(
+                                                Icons.location_on,
+                                                color: Color(0xff038484),
                                               ),
-                                              Text(
-                                                '5:30 PM',
-                                                style: primaryfont.copyWith(
-                                                    fontSize: 13,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Color(0xff455A64)),
+                                              Dash(
+                                                  direction: Axis.vertical,
+                                                  length: 60,
+                                                  dashLength: 5,
+                                                  dashColor: AppColors.kgrey),
+                                              Icon(
+                                                Icons.location_on,
+                                                color: Color(0xffF74354),
                                               ),
                                             ],
                                           ),
-                                        )
-                                      ],
-                                    )
-                                  ],
-                                ),
-                                ksizedbox10,
-                              ],
-                            ),
-                          );
-                        })),
+                                          SizedBox(
+                                            width: 5.w,
+                                          ),
+                                          Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    'Pickup Address',
+                                                    style: primaryfont.copyWith(
+                                                        fontSize: 15.sp,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        color:
+                                                            Color(0xff455A64)),
+                                                  ),
+                                                  Container(
+                                                    width: 250.h,
+                                                    child: Text(
+                                                      parcelController
+                                                          .ongoingOrdersData[
+                                                              index]
+                                                          .fromAddress
+                                                          .first
+                                                          .address,
+                                                      style:
+                                                          primaryfont.copyWith(
+                                                              color: const Color(
+                                                                  0xff1E1E1E),
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              fontSize: 15.sp),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              SizedBox(
+                                                height: 40.h,
+                                              ),
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    'Drop Address',
+                                                    style: primaryfont.copyWith(
+                                                        fontSize: 15.sp,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        color:
+                                                            Color(0xff455A64)),
+                                                  ),
+                                                  Container(
+                                                    width: 250.h,
+                                                    child: Text(
+                                                      parcelController
+                                                          .ongoingOrdersData[
+                                                              index]
+                                                          .bookingDeliveryAddresses
+                                                          .last
+                                                          .address,
+                                                      style:
+                                                          primaryfont.copyWith(
+                                                              color: const Color(
+                                                                  0xff1E1E1E),
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              fontSize: 15.sp),
+                                                    ),
+                                                  ),
+                                                ],
+                                              )
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            height: size.height * .12,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(
+                                                  formateTimePickAddress =
+                                                      formatDate(
+                                                          parcelController
+                                                              .ongoingOrdersData[
+                                                                  index]
+                                                              .fromAddress
+                                                              .first
+                                                              .createdAt,
+                                                          [
+                                                        HH,
+                                                        ':',
+                                                        nn,
+                                                        " ",
+                                                        am
+                                                      ]),
+                                                  style: primaryfont.copyWith(
+                                                      fontSize: 13,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color: const Color(
+                                                          0xff455A64)),
+                                                ),
+                                                Text(
+                                                  formateTimePickAddress =
+                                                      formatDate(
+                                                          parcelController
+                                                              .ongoingOrdersData[
+                                                                  index]
+                                                              .bookingDeliveryAddresses
+                                                              .last
+                                                              .createdAt,
+                                                          [
+                                                        HH,
+                                                        ':',
+                                                        nn,
+                                                        " ",
+                                                        am
+                                                      ]),
+                                                  style: primaryfont.copyWith(
+                                                      fontSize: 13,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color: Color(0xff455A64)),
+                                                ),
+                                              ],
+                                            ),
+                                          )
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                  ksizedbox10,
+                                ],
+                              ),
+                            );
+                          });
+                    })),
               ),
               ksizedbox10,
             ],

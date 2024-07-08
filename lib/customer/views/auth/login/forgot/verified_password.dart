@@ -184,42 +184,48 @@ class _VerifiedPasswordScreenState extends State<VerifiedPasswordScreen> {
           height: 70.h,
           child: Column(
             children: [
-              authController.verificationOtpLoading.isTrue
-                  ? Container(
-                      height: 50.h,
-                      width: size.width,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(30)),
-                      child: const Center(
-                          child: CircularProgressIndicator(
-                        color: AppColors.kblue,
-                      )),
-                    )
-                  : InkWell(
-                      onTap: () {
-                        if (formKey.currentState!.validate()) {
-                          authController.verificationOtp(
-                              widget.mobileNumber, otpController.text);
-                        }
-                      },
-                      child: Container(
-                        height: 50.h,
-                        width: size.width,
-                        decoration: BoxDecoration(
+              Obx(() {
+                return Container(
+                  height: 50.h,
+                  width: MediaQuery.of(context).size.width,
+                  child: authController.verificationOtpLoading.isTrue
+                      ? Container(
+                          height: 50.h,
+                          width: size.width,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(30)),
+                          child: const Center(
+                              child: CircularProgressIndicator(
                             color: AppColors.kblue,
-                            borderRadius: BorderRadius.circular(30)),
-                        child: Center(
-                          child: Text(
-                            'Verify',
-                            style: primaryfont.copyWith(
-                                fontSize: 18.sp,
-                                fontWeight: FontWeight.w500,
-                                color: AppColors.kwhite),
+                          )),
+                        )
+                      : InkWell(
+                          onTap: () {
+                            if (formKey.currentState!.validate()) {
+                              authController.verificationOtp(
+                                  widget.mobileNumber, otpController.text);
+                            }
+                          },
+                          child: Container(
+                            height: 50.h,
+                            width: size.width,
+                            decoration: BoxDecoration(
+                                color: AppColors.kblue,
+                                borderRadius: BorderRadius.circular(30)),
+                            child: Center(
+                              child: Text(
+                                'Verify',
+                                style: primaryfont.copyWith(
+                                    fontSize: 18.sp,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.kwhite),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
+                );
+              }),
             ],
           ),
         ),

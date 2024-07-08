@@ -41,13 +41,9 @@ class _LoginScreenState extends State<LoginScreen> {
   var passwordController = TextEditingController();
 
   final formkey = GlobalKey<FormState>();
-  void _doSomething() async {
-    // Simulate a time-consuming task, e.g., network request
-    await Future.delayed(Duration(seconds: 3));
 
-    // On success, stop the loading animation and show a success icon
-    _btnController.success();
-  }
+  int selectedIndex = 0;
+  String selectedValues = "+65";
 
   void _onLoginPressed() {
     if (formkey.currentState!.validate()) {
@@ -140,27 +136,72 @@ class _LoginScreenState extends State<LoginScreen> {
                             height: 20.h,
                           ),
                           Text(
-                            'Mobile Number or Email ID*',
+                            'Mobile Number',
                             style: primaryfont.copyWith(
                                 color: Color(0xff7C86A2), fontSize: 15.sp),
                           ),
                           ksizedbox5,
                           TextFormField(
-                            keyboardType: TextInputType.emailAddress,
+                            keyboardType: TextInputType.phone,
+                           
                             inputFormatters: [
-                              LengthLimitingTextInputFormatter(10),
+                              selectedValues == "+65"
+                                  ? LengthLimitingTextInputFormatter(8)
+                                  : LengthLimitingTextInputFormatter(10),
+                              FilteringTextInputFormatter.digitsOnly,
                             ],
-                            validator: (value) {
-                              if (value!.length < 10 || value.length > 10) {
-                                return 'Mobile number should be in 10 digits';
-                              } else {
-                                return null;
-                              }
-                            },
+                            validator: selectedValues == "+65"
+                                ? (value) {
+                                    if (value!.length < 8 || value.length > 8) {
+                                      return 'Mobile number should be in 8 digits';
+                                    } else {
+                                      return null;
+                                    }
+                                  }
+                                : (value) {
+                                    if (value!.length < 10 ||
+                                        value.length > 10) {
+                                      return 'Mobile number should be in 10 digits';
+                                    } else {
+                                      return null;
+                                    }
+                                  },
                             controller: emailOrmobileController,
                             decoration: InputDecoration(
-                              errorStyle:
-                                  primaryfont.copyWith(color: Colors.red),
+                              prefixIcon: Padding(
+                                  padding:
+                                      const EdgeInsets.only(left: 10, top: 13),
+                                  child: PopupMenuButton(
+                                    child: Container(
+                                        height: 30,
+                                        width: 50,
+                                        child: Text(selectedValues)),
+                                    onSelected: (value) {
+                                      setState(() {
+                                        selectedIndex = value;
+                                        selectedValues =
+                                            value == 0 ? "+65" : "+91";
+                                      });
+                                    },
+                                    itemBuilder: (context) => [
+                                      PopupMenuItem<int>(
+                                        value: 0,
+                                        child: Container(
+                                          height: 30,
+                                          width: 50,
+                                          child: Text("+65"),
+                                        ),
+                                      ),
+                                      PopupMenuItem<int>(
+                                        value: 1,
+                                        child: Container(
+                                          height: 30,
+                                          width: 50,
+                                          child: Text("+91"),
+                                        ),
+                                      ),
+                                    ],
+                                  )),
                               contentPadding:
                                   EdgeInsets.only(bottom: 5, left: 20),
                               fillColor: Color(0xffF8F8F8),
@@ -314,21 +355,17 @@ class _LoginScreenState extends State<LoginScreen> {
                               height: 50.h,
                               width: MediaQuery.of(context).size.width,
                               child: authController.loginLoading.isTrue
-                                  ? RoundedLoadingButton(
-                                      controller: _btnController,
-                                      onPressed: _onLoginPressed,
-                                      child: Text(
-                                        'Login',
-                                        style: TextStyle(
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.w500,
+                                  ? Container(
+                                      height: 50.h,
+                                      width: size.width,
+                                      decoration: BoxDecoration(
                                           color: Colors.white,
-                                        ),
-                                      ),
-                                      color: Colors.blue,
-                                      successIcon: Icons.check,
-                                      successColor: Colors.green,
-                                      errorColor: Colors.red,
+                                          borderRadius:
+                                              BorderRadius.circular(30)),
+                                      child: Center(
+                                          child: CircularProgressIndicator(
+                                        color: AppColors.kblue,
+                                      )),
                                     )
                                   : GestureDetector(
                                       onTap: _onLoginPressed,
@@ -341,7 +378,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           borderRadius:
                                               BorderRadius.circular(30),
                                         ),
-                                        child: Center(
+                                        child: const Center(
                                           child: Text(
                                             'Login',
                                             style: TextStyle(
@@ -388,7 +425,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ]),
                               ),
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ),

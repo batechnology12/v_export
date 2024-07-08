@@ -1,6 +1,6 @@
 abstract class BaseApiServices {
   String baseUrl = "https://veelgo.digitaldatatechnologia.in/api/";
-  
+
   String get registerPersonalAccoutUrl => "${baseUrl}register";
   String get registerPersonalOtpUrl => "${baseUrl}verify_otp";
   String get registerBusinessOtpUrl => "${baseUrl}verify_otp";
@@ -12,8 +12,13 @@ abstract class BaseApiServices {
   String get getProfileUrl => "${baseUrl}getProfile";
   String get getSliderList => "${baseUrl}get_slider";
   String get updatePasswordUrl => "${baseUrl}updatePassword";
-
   String get notificationUrl => "${baseUrl}notifications";
+  String get ongoingOrderUrl => "${baseUrl}ongoing_booking";
+  String get addBookingParcelUrl => "${baseUrl}store_booking";
+  
+
+  String get getBookingUrl => "${baseUrl}get_booking";
+  String get addAddressUrl => "${baseUrl}add_address";
 }
 
 class AppPath {

@@ -11,6 +11,7 @@ import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:v_export/constant/common_container.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/bottomn_navi_bar.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/arrived_destination.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/cancel_booking.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/driver_about_details.dart';
@@ -39,14 +40,16 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
   }
 
   void _initLocationAndRedirect() async {
-    _getLocation();
-    redirectToNextScreen();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _getLocation();
+      popUp1();
+    });
   }
 
-  redirectToNextScreen() async {
-    await Future.delayed(Duration(seconds: 2));
-    Get.to(ArrivedDestination());
-  }
+  // redirectToNextScreen() async {
+  //   await Future.delayed(Duration(seconds: 2));
+  //   Get.to(ArrivedDestination());
+  // }
 
   void _getLocation() async {
     bool _serviceEnabled;
@@ -100,7 +103,7 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
         centerTitle: true,
         leading: GestureDetector(
           onTap: () {
-            Get.back();
+            Get.to(BottomNavigationScreen());
           },
           child: const Icon(
             Icons.arrow_back_ios_new_sharp,
@@ -838,7 +841,9 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
                   SizedBox(height: 20),
                   GestureDetector(
                     onTap: () {
-                      Get.to(CancelBooking());
+                      if (isCancelBookingChecked == true) {
+                        Get.to(CancelBooking());
+                      }
                     },
                     child: Container(
                       alignment: Alignment.center,
@@ -861,6 +866,55 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
             ),
           );
         });
+      },
+    );
+  }
+
+  popUp1() {
+    return showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return FractionallySizedBox(
+          widthFactor: 1,
+          child: Container(
+            padding: EdgeInsets.only(top: 10),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topRight: Radius.circular(25),
+                topLeft: Radius.circular(25),
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SvgPicture.asset("assets/icons/arrived.svg"),
+                  ksizedbox15,
+                  Text(
+                    'Arrived At Destination',
+                    style: primaryfont.copyWith(
+                      fontSize: 21.sp,
+                      color: Color(0xff000000),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    '338 Serangoon North ave 6, 543338',
+                    style: primaryfont.copyWith(
+                      fontSize: 15.sp,
+                      color: Color(0xff1E1E1E),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
       },
     );
   }
