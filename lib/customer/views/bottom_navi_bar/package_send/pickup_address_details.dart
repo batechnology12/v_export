@@ -45,9 +45,11 @@ class _MyHomePageState extends State<PickupAddressDetails> {
   getData() async {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _getLocation();
-      await accountController.getProfile();
+      //  await accountController.getProfile();
+
       _fetchAddress();
       accountController.update();
+      setState(() {});
     });
   }
 
@@ -103,9 +105,9 @@ class _MyHomePageState extends State<PickupAddressDetails> {
             "${place.name},${place.subLocality},${place.locality},${place.postalCode}" ??
                 '';
         _blockUnitController.text = place.street ?? '';
-        _senderNameController.text = accountController.getUserData != null
-            ? accountController.getUserData!.firstName
-            : "";
+        // _senderNameController.text = accountController.getUserData != null
+        //     ? accountController.getUserData!.firstName
+        //     : "";
         _phoneNumberController.text = place.country ?? '';
 
         print("------location address");
@@ -126,6 +128,12 @@ class _MyHomePageState extends State<PickupAddressDetails> {
   }
 
   bool ischecked = false;
+
+  // getProfileData() async {
+  //   if (accountController.getUserData != null) {
+  //     _senderNameController.text = accountController.getUserData!.firstName;
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -398,7 +406,11 @@ class _MyHomePageState extends State<PickupAddressDetails> {
                               onTap: () {
                                 // await _fetchAddress();
                                 Get.to(PackageSendScreen(
-                                    pickupAdress: _postalCodeController.text));
+                                  unitIdBlockID: [_blockUnitController.text],
+                                  pickupAdress: _postalCodeController.text,
+                                  lat: _currentPosition.latitude.toString(),
+                                  long: _currentPosition.longitude.toString(),
+                                ));
                               },
                               child: CommonContainer(
                                 name: 'Confirm',

@@ -20,7 +20,7 @@ class AccountController extends GetxController {
     print(response.data);
     if (response.data["status"] == true) {
       GetUserModel getUserModel = GetUserModel.fromJson(response.data);
-      getUserData = getUserModel.data.user;
+     // getUserData = getUserData.;
       Get.rawSnackbar(
         backgroundColor: Colors.green,
         messageText: Text(

@@ -41,13 +41,13 @@ class HomeScreenController extends GetxController {
         .updatePassword(oldPassword, newPassword, newConfirmPassword);
     if (response.data["status"] == true) {
       Get.offAll(Settings());
-      Get.rawSnackbar(
-        backgroundColor: Colors.green,
-        messageText: Text(
-          response.data['message'],
-          style: TextStyle(color: Colors.white, fontSize: 15.sp),
-        ),
-      );
+      // Get.rawSnackbar(
+      //   backgroundColor: Colors.green,
+      //   messageText: Text(
+      //     response.data['message'],
+      //     style: TextStyle(color: Colors.white, fontSize: 15.sp),
+      //   ),
+      // );
       update();
     } else {
       Get.rawSnackbar(

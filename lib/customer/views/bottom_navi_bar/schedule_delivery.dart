@@ -5,20 +5,75 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:v_export/customer/controller/parcel_controller.dart';
+import 'package:v_export/customer/model/add_booking_parcel_model.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/booking_details.dart';
 import '../../../constant/app_colors.dart';
 import '../../../constant/app_font.dart';
 import '../../../constant/common_container.dart';
 
 class ScheduleDeliveryScreen extends StatefulWidget {
-  const ScheduleDeliveryScreen({super.key});
+  String pickuplatitude;
+  String pickuplogitude;
+  List<String> droppingLatitude;
+  List<String> droppingLogitude;
+  String bookingDate;
+  String deliverytype;
+  List<String> length;
+  List<String> width;
+  List<String> height;
+  List<String> kg;
+  List<String> qty;
+  List<String> parcelItems;
+  List<String> unitIdBlockId;
+  String? pickTimeFrom;
+  String? pickTimeTo;
+  List<String> pickTimeListFrom;
+  List<String> pickTimeListTo;
+
+  ScheduleDeliveryScreen({
+    super.key,
+    required this.pickuplatitude,
+    required this.pickuplogitude,
+    required this.droppingLatitude,
+    required this.droppingLogitude,
+    required this.bookingDate,
+    required this.deliverytype,
+    required this.length,
+    required this.width,
+    required this.height,
+    required this.kg,
+    required this.qty,
+    required this.parcelItems,
+    required this.pickTimeFrom,
+    required this.pickTimeTo,
+    required this.pickTimeListFrom,
+    required this.pickTimeListTo,
+    required this.unitIdBlockId,
+  });
 
   @override
   State<ScheduleDeliveryScreen> createState() => _ScheduleDeliveryScreenState();
 }
 
 class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
+  @override
+  void initState() {
+    super.initState();
+    getData();
+  }
 
+  getData() async {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      parcelController.getAdditionalServices();
+      parcelController.update();
+      setState(() {});
+    });
+  }
+
+  List<int> selectedId = [];
+
+  ParcelController parcelController = Get.find<ParcelController>();
   bool ischeck = false;
   bool manpowercheck = false;
   bool postinvoicecheck = false;
@@ -29,41 +84,40 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
 
   DateTime selectedDate = DateTime.now();
 
-  TimeOfDay pickTime = TimeOfDay.now();
-  TimeOfDay dropTime = TimeOfDay.now();
-  String pickingTime = "";
-  String dropingTime = "";
+  TimeOfDay pickTimes = TimeOfDay.now();
+  TimeOfDay dropTimes = TimeOfDay.now();
+  String pickingTimes = "";
+  String dropingTimes = "";
 
   Future displayTimePicker(BuildContext context) async {
     var time = await showTimePicker(
       context: context,
-      initialTime: pickTime,
+      initialTime: pickTimes,
       initialEntryMode: TimePickerEntryMode.input,
     );
 
     if (time != null) {
       setState(() {
-        pickTime = time;
-        // pickuptimeController.text = TextEditingValue(text:dropingTime.toString()),
+        pickTimes = time;
       });
 
-      print(pickTime);
+      print(pickTimes);
     }
   }
 
   Future dropTimePicker(BuildContext context) async {
     var times = await showTimePicker(
       context: context,
-      initialTime: pickTime,
+      initialTime: pickTimes,
       initialEntryMode: TimePickerEntryMode.input,
     );
 
     if (times != null) {
       setState(() {
-        dropTime = times;
+        dropTimes = times;
       });
 
-      print(dropTime);
+      print(dropTimes);
     }
   }
 
@@ -72,11 +126,11 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
   var parcelsizeController = TextEditingController();
   var parcelkgController = TextEditingController();
   var numberofparcelController = TextEditingController();
-  var parcelitemController = TextEditingController();
+  var notesController = TextEditingController();
   var pickuptimeController = TextEditingController();
   var fromtimeController = TextEditingController();
   var totimeController = TextEditingController();
-  
+
   String formatDateTime = "";
 
   Future<Null> selectDate(BuildContext context) async {
@@ -89,42 +143,8 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
       setState(() {
         selectedDate = picked;
         formatDateTime = formatDate(selectedDate, [dd, '-', mm, '-', yyyy]);
-        // deliverydateController.value =
-        //     TextEditingValue(text: formatDateTime.toString());
       });
   }
-
-  // TimeOfDay toTime = TimeOfDay.now();
-
-  // void selectTime() async {
-  //   final TimeOfDay? newTimes = await showTimePicker(
-  //     context: context,
-  //     initialTime: toTime,
-  //   );
-
-  //   if (newTimes != null) {
-  //     setState(() {
-  //       toTime = newTimes;
-  //       fromtimeController.value = TextEditingValue(text: newTimes.toString());
-  //     });
-  //   }
-  // }
-
-  // TimeOfDay fromTime = TimeOfDay.now();
-
-  // void toselectTime() async {
-  //   final TimeOfDay? newTime = await showTimePicker(
-  //     context: context,
-  //     initialTime: fromTime,
-  //   );
-
-  //   if (newTime != null) {
-  //     setState(() {
-  //       fromTime = newTime;
-  //       totimeController.value = TextEditingValue(text: newTime.toString());
-  //     });
-  //   }
-  // }
 
   File? image;
   bool ImageHide = false;
@@ -251,39 +271,47 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                         color: Color(0xff455A64)),
                                   ),
                                   ksizedbox10,
-                                  Container(
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 15),
-                                      height: 50.h,
-                                      width: size.width,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        border: Border.all(
-                                          width: 1,
-                                          color: Color(0xff444444)
-                                              .withOpacity(.32),
-                                        ),
-                                        color: AppColors.kwhite,
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            formatDateTime,
-                                            style: primaryfont.copyWith(
-                                                color: Color(0xff455A64),
-                                                fontSize: 12.sp,
-                                                fontWeight: FontWeight.w500),
+                                  GestureDetector(
+                                    onTap: () {
+                                      selectDate(context);
+                                    },
+                                    child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 15),
+                                        height: 50.h,
+                                        width: size.width,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                            width: 1,
+                                            color: Color(0xff444444)
+                                                .withOpacity(.32),
                                           ),
-                                          GestureDetector(
-                                              onTap: () {
-                                                selectDate(context);
-                                              },
-                                              child: Image.asset(
-                                                  "assets/icons/date.png")),
-                                        ],
-                                      )),
+                                          color: AppColors.kwhite,
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              formatDateTime.isEmpty
+                                                  ? "Select Date"
+                                                  : formatDateTime,
+                                              style: primaryfont.copyWith(
+                                                  color: Color(0xff455A64),
+                                                  fontSize: 12.sp,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
+                                            GestureDetector(
+                                                onTap: () {
+                                                  selectDate(context);
+                                                },
+                                                child: Image.asset(
+                                                    "assets/icons/date.png")),
+                                          ],
+                                        )),
+                                  ),
                                   ksizedbox10,
                                   Text(
                                     'Delivery Timing',
@@ -297,38 +325,44 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Container(
-                                        padding: EdgeInsets.only(left: 5),
-                                        height: 50.h,
-                                        width: 130.w,
-                                        decoration: BoxDecoration(
-                                            color: AppColors.kwhite,
-                                            border: Border.all(
-                                                width: 1,
-                                                color: Colors.grey
-                                                    .withOpacity(.32)),
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              "${pickTime.hour < 10 ? "0${pickTime.hour}" : pickTime.hour}:${pickTime.minute.remainder(60) < 10 ? "0${pickTime.minute.remainder(60)}" : '${pickTime.minute.remainder(60)}'}:00"
-                                                  .toString(),
-                                              style: primaryfont.copyWith(
-                                                  fontSize: 14.sp,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Color(0xff455A64)),
-                                            ),
-                                            IconButton(
-                                                onPressed: () {
-                                                  displayTimePicker(context);
-                                                },
-                                                icon: Image.asset(
-                                                    "assets/icons/mylisticon.png",
-                                                    color: Colors.grey))
-                                          ],
+                                      GestureDetector(
+                                        onTap: () {
+                                          displayTimePicker(context);
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.only(left: 5),
+                                          height: 50.h,
+                                          width: 130.w,
+                                          decoration: BoxDecoration(
+                                              color: AppColors.kwhite,
+                                              border: Border.all(
+                                                  width: 1,
+                                                  color: Colors.grey
+                                                      .withOpacity(.32)),
+                                              borderRadius:
+                                                  BorderRadius.circular(10)),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                //   pickTimes.format(context),
+                                                "${pickTimes.hour < 10 ? "0${pickTimes.hour}" : pickTimes.hour}:${pickTimes.minute.remainder(60) < 10 ? "0${pickTimes.minute.remainder(60)}" : '${pickTimes.minute.remainder(60)}'}:00"
+                                                    .toString(),
+                                                style: primaryfont.copyWith(
+                                                    fontSize: 14.sp,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Color(0xff455A64)),
+                                              ),
+                                              IconButton(
+                                                  onPressed: () {
+                                                    displayTimePicker(context);
+                                                  },
+                                                  icon: Image.asset(
+                                                      "assets/icons/mylisticon.png",
+                                                      color: Colors.grey))
+                                            ],
+                                          ),
                                         ),
                                       ),
                                       Text(
@@ -338,39 +372,45 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                             fontWeight: FontWeight.w600,
                                             color: Color(0xff000000)),
                                       ),
-                                      Container(
-                                        padding: EdgeInsets.only(left: 5),
-                                        height: 50.h,
-                                        width: 130.w,
-                                        decoration: BoxDecoration(
-                                            color: AppColors.kwhite,
-                                            border: Border.all(
-                                                width: 1,
-                                                color: Colors.grey
-                                                    .withOpacity(.32)),
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              "${dropTime.hour < 10 ? "0${dropTime.hour}" : dropTime.hour}:${dropTime.minute.remainder(60) < 10 ? "0${dropTime.minute.remainder(60)}" : '${dropTime.minute.remainder(60)}'}:00"
-                                                  .toString(),
-                                              style: primaryfont.copyWith(
-                                                  fontSize: 14.sp,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Color(0xff455A64)),
-                                            ),
-                                            IconButton(
-                                                onPressed: () {
-                                                  dropTimePicker(context);
-                                                },
-                                                icon: Image.asset(
-                                                  "assets/icons/mylisticon.png",
-                                                  color: Colors.grey,
-                                                ))
-                                          ],
+                                      GestureDetector(
+                                        onTap: () {
+                                          dropTimePicker(context);
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.only(left: 5),
+                                          height: 50.h,
+                                          width: 130.w,
+                                          decoration: BoxDecoration(
+                                              color: AppColors.kwhite,
+                                              border: Border.all(
+                                                  width: 1,
+                                                  color: Colors.grey
+                                                      .withOpacity(.32)),
+                                              borderRadius:
+                                                  BorderRadius.circular(10)),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                //  dropTimes.format(context),
+                                                "${dropTimes.hour < 10 ? "0${dropTimes.hour}" : dropTimes.hour}:${dropTimes.minute.remainder(60) < 10 ? "0${dropTimes.minute.remainder(60)}" : '${dropTimes.minute.remainder(60)}'}:00"
+                                                    .toString(),
+                                                style: primaryfont.copyWith(
+                                                    fontSize: 14.sp,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Color(0xff455A64)),
+                                              ),
+                                              IconButton(
+                                                  onPressed: () {
+                                                    dropTimePicker(context);
+                                                  },
+                                                  icon: Image.asset(
+                                                    "assets/icons/mylisticon.png",
+                                                    color: Colors.grey,
+                                                  ))
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -561,7 +601,7 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                     child: TextFormField(
                                       textAlign: TextAlign.start,
                                       maxLines: 100,
-                                      controller: parcelitemController,
+                                      controller: notesController,
                                       decoration: InputDecoration(
                                         hintText: 'Type here notes...',
                                         hintStyle: primaryfont.copyWith(
@@ -630,14 +670,77 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                             ),
                           ),
                           ksizedbox20,
-                          InkWell(
+                          // Obx(() {
+                          //   return Container(
+                          //       height: 50.h,
+                          //       width: MediaQuery.of(context).size.width,
+                          //       child: parcelController.addBookingLoading.isTrue
+                          //           ? Container(
+                          //               height: 50.h,
+                          //               width: size.width,
+                          //               decoration: BoxDecoration(
+                          //                   color: Color(0xffF4F8FF),
+                          //                   borderRadius:
+                          //                       BorderRadius.circular(30)),
+                          //               child: Center(
+                          //                   child: CircularProgressIndicator(
+                          //                 color: AppColors.kblue,
+                          //               )),
+                          //             )
+                          //           :
+                          GestureDetector(
                               onTap: () {
-                                Get.to(BookingDetailsScreen());
+                                AddBookingParcelModel addBookingParcelModel =
+                                    AddBookingParcelModel(
+                                        latitude: widget.pickuplatitude,
+                                        longitude: widget.pickuplogitude,
+                                        latitudeList: widget.droppingLatitude,
+                                        logitudeList: widget.droppingLogitude,
+                                        bookingDate: widget.bookingDate,
+                                        deliveryTypeid: widget.deliverytype,
+                                        length: widget.length,
+                                        width: widget.width,
+                                        height: widget.height,
+                                        kg: widget.kg,
+                                        qty: widget.qty,
+                                        parcelItem: widget.parcelItems,
+                                        pickupTimeFrom: widget.pickTimeFrom,
+                                        pickupTimeTo: widget.pickTimeTo,
+                                        pickupTimeFromList:
+                                            widget.pickTimeListFrom,
+                                        pickupTimeToList: widget.pickTimeListTo,
+                                        deliveryDate: formatDateTime,
+                                        deliveryDateList: [formatDateTime],
+                                        deliveryTimeFrom: pickTimes.toString(),
+                                        deliveryTimeTo: [dropTimes.toString()],
+                                        deliveryTimeFromList: [pickTimes],
+                                        deliveryTimeToList: [dropTimes],
+                                        parcelPhoto: image,
+                                        notes: notesController.text,
+                                        customerName: ["jay"],
+                                        customerMobile: ["9876543210"],
+                                        blockNoUnitNo: ["23"],
+                                        address: ["NO.263,KCC STREET"],
+                                        postalCode: ["601002"],
+                                        distance: "30",
+                                        //     additionalDetails: "Fragile Item",
+                                        addressDeliveryTimeFromList: [
+                                          pickTimes.toString()
+                                        ],
+                                        addressDeliveryTimeToList: [
+                                          dropTimes.toString()
+                                        ],
+                                        deliveryStatus: ["Pending"],
+                                        additionalDetails: selectedId);
+                                parcelController
+                                    .addBookingParcel(addBookingParcelModel);
+                                //   Get.to(BookingDetailsScreen());
                               },
                               child: CommonContainer(
                                 name: "Booking Review",
-                              )),
-                          ksizedbox10,
+                              ))
+                          //               );
+                          // })
                         ],
                       ),
                     ),
@@ -652,23 +755,19 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
   }
 
   void showListViewDialog(BuildContext context) {
-    // List<String> list = [
-    //   "Manpower Service",
-    //   "Post Invoice (Ex, Stamp)",
-    //   "Staircase",
-    //   "OTP Verification",
-    //   "Fragile Item",
-    //   "Access restricted area"
-    // ];
+    List<String> list = [
+      "Manpower Service",
+      "Post Invoice (Ex, Stamp)",
+      "Staircase",
+      "OTP Verification",
+      "Fragile Item",
+      "Access restricted area"
+    ];
 
-    // List<bool> isCheck = List<bool>.filled(list.length, false);
-
-    // bool isCheck1 = false;
-    bool isCheck2 = false;
-    bool isCheck3 = false;
-    bool isCheck4 = false;
-    bool isCheck5 = false;
-    bool isCheck6 = false;
+    final ParcelController parcelController1 = Get.find<ParcelController>();
+    // List<bool> isCheck = [false, false, false, false, false];
+    List<bool> isCheck =
+        List<bool>.filled(parcelController.additionalServiceData.length, false);
 
     int updateValue = 0;
     int maxValue = 3;
@@ -712,422 +811,149 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
       context: context,
       builder: (BuildContext context) {
         return StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-          return AlertDialog(
-            insetPadding: EdgeInsets.all(10),
-            scrollable: false,
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      'Additional Services',
-                      style: primaryfont.copyWith(
-                          fontSize: 16.sp,
-                          color: AppColors.kblue,
-                          fontWeight: FontWeight.w600),
-                    ),
-                    Ksizedboxw10,
-                    Padding(
-                      padding: const EdgeInsets.only(left: 2),
-                      child: Image.asset(
-                        'assets/icons/support_icon.png',
-                      ),
-                    )
-                  ],
+          builder: (BuildContext context, StateSetter setState) {
+            return Center(
+              child: Dialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    Get.back();
-                  },
-                  child: const Icon(
-                    Icons.cancel_outlined,
-                    color: Colors.red,
+                child: Container(
+                  width: 300.w,
+                  padding: EdgeInsets.all(20.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                'Additional Services',
+                                style: primaryfont.copyWith(
+                                    fontSize: 16.sp,
+                                    color: AppColors.kblue,
+                                    fontWeight: FontWeight.w600),
+                              ),
+                              Ksizedboxw10,
+                              Padding(
+                                padding: const EdgeInsets.only(left: 2),
+                                child: Image.asset(
+                                  'assets/icons/support_icon.png',
+                                ),
+                              )
+                            ],
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Get.back();
+                            },
+                            child: const Icon(
+                              Icons.cancel_outlined,
+                              color: Colors.red,
+                            ),
+                          ),
+                        ],
+                      ),
+                      ksizedbox15,
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            GetBuilder<ParcelController>(builder: (controller) {
+                              return ListView.builder(
+                                  itemCount:
+                                      controller.additionalServiceData.length,
+                                  shrinkWrap: true,
+                                  itemBuilder: ((context, index) {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(5.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              GestureDetector(
+                                                onTap: () {
+                                                  setState(
+                                                    () {
+                                                      isCheck[index] =
+                                                          !isCheck[index];
+                                                      selectedId = controller
+                                                          .additionalServiceData[
+                                                              index]
+                                                          .id;
+                                                    },
+                                                  );
+                                                },
+                                                child: Container(
+                                                  height: 20.h,
+                                                  width: 20.w,
+                                                  decoration: BoxDecoration(
+                                                      border: Border.all(
+                                                          width: 1,
+                                                          color:
+                                                              AppColors.kblue),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              5)),
+                                                  child: isCheck[index] == true
+                                                      ? Image.asset(
+                                                          "assets/icons/7-Check.png")
+                                                      : Text(""),
+                                                ),
+                                              ),
+                                              Ksizedboxw10,
+                                              Text(
+                                                controller
+                                                    .additionalServiceData[
+                                                        index]
+                                                    .name,
+                                                style: primaryfont.copyWith(
+                                                  fontSize: 15.sp,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                  "+\$${controller.additionalServiceData[index].amount}",
+                                                  style: primaryfont.copyWith(
+                                                    fontSize: 15.sp,
+                                                    fontWeight: FontWeight.w600,
+                                                  ))
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }));
+                            }),
+                          ],
+                        ),
+                      ),
+                      TextButton(
+                          onPressed: () {
+                            // if (isChecked == true) {
+
+                            // }
+
+                            Navigator.of(context).pop();
+                          },
+                          child: CommonContainer(
+                            name: 'Confirm',
+                          )),
+                    ],
                   ),
                 ),
-              ],
-            ),
-            content: Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //   children: [
-                  //     Row(
-                  //       children: [
-                  //         GestureDetector(
-                  //           onTap: () {
-                  //             setState(
-                  //               () {
-                  //                 isCheck1 = !isCheck1;
-                  //               },
-                  //             );
-                  //           },
-                  //           child: Container(
-                  //             height: 20.h,
-                  //             width: 20.w,
-                  //             decoration: BoxDecoration(
-                  //                 border: Border.all(
-                  //                     width: 1, color: AppColors.kblue),
-                  //                 borderRadius: BorderRadius.circular(5)),
-                  //             child: isCheck1 == true
-                  //                 ? Image.asset("assets/icons/7-Check.png")
-                  //                 : Text(""),
-                  //           ),
-                  //         ),
-                  //         Ksizedboxw10,
-                  //         Text(
-                  //           "Manpower Service",
-                  //           style: primaryfont.copyWith(
-                  //             fontSize: 15.sp,
-                  //             fontWeight: FontWeight.w600,
-                  //           ),
-                  //         ),
-                  //         IconButton(
-                  //           onPressed: () {
-                  //             setState(
-                  //               () {
-                  //                 addValue();
-                  //               },
-                  //             );
-                  //           },
-                  //           icon: Icon(
-                  //             Icons.add_outlined,
-                  //             color: AppColors.kblue,
-                  //             size: 12.sp,
-                  //           ),
-                  //         ),
-                  //         Text(updateValue.toString()),
-                  //         IconButton(
-                  //           onPressed: () {
-                  //             setState(
-                  //               () {
-                  //                 decrementValue();
-                  //               },
-                  //             );
-                  //           },
-                  //           icon: Icon(
-                  //             Icons.remove_outlined,
-                  //             color: AppColors.kblue,
-                  //             size: 12.sp,
-                  //           ),
-                  //         ),
-                  //       ],
-                  //     ),
-                  //     Row(
-                  //       children: [
-                  //         Text("+\$30",
-                  //             style: primaryfont.copyWith(
-                  //               fontSize: 15.sp,
-                  //               fontWeight: FontWeight.w600,
-                  //             ))
-                  //       ],
-                  //     )
-                  //   ],
-                  // ),
-                  // ksizedbox15,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              setState(
-                                () {
-                                  isCheck2 = !isCheck2;
-                                },
-                              );
-                            },
-                            child: Container(
-                              height: 20.h,
-                              width: 20.w,
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      width: 1, color: AppColors.kblue),
-                                  borderRadius: BorderRadius.circular(5)),
-                              child: isCheck2 == true
-                                  ? Image.asset("assets/icons/7-Check.png")
-                                  : Text(""),
-                            ),
-                          ),
-                          Ksizedboxw10,
-                          Text(
-                            "Post Invoice (Ex, Stamp)",
-                            style: primaryfont.copyWith(
-                              fontSize: 15.sp,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text("+\$30",
-                              style: primaryfont.copyWith(
-                                fontSize: 15.sp,
-                                fontWeight: FontWeight.w600,
-                              ))
-                        ],
-                      )
-                    ],
-                  ),
-                  // ksizedbox15,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              setState(
-                                () {
-                                  isCheck3 = !isCheck3;
-                                },
-                              );
-                            },
-                            child: Container(
-                              height: 20.h,
-                              width: 20.w,
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      width: 1, color: AppColors.kblue),
-                                  borderRadius: BorderRadius.circular(5)),
-                              child: isCheck3 == true
-                                  ? Image.asset("assets/icons/7-Check.png")
-                                  : Text(""),
-                            ),
-                          ),
-                          Ksizedboxw10,
-                          Container(
-                            width: 70.w,
-                            // color: Colors.grey,
-                            child: Text(
-                              "Staircase",
-                              style: primaryfont.copyWith(
-                                fontSize: 15.sp,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                          Ksizedboxw10,
-                          Ksizedboxw10,
-                          IconButton(
-                            onPressed: () {
-                              setState(
-                                () {
-                                  decrementCount();
-                                },
-                              );
-                            },
-                            icon: Container(
-                              height: 20.h,
-                              width: 20.h,
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: AppColors.kblue, width: 1),
-                                  shape: BoxShape.circle),
-                              child: Icon(
-                                Icons.remove_outlined,
-                                color: AppColors.kblue,
-                                size: 15.sp,
-                              ),
-                            ),
-                          ),
-                          Text(count.toString()),
-                          IconButton(
-                            onPressed: () {
-                              setState(
-                                () {
-                                  addCount();
-                                },
-                              );
-                            },
-                            icon: Container(
-                              height: 20.h,
-                              width: 20.h,
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: AppColors.kblue, width: 1),
-                                  shape: BoxShape.circle),
-                              child: Icon(
-                                Icons.add_outlined,
-                                color: AppColors.kblue,
-                                size: 15.sp,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text("+\$30",
-                              style: primaryfont.copyWith(
-                                fontSize: 15.sp,
-                                fontWeight: FontWeight.w600,
-                              ))
-                        ],
-                      )
-                    ],
-                  ),
-                  //  ksizedbox15,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              setState(
-                                () {
-                                  isCheck4 = !isCheck4;
-                                },
-                              );
-                            },
-                            child: Container(
-                              height: 20.h,
-                              width: 20.w,
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      width: 1, color: AppColors.kblue),
-                                  borderRadius: BorderRadius.circular(5)),
-                              child: isCheck4 == true
-                                  ? Image.asset("assets/icons/7-Check.png")
-                                  : Text(""),
-                            ),
-                          ),
-                          Ksizedboxw10,
-                          Text(
-                            "OTP Verification",
-                            style: primaryfont.copyWith(
-                              fontSize: 15.sp,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text("+\$30",
-                              style: primaryfont.copyWith(
-                                fontSize: 15.sp,
-                                fontWeight: FontWeight.w600,
-                              ))
-                        ],
-                      )
-                    ],
-                  ),
-                  ksizedbox15,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              setState(
-                                () {
-                                  isCheck5 = !isCheck5;
-                                },
-                              );
-                            },
-                            child: Container(
-                              height: 20.h,
-                              width: 20.w,
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      width: 1, color: AppColors.kblue),
-                                  borderRadius: BorderRadius.circular(5)),
-                              child: isCheck5 == true
-                                  ? Image.asset("assets/icons/7-Check.png")
-                                  : Text(""),
-                            ),
-                          ),
-                          Ksizedboxw10,
-                          Text(
-                            "Fragile Item",
-                            style: primaryfont.copyWith(
-                              fontSize: 15.sp,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text("+\$30",
-                              style: primaryfont.copyWith(
-                                fontSize: 15.sp,
-                                fontWeight: FontWeight.w600,
-                              ))
-                        ],
-                      )
-                    ],
-                  ),
-                  ksizedbox15,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              setState(
-                                () {
-                                  isCheck6 = !isCheck6;
-                                },
-                              );
-                            },
-                            child: Container(
-                              height: 20.h,
-                              width: 20.w,
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      width: 1, color: AppColors.kblue),
-                                  borderRadius: BorderRadius.circular(5)),
-                              child: isCheck6 == true
-                                  ? Image.asset("assets/icons/7-Check.png")
-                                  : Text(""),
-                            ),
-                          ),
-                          Ksizedboxw10,
-                          Text(
-                            "Access restricted area",
-                            style: primaryfont.copyWith(
-                              fontSize: 15.sp,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text("+\$30",
-                              style: primaryfont.copyWith(
-                                fontSize: 15.sp,
-                                fontWeight: FontWeight.w600,
-                              ))
-                        ],
-                      )
-                    ],
-                  ),
-                ],
               ),
-            ),
-            actions: [
-              TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: CommonContainer(
-                    name: 'Confirm',
-                  )),
-            ],
-          );
-        });
+            );
+          },
+        );
       },
     );
   }
@@ -1161,22 +987,3 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
         });
   }
 }
-
-//  Container(
-//                         height: 50.w,
-//                         decoration: BoxDecoration(
-//                             borderRadius: BorderRadius.circular(30)),
-//                         alignment: Alignment.center,
-//                         child: InkWell(
-//                           onTap: () {
-//                             Get.to(BookingDetailsScreen());
-//                           },
-//                           child: Text(
-//                             'Booking Review',
-//                             style: thirdsfont.copyWith(
-//                                 fontSize: 15,
-//                                 fontWeight: FontWeight.w600,
-//                                 color: AppColors.kwhite),
-//                           ),
-//                         ),
-//                       ),

@@ -4,7 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:v_export/constant/common_container.dart';
 import 'package:v_export/customer/controller/home_controller.dart';
+import 'package:v_export/customer/controller/parcel_controller.dart';
+import 'package:v_export/customer/model/delivery_type_model.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/bottomn_navi_bar.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/droping_address_details.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/pickup_address_details.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/schedule_delivery.dart';
 
@@ -13,13 +16,41 @@ import '../../../../constant/app_font.dart';
 
 class PackageSendScreen extends StatefulWidget {
   String pickupAdress;
-  PackageSendScreen({super.key, required this.pickupAdress});
+  String lat;
+  String long;
+  List unitIdBlockID;
+  PackageSendScreen(
+      {super.key,
+      required this.pickupAdress,
+      required this.lat,
+      required this.long,
+      required this.unitIdBlockID});
 
   @override
   State<PackageSendScreen> createState() => _PackageSendScreenState();
 }
 
 class _PackageSendScreenState extends State<PackageSendScreen> {
+  @override
+  void initState() {
+    super.initState();
+    getData();
+  }
+
+  getData() async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await parcelController.getDeliveryTypes();
+      await parcelController.getAdditionalServices();
+      // if (parcelController.deliveryTypesData.isNotEmpty) {
+      //   deliveryItems = parcelController.deliveryTypesData[0];
+      //   deliveryId = deliveryItems?.id;
+      // }
+      parcelController.update();
+      setState(() {});
+    });
+  }
+
+  final ParcelController parcelController = Get.find<ParcelController>();
   final HomeController homeController = Get.find<HomeController>();
   DateTime selectedDate = DateTime.now();
   TimeOfDay pickTime = TimeOfDay.now();
@@ -43,6 +74,9 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
   String formatDateTime = "";
   String pickingTime = "";
   String dropingTime = "";
+  TimeOfDay? _updatedTime;
+  TimeOfDay? updatedroptime1;
+  TimeOfDay? updatedroptime2;
   Future<Null> selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
         context: context,
@@ -56,6 +90,8 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
       });
   }
 
+  var time;
+
   Future displayTimePicker(BuildContext context) async {
     var time = await showTimePicker(
       context: context,
@@ -66,11 +102,23 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
     if (time != null) {
       setState(() {
         pickTime = time;
-        // pickuptimeController.text = TextEditingValue(text:dropingTime.toString()),
+        _updatedTime = _addMinutes(pickTime, 60);
       });
-
+      print("-----picktime");
       print(pickTime);
+      print(
+          "${pickTime.hour < 10 ? "0${pickTime.hour}" : pickTime.hour}:${pickTime.minute.remainder(60) < 10 ? "0${pickTime.minute.remainder(60)}" : '${pickTime.minute.remainder(60)}:00'} - ${_updatedTime!.hour < 10 ? "0${_updatedTime!.hour}" : _updatedTime!.hour}:${_updatedTime!.minute.remainder(60) < 10 ? "0${_updatedTime!.minute.remainder(60)}" : '${_updatedTime!.minute.remainder(60)}:00'}"
+              .toString());
     }
+  }
+
+  TimeOfDay _addMinutes(TimeOfDay time, int minutes) {
+    final now = DateTime.now();
+    final dateTime =
+        DateTime(now.year, now.month, now.day, time.hour, time.minute);
+    final updatedDateTime = dateTime.add(Duration(minutes: minutes));
+    return TimeOfDay(
+        hour: updatedDateTime.hour, minute: updatedDateTime.minute);
   }
 
   Future dropTimePicker(BuildContext context) async {
@@ -83,6 +131,8 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
     if (times != null) {
       setState(() {
         dropTime = times;
+        updatedroptime1 = _addMinutes(dropTime, 60);
+        updatedroptime2 = _addMinutes(dropTime, 120);
       });
 
       print(dropTime);
@@ -90,6 +140,7 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
   }
 
   var deliveryItems;
+  int? deliveryId;
 
   List<String> deliveryItemsList = [
     "Express Delvery - 24/7 (1 Hour)",
@@ -102,6 +153,7 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
   bool checkParcelorMulti = false;
 
   final formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -122,12 +174,17 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
             ),
           ),
         ),
-        title: Text(
-          'Parcel Booking',
-          style: primaryfont.copyWith(
-              fontSize: 21.sp,
-              color: Color(0xffF4F8FF),
-              fontWeight: FontWeight.w600),
+        title: GestureDetector(
+          onTap: () {
+          //  showListViewDialog(context);
+          },
+          child: Text(
+            'Parcel Booking',
+            style: primaryfont.copyWith(
+                fontSize: 21.sp,
+                color: Color(0xffF4F8FF),
+                fontWeight: FontWeight.w600),
+          ),
         ),
       ),
       body: Form(
@@ -188,7 +245,7 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                   borderRadius: BorderRadius.circular(5)),
                               child: ListView.builder(
                                 padding: EdgeInsets.zero,
-                                physics: NeverScrollableScrollPhysics(),
+                                physics: const NeverScrollableScrollPhysics(),
                                 itemCount: homeController.entries.length,
                                 shrinkWrap: true,
                                 itemBuilder: (context, index) {
@@ -232,8 +289,9 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                     endIndent: 10,
                                                   ),
                                                   Padding(
-                                                    padding: EdgeInsets.only(
-                                                        left: 5),
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 5),
                                                     child: GestureDetector(
                                                       onTap: () {
                                                         Get.to(
@@ -265,51 +323,75 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 10, vertical: 10),
-                                        child: Container(
-                                          height: 50.h,
-                                          width: size.width,
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: Colors.grey
-                                                    .withOpacity(.32),
-                                                width: 1),
-                                            color: Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(5),
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              const Icon(
-                                                Icons.location_on,
-                                                color: Color(0xff038484),
-                                              ),
-                                              const VerticalDivider(
-                                                indent: 10,
-                                                thickness: 1,
-                                                width: 5,
-                                                color: Color(0xff455A64),
-                                                endIndent: 10,
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    EdgeInsets.only(left: 5),
-                                                child: GestureDetector(
-                                                  onTap: () {
-                                                    Get.to(
-                                                        PickupAddressDetails());
-                                                  },
-                                                  child: Text(
-                                                    'Enter Drop here...',
-                                                    style: primaryfont.copyWith(
-                                                      fontSize: 13.sp,
-                                                      color: Color(0xff455A64),
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                    ),
-                                                  ),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            Get.to(DroppingAddressDetails(
+                                                index: index));
+                                          },
+                                          child: Container(
+                                            height: 50.h,
+                                            width: size.width,
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: Colors.grey
+                                                      .withOpacity(.32),
+                                                  width: 1),
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                const Icon(
+                                                  Icons.location_on,
+                                                  color: Color(0xff038484),
                                                 ),
-                                              ),
-                                            ],
+                                                const VerticalDivider(
+                                                  indent: 10,
+                                                  thickness: 1,
+                                                  width: 5,
+                                                  color: Color(0xff455A64),
+                                                  endIndent: 10,
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      EdgeInsets.only(left: 5),
+                                                  child: GestureDetector(
+                                                      onTap: () {
+                                                        Get.to(
+                                                            DroppingAddressDetails(
+                                                                index: index));
+                                                      },
+                                                      child: Obx(
+                                                        () => Container(
+                                                          width: 250.w,
+                                                          child: Text(
+                                                            homeController
+                                                                        .droppingLocations
+                                                                        .length >
+                                                                    index
+                                                                ? homeController
+                                                                        .droppingLocations[
+                                                                    index]
+                                                                : 'Enter Drop here...',
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            style: primaryfont
+                                                                .copyWith(
+                                                              fontSize: 13.sp,
+                                                              color: const Color(
+                                                                  0xff455A64),
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      )),
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -449,73 +531,47 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                         color: Color(0xff455A64)),
                                   ),
                                   ksizedbox10,
-                                  Container(
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 15),
-                                      height: 50.h,
-                                      width: size.width,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        border: Border.all(
-                                          width: 1,
-                                          color: Color(0xff444444)
-                                              .withOpacity(.32),
-                                        ),
-                                        color: AppColors.kwhite,
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            formatDateTime.isEmpty
-                                                ? 'Select Date'
-                                                : formatDateTime,
-                                            style: primaryfont.copyWith(
-                                                color: Color(0xff455A64),
-                                                fontSize: 12.sp,
-                                                fontWeight: FontWeight.w500),
+                                  GestureDetector(
+                                    onTap: () {
+                                      selectDate(context);
+                                    },
+                                    child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 15),
+                                        height: 50.h,
+                                        width: size.width,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                            width: 1,
+                                            color: Color(0xff444444)
+                                                .withOpacity(.32),
                                           ),
-                                          GestureDetector(
-                                              onTap: () {
-                                                selectDate(context);
-                                              },
-                                              child: Image.asset(
-                                                  "assets/icons/date.png")),
-                                        ],
-                                      )),
-                                  // Container(
-                                  //   height: 50.h,
-                                  //   width: size.width,
-                                  //   decoration: BoxDecoration(
-                                  //     color: AppColors.kwhite,
-                                  //   ),
-                                  //   child: TextFormField(
-                                  //     onTap: () {
-                                  //       setState(() {
-                                  //         selectDate(context);
-                                  //       });
-                                  //     },
-                                  //     controller: datebookingController,
-                                  //     decoration: InputDecoration(
-                                  //         suffixIcon: Image.asset("assets/icons/date.png"),
-                                  //         hintText: 'DD/MM/YYYY',
-                                  //         hintStyle: primaryfont.copyWith(
-                                  //             color: Color(0xff455A64),
-                                  //             fontSize: 12,
-                                  //             fontWeight: FontWeight.w500),
-                                  //         border: const OutlineInputBorder(
-                                  //             borderSide: BorderSide(
-                                  //           width: 1,
-                                  //           color: Color(0xff455A64),
-                                  //         )),
-                                  //         enabledBorder: const OutlineInputBorder(
-                                  //             borderSide: BorderSide(
-                                  //           width: 1,
-                                  //           color: Color(0xff455A64),
-                                  //         ))),
-                                  //   ),
-                                  // ),
+                                          color: AppColors.kwhite,
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              formatDateTime.isEmpty
+                                                  ? 'Select Date'
+                                                  : formatDateTime,
+                                              style: primaryfont.copyWith(
+                                                  color: Color(0xff455A64),
+                                                  fontSize: 12.sp,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
+                                            GestureDetector(
+                                                onTap: () {
+                                                  selectDate(context);
+                                                },
+                                                child: Image.asset(
+                                                    "assets/icons/date.png")),
+                                          ],
+                                        )),
+                                  ),
                                   ksizedbox20,
                                   Text(
                                     'Select Delivery types',
@@ -538,51 +594,62 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                       ),
                                       borderRadius: BorderRadius.circular(10),
                                     ),
-                                    child: DropdownButton<String>(
-                                      value: deliveryItems,
-                                      hint: Text(
+                                    child: DropdownButton<DeliveryTypeData>(
+                                      hint: const Text(
                                         'Select Delivery Item',
-                                        style: primaryfont.copyWith(
+                                        style: TextStyle(
                                           color: Color(0xff455A64),
-                                          fontSize: 14.sp,
+                                          fontSize: 14,
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),
-                                      // icon: Icon(Icons.arrow_downward),
-                                      //  iconSize: 24,
                                       elevation: 16,
                                       isExpanded: true,
-                                      style: primaryfont.copyWith(
+                                      style: TextStyle(
                                         color:
                                             Color(0xff444444).withOpacity(.32),
-                                        fontSize: 14.sp,
+                                        fontSize: 14,
                                         fontWeight: FontWeight.w500,
                                       ),
                                       underline: Container(),
-                                      onChanged: (String? newValue) {
-                                        setState(() {
-                                          deliveryItems = newValue;
-                                        });
-                                      },
-                                      items: deliveryItemsList
-                                          .map<DropdownMenuItem<String>>(
-                                              (String value) {
-                                        return DropdownMenuItem<String>(
-                                          value: value,
+                                      value: deliveryItems,
+                                      items: parcelController.deliveryTypesData
+                                          .map((DeliveryTypeData type) {
+                                        return DropdownMenuItem<
+                                            DeliveryTypeData>(
+                                          value: type,
                                           child: Text(
-                                            value,
-                                            style: primaryfont.copyWith(
+                                            type.name,
+                                            style: TextStyle(
                                               color: Color(0xff455A64),
-                                              fontSize: 14.sp,
+                                              fontSize: 14,
                                               fontWeight: FontWeight.w500,
                                             ),
                                           ),
                                         );
                                       }).toList(),
+                                      onChanged: (DeliveryTypeData? newValue) {
+                                        setState(() {
+                                          deliveryItems = newValue;
+                                          deliveryId = newValue?.id;
+                                          if (deliveryItems?.name ==
+                                              "Express Delivery") {
+                                            _updatedTime =
+                                                _addMinutes(pickTime, 60);
+                                            // updatedroptime1 =
+                                            //     _addMinutes(pickTime, 60);
+                                            // updatedroptime2 =
+                                            //     _addMinutes(pickTime, 120);
+                                          } else if (deliveryItems?.name ==
+                                              "Standard Delivery") {
+                                            updatedroptime2 =
+                                                _addMinutes(pickTime, 240);
+                                          }
+                                        });
+                                      },
                                     ),
                                   ),
                                   ksizedbox20,
-
                                   Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -676,45 +743,46 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                                           color:
                                                                               AppColors.kblue),
                                                                     )
-                                                                  : index == 5
+                                                                  : index > 5
                                                                       ? Text(
                                                                           "${index + 1}th Location",
                                                                           style: primaryfont.copyWith(
                                                                               fontWeight: FontWeight.w600,
                                                                               color: AppColors.kblue),
                                                                         )
-                                                                      : index ==
-                                                                              6
-                                                                          ? Text(
-                                                                              "${index + 1}th Location",
-                                                                              style: primaryfont.copyWith(fontWeight: FontWeight.w600, color: AppColors.kblue),
-                                                                            )
-                                                                          : index == 7
-                                                                              ? Text(
-                                                                                  "${index + 1}th Location",
-                                                                                  style: primaryfont.copyWith(fontWeight: FontWeight.w600, color: AppColors.kblue),
-                                                                                )
-                                                                              : index == 8
-                                                                                  ? Text(
-                                                                                      "${index + 1}th Location",
-                                                                                      style: primaryfont.copyWith(fontWeight: FontWeight.w600, color: AppColors.kblue),
-                                                                                    )
-                                                                                  : index == 9
-                                                                                      ? Text(
-                                                                                          "${index + 1}th Location",
-                                                                                          style: primaryfont.copyWith(fontWeight: FontWeight.w600, color: AppColors.kblue),
-                                                                                        )
-                                                                                      : index == 10
-                                                                                          ? Text(
-                                                                                              "${index + 1}th Location",
-                                                                                              style: primaryfont.copyWith(fontWeight: FontWeight.w600, color: AppColors.kblue),
-                                                                                            )
-                                                                                          : index == 11
-                                                                                              ? Text(
-                                                                                                  "${index + 1}th Location",
-                                                                                                  style: primaryfont.copyWith(fontWeight: FontWeight.w600, color: AppColors.kblue),
-                                                                                                )
-                                                                                              : Text("data"),
+                                                                      // : index ==
+                                                                      //         6
+                                                                      //     ? Text(
+                                                                      //         "${index + 1}th Location",
+                                                                      //         style: primaryfont.copyWith(fontWeight: FontWeight.w600, color: AppColors.kblue),
+                                                                      //       )
+                                                                      //     : index == 7
+                                                                      //         ? Text(
+                                                                      //             "${index + 1}th Location",
+                                                                      //             style: primaryfont.copyWith(fontWeight: FontWeight.w600, color: AppColors.kblue),
+                                                                      //           )
+                                                                      //         : index == 8
+                                                                      //             ? Text(
+                                                                      //                 "${index + 1}th Location",
+                                                                      //                 style: primaryfont.copyWith(fontWeight: FontWeight.w600, color: AppColors.kblue),
+                                                                      //               )
+                                                                      //             : index == 9
+                                                                      //                 ? Text(
+                                                                      //                     "${index + 1}th Location",
+                                                                      //                     style: primaryfont.copyWith(fontWeight: FontWeight.w600, color: AppColors.kblue),
+                                                                      //                   )
+                                                                      //                 : index == 10
+                                                                      //                     ? Text(
+                                                                      //                         "${index + 1}th Location",
+                                                                      //                         style: primaryfont.copyWith(fontWeight: FontWeight.w600, color: AppColors.kblue),
+                                                                      //                       )
+                                                                      //                     : index == 11
+                                                                      //                         ? Text(
+                                                                      //                             "${index + 1}th Location",
+                                                                      //                             style: primaryfont.copyWith(fontWeight: FontWeight.w600, color: AppColors.kblue),
+                                                                      //                           )
+                                                                      : Text(
+                                                                          "data"),
                                               ksizedbox5,
                                               Padding(
                                                 padding:
@@ -919,7 +987,7 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                             fontSize: 14.sp,
                                                             fontWeight:
                                                                 FontWeight.w500,
-                                                            color: Color(
+                                                            color: const Color(
                                                                 0xff455A64),
                                                           ),
                                                           border:
@@ -1172,38 +1240,55 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Container(
-                                        padding: EdgeInsets.only(left: 5),
-                                        height: 50.h,
-                                        width: 150.w,
-                                        decoration: BoxDecoration(
-                                            color: AppColors.kwhite,
-                                            border: Border.all(
-                                                width: 1,
-                                                color: Colors.grey
-                                                    .withOpacity(.32)),
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              "${pickTime.hour < 10 ? "0${pickTime.hour}" : pickTime.hour}:${pickTime.minute.remainder(60) < 10 ? "0${pickTime.minute.remainder(60)}" : '${pickTime.minute.remainder(60)}'}:00"
-                                                  .toString(),
-                                              style: primaryfont.copyWith(
-                                                  fontSize: 14.sp,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Color(0xff455A64)),
-                                            ),
-                                            IconButton(
-                                                onPressed: () {
-                                                  displayTimePicker(context);
-                                                },
-                                                icon: Image.asset(
-                                                    "assets/icons/mylisticon.png",
-                                                    color: Colors.grey))
-                                          ],
+                                      GestureDetector(
+                                        onTap: () {
+                                          dropTimePicker(context);
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.only(left: 5),
+                                          height: 50.h,
+                                          width: 160.w,
+                                          decoration: BoxDecoration(
+                                              color: AppColors.kwhite,
+                                              border: Border.all(
+                                                  width: 1,
+                                                  color: Colors.grey
+                                                      .withOpacity(.32)),
+                                              borderRadius:
+                                                  BorderRadius.circular(10)),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              //   if (_updatedTime != null)
+                                              Text(
+                                                // deliveryItems == null
+                                                //     ? 'Select time'
+                                                //     : deliveryItems ==
+                                                //             "Express Delvery - 24/7 (1 Hour)"
+                                                //         ? "${pickTime.format(context)} - ${_updatedTime!.format(context)}"
+                                                //         : "${pickTime.format(context)}",
+                                                deliveryId == null
+                                                    ? 'Select time'
+                                                    : deliveryId == 2
+                                                        ? "${pickTime.hour < 10 ? "0${pickTime.hour}" : pickTime.hour}:${pickTime.minute.remainder(60) < 10 ? "0${pickTime.minute.remainder(60)}" : '${pickTime.minute.remainder(60)}:00'}"
+                                                            .toString()
+                                                        : "${pickTime.hour < 10 ? "0${pickTime.hour}" : pickTime.hour}:${pickTime.minute.remainder(60) < 10 ? "0${pickTime.minute.remainder(60)}" : '${pickTime.minute.remainder(60)}:00'}"
+                                                            .toString(),
+                                                style: primaryfont.copyWith(
+                                                    fontSize: 9.sp,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Color(0xff455A64)),
+                                              ),
+                                              IconButton(
+                                                  onPressed: () {
+                                                    displayTimePicker(context);
+                                                  },
+                                                  icon: Image.asset(
+                                                      "assets/icons/mylisticon.png",
+                                                      color: Colors.grey))
+                                            ],
+                                          ),
                                         ),
                                       ),
                                       Text(
@@ -1213,39 +1298,64 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                             fontWeight: FontWeight.w600,
                                             color: Color(0xff000000)),
                                       ),
-                                      Container(
-                                        padding: EdgeInsets.only(left: 5),
-                                        height: 50.h,
-                                        width: 150.w,
-                                        decoration: BoxDecoration(
-                                            color: AppColors.kwhite,
-                                            border: Border.all(
-                                                width: 1,
-                                                color: Colors.grey
-                                                    .withOpacity(.32)),
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              "${dropTime.hour < 10 ? "0${dropTime.hour}" : dropTime.hour}:${dropTime.minute.remainder(60) < 10 ? "0${dropTime.minute.remainder(60)}" : '${dropTime.minute.remainder(60)}'}:00"
-                                                  .toString(),
-                                              style: primaryfont.copyWith(
-                                                  fontSize: 14.sp,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Color(0xff455A64)),
-                                            ),
-                                            IconButton(
-                                                onPressed: () {
-                                                  dropTimePicker(context);
-                                                },
-                                                icon: Image.asset(
-                                                  "assets/icons/mylisticon.png",
-                                                  color: Colors.grey,
-                                                ))
-                                          ],
+                                      GestureDetector(
+                                        onTap: () {
+                                          dropTimePicker(context);
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.only(left: 5),
+                                          height: 50.h,
+                                          width: 160.w,
+                                          decoration: BoxDecoration(
+                                              color: AppColors.kwhite,
+                                              border: Border.all(
+                                                  width: 1,
+                                                  color: Colors.grey
+                                                      .withOpacity(.32)),
+                                              borderRadius:
+                                                  BorderRadius.circular(10)),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                deliveryId == null
+                                                    ? 'Select time'
+                                                    : deliveryId == 2
+                                                        ? "${_updatedTime!.hour < 10 ? "0${_updatedTime!.hour}" : _updatedTime!.hour}:${_updatedTime!.minute.remainder(60) < 10 ? "0${_updatedTime!.minute.remainder(60)}" : '${_updatedTime!.minute.remainder(60)}:00'}"
+                                                            .toString()
+                                                        : deliveryId == 1
+                                                            ? "${updatedroptime2!.hour < 10 ? "0${updatedroptime2!.hour}" : updatedroptime2!.hour}:${updatedroptime2!.minute.remainder(60) < 10 ? "0${updatedroptime2!.minute.remainder(60)}" : '${updatedroptime2!.minute.remainder(60)}:00'}"
+                                                            : "${dropTime.hour < 10 ? "0${dropTime.hour}" : dropTime.hour}:${dropTime.minute.remainder(60) < 10 ? "0${dropTime.minute.remainder(60)}" : '${dropTime.minute.remainder(60)}:00'}"
+                                                                .toString(),
+                                                // deliveryItems == null
+                                                //     ? 'Select time'
+                                                //     : deliveryItems ==
+                                                //             "Express Delvery - 24/7 (1 Hour)"
+                                                //         ? "${updatedroptime1!.format(context)} - ${updatedroptime2!.format(context)}"
+                                                //         : deliveryItems ==
+                                                //                 "4 Hours Delivery"
+                                                //             ? updatedroptime2!
+                                                //                 .format(context)
+                                                //             : "${dropTime.format(context)}",
+                                                // "${dropTime.hour < 10 ? "0${dropTime.hour}" : dropTime.hour}:${dropTime.minute.remainder(60) < 10 ? "0${dropTime.minute.remainder(60)}" : '${dropTime.minute.remainder(60)}'} - ${dropTime.hour < 10 ? "0${dropTime.hour}" : dropTime.hour}:${dropTime.minute.remainder(60) < 10 ? "0${dropTime.minute.remainder(60)}" : '${dropTime.minute.remainder(60)}'}"
+                                                //     .toString(),
+                                                style: primaryfont.copyWith(
+                                                    fontSize: 9.sp,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: const Color.fromARGB(
+                                                        255, 2, 3, 3)),
+                                              ),
+                                              IconButton(
+                                                  onPressed: () {
+                                                    dropTimePicker(context);
+                                                  },
+                                                  icon: Image.asset(
+                                                    "assets/icons/mylisticon.png",
+                                                    color: Colors.grey,
+                                                  ))
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -1260,7 +1370,33 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                           ksizedbox20,
                           InkWell(
                               onTap: () {
-                                Get.to(ScheduleDeliveryScreen());
+                                Get.to(ScheduleDeliveryScreen(
+                                  pickuplatitude: widget.lat,
+                                  pickuplogitude: widget.long,
+                                  droppingLatitude: homeController.droppingLat,
+                                  droppingLogitude: homeController.dropLong,
+                                  bookingDate: formatDateTime,
+                                  deliverytype: deliveryId.toString(),
+                                  length: [parcellengthController.text],
+                                  width: [parcelwidthController.text],
+                                  height: [parcelheightController.text],
+                                  qty: [quantityController.text],
+                                  kg: [parcelkgController.text],
+                                  parcelItems: [parcelitemController.text],
+                                  unitIdBlockId: [
+                                    widget.unitIdBlockID.toString()
+                                  ],
+                                  pickTimeListFrom: [
+                                    pickTime.toString(),
+                                    _updatedTime!.toString()
+                                  ],
+                                  pickTimeListTo: [
+                                    updatedroptime1.toString(),
+                                    updatedroptime2.toString()
+                                  ],
+                                  pickTimeFrom: pickTime.toString(),
+                                  pickTimeTo: dropTime.toString(),
+                                ));
                               },
                               child: CommonContainer(
                                 name: "Next",
@@ -1278,4 +1414,6 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
       ),
     );
   }
+
+ 
 }

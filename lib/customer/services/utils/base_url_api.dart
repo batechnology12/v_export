@@ -14,6 +14,8 @@ abstract class BaseApiServices {
   String get updatePasswordUrl => "${baseUrl}updatePassword";
   String get notificationUrl => "${baseUrl}notifications";
   String get ongoingOrderUrl => "${baseUrl}ongoing_booking";
+  String get getDeliveryTypeUrl => "${baseUrl}delivery_types";
+  String get getAdditionlServicesUrl => "${baseUrl}additional_servicess";
   String get addBookingParcelUrl => "${baseUrl}store_booking";
   
 

@@ -242,22 +242,22 @@ class _AccountState extends State<Account> {
               SizedBox(height: 8),
               //  accountController.imageLoading.isTrue ? :
 
-              GetBuilder<AccountController>(
-                builder: (controller) {
-                  return controller.imageLoading.value
-                      ? CircularProgressIndicator()
-                      : Text(
-                          controller.getUserData != null
-                              ? controller.getUserData!.firstName
-                              : " ",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 17.sp,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        );
-                },
-              ),
+              // GetBuilder<AccountController>(
+              //   builder: (controller) {
+              //     return controller.imageLoading.value
+              //         ? CircularProgressIndicator()
+              //         : Text(
+              //             controller.getUserData != null
+              //                 ? controller.getUserData!.firstName
+              //                 : " ",
+              //             style: TextStyle(
+              //               color: Colors.black,
+              //               fontSize: 17.sp,
+              //               fontWeight: FontWeight.w600,
+              //             ),
+              //           );
+              //   },
+              // ),
             ],
           ),
         ],

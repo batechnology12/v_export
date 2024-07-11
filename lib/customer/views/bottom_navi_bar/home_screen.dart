@@ -239,7 +239,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   InkWell(
                     onTap: () {
-                      Get.to(PackageSendScreen(pickupAdress: "pickup",));
+                      Get.to(PackageSendScreen(
+                        pickupAdress: "pickup address",
+                        lat: '',
+                        long: '',
+                        unitIdBlockID: [""],
+                      ));
                     },
                     child: Container(
                       alignment: Alignment.center,
@@ -264,6 +269,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             onTap: () {
                               Get.to(PackageSendScreen(
                                 pickupAdress: "pickup",
+                                lat: '',
+                                long: '',
+                                unitIdBlockID: [""],
                               ));
                             },
                             child: Container(

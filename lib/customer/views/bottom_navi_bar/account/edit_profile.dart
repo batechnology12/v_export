@@ -30,19 +30,19 @@ class _EditProfileState extends State<EditProfile> {
   getData() async {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await accountController.getProfile();
-      await getProfileData();
+     // await getProfileData();
       accountController.update();
     });
   }
 
-  getProfileData() async {
-    if (accountController.getUserData != null) {
-      nameController.text = accountController.getUserData!.firstName;
-      mobileController.text = accountController.getUserData!.phone;
-      emailController.text = accountController.getUserData!.email;
-      //  addressController.text = accountController.getUserData!.addresses;
-    }
-  }
+  // getProfileData() async {
+  //   if (accountController.getUserData != null) {
+  //     nameController.text = accountController.getUserData!.firstName;
+  //     mobileController.text = accountController.getUserData!.phone;
+  //     emailController.text = accountController.getUserData!.email;
+  //     //  addressController.text = accountController.getUserData!.addresses;
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

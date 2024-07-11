@@ -28,11 +28,29 @@ class HomeController extends GetxController {
   void removeEntry(int index) {
     if (entries.length > 1) {
       entries.removeAt(index);
+      if (index < droppingLocations.length) {
+        droppingLocations.removeAt(index);
+      }
     }
   }
 
   void toggleCheck(bool value) {
     isCheck.value = value;
+  }
+
+  List droppingLocations = <String>[].obs;
+
+  List<String> droppingLat = <String>[].obs;
+  List<String> dropLong = <String>[].obs;
+
+  void updateDroppingLocation(String location, String lat, String long) {
+    // if (index < droppingLocations.length) {
+    droppingLocations.add(location);
+    droppingLat.add(lat);
+    dropLong.add(long);
+    // } else {
+    //   droppingLocations.add(location);
+    // }
   }
 
   var addParcels = <int>[0].obs;
