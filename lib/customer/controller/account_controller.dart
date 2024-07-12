@@ -4,10 +4,12 @@ import 'package:get/get.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:v_export/customer/model/get_profile_model.dart';
 import 'package:v_export/customer/services/network/Account_api_service/edit_profile_api_service.dart';
+import 'package:v_export/customer/services/network/Account_api_service/edit_profile_picture_api_service.dart';
+import 'package:v_export/customer/services/network/Account_api_service/update_profile_api_service.dart';
 
 class AccountController extends GetxController {
   ProfileApiServices profileApiServices = ProfileApiServices();
-  UserData? getUserData;
+  GetUserModel? getUserData;
   RxBool imageLoading = false.obs;
   getProfile() async {
     imageLoading(true);
@@ -20,7 +22,42 @@ class AccountController extends GetxController {
     print(response.data);
     if (response.data["status"] == true) {
       GetUserModel getUserModel = GetUserModel.fromJson(response.data);
-     // getUserData = getUserData.;
+      getUserData = getUserModel;
+
+      // Get.rawSnackbar(
+      //   backgroundColor: Colors.green,
+      //   messageText: Text(
+      //     response.data['message'],
+      //     style: TextStyle(color: Colors.white, fontSize: 15.sp),
+      //   ),
+      // );
+      update();
+    } else {
+      Get.rawSnackbar(
+        backgroundColor: Colors.red,
+        messageText: Text(
+          response.data['message'],
+          style: TextStyle(color: Colors.white, fontSize: 15.sp),
+        ),
+      );
+    }
+  }
+
+  UpdateProfileApiService updateProfileApiService = UpdateProfileApiService();
+  RxBool profileLoading = false.obs;
+  updateProfileUser(
+      {required String name,
+      required String mail,
+      required String phone}) async {
+    profileLoading(true);
+    dio.Response<dynamic> response = await updateProfileApiService
+        .updateProfile(name: name, mail: mail, phone: phone);
+    profileLoading(false);
+    print("update profile response---------");
+    print(response.data);
+    if (response.data["status"] == true) {
+      Get.back();
+      getProfile();
       Get.rawSnackbar(
         backgroundColor: Colors.green,
         messageText: Text(
@@ -29,6 +66,37 @@ class AccountController extends GetxController {
         ),
       );
       update();
+      Get.back();
+    } else {
+      Get.rawSnackbar(
+        backgroundColor: Colors.red,
+        messageText: Text(
+          response.data['message'],
+          style: TextStyle(color: Colors.white, fontSize: 15.sp),
+        ),
+      );
+    }
+  }
+
+  EditProfilePictureApiService editProfilePictureApiService =
+      EditProfilePictureApiService();
+
+  RxBool editProfilePictureLoading = false.obs;
+  editProfilePicture({required String profilePicture}) async {
+    editProfilePictureLoading.value = true;
+    dio.Response<dynamic> response = await editProfilePictureApiService
+        .editProfilePictureUser(profilePicture: profilePicture);
+    editProfilePictureLoading.value = false;
+    getProfile();
+    update();
+    if (response.data["status"] == true) {
+      Get.rawSnackbar(
+        backgroundColor: Colors.green,
+        messageText: Text(
+          response.data['message'],
+          style: TextStyle(color: Colors.white, fontSize: 15.sp),
+        ),
+      );
     } else {
       Get.rawSnackbar(
         backgroundColor: Colors.red,

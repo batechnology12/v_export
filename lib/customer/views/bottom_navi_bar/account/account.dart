@@ -1,7 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:svg_flutter/svg_flutter.dart';
 import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
@@ -23,8 +29,8 @@ class Account extends StatefulWidget {
 }
 
 class _AccountState extends State<Account> {
-  // AccountController accountController = Get.find<AccountController>();
-  final AccountController accountController = Get.put(AccountController());
+  AccountController accountController = Get.find<AccountController>();
+  // final AccountController accountController = Get.put(AccountController());
   @override
   void initState() {
     accountController.getProfile();
@@ -65,6 +71,47 @@ class _AccountState extends State<Account> {
       "image": "assets/icons/log.png",
     },
   ];
+
+  File? image;
+  //  var image = Rxn<File>();
+  final ImagePicker picker = ImagePicker();
+
+  editprofileImage() async {
+    final XFile? imageFile =
+        await picker.pickImage(source: ImageSource.gallery);
+
+    if (imageFile != null) {
+      if (imageFile.path.isNotEmpty) {
+        CroppedFile? croppedFile = await ImageCropper().cropImage(
+          sourcePath: imageFile.path, // Use the image file path directly
+          compressQuality: 70,
+          aspectRatioPresets: [
+            CropAspectRatioPreset.square,
+            CropAspectRatioPreset.ratio3x2,
+            CropAspectRatioPreset.original,
+            CropAspectRatioPreset.ratio4x3,
+            CropAspectRatioPreset.ratio16x9
+          ],
+        );
+        if (croppedFile != null) {
+          var tempImage = croppedFile.path;
+          setState(() {
+            image = File(tempImage);
+          });
+          accountController.editProfilePicture(profilePicture: tempImage);
+        } else {
+          print("edit picture");
+        }
+      }
+    }
+  }
+
+  String capitalize(String input) {
+    if (input.isEmpty) return input;
+
+    return input.substring(0, 1).toUpperCase() +
+        input.substring(1).toLowerCase();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -163,8 +210,11 @@ class _AccountState extends State<Account> {
                                             children: [
                                               Row(
                                                 children: [
-                                                  Image.asset(accountList[index]
-                                                      ["image"]),
+                                                  Image.asset(
+                                                    accountList[index]["image"],
+                                                    height: 20.h,
+                                                    width: 20.w,
+                                                  ),
                                                   const SizedBox(
                                                     width: 20,
                                                   ),
@@ -224,24 +274,74 @@ class _AccountState extends State<Account> {
           Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              const Stack(
+              Stack(
                 alignment: Alignment.bottomRight,
                 children: <Widget>[
-                  CircleAvatar(
-                    radius: 75,
-                    backgroundImage: AssetImage(
-                        'assets/images/Ellipse 1.png'), // Replace with your image asset path
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(150),
+                    child: GetBuilder<AccountController>(builder: (context) {
+                      return GestureDetector(
+                        onTap: () {
+                          editprofileImage();
+                        },
+                        child: Container(
+                          height: 150,
+                          width: 150,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              width: 1,
+                              color: const Color.fromRGBO(0, 0, 0, 1),
+                            ),
+                          ),
+                          child: accountController.getUserData == null
+                              ? Image.asset(
+                                  "assets/icons/Ellipse 26.png",
+                                  fit: BoxFit.cover,
+                                )
+                              : accountController.getUserData!.data.imageUrl ==
+                                      ""
+                                  ? Image.asset("assets/icons/Ellipse 26.png")
+                                  : accountController
+                                          .editProfilePictureLoading.value
+                                      ? Center(
+                                          child: CircularProgressIndicator(),
+                                        )
+                                      : Image.network(
+                                          accountController
+                                              .getUserData!.data.imageUrl,
+                                          fit: BoxFit.cover,
+                                        ),
+                        ),
+                      );
+                    }),
                   ),
-                  CircleAvatar(
-                    radius: 25,
-                    backgroundColor: Colors.white,
-                    child: Icon(Icons.edit, color: Colors.blue, size: 22),
+                  // CircleAvatar(
+                  //   radius: 75,
+                  //   backgroundImage: Image.network(
+
+                  //       'assets/images/Ellipse 1.png'),
+                  // ),
+                  GestureDetector(
+                    onTap: () {
+                      editprofileImage();
+                    },
+                    child: CircleAvatar(
+                      radius: 25,
+                      backgroundColor: Colors.white,
+                      child: GestureDetector(
+                          onTap: () {
+                            editprofileImage();
+                          },
+                          child: const Icon(Icons.edit,
+                              color: Colors.blue, size: 22)),
+                    ),
                   ),
                 ],
               ),
               SizedBox(height: 8),
               //  accountController.imageLoading.isTrue ? :
-
               // GetBuilder<AccountController>(
               //   builder: (controller) {
               //     return controller.imageLoading.value
@@ -456,7 +556,10 @@ class _AccountState extends State<Account> {
                           ),
                         ),
                         GestureDetector(
-                          onTap: () {
+                          onTap: () async {
+                            final SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+                            await prefs.setString('auth_token', "null");
                             Get.offAll(LoginScreen());
                           },
                           child: Container(

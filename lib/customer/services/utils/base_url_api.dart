@@ -17,8 +17,10 @@ abstract class BaseApiServices {
   String get getDeliveryTypeUrl => "${baseUrl}delivery_types";
   String get getAdditionlServicesUrl => "${baseUrl}additional_servicess";
   String get addBookingParcelUrl => "${baseUrl}store_booking";
-  
-
+  String get cancelBookingUrl => "${baseUrl}cancelBooking";
+  String get updateProfileUrl => "${baseUrl}updateProfile";
+  String get  getOngoing_completed_cancelledUrl => "${baseUrl}getCustomerOngoingOrders"; 
+  String get editProfileUrl => "${baseUrl}update_profile_picture";
   String get getBookingUrl => "${baseUrl}get_booking";
   String get addAddressUrl => "${baseUrl}add_address";
 }

@@ -10,6 +10,7 @@ import 'package:v_export/customer/controller/account_controller.dart';
 import 'package:v_export/customer/controller/auth_controller.dart';
 import 'package:v_export/customer/controller/home_controller.dart';
 import 'package:v_export/customer/controller/home_screen_controller.dart';
+import 'package:v_export/customer/controller/my_list_controller.dart';
 import 'package:v_export/customer/controller/parcel_controller.dart';
 import 'package:v_export/customer/splash/splash_screen.dart';
 import 'package:v_export/customer/views/auth/login/login_screen.dart';
@@ -38,6 +39,7 @@ void main() {
   Get.put(HomeScreenController());
   Get.put(EasebuszzController());
   Get.put(ParcelController());
+  Get.put(MyListController());
 }
 
 class MyApp extends StatelessWidget {
