@@ -24,16 +24,18 @@ class DroppingAddressDetails extends StatefulWidget {
 class _DroppingAddressDetailsState extends State<DroppingAddressDetails> {
   AccountController accountController = Get.find<AccountController>();
   HomeController homeController = Get.find<HomeController>();
-
   late GoogleMapController _controller;
   final Set<Marker> _markers = {};
   late loc.LocationData _currentPosition;
   loc.Location location = loc.Location(); // Use the alias
-
   static const CameraPosition _initialPosition = CameraPosition(
     target: LatLng(37.7749, -122.4194), // San Francisco
     zoom: 12,
   );
+  String fullAddress = "";
+  String areapincode = "";
+  String doorno = "";
+  List<Placemark> placemarks = [];
 
   final TextEditingController _addressController = TextEditingController();
 
@@ -46,7 +48,7 @@ class _DroppingAddressDetailsState extends State<DroppingAddressDetails> {
   getData() async {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _getLocation();
-      await accountController.getProfile();
+
       accountController.update();
     });
   }
@@ -97,17 +99,29 @@ class _DroppingAddressDetailsState extends State<DroppingAddressDetails> {
         await locationFromAddress(_addressController.text);
     if (locations.isNotEmpty) {
       final location = locations.first;
-      _controller.animateCamera(CameraUpdate.newLatLng(
-        LatLng(location.latitude, location.longitude),
-      ));
-      setState(() {
-        _markers.clear();
-        _markers.add(Marker(
-          markerId: MarkerId('enteredAddress'),
-          position: LatLng(location.latitude, location.longitude),
-          infoWindow: InfoWindow(title: _addressController.text),
+      placemarks =
+          await placemarkFromCoordinates(location.latitude, location.longitude);
+      if (placemarks.isNotEmpty) {
+        final placemark = placemarks.first;
+        fullAddress =
+            '${placemark.name}, ${placemark.subLocality}, ${placemark.locality}, ${placemark.postalCode}, ${placemark.country}';
+        areapincode = placemark.postalCode!;
+        doorno = placemark.name!;
+
+        print("7890456789054-=Location get----------66666666666");
+        print(fullAddress);
+        _controller.animateCamera(CameraUpdate.newLatLng(
+          LatLng(location.latitude, location.longitude),
         ));
-      });
+        setState(() {
+          _markers.clear();
+          _markers.add(Marker(
+            markerId: MarkerId('enteredAddress'),
+            position: LatLng(location.latitude, location.longitude),
+            infoWindow: InfoWindow(title: fullAddress),
+          ));
+        });
+      }
     }
   }
 
@@ -235,9 +249,12 @@ class _DroppingAddressDetailsState extends State<DroppingAddressDetails> {
                               onTap: () {
                                 //    _fetchAddress();
                                 homeController.updateDroppingLocation(
-                                    _addressController.text,
+                                    fullAddress,
                                     _currentPosition.latitude.toString(),
-                                    _currentPosition.longitude.toString());
+                                    _currentPosition.longitude.toString(),
+                                    areapincode,
+                                    doorno,
+                                    widget.index);
                                 // print(
                                 //     "-------------------booking latlogn----------");
                                 // print(_currentPosition.latitude.toString());

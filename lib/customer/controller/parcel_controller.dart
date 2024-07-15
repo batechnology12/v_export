@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:v_export/customer/model/add_booking_parcel_model.dart';
 import 'package:v_export/customer/model/additional_service_model.dart';
+import 'package:v_export/customer/model/booking_review_detalis_model.dart';
 import 'package:v_export/customer/model/delivery_type_model.dart';
 import 'package:v_export/customer/model/onGoing_order_model.dart';
 import 'package:v_export/customer/services/network/booking_api_service/add_booking_parcel_api_service.dart';
@@ -107,14 +108,19 @@ class ParcelController extends GetxController {
   AddBookingParcelsApiService addBookingParcelsApiService =
       AddBookingParcelsApiService();
   RxBool addBookingLoading = false.obs;
+  List<Bookingdata> data = [];
   addBookingParcel(AddBookingParcelModel addBookingParcelModel) async {
     addBookingLoading(true);
+    update();
     dio.Response<dynamic> response = await addBookingParcelsApiService
         .addBookingParcel(addBookingParcelModel);
-    addBookingLoading(false);
+
     print("---------response");
     print(response.data);
     if (response.data["status"] == true) {
+      Map<String, dynamic> bookingData = response.data["data"];
+
+      data.add(Bookingdata.fromJson(bookingData));
       Get.rawSnackbar(
         backgroundColor: Colors.green,
         messageText: Text(
@@ -122,8 +128,15 @@ class ParcelController extends GetxController {
           style: TextStyle(color: Colors.white, fontSize: 15.sp),
         ),
       );
-      Get.to(BookingDetailsScreen());
+
+      Get.to(BookingDetailsScreen(
+        bookingdatalist: data,
+      ));
+      addBookingLoading(false);
+      update();
     } else {
+      addBookingLoading(false);
+      update();
       Get.rawSnackbar(
         backgroundColor: Colors.red,
         messageText: Text(
@@ -132,5 +145,7 @@ class ParcelController extends GetxController {
         ),
       );
     }
+    addBookingLoading(false);
+    update();
   }
 }

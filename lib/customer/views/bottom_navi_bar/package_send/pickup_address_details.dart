@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dash/flutter_dash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -108,7 +109,7 @@ class _MyHomePageState extends State<PickupAddressDetails> {
         // _senderNameController.text = accountController.getUserData != null
         //     ? accountController.getUserData!.firstName
         //     : "";
-        _phoneNumberController.text = place.country ?? '';
+        // _phoneNumberController.text = place.country ?? '';
 
         print("------location address");
         print(place.name ?? '');
@@ -354,6 +355,13 @@ class _MyHomePageState extends State<PickupAddressDetails> {
                             ),
                             child: TextFormField(
                                 controller: _phoneNumberController,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter
+                                      .digitsOnly, // Allows only digits
+                                  LengthLimitingTextInputFormatter(
+                                      6), // Limits to 6 digits
+                                ],
                                 decoration: InputDecoration(
                                     hintText: 'Enter Phone Number',
                                     hintStyle: primaryfont.copyWith(
@@ -405,12 +413,25 @@ class _MyHomePageState extends State<PickupAddressDetails> {
                           InkWell(
                               onTap: () {
                                 // await _fetchAddress();
-                                Get.to(PackageSendScreen(
-                                  unitIdBlockID: [_blockUnitController.text],
-                                  pickupAdress: _postalCodeController.text,
-                                  lat: _currentPosition.latitude.toString(),
-                                  long: _currentPosition.longitude.toString(),
-                                ));
+                                if (_senderNameController.text.isNotEmpty &&
+                                    _receiverNameController.text.isNotEmpty &&
+                                    _phoneNumberController.text.isNotEmpty) {
+                                  Get.to(PackageSendScreen(
+                                    unitIdBlockID: [_blockUnitController.text],
+                                    pickupAdress: _postalCodeController.text,
+                                    lat: _currentPosition.latitude.toString(),
+                                    long: _currentPosition.longitude.toString(),
+                                    sendername: _senderNameController.text,
+                                    receivername: _receiverNameController.text,
+                                    mobilenumber: _phoneNumberController.text,
+                                  ));
+                                } else {
+                                  Get.snackbar(
+                                      "Fill all Fileds", "Please try again!",
+                                      colorText: AppColors.kwhite,
+                                      backgroundColor: Colors.red,
+                                      snackPosition: SnackPosition.BOTTOM);
+                                }
                               },
                               child: CommonContainer(
                                 name: 'Confirm',

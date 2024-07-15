@@ -351,46 +351,42 @@ class _LoginScreenState extends State<LoginScreen> {
                           ksizedbox40,
                           ksizedbox10,
                           Obx(() {
-                            return Container(
-                              height: 50.h,
-                              width: MediaQuery.of(context).size.width,
-                              child: authController.loginLoading.isTrue
-                                  ? Container(
-                                      height: 50.h,
-                                      width: size.width,
+                            return authController.loginLoading.isTrue
+                                ? Container(
+                                    height: 50.h,
+                                    width: size.width,
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius:
+                                            BorderRadius.circular(30)),
+                                    child: Center(
+                                        child: CircularProgressIndicator(
+                                      color: AppColors.kblue,
+                                    )),
+                                  )
+                                : GestureDetector(
+                                    onTap: _onLoginPressed,
+                                    child: Container(
+                                      height: 50,
+                                      width:
+                                          MediaQuery.of(context).size.width,
                                       decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(30)),
-                                      child: Center(
-                                          child: CircularProgressIndicator(
-                                        color: AppColors.kblue,
-                                      )),
-                                    )
-                                  : GestureDetector(
-                                      onTap: _onLoginPressed,
-                                      child: Container(
-                                        height: 50,
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        decoration: BoxDecoration(
-                                          color: Colors.blue,
-                                          borderRadius:
-                                              BorderRadius.circular(30),
-                                        ),
-                                        child: const Center(
-                                          child: Text(
-                                            'Login',
-                                            style: TextStyle(
-                                              fontSize: 17,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.white,
-                                            ),
+                                        color: Colors.blue,
+                                        borderRadius:
+                                            BorderRadius.circular(30),
+                                      ),
+                                      child: const Center(
+                                        child: Text(
+                                          'Login',
+                                          style: TextStyle(
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.white,
                                           ),
                                         ),
                                       ),
                                     ),
-                            );
+                                  );
                           }),
 
                           // ksizedbox20,

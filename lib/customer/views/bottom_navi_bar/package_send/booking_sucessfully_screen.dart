@@ -26,8 +26,6 @@ class _BookingSucessfullyScreenState extends State<BookingSucessfullyScreen> {
     });
   }
 
-  
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

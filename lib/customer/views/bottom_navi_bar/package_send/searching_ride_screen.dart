@@ -12,17 +12,17 @@ class SearchingRideScreen extends StatefulWidget {
 }
 
 class _SearchingRideScreenState extends State<SearchingRideScreen> {
-
   @override
   void initState() {
     super.initState();
     // Start a timer that will navigate to the second page after 5 seconds
-    Timer(Duration(seconds: 5), () {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) =>DriverDetailsScreen()),
-      );
-    });
+    // Timer(Duration(seconds: 5), () {
+    //   Navigator.of(context).pushReplacement(
+    //     MaterialPageRoute(builder: (context) =>DriverDetailsScreen()),
+    //   );
+    // });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,20 +31,22 @@ class _SearchingRideScreenState extends State<SearchingRideScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image.asset('assets/icons/Truck.gif',
-            fit: BoxFit.fitHeight,
-            height: 120,),
-
-            Text('Searching Ride...',
-            style: secondoryfont.copyWith(
-              fontWeight: FontWeight.w700,
-              fontSize: 18
-            ),),
-            Text('This my take a few seconds...',
-            style: thirdsfont.copyWith(
-              fontWeight: FontWeight.w400,
-
-            ),)
+            Image.asset(
+              'assets/icons/Truck.gif',
+              fit: BoxFit.fitHeight,
+              height: 120,
+            ),
+            Text(
+              'Searching Ride...',
+              style: secondoryfont.copyWith(
+                  fontWeight: FontWeight.w700, fontSize: 18),
+            ),
+            Text(
+              'This my take a few seconds...',
+              style: thirdsfont.copyWith(
+                fontWeight: FontWeight.w400,
+              ),
+            )
           ],
         ),
       ),

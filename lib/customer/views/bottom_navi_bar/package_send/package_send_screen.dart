@@ -19,12 +19,19 @@ class PackageSendScreen extends StatefulWidget {
   String lat;
   String long;
   List unitIdBlockID;
+  String sendername;
+  String receivername;
+  String mobilenumber;
+
   PackageSendScreen(
       {super.key,
       required this.pickupAdress,
       required this.lat,
       required this.long,
-      required this.unitIdBlockID});
+      required this.unitIdBlockID,
+      required this.sendername,
+      required this.receivername,
+      required this.mobilenumber});
 
   @override
   State<PackageSendScreen> createState() => _PackageSendScreenState();
@@ -174,17 +181,12 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
             ),
           ),
         ),
-        title: GestureDetector(
-          onTap: () {
-          //  showListViewDialog(context);
-          },
-          child: Text(
-            'Parcel Booking',
-            style: primaryfont.copyWith(
-                fontSize: 21.sp,
-                color: Color(0xffF4F8FF),
-                fontWeight: FontWeight.w600),
-          ),
+        title: Text(
+          'Parcel Booking',
+          style: primaryfont.copyWith(
+              fontSize: 21.sp,
+              color: Color(0xffF4F8FF),
+              fontWeight: FontWeight.w600),
         ),
       ),
       body: Form(
@@ -243,27 +245,95 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                         color: AppColors.kgrey)
                                   ],
                                   borderRadius: BorderRadius.circular(5)),
-                              child: ListView.builder(
-                                padding: EdgeInsets.zero,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: homeController.entries.length,
-                                shrinkWrap: true,
-                                itemBuilder: (context, index) {
-                                  return Column(
-                                    children: [
-                                      if (index == 0)
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                            right: 10,
-                                            left: 10,
+                              child: Obx(
+                                () => ListView.builder(
+                                  padding: EdgeInsets.zero,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: homeController.entries.length,
+                                  shrinkWrap: true,
+                                  itemBuilder: (context, index) {
+                                    return Column(
+                                      children: [
+                                        if (index == 0)
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                              right: 10,
+                                              left: 10,
+                                            ),
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                Get.to(PickupAddressDetails());
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    EdgeInsets.only(right: 5),
+                                                height: 50.h,
+                                                width: size.width,
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                      color: Colors.grey
+                                                          .withOpacity(.32),
+                                                      width: 1),
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(5),
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    const Icon(
+                                                      Icons.location_on,
+                                                      color: Color(0xffF74354),
+                                                    ),
+                                                    const VerticalDivider(
+                                                      indent: 10,
+                                                      thickness: 1,
+                                                      width: 5,
+                                                      color: Color(0xff455A64),
+                                                      endIndent: 10,
+                                                    ),
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 5),
+                                                      child: GestureDetector(
+                                                        onTap: () {
+                                                          Get.to(
+                                                              PickupAddressDetails());
+                                                        },
+                                                        child: Container(
+                                                          width: 250.w,
+                                                          child: Text(
+                                                            widget.pickupAdress,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            style: primaryfont
+                                                                .copyWith(
+                                                              fontSize: 13.sp,
+                                                              color: Color(
+                                                                  0xff455A64),
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
                                           ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10, vertical: 10),
                                           child: GestureDetector(
                                             onTap: () {
-                                              Get.to(PickupAddressDetails());
+                                              Get.to(DroppingAddressDetails(
+                                                  index: index));
                                             },
                                             child: Container(
-                                              padding:
-                                                  EdgeInsets.only(right: 5),
                                               height: 50.h,
                                               width: size.width,
                                               decoration: BoxDecoration(
@@ -279,7 +349,7 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                 children: [
                                                   const Icon(
                                                     Icons.location_on,
-                                                    color: Color(0xffF74354),
+                                                    color: Color(0xff038484),
                                                   ),
                                                   const VerticalDivider(
                                                     indent: 10,
@@ -289,219 +359,160 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                     endIndent: 10,
                                                   ),
                                                   Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 5),
+                                                    padding: EdgeInsets.only(
+                                                        left: 5),
                                                     child: GestureDetector(
-                                                      onTap: () {
-                                                        Get.to(
-                                                            PickupAddressDetails());
-                                                      },
-                                                      child: Container(
-                                                        width: 250.w,
-                                                        child: Text(
-                                                          widget.pickupAdress,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          style: primaryfont
-                                                              .copyWith(
-                                                            fontSize: 13.sp,
-                                                            color: Color(
-                                                                0xff455A64),
-                                                            fontWeight:
-                                                                FontWeight.w500,
+                                                        onTap: () {
+                                                          Get.to(
+                                                              DroppingAddressDetails(
+                                                                  index:
+                                                                      index));
+                                                        },
+                                                        child: Obx(
+                                                          () => Container(
+                                                            width: 250.w,
+                                                            child: Text(
+                                                              homeController
+                                                                          .droppingLocations
+                                                                          .length >
+                                                                      index
+                                                                  ? homeController
+                                                                          .droppingLocations[
+                                                                      index]
+                                                                  : 'Enter Drop here...',
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                              style: primaryfont
+                                                                  .copyWith(
+                                                                fontSize: 13.sp,
+                                                                color: const Color(
+                                                                    0xff455A64),
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                              ),
+                                                            ),
                                                           ),
-                                                        ),
-                                                      ),
-                                                    ),
+                                                        )),
                                                   ),
                                                 ],
                                               ),
                                             ),
                                           ),
                                         ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 10, vertical: 10),
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            Get.to(DroppingAddressDetails(
-                                                index: index));
-                                          },
-                                          child: Container(
-                                            height: 50.h,
-                                            width: size.width,
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color: Colors.grey
-                                                      .withOpacity(.32),
-                                                  width: 1),
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(5),
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                const Icon(
-                                                  Icons.location_on,
-                                                  color: Color(0xff038484),
-                                                ),
-                                                const VerticalDivider(
-                                                  indent: 10,
-                                                  thickness: 1,
-                                                  width: 5,
-                                                  color: Color(0xff455A64),
-                                                  endIndent: 10,
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      EdgeInsets.only(left: 5),
-                                                  child: GestureDetector(
-                                                      onTap: () {
-                                                        Get.to(
-                                                            DroppingAddressDetails(
-                                                                index: index));
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                            right: 10,
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment: homeController
+                                                            .entries.length -
+                                                        1 ==
+                                                    index
+                                                ? MainAxisAlignment.spaceBetween
+                                                : MainAxisAlignment.end,
+                                            children: [
+                                              if (homeController
+                                                          .entries.length -
+                                                      1 ==
+                                                  index)
+                                                Row(
+                                                  children: [
+                                                    Checkbox(
+                                                      value: homeController
+                                                          .isCheck.value,
+                                                      onChanged: (value) {
+                                                        setState(() {
+                                                          homeController
+                                                              .toggleCheck(
+                                                                  value!);
+                                                        });
                                                       },
-                                                      child: Obx(
-                                                        () => Container(
-                                                          width: 250.w,
+                                                    ),
+                                                    Text(
+                                                      'Round Trip',
+                                                      style:
+                                                          primaryfont.copyWith(
+                                                        fontSize: 17.sp,
+                                                        color:
+                                                            Color(0xff455A64),
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              index ==
+                                                      homeController
+                                                              .entries.length -
+                                                          1
+                                                  ? Row(
+                                                      children: [
+                                                        GestureDetector(
+                                                          onTap: () {
+                                                            setState(() {
+                                                              homeController
+                                                                  .addEntry();
+                                                            });
+                                                          },
+                                                          child: Icon(
+                                                            Icons.add,
+                                                            color: Color(
+                                                                0xff0072E8),
+                                                            size: 19.sp,
+                                                          ),
+                                                        ),
+                                                        GestureDetector(
+                                                          onTap: () {
+                                                            setState(() {
+                                                              homeController
+                                                                  .addEntry();
+                                                              homeController
+                                                                  .addParcelList();
+                                                            });
+                                                          },
                                                           child: Text(
-                                                            homeController
-                                                                        .droppingLocations
-                                                                        .length >
-                                                                    index
-                                                                ? homeController
-                                                                        .droppingLocations[
-                                                                    index]
-                                                                : 'Enter Drop here...',
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
+                                                            'Add Location',
                                                             style: primaryfont
                                                                 .copyWith(
-                                                              fontSize: 13.sp,
-                                                              color: const Color(
-                                                                  0xff455A64),
+                                                              fontSize: 17.sp,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .w500,
+                                                              color: const Color(
+                                                                  0xff0072E8),
                                                             ),
                                                           ),
                                                         ),
-                                                      )),
-                                                ),
-                                              ],
-                                            ),
+                                                      ],
+                                                    )
+                                                  : Row(
+                                                      children: [
+                                                        IconButton(
+                                                            onPressed: () {
+                                                              setState(() {
+                                                                homeController
+                                                                    .removeEntry(
+                                                                        index);
+                                                                homeController
+                                                                    .removeParcelList(
+                                                                        index);
+                                                              });
+                                                            },
+                                                            icon: const Icon(
+                                                              Icons.delete,
+                                                              color: Colors.red,
+                                                            ))
+                                                      ],
+                                                    ),
+                                            ],
                                           ),
                                         ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                          right: 10,
-                                        ),
-                                        child: Row(
-                                          mainAxisAlignment: homeController
-                                                          .entries.length -
-                                                      1 ==
-                                                  index
-                                              ? MainAxisAlignment.spaceBetween
-                                              : MainAxisAlignment.end,
-                                          children: [
-                                            if (homeController.entries.length -
-                                                    1 ==
-                                                index)
-                                              Row(
-                                                children: [
-                                                  Checkbox(
-                                                    value: homeController
-                                                        .isCheck.value,
-                                                    onChanged: (value) {
-                                                      setState(() {
-                                                        homeController
-                                                            .toggleCheck(
-                                                                value!);
-                                                      });
-                                                    },
-                                                  ),
-                                                  Text(
-                                                    'Round Trip',
-                                                    style: primaryfont.copyWith(
-                                                      fontSize: 17.sp,
-                                                      color: Color(0xff455A64),
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            index ==
-                                                    homeController
-                                                            .entries.length -
-                                                        1
-                                                ? Row(
-                                                    children: [
-                                                      GestureDetector(
-                                                        onTap: () {
-                                                          setState(() {
-                                                            homeController
-                                                                .addEntry(); // Add new entry
-                                                          });
-                                                        },
-                                                        child: Icon(
-                                                          Icons.add,
-                                                          color:
-                                                              Color(0xff0072E8),
-                                                          size: 19.sp,
-                                                        ),
-                                                      ),
-                                                      GestureDetector(
-                                                        onTap: () {
-                                                          setState(() {
-                                                            homeController
-                                                                .addEntry();
-                                                            homeController
-                                                                .addParcelList();
-                                                          });
-                                                        },
-                                                        child: Text(
-                                                          'Add Location',
-                                                          style: primaryfont
-                                                              .copyWith(
-                                                            fontSize: 17.sp,
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                            color: const Color(
-                                                                0xff0072E8),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  )
-                                                : Row(
-                                                    children: [
-                                                      IconButton(
-                                                          onPressed: () {
-                                                            setState(() {
-                                                              homeController
-                                                                  .removeEntry(
-                                                                      index);
-                                                              homeController
-                                                                  .removeParcelList(
-                                                                      index);
-                                                            });
-                                                          },
-                                                          icon: const Icon(
-                                                            Icons.delete,
-                                                            color: Colors.red,
-                                                          ))
-                                                    ],
-                                                  ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                },
+                                      ],
+                                    );
+                                  },
+                                ),
                               ),
                             ),
                           ),
@@ -560,8 +571,8 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                   : formatDateTime,
                                               style: primaryfont.copyWith(
                                                   color: Color(0xff455A64),
-                                                  fontSize: 12.sp,
-                                                  fontWeight: FontWeight.w500),
+                                                  fontSize: 14.sp,
+                                                  fontWeight: FontWeight.bold),
                                             ),
                                             GestureDetector(
                                                 onTap: () {
@@ -792,375 +803,23 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                       MainAxisAlignment
                                                           .spaceBetween,
                                                   children: [
-                                                    Container(
-                                                      height: 45.h,
-                                                      width: 60.w,
-                                                      decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(4),
-                                                      ),
-                                                      child: TextFormField(
-                                                        controller:
-                                                            parcellengthController,
-                                                        keyboardType:
-                                                            TextInputType
-                                                                .number,
-                                                        cursorColor:
-                                                            Colors.black,
-                                                        style: primaryfont
-                                                            .copyWith(
-                                                          fontSize: 14.sp,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          color: Colors
-                                                              .black, // Ensure the text color is visible
-                                                        ),
-                                                        decoration:
-                                                            InputDecoration(
-                                                          contentPadding:
-                                                              const EdgeInsets
-                                                                  .only(
-                                                                  top: 5,
-                                                                  left: 5),
-                                                          hintText: 'L',
-                                                          hintStyle: primaryfont
-                                                              .copyWith(
-                                                            fontSize: 14.sp,
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                            color: Color(
-                                                                0xff455A64),
-                                                          ),
-                                                          border:
-                                                              InputBorder.none,
-                                                          enabledBorder:
-                                                              OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        4),
-                                                            borderSide:
-                                                                BorderSide(
-                                                              width: 1,
-                                                              color: Colors.grey
-                                                                  .withOpacity(
-                                                                      .32),
-                                                            ),
-                                                          ),
-                                                          focusedBorder:
-                                                              OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        4),
-                                                            borderSide:
-                                                                BorderSide(
-                                                              width: 1,
-                                                              color: Colors.grey
-                                                                  .withOpacity(
-                                                                      .32),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
+                                                    _buildTextField(
+                                                        parcellengthController,
+                                                        'L'),
                                                     Text("X"),
-                                                    Container(
-                                                      height: 45.h,
-                                                      width: 60.w,
-                                                      decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(4),
-                                                      ),
-                                                      child: TextFormField(
-                                                        controller:
-                                                            parcelwidthController,
-                                                        keyboardType:
-                                                            TextInputType
-                                                                .number,
-                                                        cursorColor:
-                                                            Colors.black,
-                                                        style: primaryfont
-                                                            .copyWith(
-                                                          fontSize: 14.sp,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          color: Colors.black,
-                                                        ),
-                                                        decoration:
-                                                            InputDecoration(
-                                                          // suffixIcon: Padding(
-                                                          //   padding: const EdgeInsets.only(
-                                                          //       left: 16, top: 12),
-                                                          //   child: Text(
-                                                          //     "cm",
-                                                          //     style: primaryfont.copyWith(
-                                                          //       fontSize: 14.sp,
-                                                          //       fontWeight: FontWeight.w500,
-                                                          //       color: Color(0xff455A64),
-                                                          //     ),
-                                                          //   ),
-                                                          // ),
-                                                          contentPadding:
-                                                              const EdgeInsets
-                                                                  .only(
-                                                                  top: 5,
-                                                                  left: 5),
-                                                          hintText: 'W',
-                                                          hintStyle: primaryfont
-                                                              .copyWith(
-                                                            fontSize: 14.sp,
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                            color: Color(
-                                                                0xff455A64),
-                                                          ),
-                                                          border:
-                                                              InputBorder.none,
-                                                          enabledBorder:
-                                                              OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        4),
-                                                            borderSide:
-                                                                BorderSide(
-                                                              width: 1,
-                                                              color: Colors.grey
-                                                                  .withOpacity(
-                                                                      .32),
-                                                            ),
-                                                          ),
-                                                          focusedBorder:
-                                                              OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        4),
-                                                            borderSide:
-                                                                BorderSide(
-                                                              width: 1,
-                                                              color: Colors.grey
-                                                                  .withOpacity(
-                                                                      .32),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
+                                                    _buildTextField(
+                                                        parcelwidthController,
+                                                        'W'),
                                                     Text("X"),
-                                                    Container(
-                                                      height: 45.h,
-                                                      width: 60.w,
-                                                      decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(4),
-                                                      ),
-                                                      child: TextFormField(
-                                                        controller:
-                                                            parcelheightController,
-                                                        keyboardType:
-                                                            TextInputType
-                                                                .number,
-                                                        cursorColor:
-                                                            Colors.black,
-                                                        style: primaryfont
-                                                            .copyWith(
-                                                          fontSize: 14.sp,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          color: Colors.black,
-                                                        ),
-                                                        decoration:
-                                                            InputDecoration(
-                                                          contentPadding:
-                                                              const EdgeInsets
-                                                                  .only(
-                                                                  top: 5,
-                                                                  left: 5),
-                                                          hintText: 'h',
-                                                          hintStyle: primaryfont
-                                                              .copyWith(
-                                                            fontSize: 14.sp,
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                            color: const Color(
-                                                                0xff455A64),
-                                                          ),
-                                                          border:
-                                                              InputBorder.none,
-                                                          enabledBorder:
-                                                              OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        4),
-                                                            borderSide:
-                                                                BorderSide(
-                                                              width: 1,
-                                                              color: Colors.grey
-                                                                  .withOpacity(
-                                                                      .32),
-                                                            ),
-                                                          ),
-                                                          focusedBorder:
-                                                              OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        4),
-                                                            borderSide:
-                                                                BorderSide(
-                                                              width: 1,
-                                                              color: Colors.grey
-                                                                  .withOpacity(
-                                                                      .32),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    Container(
-                                                      height: 45.h,
-                                                      width: 60.w,
-                                                      decoration:
-                                                          const BoxDecoration(
-                                                              color: AppColors
-                                                                  .kwhite),
-                                                      child: TextFormField(
-                                                        controller:
-                                                            parcelkgController,
-                                                        decoration:
-                                                            InputDecoration(
-                                                          contentPadding:
-                                                              const EdgeInsets
-                                                                  .only(
-                                                                  top: 5,
-                                                                  left: 10),
-                                                          hintText: 'Kg',
-                                                          hintStyle: primaryfont
-                                                              .copyWith(
-                                                                  fontSize:
-                                                                      14.sp,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500,
-                                                                  color: Color(
-                                                                      0xff455A64)),
-                                                          border:
-                                                              OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        4),
-                                                            borderSide:
-                                                                BorderSide(
-                                                              width: 1,
-                                                              color: Colors.grey
-                                                                  .withOpacity(
-                                                                      .32),
-                                                            ),
-                                                          ),
-                                                          enabledBorder:
-                                                              OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        4),
-                                                            borderSide:
-                                                                BorderSide(
-                                                              width: 1,
-                                                              color: Colors.grey
-                                                                  .withOpacity(
-                                                                      .32),
-                                                            ),
-                                                          ),
-                                                          focusedBorder:
-                                                              OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        4),
-                                                            borderSide:
-                                                                const BorderSide(
-                                                              width: 1,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    Container(
-                                                      height: 45.h,
-                                                      width: 60.w,
-                                                      decoration:
-                                                          const BoxDecoration(
-                                                              color: AppColors
-                                                                  .kwhite),
-                                                      child: TextFormField(
-                                                        controller:
-                                                            quantityController,
-                                                        decoration:
-                                                            InputDecoration(
-                                                          contentPadding:
-                                                              const EdgeInsets
-                                                                  .only(
-                                                                  top: 5,
-                                                                  left: 10),
-                                                          hintText: 'Qty',
-                                                          hintStyle: primaryfont
-                                                              .copyWith(
-                                                                  fontSize:
-                                                                      14.sp,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500,
-                                                                  color: Color(
-                                                                      0xff455A64)),
-                                                          border:
-                                                              OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        4),
-                                                            borderSide:
-                                                                BorderSide(
-                                                              width: 1,
-                                                              color: Colors.grey
-                                                                  .withOpacity(
-                                                                      .32),
-                                                            ),
-                                                          ),
-                                                          enabledBorder:
-                                                              OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        4),
-                                                            borderSide:
-                                                                BorderSide(
-                                                              width: 1,
-                                                              color: Colors.grey
-                                                                  .withOpacity(
-                                                                      .32),
-                                                            ),
-                                                          ),
-                                                          focusedBorder:
-                                                              OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        4),
-                                                            borderSide:
-                                                                const BorderSide(
-                                                              width: 1,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
+                                                    _buildTextField(
+                                                        parcelheightController,
+                                                        'H'),
+                                                    _buildTextField(
+                                                        parcelkgController,
+                                                        'Kg'),
+                                                    _buildTextField(
+                                                        quantityController,
+                                                        'Qty'),
                                                   ],
                                                 ),
                                               ),
@@ -1186,8 +845,8 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                     child: TextFormField(
                                       controller: parcelitemController,
                                       decoration: InputDecoration(
-                                        contentPadding: const EdgeInsets.only(
-                                            top: 5, left: 10),
+                                        contentPadding:
+                                            const EdgeInsets.only(left: 10),
                                         hintText: 'Items',
                                         hintStyle: primaryfont.copyWith(
                                             fontSize: 15.sp,
@@ -1232,7 +891,7 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                     'Pickup Time',
                                     style: primaryfont.copyWith(
                                         fontSize: 15.sp,
-                                        fontWeight: FontWeight.w600,
+                                        fontWeight: FontWeight.bold,
                                         color: Color(0xff455A64)),
                                   ),
                                   ksizedbox20,
@@ -1276,9 +935,10 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                         : "${pickTime.hour < 10 ? "0${pickTime.hour}" : pickTime.hour}:${pickTime.minute.remainder(60) < 10 ? "0${pickTime.minute.remainder(60)}" : '${pickTime.minute.remainder(60)}:00'}"
                                                             .toString(),
                                                 style: primaryfont.copyWith(
-                                                    fontSize: 9.sp,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: Color(0xff455A64)),
+                                                    fontSize: 12.sp,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: const Color.fromARGB(
+                                                        255, 2, 3, 3)),
                                               ),
                                               IconButton(
                                                   onPressed: () {
@@ -1341,8 +1001,8 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                 // "${dropTime.hour < 10 ? "0${dropTime.hour}" : dropTime.hour}:${dropTime.minute.remainder(60) < 10 ? "0${dropTime.minute.remainder(60)}" : '${dropTime.minute.remainder(60)}'} - ${dropTime.hour < 10 ? "0${dropTime.hour}" : dropTime.hour}:${dropTime.minute.remainder(60) < 10 ? "0${dropTime.minute.remainder(60)}" : '${dropTime.minute.remainder(60)}'}"
                                                 //     .toString(),
                                                 style: primaryfont.copyWith(
-                                                    fontSize: 9.sp,
-                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 12.sp,
+                                                    fontWeight: FontWeight.w700,
                                                     color: const Color.fromARGB(
                                                         255, 2, 3, 3)),
                                               ),
@@ -1370,25 +1030,27 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                           ksizedbox20,
                           InkWell(
                               onTap: () {
+                                List<String> droppingAddressList =
+                                    homeController.droppingLocations.toList();
                                 Get.to(ScheduleDeliveryScreen(
                                   pickuplatitude: widget.lat,
                                   pickuplogitude: widget.long,
-                                  droppingLatitude: homeController.droppingLat,
-                                  droppingLogitude: homeController.dropLong,
+                                  droppingLatitude: homeController.droppingLats,
+                                  droppingLogitude: homeController.dropLongs,
                                   bookingDate: formatDateTime,
                                   deliverytype: deliveryId.toString(),
-                                  length: [parcellengthController.text],
-                                  width: [parcelwidthController.text],
-                                  height: [parcelheightController.text],
-                                  qty: [quantityController.text],
-                                  kg: [parcelkgController.text],
-                                  parcelItems: [parcelitemController.text],
+                                  length: parcellengthController.text,
+                                  width: parcelwidthController.text,
+                                  height: parcelheightController.text,
+                                  qty: int.parse(quantityController.text),
+                                  kg: parcelkgController.text,
+                                  parcelItems: parcelitemController.text,
                                   unitIdBlockId: [
                                     widget.unitIdBlockID.toString()
                                   ],
                                   pickTimeListFrom: [
                                     pickTime.toString(),
-                                    _updatedTime!.toString()
+                                    _updatedTime.toString()
                                   ],
                                   pickTimeListTo: [
                                     updatedroptime1.toString(),
@@ -1396,6 +1058,11 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                   ],
                                   pickTimeFrom: pickTime.toString(),
                                   pickTimeTo: dropTime.toString(),
+                                  sendername: widget.sendername,
+                                  phonenumber: widget.mobilenumber,
+                                  droppingaddress: droppingAddressList,
+                                  arpincode: homeController.pincodes,
+                                  doorname: homeController.doornames,
                                 ));
                               },
                               child: CommonContainer(
@@ -1415,5 +1082,416 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
     );
   }
 
- 
+  Widget _buildTextField(TextEditingController controller, String hintText) {
+    return Container(
+      height: 35,
+      width: 60,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(width: 1, color: Colors.grey.withOpacity(0.32)),
+      ),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: TextInputType.number,
+        cursorColor: Colors.black,
+        style: TextStyle(
+          fontSize: 13.sp,
+          fontWeight: FontWeight.w500,
+          color: Colors.black,
+        ),
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.only(top: 0, left: 5, bottom: 15),
+          hintText: hintText,
+          hintStyle: TextStyle(
+            fontSize: 13.sp,
+            fontWeight: FontWeight.w500,
+            color: Color(0xff455A64),
+          ),
+          border: InputBorder.none,
+        ),
+      ),
+    );
+  }
 }
+
+
+// Padding(
+                                              //   padding:
+                                              //       EdgeInsets.only(bottom: 10),
+                                              //   child: Row(
+                                              //     mainAxisAlignment:
+                                              //         MainAxisAlignment
+                                              //             .spaceBetween,
+                                              //     children: [
+                                              //       Container(
+                                              //         height: 45.h,
+                                              //         width: 60.w,
+                                              //         decoration: BoxDecoration(
+                                              //           borderRadius:
+                                              //               BorderRadius
+                                              //                   .circular(4),
+                                              //         ),
+                                              //         child: TextFormField(
+                                              //           controller:
+                                              //               parcellengthController,
+                                              //           keyboardType:
+                                              //               TextInputType
+                                              //                   .number,
+                                              //           cursorColor:
+                                              //               Colors.black,
+                                              //           style: primaryfont
+                                              //               .copyWith(
+                                              //             fontSize: 14.sp,
+                                              //             fontWeight:
+                                              //                 FontWeight.w500,
+                                              //             color: Colors
+                                              //                 .black, // Ensure the text color is visible
+                                              //           ),
+                                              //           decoration:
+                                              //               InputDecoration(
+                                              //             contentPadding:
+                                              //                 const EdgeInsets
+                                              //                     .only(
+                                              //                     top: 5,
+                                              //                     left: 5),
+                                              //             hintText: 'L',
+                                              //             hintStyle: primaryfont
+                                              //                 .copyWith(
+                                              //               fontSize: 14.sp,
+                                              //               fontWeight:
+                                              //                   FontWeight.w500,
+                                              //               color: Color(
+                                              //                   0xff455A64),
+                                              //             ),
+                                              //             border:
+                                              //                 InputBorder.none,
+                                              //             enabledBorder:
+                                              //                 OutlineInputBorder(
+                                              //               borderRadius:
+                                              //                   BorderRadius
+                                              //                       .circular(
+                                              //                           4),
+                                              //               borderSide:
+                                              //                   BorderSide(
+                                              //                 width: 1,
+                                              //                 color: Colors.grey
+                                              //                     .withOpacity(
+                                              //                         .32),
+                                              //               ),
+                                              //             ),
+                                              //             focusedBorder:
+                                              //                 OutlineInputBorder(
+                                              //               borderRadius:
+                                              //                   BorderRadius
+                                              //                       .circular(
+                                              //                           4),
+                                              //               borderSide:
+                                              //                   BorderSide(
+                                              //                 width: 1,
+                                              //                 color: Colors.grey
+                                              //                     .withOpacity(
+                                              //                         .32),
+                                              //               ),
+                                              //             ),
+                                              //           ),
+                                              //         ),
+                                              //       ),
+                                              //       Text("X"),
+                                              //       Container(
+                                              //         height: 45.h,
+                                              //         width: 60.w,
+                                              //         decoration: BoxDecoration(
+                                              //           borderRadius:
+                                              //               BorderRadius
+                                              //                   .circular(4),
+                                              //         ),
+                                              //         child: TextFormField(
+                                              //           controller:
+                                              //               parcelwidthController,
+                                              //           keyboardType:
+                                              //               TextInputType
+                                              //                   .number,
+                                              //           cursorColor:
+                                              //               Colors.black,
+                                              //           style: primaryfont
+                                              //               .copyWith(
+                                              //             fontSize: 14.sp,
+                                              //             fontWeight:
+                                              //                 FontWeight.w500,
+                                              //             color: Colors.black,
+                                              //           ),
+                                              //           decoration:
+                                              //               InputDecoration(
+                                              //             // suffixIcon: Padding(
+                                              //             //   padding: const EdgeInsets.only(
+                                              //             //       left: 16, top: 12),
+                                              //             //   child: Text(
+                                              //             //     "cm",
+                                              //             //     style: primaryfont.copyWith(
+                                              //             //       fontSize: 14.sp,
+                                              //             //       fontWeight: FontWeight.w500,
+                                              //             //       color: Color(0xff455A64),
+                                              //             //     ),
+                                              //             //   ),
+                                              //             // ),
+                                              //             contentPadding:
+                                              //                 const EdgeInsets
+                                              //                     .only(
+                                              //                     top: 5,
+                                              //                     left: 5),
+                                              //             hintText: 'W',
+                                              //             hintStyle: primaryfont
+                                              //                 .copyWith(
+                                              //               fontSize: 14.sp,
+                                              //               fontWeight:
+                                              //                   FontWeight.w500,
+                                              //               color: Color(
+                                              //                   0xff455A64),
+                                              //             ),
+                                              //             border:
+                                              //                 InputBorder.none,
+                                              //             enabledBorder:
+                                              //                 OutlineInputBorder(
+                                              //               borderRadius:
+                                              //                   BorderRadius
+                                              //                       .circular(
+                                              //                           4),
+                                              //               borderSide:
+                                              //                   BorderSide(
+                                              //                 width: 1,
+                                              //                 color: Colors.grey
+                                              //                     .withOpacity(
+                                              //                         .32),
+                                              //               ),
+                                              //             ),
+                                              //             focusedBorder:
+                                              //                 OutlineInputBorder(
+                                              //               borderRadius:
+                                              //                   BorderRadius
+                                              //                       .circular(
+                                              //                           4),
+                                              //               borderSide:
+                                              //                   BorderSide(
+                                              //                 width: 1,
+                                              //                 color: Colors.grey
+                                              //                     .withOpacity(
+                                              //                         .32),
+                                              //               ),
+                                              //             ),
+                                              //           ),
+                                              //         ),
+                                              //       ),
+                                              //       Text("X"),
+                                              //       Container(
+                                              //         height: 45.h,
+                                              //         width: 60.w,
+                                              //         decoration: BoxDecoration(
+                                              //           borderRadius:
+                                              //               BorderRadius
+                                              //                   .circular(4),
+                                              //         ),
+                                              //         child: TextFormField(
+                                              //           controller:
+                                              //               parcelheightController,
+                                              //           keyboardType:
+                                              //               TextInputType
+                                              //                   .number,
+                                              //           cursorColor:
+                                              //               Colors.black,
+                                              //           style: primaryfont
+                                              //               .copyWith(
+                                              //             fontSize: 14.sp,
+                                              //             fontWeight:
+                                              //                 FontWeight.w500,
+                                              //             color: Colors.black,
+                                              //           ),
+                                              //           decoration:
+                                              //               InputDecoration(
+                                              //             contentPadding:
+                                              //                 const EdgeInsets
+                                              //                     .only(
+                                              //                     top: 5,
+                                              //                     left: 5),
+                                              //             hintText: 'h',
+                                              //             hintStyle: primaryfont
+                                              //                 .copyWith(
+                                              //               fontSize: 14.sp,
+                                              //               fontWeight:
+                                              //                   FontWeight.w500,
+                                              //               color: const Color(
+                                              //                   0xff455A64),
+                                              //             ),
+                                              //             border:
+                                              //                 InputBorder.none,
+                                              //             enabledBorder:
+                                              //                 OutlineInputBorder(
+                                              //               borderRadius:
+                                              //                   BorderRadius
+                                              //                       .circular(
+                                              //                           4),
+                                              //               borderSide:
+                                              //                   BorderSide(
+                                              //                 width: 1,
+                                              //                 color: Colors.grey
+                                              //                     .withOpacity(
+                                              //                         .32),
+                                              //               ),
+                                              //             ),
+                                              //             focusedBorder:
+                                              //                 OutlineInputBorder(
+                                              //               borderRadius:
+                                              //                   BorderRadius
+                                              //                       .circular(
+                                              //                           4),
+                                              //               borderSide:
+                                              //                   BorderSide(
+                                              //                 width: 1,
+                                              //                 color: Colors.grey
+                                              //                     .withOpacity(
+                                              //                         .32),
+                                              //               ),
+                                              //             ),
+                                              //           ),
+                                              //         ),
+                                              //       ),
+                                              //       Container(
+                                              //         height: 45.h,
+                                              //         width: 60.w,
+                                              //         decoration:
+                                              //             const BoxDecoration(
+                                              //                 color: AppColors
+                                              //                     .kwhite),
+                                              //         child: TextFormField(
+                                              //           controller:
+                                              //               parcelkgController,
+                                              //           decoration:
+                                              //               InputDecoration(
+                                              //             contentPadding:
+                                              //                 const EdgeInsets
+                                              //                     .only(
+                                              //                     top: 5,
+                                              //                     left: 10),
+                                              //             hintText: 'Kg',
+                                              //             hintStyle: primaryfont
+                                              //                 .copyWith(
+                                              //                     fontSize:
+                                              //                         14.sp,
+                                              //                     fontWeight:
+                                              //                         FontWeight
+                                              //                             .w500,
+                                              //                     color: Color(
+                                              //                         0xff455A64)),
+                                              //             border:
+                                              //                 OutlineInputBorder(
+                                              //               borderRadius:
+                                              //                   BorderRadius
+                                              //                       .circular(
+                                              //                           4),
+                                              //               borderSide:
+                                              //                   BorderSide(
+                                              //                 width: 1,
+                                              //                 color: Colors.grey
+                                              //                     .withOpacity(
+                                              //                         .32),
+                                              //               ),
+                                              //             ),
+                                              //             enabledBorder:
+                                              //                 OutlineInputBorder(
+                                              //               borderRadius:
+                                              //                   BorderRadius
+                                              //                       .circular(
+                                              //                           4),
+                                              //               borderSide:
+                                              //                   BorderSide(
+                                              //                 width: 1,
+                                              //                 color: Colors.grey
+                                              //                     .withOpacity(
+                                              //                         .32),
+                                              //               ),
+                                              //             ),
+                                              //             focusedBorder:
+                                              //                 OutlineInputBorder(
+                                              //               borderRadius:
+                                              //                   BorderRadius
+                                              //                       .circular(
+                                              //                           4),
+                                              //               borderSide:
+                                              //                   const BorderSide(
+                                              //                 width: 1,
+                                              //               ),
+                                              //             ),
+                                              //           ),
+                                              //         ),
+                                              //       ),
+                                              //       Container(
+                                              //         height: 45.h,
+                                              //         width: 60.w,
+                                              //         decoration:
+                                              //             const BoxDecoration(
+                                              //                 color: AppColors
+                                              //                     .kwhite),
+                                              //         child: TextFormField(
+                                              //           controller:
+                                              //               quantityController,
+                                              //           decoration:
+                                              //               InputDecoration(
+                                              //             contentPadding:
+                                              //                 const EdgeInsets
+                                              //                     .only(
+                                              //                     top: 5,
+                                              //                     left: 10),
+                                              //             hintText: 'Qty',
+                                              //             hintStyle: primaryfont
+                                              //                 .copyWith(
+                                              //                     fontSize:
+                                              //                         14.sp,
+                                              //                     fontWeight:
+                                              //                         FontWeight
+                                              //                             .w500,
+                                              //                     color: Color(
+                                              //                         0xff455A64)),
+                                              //             border:
+                                              //                 OutlineInputBorder(
+                                              //               borderRadius:
+                                              //                   BorderRadius
+                                              //                       .circular(
+                                              //                           4),
+                                              //               borderSide:
+                                              //                   BorderSide(
+                                              //                 width: 1,
+                                              //                 color: Colors.grey
+                                              //                     .withOpacity(
+                                              //                         .32),
+                                              //               ),
+                                              //             ),
+                                              //             enabledBorder:
+                                              //                 OutlineInputBorder(
+                                              //               borderRadius:
+                                              //                   BorderRadius
+                                              //                       .circular(
+                                              //                           4),
+                                              //               borderSide:
+                                              //                   BorderSide(
+                                              //                 width: 1,
+                                              //                 color: Colors.grey
+                                              //                     .withOpacity(
+                                              //                         .32),
+                                              //               ),
+                                              //             ),
+                                              //             focusedBorder:
+                                              //                 OutlineInputBorder(
+                                              //               borderRadius:
+                                              //                   BorderRadius
+                                              //                       .circular(
+                                              //                           4),
+                                              //               borderSide:
+                                              //                   const BorderSide(
+                                              //                 width: 1,
+                                              //               ),
+                                              //             ),
+                                              //           ),
+                                              //         ),
+                                              //       ),
+                                              //     ],
+                                              //   ),
+                                              // ),

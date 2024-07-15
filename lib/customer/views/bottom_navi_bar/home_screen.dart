@@ -244,6 +244,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         lat: '',
                         long: '',
                         unitIdBlockID: [""],
+                        sendername: '',
+                        receivername: '',
+                        mobilenumber: '',
                       ));
                     },
                     child: Container(
@@ -265,28 +268,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                 color: AppColors.kwhite,
                                 fontWeight: FontWeight.w700),
                           ),
-                          InkWell(
-                            onTap: () {
-                              Get.to(PackageSendScreen(
-                                pickupAdress: "pickup",
-                                lat: '',
-                                long: '',
-                                unitIdBlockID: [""],
-                              ));
-                            },
-                            child: Container(
-                              alignment: Alignment.center,
-                              height: 30.h,
-                              width: 90.w,
-                              decoration: BoxDecoration(
-                                  color: Color(0xffCDDD13),
-                                  borderRadius: BorderRadius.circular(6)),
-                              child: Text(
-                                'Book Now',
-                                style: secondoryfont.copyWith(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w700),
-                              ),
+                          Container(
+                            alignment: Alignment.center,
+                            height: 30.h,
+                            width: 90.w,
+                            decoration: BoxDecoration(
+                                color: Color(0xffCDDD13),
+                                borderRadius: BorderRadius.circular(6)),
+                            child: Text(
+                              'Book Now',
+                              style: secondoryfont.copyWith(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w700),
                             ),
                           )
                         ],
@@ -295,7 +288,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   InkWell(
                     onTap: () {
-                      Get.to(BookVehicleScreen());
+                      Get.to(const BookVehicleScreen());
                     },
                     child: Container(
                       alignment: Alignment.center,

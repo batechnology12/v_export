@@ -3,6 +3,7 @@ import 'package:date_format/date_format.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:v_export/customer/controller/parcel_controller.dart';
@@ -17,40 +18,50 @@ class ScheduleDeliveryScreen extends StatefulWidget {
   String pickuplogitude;
   List<String> droppingLatitude;
   List<String> droppingLogitude;
+  List<String> droppingaddress;
+
   String bookingDate;
   String deliverytype;
-  List<String> length;
-  List<String> width;
-  List<String> height;
-  List<String> kg;
-  List<String> qty;
-  List<String> parcelItems;
+  String length;
+  String width;
+  String height;
+  String kg;
+  int qty;
+  String parcelItems;
   List<String> unitIdBlockId;
   String? pickTimeFrom;
   String? pickTimeTo;
   List<String> pickTimeListFrom;
   List<String> pickTimeListTo;
+  String sendername;
+  String phonenumber;
+  List<String> arpincode;
+  List<String> doorname;
 
-  ScheduleDeliveryScreen({
-    super.key,
-    required this.pickuplatitude,
-    required this.pickuplogitude,
-    required this.droppingLatitude,
-    required this.droppingLogitude,
-    required this.bookingDate,
-    required this.deliverytype,
-    required this.length,
-    required this.width,
-    required this.height,
-    required this.kg,
-    required this.qty,
-    required this.parcelItems,
-    required this.pickTimeFrom,
-    required this.pickTimeTo,
-    required this.pickTimeListFrom,
-    required this.pickTimeListTo,
-    required this.unitIdBlockId,
-  });
+  ScheduleDeliveryScreen(
+      {super.key,
+      required this.pickuplatitude,
+      required this.pickuplogitude,
+      required this.droppingLatitude,
+      required this.droppingLogitude,
+      required this.bookingDate,
+      required this.deliverytype,
+      required this.length,
+      required this.width,
+      required this.height,
+      required this.kg,
+      required this.qty,
+      required this.parcelItems,
+      required this.pickTimeFrom,
+      required this.pickTimeTo,
+      required this.pickTimeListFrom,
+      required this.pickTimeListTo,
+      required this.unitIdBlockId,
+      required this.sendername,
+      required this.phonenumber,
+      required this.droppingaddress,
+      required this.arpincode,
+      required this.doorname});
 
   @override
   State<ScheduleDeliveryScreen> createState() => _ScheduleDeliveryScreenState();
@@ -149,6 +160,7 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
   File? image;
   bool ImageHide = false;
   final ImagePicker _picker = ImagePicker();
+  String? imagePath;
 
   Future<void> pickImage(ImageSource source) async {
     try {
@@ -158,6 +170,7 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
       if (pickedFile != null) {
         setState(() {
           image = File(pickedFile.path);
+          imagePath = pickedFile.path;
           ImageHide = true;
         });
       }
@@ -300,8 +313,8 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                                   : formatDateTime,
                                               style: primaryfont.copyWith(
                                                   color: Color(0xff455A64),
-                                                  fontSize: 12.sp,
-                                                  fontWeight: FontWeight.w500),
+                                                  fontSize: 14.sp,
+                                                  fontWeight: FontWeight.bold),
                                             ),
                                             GestureDetector(
                                                 onTap: () {
@@ -350,9 +363,9 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                                 "${pickTimes.hour < 10 ? "0${pickTimes.hour}" : pickTimes.hour}:${pickTimes.minute.remainder(60) < 10 ? "0${pickTimes.minute.remainder(60)}" : '${pickTimes.minute.remainder(60)}'}:00"
                                                     .toString(),
                                                 style: primaryfont.copyWith(
-                                                    fontSize: 14.sp,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: Color(0xff455A64)),
+                                                    fontSize: 13.sp,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: Colors.black),
                                               ),
                                               IconButton(
                                                   onPressed: () {
@@ -397,9 +410,9 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                                 "${dropTimes.hour < 10 ? "0${dropTimes.hour}" : dropTimes.hour}:${dropTimes.minute.remainder(60) < 10 ? "0${dropTimes.minute.remainder(60)}" : '${dropTimes.minute.remainder(60)}'}:00"
                                                     .toString(),
                                                 style: primaryfont.copyWith(
-                                                    fontSize: 14.sp,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: Color(0xff455A64)),
+                                                    fontSize: 13.sp,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: Color(0xff000000)),
                                               ),
                                               IconButton(
                                                   onPressed: () {
@@ -688,57 +701,119 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                           //               )),
                           //             )
                           //           :
-                          GestureDetector(
-                              onTap: () {
-                                AddBookingParcelModel addBookingParcelModel =
-                                    AddBookingParcelModel(
-                                        latitude: widget.pickuplatitude,
-                                        longitude: widget.pickuplogitude,
-                                        latitudeList: widget.droppingLatitude,
-                                        logitudeList: widget.droppingLogitude,
-                                        bookingDate: widget.bookingDate,
-                                        deliveryTypeid: widget.deliverytype,
-                                        length: widget.length,
-                                        width: widget.width,
-                                        height: widget.height,
-                                        kg: widget.kg,
-                                        qty: widget.qty,
-                                        parcelItem: widget.parcelItems,
-                                        pickupTimeFrom: widget.pickTimeFrom,
-                                        pickupTimeTo: widget.pickTimeTo,
-                                        pickupTimeFromList:
-                                            widget.pickTimeListFrom,
-                                        pickupTimeToList: widget.pickTimeListTo,
-                                        deliveryDate: formatDateTime,
-                                        deliveryDateList: [formatDateTime],
-                                        deliveryTimeFrom: pickTimes.toString(),
-                                        deliveryTimeTo: [dropTimes.toString()],
-                                        deliveryTimeFromList: [pickTimes],
-                                        deliveryTimeToList: [dropTimes],
-                                        parcelPhoto: image,
-                                        notes: notesController.text,
-                                        customerName: ["jay"],
-                                        customerMobile: ["9876543210"],
-                                        blockNoUnitNo: ["23"],
-                                        address: ["NO.263,KCC STREET"],
-                                        postalCode: ["601002"],
-                                        distance: "30",
-                                        //     additionalDetails: "Fragile Item",
-                                        addressDeliveryTimeFromList: [
-                                          pickTimes.toString()
-                                        ],
-                                        addressDeliveryTimeToList: [
-                                          dropTimes.toString()
-                                        ],
-                                        deliveryStatus: ["Pending"],
-                                        additionalDetails: selectedId);
-                                parcelController
-                                    .addBookingParcel(addBookingParcelModel);
-                                //   Get.to(BookingDetailsScreen());
-                              },
-                              child: CommonContainer(
-                                name: "Booking Review",
-                              ))
+                          GestureDetector(onTap: () {
+                            List<Product> products = [
+                              Product(
+                                parcelItems: widget.parcelItems,
+                                length: widget.length,
+                                width: widget.width,
+                                height: widget.height,
+                                qty: widget.qty,
+                                kg: widget.kg,
+                                pickupTimeFrom: widget.pickTimeFrom!,
+                                pickupTimeTo: widget.pickTimeTo!,
+                                deliveryDate: formatDateTime,
+                                deliveryTimeFrom: pickTimes.toString(),
+                                deliveryTimeTo: dropTimes.toString(),
+                              ),
+                            ];
+
+                            List<BookingAddress> bookingAddress = [
+                              BookingAddress(
+                                  customerName: widget.sendername,
+                                  customerMobile: widget.sendername,
+                                  unitNoBlockNo: widget.doorname,
+                                  address: widget.droppingaddress,
+                                  postalCode: widget.arpincode,
+                                  latitude: widget.droppingLatitude,
+                                  longitude: widget.droppingLogitude,
+                                  deliveryStatus: "0",
+                                  deliveryTimeFrom: pickTimes.toString(),
+                                  deliveryTimeTo: dropTimes.toString()),
+                            ];
+                            AddBookingParcelModel addBookingParcelModel =
+                                AddBookingParcelModel(
+                                    deliveryTypeid: widget.deliverytype,
+                                    paymentMode: "500",
+                                    bookingAmount: "500",
+                                    gst: "500",
+                                    additionalTotal: "500",
+                                    totalAmount: "500",
+                                    isRoundTrip: '1',
+                                    bookingDate: widget.bookingDate,
+                                    pickupTimeFrom: widget.pickTimeFrom!,
+                                    pickupTimeTo: widget.pickTimeTo!,
+                                    deliveryDate: formatDateTime,
+                                    deliveryTimeFrom: pickTimes.toString(),
+                                    deliveryTimeTo: dropTimes.toString(),
+                                    latitude: widget.pickuplatitude,
+                                    longitude: widget.pickuplogitude,
+                                    distance: "30",
+                                    bookingType: "parcel",
+                                    additionalDetails: selectedId,
+                                    notes: "",
+                                    products: products,
+                                    bookingAddress: bookingAddress,
+                                    parcelPhoto: imagePath!);
+
+                            // AddBookingParcelModel(
+                            //     latitude: widget.pickuplatitude,
+                            //     longitude: widget.pickuplogitude,
+                            //     latitudeList: widget.droppingLatitude,
+                            //     logitudeList: widget.droppingLogitude,
+                            //     bookingDate: widget.bookingDate,
+                            //     deliveryTypeid: widget.deliverytype,
+                            //     length: widget.length,
+                            //     width: widget.width,
+                            //     height: widget.height,
+                            //     kg: widget.kg,
+                            //     qty: widget.qty,
+                            //     parcelItem: widget.parcelItems,
+                            //     pickupTimeFrom: widget.pickTimeFrom,
+                            //     pickupTimeTo: widget.pickTimeTo,
+                            //     pickupTimeFromList:
+                            //         widget.pickTimeListFrom,
+                            //     pickupTimeToList: widget.pickTimeListTo,
+                            //     deliveryDate: formatDateTime,
+                            //     deliveryDateList: [formatDateTime],
+                            //     deliveryTimeFrom: pickTimes.toString(),
+                            //     deliveryTimeTo: [dropTimes.toString()],
+                            //     deliveryTimeFromList: [pickTimes],
+                            //     deliveryTimeToList: [dropTimes],
+                            //     parcelPhoto: image,
+                            //     notes: notesController.text,
+                            //     customerName: [widget.sendername],
+                            //     customerMobile: [widget.phonenumber],
+                            //     blockNoUnitNo: [widget.doorname],
+                            //     address: [widget.droppingaddress],
+                            //     postalCode: [widget.arpincode],
+                            //     distance: "30",
+                            //     //     additionalDetails: "Fragile Item",
+                            //     addressDeliveryTimeFromList: [
+                            //       pickTimes.toString()
+                            //     ],
+                            //     addressDeliveryTimeToList: [
+                            //       dropTimes.toString()
+                            //     ],
+                            //     deliveryStatus: ["Pending"],
+                            //     additionalDetails: selectedId);
+                            parcelController
+                                .addBookingParcel(addBookingParcelModel);
+                            //   Get.to(BookingDetailsScreen());
+                          }, child: Obx(() {
+                            return parcelController.addBookingLoading.isTrue
+                                ? Container(
+                                    height: 50.h,
+                                    width: size.width,
+                                    child: Center(
+                                        child: CircularProgressIndicator(
+                                      color: AppColors.kblue,
+                                    )),
+                                  )
+                                : CommonContainer(
+                                    name: "Booking Review",
+                                  );
+                          }))
                           //               );
                           // })
                         ],
