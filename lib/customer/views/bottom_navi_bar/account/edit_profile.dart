@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dash/flutter_dash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
 import 'package:v_export/constant/common_container.dart';
@@ -24,25 +28,61 @@ class _EditProfileState extends State<EditProfile> {
   @override
   void initState() {
     super.initState();
-    getData();
+
+    getProfileData();
   }
 
-  getData() async {
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await accountController.getProfile();
-     // await getProfileData();
-      accountController.update();
+  // getData() async {
+  //   WidgetsBinding.instance.addPostFrameCallback((_) async {
+  //     await accountController.getProfile();
+  //     await getProfileData();
+  //     accountController.update();
+  //   });
+  // }
+
+  getProfileData() async {
+    await accountController.getProfile();
+    setState(() {
+      nameController.text = accountController.getUserData!.data.firstName;
+      mobileController.text = accountController.getUserData!.data.phone;
+      emailController.text = accountController.getUserData!.data.email;
+      //  addressController.text = accountController.getUserData!.addresses;
     });
   }
 
-  // getProfileData() async {
-  //   if (accountController.getUserData != null) {
-  //     nameController.text = accountController.getUserData!.firstName;
-  //     mobileController.text = accountController.getUserData!.phone;
-  //     emailController.text = accountController.getUserData!.email;
-  //     //  addressController.text = accountController.getUserData!.addresses;
-  //   }
-  // }
+  File? image;
+  //  var image = Rxn<File>();
+  final ImagePicker picker = ImagePicker();
+
+  editImage() async {
+    final XFile? imageFile =
+        await picker.pickImage(source: ImageSource.gallery);
+
+    if (imageFile != null) {
+      if (imageFile.path.isNotEmpty) {
+        CroppedFile? croppedFile = await ImageCropper().cropImage(
+          sourcePath: imageFile.path, // Use the image file path directly
+          compressQuality: 70,
+          aspectRatioPresets: [
+            CropAspectRatioPreset.square,
+            CropAspectRatioPreset.ratio3x2,
+            CropAspectRatioPreset.original,
+            CropAspectRatioPreset.ratio4x3,
+            CropAspectRatioPreset.ratio16x9
+          ],
+        );
+        if (croppedFile != null) {
+          var tempImage = croppedFile.path;
+          setState(() {
+            image = File(tempImage);
+          });
+          accountController.editProfilePicture(profilePicture: tempImage);
+        } else {
+          print("edit picture");
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,32 +148,101 @@ class _EditProfileState extends State<EditProfile> {
                           children: [
                             Stack(
                               children: [
-                                Container(
-                                  height: 150.h,
-                                  width: 150.w,
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(150),
+                                  child: GetBuilder<AccountController>(
+                                      builder: (context) {
+                                    return Container(
+                                      height: 100,
+                                      width: 100,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          width: 1,
+                                          color:
+                                              const Color.fromRGBO(0, 0, 0, 1),
+                                        ),
+                                      ),
+                                      child: accountController.getUserData ==
+                                              null
+                                          ? Image.asset(
+                                              "assets/icons/Ellipse 26.png",
+                                              fit: BoxFit.cover,
+                                            )
+                                          : accountController.getUserData!.data
+                                                      .imageUrl ==
+                                                  ""
+                                              ? Image.asset(
+                                                  "assets/icons/Ellipse 26.png")
+                                              : accountController
+                                                      .editProfilePictureLoading
+                                                      .value
+                                                  ? Center(
+                                                      child:
+                                                          CircularProgressIndicator(),
+                                                    )
+                                                  : Image.network(
+                                                      accountController
+                                                          .getUserData!
+                                                          .data
+                                                          .imageUrl,
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                    );
+                                  }),
                                 ),
+                                // CircleAvatar(
+                                //   radius: 75,
+                                //   backgroundImage: Image.network(
+
+                                //       'assets/images/Ellipse 1.png'),
+                                // ),
                                 Positioned(
-                                  top: 0,
-                                  left: 0,
-                                  right: 0,
-                                  child: Image.asset(
-                                    "assets/icons/Ellipse 26.png",
-                                    height: 130,
-                                    width: 130,
-                                  ),
-                                ),
-                                Positioned(
-                                  left: 0,
-                                  right: 0,
-                                  bottom: 15.h,
-                                  child: CircleAvatar(
+                                  //  top: 0,
+                                  bottom: 0, right: 0,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      editImage();
+                                    },
+                                    child: CircleAvatar(
                                       radius: 20,
                                       backgroundColor: AppColors.kblue,
-                                      child: IconButton(
-                                          onPressed: () {},
-                                          icon: const Icon(Icons.edit,
-                                              color: Colors.white, size: 22))),
+                                      child: GestureDetector(
+                                          onTap: () {
+                                            editImage();
+                                          },
+                                          child: const Icon(Icons.edit,
+                                              color: Colors.white, size: 15)),
+                                    ),
+                                  ),
                                 ),
+                                // Container(
+                                //   height: 150.h,
+                                //   width: 150.w,
+                                // ),
+                                // Positioned(
+                                //   top: 0,
+                                //   left: 0,
+                                //   right: 0,
+                                //   child: Image.asset(
+                                //     "assets/icons/Ellipse 26.png",
+                                //     height: 130,
+                                //     width: 130,
+                                //   ),
+                                // ),
+                                // Positioned(
+                                //   left: 0,
+                                //   right: 0,
+                                //   bottom: 15.h,
+                                //   child: CircleAvatar(
+                                //       radius: 20,
+                                //       backgroundColor: AppColors.kblue,
+                                //       child: IconButton(
+                                //           onPressed: () {},
+                                //           icon: const Icon(Icons.edit,
+                                //               color: Colors.white, size: 22))),
+                                // ),
                               ],
                             ),
                           ],
@@ -158,7 +267,7 @@ class _EditProfileState extends State<EditProfile> {
                               if (value == null) {
                                 return 'Please Enter Name';
                               }
-                              return null; // Return null if the input is valid
+                              return null;
                             },
                             decoration: InputDecoration(
                               hintText: 'Enter Name',
@@ -290,55 +399,55 @@ class _EditProfileState extends State<EditProfile> {
                           ),
                         ),
                         ksizedbox20,
-                        // Text(
-                        //   'Address',
-                        //   style: primaryfont.copyWith(
-                        //       fontSize: 14.sp,
-                        //       fontWeight: FontWeight.w500,
-                        //       color: Color(0xff455A64)),
-                        // ),
-                        // ksizedbox10,
-                        // Container(
-                        //   height: 45.h,
-                        //   width: size.width,
-                        //   decoration: BoxDecoration(color: AppColors.kwhite),
-                        //   child: TextFormField(
-                        //     controller: addressController,
-                        //     validator: (value) {
-                        //       if (value == null) {
-                        //         return 'Please Enter Address';
-                        //       }
-                        //       return null; // Return null if the input is valid
-                        //     },
-                        //     decoration: InputDecoration(
-                        //       hintText: 'Enter Address',
-                        //       hintStyle: primaryfont.copyWith(
-                        //           fontSize: 13.sp,
-                        //           fontWeight: FontWeight.w500,
-                        //           color: Color(0xff455A64)),
-                        //       border: OutlineInputBorder(
-                        //         borderRadius: BorderRadius.circular(10),
-                        //         borderSide: BorderSide(
-                        //           width: 1,
-                        //           color: Color(0xff5C5C5C),
-                        //         ),
-                        //       ),
-                        //       enabledBorder: OutlineInputBorder(
-                        //         borderRadius: BorderRadius.circular(10),
-                        //         borderSide: BorderSide(
-                        //           width: 1,
-                        //           color: Color(0xff5C5C5C),
-                        //         ),
-                        //       ),
-                        //       focusedBorder: OutlineInputBorder(
-                        //         borderRadius: BorderRadius.circular(10),
-                        //         borderSide: const BorderSide(
-                        //           width: 1,
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
+                        Text(
+                          'Address',
+                          style: primaryfont.copyWith(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xff455A64)),
+                        ),
+                        ksizedbox10,
+                        Container(
+                          height: 45.h,
+                          width: size.width,
+                          decoration: BoxDecoration(color: AppColors.kwhite),
+                          child: TextFormField(
+                            //   controller: addressController,
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Please Enter Address';
+                              }
+                              return null; // Return null if the input is valid
+                            },
+                            decoration: InputDecoration(
+                              hintText: 'Enter Address',
+                              hintStyle: primaryfont.copyWith(
+                                  fontSize: 13.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xff455A64)),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(
+                                  width: 1,
+                                  color: Color(0xff5C5C5C),
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(
+                                  width: 1,
+                                  color: Color(0xff5C5C5C),
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: const BorderSide(
+                                  width: 1,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -350,9 +459,31 @@ class _EditProfileState extends State<EditProfile> {
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: CommonContainer(
-          name: "Complete Profile",
-        ),
+        child: Obx(() {
+          return accountController.profileLoading.isTrue
+              ? Container(
+                  height: 50.h,
+                  width: size.width,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(30)),
+                  child: Center(
+                      child: CircularProgressIndicator(
+                    color: AppColors.kblue,
+                  )),
+                )
+              : GestureDetector(
+                  onTap: () {
+                    accountController.updateProfileUser(
+                        name: nameController.text,
+                        mail: emailController.text,
+                        phone: mobileController.text);
+                  },
+                  child: CommonContainer(
+                    name: "Complete Profile",
+                  ),
+                );
+        }),
       ),
     );
   }

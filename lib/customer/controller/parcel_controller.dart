@@ -8,6 +8,7 @@ import 'package:v_export/customer/model/delivery_type_model.dart';
 import 'package:v_export/customer/model/onGoing_order_model.dart';
 import 'package:v_export/customer/services/network/booking_api_service/add_booking_parcel_api_service.dart';
 import 'package:v_export/customer/services/network/booking_api_service/additional_service_api_service.dart';
+import 'package:v_export/customer/services/network/booking_api_service/cancel_booking_api_service.dart';
 import 'package:v_export/customer/services/network/booking_api_service/get_booking_api_service.dart';
 import 'package:v_export/customer/services/network/booking_api_service/get_delivery_type_api_services.dart';
 import 'package:v_export/customer/services/network/booking_api_service/ongoing_orders_api_service.dart';
@@ -147,5 +148,32 @@ class ParcelController extends GetxController {
     }
     addBookingLoading(false);
     update();
+  }
+
+  CancelBookingApiServices cancelBookingApiServices =
+      CancelBookingApiServices();
+
+  RxBool cancelBookingLoading = false.obs;
+  cancelBooking(String bookingId) async {
+    dio.Response<dynamic> response =
+        await cancelBookingApiServices.cancelBooking(bookingId);
+    if (response.data["status"] == true) {
+      Get.rawSnackbar(
+        backgroundColor: Colors.green,
+        messageText: Text(
+          response.data['message'],
+          style: TextStyle(color: Colors.white, fontSize: 15.sp),
+        ),
+      );
+      update();
+    } else {
+      Get.rawSnackbar(
+        backgroundColor: Colors.red,
+        messageText: Text(
+          response.data['message'],
+          style: TextStyle(color: Colors.white, fontSize: 15.sp),
+        ),
+      );
+    }
   }
 }

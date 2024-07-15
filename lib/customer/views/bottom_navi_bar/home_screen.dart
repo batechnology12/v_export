@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dash/flutter_dash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:svg_flutter/svg_flutter.dart';
 import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
+import 'package:v_export/customer/controller/account_controller.dart';
 import 'package:v_export/customer/controller/home_controller.dart';
 import 'package:v_export/customer/controller/home_screen_controller.dart';
 import 'package:v_export/customer/controller/parcel_controller.dart';
@@ -35,6 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
   HomeScreenController homeScreenController = Get.find<HomeScreenController>();
   ParcelController parcelController = Get.find<ParcelController>();
   final CarouselController controller = CarouselController();
+  AccountController accountController = Get.find<AccountController>();
 
   List carosalimage = [
     'assets/images/banners.png',
@@ -67,6 +70,13 @@ class _HomeScreenState extends State<HomeScreen> {
   //   super.dispose();
   // }
 
+  String formatTime(String time) {
+    DateTime parsedTime = DateFormat("HH:mm:ss").parse(time);
+    //String formattedTime = DateFormat("h m a").format(parsedTime);
+    String formattedTime = DateFormat("HH:mm:a").format(parsedTime);
+    return formattedTime;
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -83,8 +93,38 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Row(
                     children: [
-                      Image.asset(
-                        'assets/images/Ellipse 1.png',
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(50),
+                        child: Container(
+                          height: 50,
+                          width: 50,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              width: 1,
+                              color: const Color.fromRGBO(0, 0, 0, 1),
+                            ),
+                          ),
+                          child: accountController.getUserData == null
+                              ? Image.asset(
+                                  "assets/icons/Ellipse 26.png",
+                                  fit: BoxFit.cover,
+                                )
+                              : accountController.getUserData!.data.imageUrl ==
+                                      ""
+                                  ? Image.asset("assets/icons/Ellipse 26.png")
+                                  : accountController
+                                          .editProfilePictureLoading.value
+                                      ? Center(
+                                          child: CircularProgressIndicator(),
+                                        )
+                                      : Image.network(
+                                          accountController
+                                              .getUserData!.data.imageUrl,
+                                          fit: BoxFit.cover,
+                                        ),
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(
@@ -458,12 +498,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   Container(
                                                     width: 250.h,
                                                     child: Text(
-                                                      parcelController
-                                                          .ongoingOrdersData[
-                                                              index]
-                                                          .fromAddress
-                                                          .first
-                                                          .address,
+                                                      // parcelController
+                                                      //     .ongoingOrdersData[
+                                                      //         index]
+                                                      //     .fromAddress
+                                                      //     .first
+                                                      //     .address,
+                                                      "338C Anchorvale Cresen",
                                                       style:
                                                           primaryfont.copyWith(
                                                               color: const Color(
@@ -498,8 +539,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       parcelController
                                                           .ongoingOrdersData[
                                                               index]
-                                                          .bookingDeliveryAddresses
-                                                          .last
+                                                          .bookingDeliveryAddresses[
+                                                              index]
                                                           .address,
                                                       style:
                                                           primaryfont.copyWith(
@@ -527,21 +568,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       .spaceBetween,
                                               children: [
                                                 Text(
-                                                  formateTimePickAddress =
-                                                      formatDate(
-                                                          parcelController
-                                                              .ongoingOrdersData[
-                                                                  index]
-                                                              .fromAddress
-                                                              .first
-                                                              .createdAt,
-                                                          [
-                                                        HH,
-                                                        ':',
-                                                        nn,
-                                                        " ",
-                                                        am
-                                                      ]),
+                                                  // formateTimePickAddress =
+                                                  //     formatDate(
+                                                  //         parcelController
+                                                  //             .ongoingOrdersData[
+                                                  //                 index].bookingProducts[index].deliverytimeFrom.toString()
+                                                  //            ,
+                                                  //         [
+                                                  //       HH,
+                                                  //       ':',
+                                                  //       nn,
+                                                  //       " ",
+                                                  //       am
+                                                  //     ]),
+                                                  '${formatTime(parcelController.ongoingOrdersData[index].bookingProducts[index].pickuptimeFrom)}',
                                                   style: primaryfont.copyWith(
                                                       fontSize: 13,
                                                       fontWeight:
@@ -550,21 +590,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           0xff455A64)),
                                                 ),
                                                 Text(
-                                                  formateTimePickAddress =
-                                                      formatDate(
-                                                          parcelController
-                                                              .ongoingOrdersData[
-                                                                  index]
-                                                              .bookingDeliveryAddresses
-                                                              .last
-                                                              .createdAt,
-                                                          [
-                                                        HH,
-                                                        ':',
-                                                        nn,
-                                                        " ",
-                                                        am
-                                                      ]),
+                                                  '${formatTime(parcelController.ongoingOrdersData[index].bookingProducts[index].deliverytimeFrom)}',
                                                   style: primaryfont.copyWith(
                                                       fontSize: 13,
                                                       fontWeight:
