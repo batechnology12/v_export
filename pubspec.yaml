@@ -64,6 +64,7 @@ dependencies:
   rounded_loading_button: ^2.1.0
   shimmer: ^3.0.0
   geocoding: ^3.0.0
+  image_cropper: ^5.0.1
   
 
   
