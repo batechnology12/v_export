@@ -10,6 +10,7 @@ import 'package:v_export/customer/views/bottom_navi_bar/bottomn_navi_bar.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/droping_address_details.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/pickup_address_details.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/schedule_delivery.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../constant/app_colors.dart';
 import '../../../../constant/app_font.dart';
@@ -20,7 +21,7 @@ class PackageSendScreen extends StatefulWidget {
   String long;
   List unitIdBlockID;
   String sendername;
-  String receivername;
+  // String receivername;
   String mobilenumber;
 
   PackageSendScreen(
@@ -30,7 +31,7 @@ class PackageSendScreen extends StatefulWidget {
       required this.long,
       required this.unitIdBlockID,
       required this.sendername,
-      required this.receivername,
+      // required this.receivername,
       required this.mobilenumber});
 
   @override
@@ -60,8 +61,8 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
   final ParcelController parcelController = Get.find<ParcelController>();
   final HomeController homeController = Get.find<HomeController>();
   DateTime selectedDate = DateTime.now();
-  TimeOfDay pickTime = TimeOfDay.now();
-  TimeOfDay dropTime = TimeOfDay.now();
+  // TimeOfDay pickTime = TimeOfDay.now();
+  // TimeOfDay dropTime = TimeOfDay.now();
   double containerHeight = 100.0;
 
 //  HomeController homeController = Get.find<HomeController>();
@@ -81,9 +82,7 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
   String formatDateTime = "";
   String pickingTime = "";
   String dropingTime = "";
-  TimeOfDay? _updatedTime;
-  TimeOfDay? updatedroptime1;
-  TimeOfDay? updatedroptime2;
+
   Future<Null> selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
         context: context,
@@ -99,50 +98,73 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
 
   var time;
 
-  Future displayTimePicker(BuildContext context) async {
-    var time = await showTimePicker(
-      context: context,
-      initialTime: pickTime,
-      initialEntryMode: TimePickerEntryMode.input,
-    );
+  TimeOfDay? _updatedTime;
+  TimeOfDay? updatedroptime2;
+  TimeOfDay? pickTime;
+  TimeOfDay? dropTime;
 
-    if (time != null) {
+  void _selectpickTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: pickTime ?? TimeOfDay.now(),
+    );
+    if (picked != null && picked != pickTime) {
       setState(() {
-        pickTime = time;
-        _updatedTime = _addMinutes(pickTime, 60);
+        pickTime = picked;
+        _updateDropTime();
       });
-      print("-----picktime");
-      print(pickTime);
-      print(
-          "${pickTime.hour < 10 ? "0${pickTime.hour}" : pickTime.hour}:${pickTime.minute.remainder(60) < 10 ? "0${pickTime.minute.remainder(60)}" : '${pickTime.minute.remainder(60)}:00'} - ${_updatedTime!.hour < 10 ? "0${_updatedTime!.hour}" : _updatedTime!.hour}:${_updatedTime!.minute.remainder(60) < 10 ? "0${_updatedTime!.minute.remainder(60)}" : '${_updatedTime!.minute.remainder(60)}:00'}"
-              .toString());
     }
   }
 
-  TimeOfDay _addMinutes(TimeOfDay time, int minutes) {
+  void _selectdropTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: dropTime ?? TimeOfDay.now(),
+    );
+    if (picked != null && picked != dropTime) {
+      setState(() {
+        dropTime = picked;
+      });
+    }
+  }
+
+String _formatTime(TimeOfDay time) {
+    String hour = time.hour.toString().padLeft(2, '0');
+    String minute = time.minute.toString().padLeft(2, '0');
+
+    return '$hour:$minute';
+  }
+
+  // String _formatTime(TimeOfDay time) {
+  //   final now = DateTime.now();
+  //   final formattedTime = DateFormat('h:mm a').format(DateTime(
+  //     now.year,
+  //     now.month,
+  //     now.day,
+  //     time.hour,
+  //     time.minute,
+  //   ));
+  //   return formattedTime;
+  // }
+
+  TimeOfDay _addMinutes(TimeOfDay pickerTime, int minutes) {
     final now = DateTime.now();
-    final dateTime =
-        DateTime(now.year, now.month, now.day, time.hour, time.minute);
+    final dateTime = DateTime(
+        now.year, now.month, now.day, pickerTime.hour, pickerTime.minute);
     final updatedDateTime = dateTime.add(Duration(minutes: minutes));
     return TimeOfDay(
         hour: updatedDateTime.hour, minute: updatedDateTime.minute);
   }
 
-  Future dropTimePicker(BuildContext context) async {
-    var times = await showTimePicker(
-      context: context,
-      initialTime: pickTime,
-      initialEntryMode: TimePickerEntryMode.input,
-    );
-
-    if (times != null) {
-      setState(() {
-        dropTime = times;
-        updatedroptime1 = _addMinutes(dropTime, 60);
-        updatedroptime2 = _addMinutes(dropTime, 120);
-      });
-
-      print(dropTime);
+  void _updateDropTime() {
+    if (deliveryItems?.name == "Express Delivery") {
+      _updatedTime = _addMinutes(pickTime!, 60);
+      dropTime = _updatedTime;
+    } else if (deliveryItems?.name == "4 Hours Delivery") {
+      updatedroptime2 = _addMinutes(pickTime!, 240);
+      dropTime = updatedroptime2;
+    } else {
+      dropTime = pickTime;
     }
   }
 
@@ -160,6 +182,11 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
   bool checkParcelorMulti = false;
 
   final formKey = GlobalKey<FormState>();
+  String formatTime(String time) {
+    DateTime parsedTime = DateFormat("HH:mm:ss").parse(time);
+    String formattedTime = DateFormat("h a").format(parsedTime);
+    return formattedTime;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -401,6 +428,26 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                             ),
                                           ),
                                         ),
+                                        // Row(
+                                        //   mainAxisAlignment:
+                                        //       MainAxisAlignment.end,
+                                        //   children: [
+                                        //     IconButton(
+                                        //         onPressed: () {
+                                        //           setState(() {
+                                        //             homeController
+                                        //                 .removeEntry(index);
+                                        //             homeController
+                                        //                 .removeParcelList(
+                                        //                     index);
+                                        //           });
+                                        //         },
+                                        //         icon: const Icon(
+                                        //           Icons.delete,
+                                        //           color: Colors.red,
+                                        //         ))
+                                        //   ],
+                                        // ),
                                         Padding(
                                           padding: const EdgeInsets.only(
                                             right: 10,
@@ -447,65 +494,102 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                       homeController
                                                               .entries.length -
                                                           1
-                                                  ? Row(
+                                                  ? Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .end,
                                                       children: [
-                                                        GestureDetector(
-                                                          onTap: () {
-                                                            setState(() {
-                                                              homeController
-                                                                  .addEntry();
-                                                            });
-                                                          },
-                                                          child: Icon(
-                                                            Icons.add,
-                                                            color: Color(
-                                                                0xff0072E8),
-                                                            size: 19.sp,
+                                                        if (index != 0)
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .end,
+                                                            children: [
+                                                              IconButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    setState(
+                                                                        () {
+                                                                      homeController
+                                                                          .removeEntry(
+                                                                              index);
+                                                                      homeController
+                                                                          .removeParcelList(
+                                                                              index);
+                                                                    });
+                                                                  },
+                                                                  icon:
+                                                                      const Icon(
+                                                                    Icons
+                                                                        .delete,
+                                                                    color: Colors
+                                                                        .red,
+                                                                  ))
+                                                            ],
                                                           ),
-                                                        ),
-                                                        GestureDetector(
-                                                          onTap: () {
-                                                            setState(() {
-                                                              homeController
-                                                                  .addEntry();
-                                                              homeController
-                                                                  .addParcelList();
-                                                            });
-                                                          },
-                                                          child: Text(
-                                                            'Add Location',
-                                                            style: primaryfont
-                                                                .copyWith(
-                                                              fontSize: 17.sp,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                              color: const Color(
-                                                                  0xff0072E8),
+                                                        Row(
+                                                          children: [
+                                                            GestureDetector(
+                                                              onTap: () {
+                                                                setState(() {
+                                                                  homeController
+                                                                      .addEntry();
+                                                                });
+                                                              },
+                                                              child: Icon(
+                                                                Icons.add,
+                                                                color: Color(
+                                                                    0xff0072E8),
+                                                                size: 19.sp,
+                                                              ),
                                                             ),
-                                                          ),
+                                                            GestureDetector(
+                                                              onTap: () {
+                                                                setState(() {
+                                                                  homeController
+                                                                      .addEntry();
+                                                                  homeController
+                                                                      .addParcelList();
+                                                                });
+                                                              },
+                                                              child: Text(
+                                                                'Add Location',
+                                                                style: primaryfont
+                                                                    .copyWith(
+                                                                  fontSize:
+                                                                      17.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  color: const Color(
+                                                                      0xff0072E8),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
                                                         ),
                                                       ],
                                                     )
-                                                  : Row(
-                                                      children: [
-                                                        IconButton(
-                                                            onPressed: () {
-                                                              setState(() {
-                                                                homeController
-                                                                    .removeEntry(
-                                                                        index);
-                                                                homeController
-                                                                    .removeParcelList(
-                                                                        index);
-                                                              });
-                                                            },
-                                                            icon: const Icon(
-                                                              Icons.delete,
-                                                              color: Colors.red,
-                                                            ))
-                                                      ],
-                                                    ),
+                                                  : Container()
+                                              // : Row(
+                                              //     children: [
+                                              //       IconButton(
+                                              //           onPressed: () {
+                                              //             setState(() {
+                                              //               homeController
+                                              //                   .removeEntry(
+                                              //                       index);
+                                              //               homeController
+                                              //                   .removeParcelList(
+                                              //                       index);
+                                              //             });
+                                              //           },
+                                              //           icon: const Icon(
+                                              //             Icons.delete,
+                                              //             color: Colors.red,
+                                              //           ))
+                                              //     ],
+                                              //   ),
                                             ],
                                           ),
                                         ),
@@ -534,12 +618,23 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    'Booking Date',
-                                    style: primaryfont.copyWith(
-                                        fontSize: 16.sp,
-                                        fontWeight: FontWeight.w500,
-                                        color: Color(0xff455A64)),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Booking Date',
+                                        style: primaryfont.copyWith(
+                                            fontSize: 17.sp,
+                                            fontWeight: FontWeight.w600,
+                                            color: Color(0xff000000)),
+                                      ),
+                                      Text(
+                                        '*',
+                                        style: primaryfont.copyWith(
+                                            fontSize: 17.sp,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.red),
+                                      ),
+                                    ],
                                   ),
                                   ksizedbox10,
                                   GestureDetector(
@@ -584,12 +679,23 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                         )),
                                   ),
                                   ksizedbox20,
-                                  Text(
-                                    'Select Delivery types',
-                                    style: primaryfont.copyWith(
-                                        fontSize: 16.sp,
-                                        fontWeight: FontWeight.w600,
-                                        color: Color(0xff000000)),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Select Delivery types',
+                                        style: primaryfont.copyWith(
+                                            fontSize: 16.sp,
+                                            fontWeight: FontWeight.w600,
+                                            color: Color(0xff000000)),
+                                      ),
+                                      Text(
+                                        '*',
+                                        style: primaryfont.copyWith(
+                                            fontSize: 16.sp,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.red),
+                                      ),
+                                    ],
                                   ),
                                   ksizedbox10,
                                   Container(
@@ -643,39 +749,38 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                         setState(() {
                                           deliveryItems = newValue;
                                           deliveryId = newValue?.id;
-                                          if (deliveryItems?.name ==
-                                              "Express Delivery") {
-                                            _updatedTime =
-                                                _addMinutes(pickTime, 60);
-                                            // updatedroptime1 =
-                                            //     _addMinutes(pickTime, 60);
-                                            // updatedroptime2 =
-                                            //     _addMinutes(pickTime, 120);
-                                          } else if (deliveryItems?.name ==
-                                              "Standard Delivery") {
-                                            updatedroptime2 =
-                                                _addMinutes(pickTime, 240);
-                                          }
+                                          pickTime = TimeOfDay.now();
+                                          _updateDropTime();
+                                          // if (deliveryItems?.name ==
+                                          //     "Express Delivery") {
+                                          //   _updatedTime =
+                                          //       _addMinutes(pickTime!, 60);
+
+                                          // } else if (deliveryItems?.name ==
+                                          //     "4 Hours Delivery") {
+                                          //   updatedroptime2 =
+                                          //       _addMinutes(pickTime!, 240);
+                                          // }
                                         });
                                       },
                                     ),
                                   ),
                                   ksizedbox20,
                                   Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       Text(
-                                        homeController.entries.length > 1
-                                            ? "Multi Size"
-                                            : "Parcel Size",
+                                        // homeController.entries.length > 1
+                                        //     ? "Multi Size"
+                                        //     :
+                                        "Parcel Size ",
                                         style: primaryfont.copyWith(
                                             fontSize: 17.sp,
                                             fontWeight: FontWeight.w600,
                                             color: Color(0xff000000)),
                                       ),
                                       Text(
-                                        "LxWxH in cm*",
+                                        "(LxWxH in cm*)",
                                         style: primaryfont.copyWith(
                                           fontSize: 14.sp,
                                           fontWeight: FontWeight.w500,
@@ -703,9 +808,9 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                 MainAxisAlignment.start,
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
-                                              index == 0
+                                              index == 1
                                                   ? Text(
-                                                      "${index + 1}st Location",
+                                                      "${index + 1}nd Location",
                                                       style:
                                                           primaryfont.copyWith(
                                                               fontWeight:
@@ -714,9 +819,9 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                               color: AppColors
                                                                   .kblue),
                                                     )
-                                                  : index == 1
+                                                  : index == 2
                                                       ? Text(
-                                                          "${index + 1}nd Location",
+                                                          "${index + 1}rd Location",
                                                           style: primaryfont
                                                               .copyWith(
                                                                   fontWeight:
@@ -725,9 +830,9 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                                   color: AppColors
                                                                       .kblue),
                                                         )
-                                                      : index == 2
+                                                      : index == 3
                                                           ? Text(
-                                                              "${index + 1}rd Location",
+                                                              "${index + 1}th Location",
                                                               style: primaryfont.copyWith(
                                                                   fontWeight:
                                                                       FontWeight
@@ -735,7 +840,7 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                                   color: AppColors
                                                                       .kblue),
                                                             )
-                                                          : index == 3
+                                                          : index == 4
                                                               ? Text(
                                                                   "${index + 1}th Location",
                                                                   style: primaryfont.copyWith(
@@ -745,7 +850,7 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                                       color: AppColors
                                                                           .kblue),
                                                                 )
-                                                              : index == 4
+                                                              : index >= 5
                                                                   ? Text(
                                                                       "${index + 1}th Location",
                                                                       style: primaryfont.copyWith(
@@ -754,46 +859,7 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                                           color:
                                                                               AppColors.kblue),
                                                                     )
-                                                                  : index > 5
-                                                                      ? Text(
-                                                                          "${index + 1}th Location",
-                                                                          style: primaryfont.copyWith(
-                                                                              fontWeight: FontWeight.w600,
-                                                                              color: AppColors.kblue),
-                                                                        )
-                                                                      // : index ==
-                                                                      //         6
-                                                                      //     ? Text(
-                                                                      //         "${index + 1}th Location",
-                                                                      //         style: primaryfont.copyWith(fontWeight: FontWeight.w600, color: AppColors.kblue),
-                                                                      //       )
-                                                                      //     : index == 7
-                                                                      //         ? Text(
-                                                                      //             "${index + 1}th Location",
-                                                                      //             style: primaryfont.copyWith(fontWeight: FontWeight.w600, color: AppColors.kblue),
-                                                                      //           )
-                                                                      //         : index == 8
-                                                                      //             ? Text(
-                                                                      //                 "${index + 1}th Location",
-                                                                      //                 style: primaryfont.copyWith(fontWeight: FontWeight.w600, color: AppColors.kblue),
-                                                                      //               )
-                                                                      //             : index == 9
-                                                                      //                 ? Text(
-                                                                      //                     "${index + 1}th Location",
-                                                                      //                     style: primaryfont.copyWith(fontWeight: FontWeight.w600, color: AppColors.kblue),
-                                                                      //                   )
-                                                                      //                 : index == 10
-                                                                      //                     ? Text(
-                                                                      //                         "${index + 1}th Location",
-                                                                      //                         style: primaryfont.copyWith(fontWeight: FontWeight.w600, color: AppColors.kblue),
-                                                                      //                       )
-                                                                      //                     : index == 11
-                                                                      //                         ? Text(
-                                                                      //                             "${index + 1}th Location",
-                                                                      //                             style: primaryfont.copyWith(fontWeight: FontWeight.w600, color: AppColors.kblue),
-                                                                      //                           )
-                                                                      : Text(
-                                                                          "data"),
+                                                                  : Container(),
                                               ksizedbox5,
                                               Padding(
                                                 padding:
@@ -805,21 +871,26 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                   children: [
                                                     _buildTextField(
                                                         parcellengthController,
-                                                        'L'),
+                                                        'L',
+                                                        "L"),
                                                     Text("X"),
                                                     _buildTextField(
                                                         parcelwidthController,
-                                                        'W'),
+                                                        'W',
+                                                        "W"),
                                                     Text("X"),
                                                     _buildTextField(
                                                         parcelheightController,
-                                                        'H'),
+                                                        'H',
+                                                        "H"),
                                                     _buildTextField(
                                                         parcelkgController,
-                                                        'Kg'),
+                                                        'Kg',
+                                                        "Kg"),
                                                     _buildTextField(
                                                         quantityController,
-                                                        'Qty'),
+                                                        'Qty',
+                                                        "Qty"),
                                                   ],
                                                 ),
                                               ),
@@ -829,12 +900,23 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                         }),
                                   ),
                                   ksizedbox10,
-                                  Text(
-                                    'Parcel Items',
-                                    style: primaryfont.copyWith(
-                                        fontSize: 17.sp,
-                                        fontWeight: FontWeight.w600,
-                                        color: Color(0xff000000)),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Parcel Items',
+                                        style: primaryfont.copyWith(
+                                            fontSize: 17.sp,
+                                            fontWeight: FontWeight.w600,
+                                            color: Color(0xff000000)),
+                                      ),
+                                      Text(
+                                        '*',
+                                        style: primaryfont.copyWith(
+                                            fontSize: 17.sp,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.red),
+                                      ),
+                                    ],
                                   ),
                                   ksizedbox10,
                                   Container(
@@ -887,12 +969,23 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                     ),
                                   ),
                                   ksizedbox20,
-                                  Text(
-                                    'Pickup Time',
-                                    style: primaryfont.copyWith(
-                                        fontSize: 15.sp,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xff455A64)),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Pickup Time',
+                                        style: primaryfont.copyWith(
+                                            fontSize: 15.sp,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color(0xff455A64)),
+                                      ),
+                                      Text(
+                                        '*',
+                                        style: primaryfont.copyWith(
+                                            fontSize: 15.sp,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.red),
+                                      ),
+                                    ],
                                   ),
                                   ksizedbox20,
                                   Row(
@@ -901,10 +994,10 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                     children: [
                                       GestureDetector(
                                         onTap: () {
-                                          dropTimePicker(context);
+                                          _selectpickTime(context);
                                         },
                                         child: Container(
-                                          padding: EdgeInsets.only(left: 5),
+                                          padding: EdgeInsets.only(left: 15),
                                           height: 50.h,
                                           width: 160.w,
                                           decoration: BoxDecoration(
@@ -919,21 +1012,11 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
-                                              //   if (_updatedTime != null)
                                               Text(
-                                                // deliveryItems == null
-                                                //     ? 'Select time'
-                                                //     : deliveryItems ==
-                                                //             "Express Delvery - 24/7 (1 Hour)"
-                                                //         ? "${pickTime.format(context)} - ${_updatedTime!.format(context)}"
-                                                //         : "${pickTime.format(context)}",
-                                                deliveryId == null
-                                                    ? 'Select time'
-                                                    : deliveryId == 2
-                                                        ? "${pickTime.hour < 10 ? "0${pickTime.hour}" : pickTime.hour}:${pickTime.minute.remainder(60) < 10 ? "0${pickTime.minute.remainder(60)}" : '${pickTime.minute.remainder(60)}:00'}"
-                                                            .toString()
-                                                        : "${pickTime.hour < 10 ? "0${pickTime.hour}" : pickTime.hour}:${pickTime.minute.remainder(60) < 10 ? "0${pickTime.minute.remainder(60)}" : '${pickTime.minute.remainder(60)}:00'}"
-                                                            .toString(),
+                                                pickTime != null
+                                                    ? _formatTime(pickTime!)
+                                                    : 'select time',
+                                        
                                                 style: primaryfont.copyWith(
                                                     fontSize: 12.sp,
                                                     fontWeight: FontWeight.w700,
@@ -942,7 +1025,7 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                               ),
                                               IconButton(
                                                   onPressed: () {
-                                                    displayTimePicker(context);
+                                                    _selectpickTime(context);
                                                   },
                                                   icon: Image.asset(
                                                       "assets/icons/mylisticon.png",
@@ -960,10 +1043,10 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                       ),
                                       GestureDetector(
                                         onTap: () {
-                                          dropTimePicker(context);
+                                          _selectdropTime(context);
                                         },
                                         child: Container(
-                                          padding: EdgeInsets.only(left: 5),
+                                          padding: EdgeInsets.only(left: 15),
                                           height: 50.h,
                                           width: 160.w,
                                           decoration: BoxDecoration(
@@ -979,27 +1062,15 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
                                               Text(
-                                                deliveryId == null
-                                                    ? 'Select time'
-                                                    : deliveryId == 2
-                                                        ? "${_updatedTime!.hour < 10 ? "0${_updatedTime!.hour}" : _updatedTime!.hour}:${_updatedTime!.minute.remainder(60) < 10 ? "0${_updatedTime!.minute.remainder(60)}" : '${_updatedTime!.minute.remainder(60)}:00'}"
-                                                            .toString()
-                                                        : deliveryId == 1
-                                                            ? "${updatedroptime2!.hour < 10 ? "0${updatedroptime2!.hour}" : updatedroptime2!.hour}:${updatedroptime2!.minute.remainder(60) < 10 ? "0${updatedroptime2!.minute.remainder(60)}" : '${updatedroptime2!.minute.remainder(60)}:00'}"
-                                                            : "${dropTime.hour < 10 ? "0${dropTime.hour}" : dropTime.hour}:${dropTime.minute.remainder(60) < 10 ? "0${dropTime.minute.remainder(60)}" : '${dropTime.minute.remainder(60)}:00'}"
-                                                                .toString(),
-                                                // deliveryItems == null
-                                                //     ? 'Select time'
-                                                //     : deliveryItems ==
-                                                //             "Express Delvery - 24/7 (1 Hour)"
-                                                //         ? "${updatedroptime1!.format(context)} - ${updatedroptime2!.format(context)}"
-                                                //         : deliveryItems ==
-                                                //                 "4 Hours Delivery"
-                                                //             ? updatedroptime2!
-                                                //                 .format(context)
-                                                //             : "${dropTime.format(context)}",
-                                                // "${dropTime.hour < 10 ? "0${dropTime.hour}" : dropTime.hour}:${dropTime.minute.remainder(60) < 10 ? "0${dropTime.minute.remainder(60)}" : '${dropTime.minute.remainder(60)}'} - ${dropTime.hour < 10 ? "0${dropTime.hour}" : dropTime.hour}:${dropTime.minute.remainder(60) < 10 ? "0${dropTime.minute.remainder(60)}" : '${dropTime.minute.remainder(60)}'}"
-                                                //     .toString(),
+                                                // deliveryId == null
+                                                //     ? 'select time'
+                                                //     : deliveryId == 2
+                                                //         ? updatedroptime2 : deliveryId == 1 ? _updatedTime : '${_formatdropTime(dropTime!)}',
+
+                                                dropTime != null
+                                                    ? _formatTime(dropTime!)
+                                                    : 'select time',
+
                                                 style: primaryfont.copyWith(
                                                     fontSize: 12.sp,
                                                     fontWeight: FontWeight.w700,
@@ -1008,7 +1079,8 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                               ),
                                               IconButton(
                                                   onPressed: () {
-                                                    dropTimePicker(context);
+                                                    //  dropTimePicker(context);
+                                                    _selectdropTime(context);
                                                   },
                                                   icon: Image.asset(
                                                     "assets/icons/mylisticon.png",
@@ -1032,38 +1104,66 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                               onTap: () {
                                 List<String> droppingAddressList =
                                     homeController.droppingLocations.toList();
-                                Get.to(ScheduleDeliveryScreen(
-                                  pickuplatitude: widget.lat,
-                                  pickuplogitude: widget.long,
-                                  droppingLatitude: homeController.droppingLats,
-                                  droppingLogitude: homeController.dropLongs,
-                                  bookingDate: formatDateTime,
-                                  deliverytype: deliveryId.toString(),
-                                  length: parcellengthController.text,
-                                  width: parcelwidthController.text,
-                                  height: parcelheightController.text,
-                                  qty: int.parse(quantityController.text),
-                                  kg: parcelkgController.text,
-                                  parcelItems: parcelitemController.text,
-                                  unitIdBlockId: [
-                                    widget.unitIdBlockID.toString()
-                                  ],
-                                  pickTimeListFrom: [
-                                    pickTime.toString(),
-                                    _updatedTime.toString()
-                                  ],
-                                  pickTimeListTo: [
-                                    updatedroptime1.toString(),
-                                    updatedroptime2.toString()
-                                  ],
-                                  pickTimeFrom: pickTime.toString(),
-                                  pickTimeTo: dropTime.toString(),
-                                  sendername: widget.sendername,
-                                  phonenumber: widget.mobilenumber,
-                                  droppingaddress: droppingAddressList,
-                                  arpincode: homeController.pincodes,
-                                  doorname: homeController.doornames,
-                                ));
+                                if (widget.pickupAdress.isNotEmpty &&
+                                    widget.lat.isNotEmpty &&
+                                    widget.long.isNotEmpty &&
+                                    homeController.droppingLats.isNotEmpty &&
+                                    homeController.dropLongs.isNotEmpty &&
+                                    _formatTime(pickTime!).isNotEmpty &&
+                                    _formatTime(dropTime!).isNotEmpty &&
+                                    formatDateTime.isNotEmpty &&
+                                    deliveryId.toString().isNotEmpty &&
+                                    parcellengthController.text.isNotEmpty &&
+                                    parcelwidthController.text.isNotEmpty &&
+                                    parcelheightController.text.isNotEmpty &&
+                                    quantityController.text.isNotEmpty &&
+                                    parcelkgController.text.isNotEmpty &&
+                                    parcelitemController.text.isNotEmpty &&
+                                    widget.unitIdBlockID
+                                        .toString()
+                                        .isNotEmpty &&
+                                    widget.sendername.isNotEmpty &&
+                                    widget.mobilenumber.isNotEmpty &&
+                                    droppingAddressList.isNotEmpty &&
+                                    homeController.pincodes.isNotEmpty &&
+                                    homeController.doornames.isNotEmpty) {
+                                  Get.to(ScheduleDeliveryScreen(
+                                    pickupAddress: widget.pickupAdress,
+                                    pickuplatitude: widget.lat,
+                                    pickuplogitude: widget.long,
+                                    droppingLatitude:
+                                        homeController.droppingLats,
+                                    droppingLogitude: homeController.dropLongs,
+                                    bookingDate: formatDateTime,
+                                    deliverytype: deliveryId.toString(),
+                                    length: parcellengthController.text,
+                                    width: parcelwidthController.text,
+                                    height: parcelheightController.text,
+                                    qty: int.parse(quantityController.text),
+                                    kg: parcelkgController.text,
+                                    parcelItems: parcelitemController.text,
+                                    unitIdBlockId: [
+                                      widget.unitIdBlockID.toString()
+                                    ],
+                                    pickTimeListFrom: [
+                                      _formatTime(pickTime!),
+                                    ],
+                                    pickTimeListTo: [_formatTime(dropTime!)],
+                                    pickTimeFrom: _formatTime(pickTime!),
+                                    pickTimeTo: _formatTime(dropTime!),
+                                    sendername: widget.sendername,
+                                    phonenumber: widget.mobilenumber,
+                                    droppingaddress: droppingAddressList,
+                                    arpincode: homeController.pincodes,
+                                    doorname: homeController.doornames,
+                                  ));
+                                } else {
+                                  Get.snackbar(
+                                      "Fill all Fileds", "Please try again!",
+                                      colorText: AppColors.kwhite,
+                                      backgroundColor: Colors.red,
+                                      snackPosition: SnackPosition.BOTTOM);
+                                }
                               },
                               child: CommonContainer(
                                 name: "Next",
@@ -1082,10 +1182,11 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String hintText) {
+  Widget _buildTextField(
+      TextEditingController controller, String hintText, String joinText) {
     return Container(
       height: 35,
-      width: 60,
+      width: 58,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(4),
         border: Border.all(width: 1, color: Colors.grey.withOpacity(0.32)),
@@ -1100,8 +1201,10 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
           color: Colors.black,
         ),
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.only(top: 0, left: 5, bottom: 15),
-          hintText: hintText,
+          suffixText: joinText,
+          contentPadding:
+              EdgeInsets.only(top: 5, left: 5, bottom: 10, right: 10),
+          // hintText: hintText,
           hintStyle: TextStyle(
             fontSize: 13.sp,
             fontWeight: FontWeight.w500,
@@ -1113,385 +1216,3 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
     );
   }
 }
-
-
-// Padding(
-                                              //   padding:
-                                              //       EdgeInsets.only(bottom: 10),
-                                              //   child: Row(
-                                              //     mainAxisAlignment:
-                                              //         MainAxisAlignment
-                                              //             .spaceBetween,
-                                              //     children: [
-                                              //       Container(
-                                              //         height: 45.h,
-                                              //         width: 60.w,
-                                              //         decoration: BoxDecoration(
-                                              //           borderRadius:
-                                              //               BorderRadius
-                                              //                   .circular(4),
-                                              //         ),
-                                              //         child: TextFormField(
-                                              //           controller:
-                                              //               parcellengthController,
-                                              //           keyboardType:
-                                              //               TextInputType
-                                              //                   .number,
-                                              //           cursorColor:
-                                              //               Colors.black,
-                                              //           style: primaryfont
-                                              //               .copyWith(
-                                              //             fontSize: 14.sp,
-                                              //             fontWeight:
-                                              //                 FontWeight.w500,
-                                              //             color: Colors
-                                              //                 .black, // Ensure the text color is visible
-                                              //           ),
-                                              //           decoration:
-                                              //               InputDecoration(
-                                              //             contentPadding:
-                                              //                 const EdgeInsets
-                                              //                     .only(
-                                              //                     top: 5,
-                                              //                     left: 5),
-                                              //             hintText: 'L',
-                                              //             hintStyle: primaryfont
-                                              //                 .copyWith(
-                                              //               fontSize: 14.sp,
-                                              //               fontWeight:
-                                              //                   FontWeight.w500,
-                                              //               color: Color(
-                                              //                   0xff455A64),
-                                              //             ),
-                                              //             border:
-                                              //                 InputBorder.none,
-                                              //             enabledBorder:
-                                              //                 OutlineInputBorder(
-                                              //               borderRadius:
-                                              //                   BorderRadius
-                                              //                       .circular(
-                                              //                           4),
-                                              //               borderSide:
-                                              //                   BorderSide(
-                                              //                 width: 1,
-                                              //                 color: Colors.grey
-                                              //                     .withOpacity(
-                                              //                         .32),
-                                              //               ),
-                                              //             ),
-                                              //             focusedBorder:
-                                              //                 OutlineInputBorder(
-                                              //               borderRadius:
-                                              //                   BorderRadius
-                                              //                       .circular(
-                                              //                           4),
-                                              //               borderSide:
-                                              //                   BorderSide(
-                                              //                 width: 1,
-                                              //                 color: Colors.grey
-                                              //                     .withOpacity(
-                                              //                         .32),
-                                              //               ),
-                                              //             ),
-                                              //           ),
-                                              //         ),
-                                              //       ),
-                                              //       Text("X"),
-                                              //       Container(
-                                              //         height: 45.h,
-                                              //         width: 60.w,
-                                              //         decoration: BoxDecoration(
-                                              //           borderRadius:
-                                              //               BorderRadius
-                                              //                   .circular(4),
-                                              //         ),
-                                              //         child: TextFormField(
-                                              //           controller:
-                                              //               parcelwidthController,
-                                              //           keyboardType:
-                                              //               TextInputType
-                                              //                   .number,
-                                              //           cursorColor:
-                                              //               Colors.black,
-                                              //           style: primaryfont
-                                              //               .copyWith(
-                                              //             fontSize: 14.sp,
-                                              //             fontWeight:
-                                              //                 FontWeight.w500,
-                                              //             color: Colors.black,
-                                              //           ),
-                                              //           decoration:
-                                              //               InputDecoration(
-                                              //             // suffixIcon: Padding(
-                                              //             //   padding: const EdgeInsets.only(
-                                              //             //       left: 16, top: 12),
-                                              //             //   child: Text(
-                                              //             //     "cm",
-                                              //             //     style: primaryfont.copyWith(
-                                              //             //       fontSize: 14.sp,
-                                              //             //       fontWeight: FontWeight.w500,
-                                              //             //       color: Color(0xff455A64),
-                                              //             //     ),
-                                              //             //   ),
-                                              //             // ),
-                                              //             contentPadding:
-                                              //                 const EdgeInsets
-                                              //                     .only(
-                                              //                     top: 5,
-                                              //                     left: 5),
-                                              //             hintText: 'W',
-                                              //             hintStyle: primaryfont
-                                              //                 .copyWith(
-                                              //               fontSize: 14.sp,
-                                              //               fontWeight:
-                                              //                   FontWeight.w500,
-                                              //               color: Color(
-                                              //                   0xff455A64),
-                                              //             ),
-                                              //             border:
-                                              //                 InputBorder.none,
-                                              //             enabledBorder:
-                                              //                 OutlineInputBorder(
-                                              //               borderRadius:
-                                              //                   BorderRadius
-                                              //                       .circular(
-                                              //                           4),
-                                              //               borderSide:
-                                              //                   BorderSide(
-                                              //                 width: 1,
-                                              //                 color: Colors.grey
-                                              //                     .withOpacity(
-                                              //                         .32),
-                                              //               ),
-                                              //             ),
-                                              //             focusedBorder:
-                                              //                 OutlineInputBorder(
-                                              //               borderRadius:
-                                              //                   BorderRadius
-                                              //                       .circular(
-                                              //                           4),
-                                              //               borderSide:
-                                              //                   BorderSide(
-                                              //                 width: 1,
-                                              //                 color: Colors.grey
-                                              //                     .withOpacity(
-                                              //                         .32),
-                                              //               ),
-                                              //             ),
-                                              //           ),
-                                              //         ),
-                                              //       ),
-                                              //       Text("X"),
-                                              //       Container(
-                                              //         height: 45.h,
-                                              //         width: 60.w,
-                                              //         decoration: BoxDecoration(
-                                              //           borderRadius:
-                                              //               BorderRadius
-                                              //                   .circular(4),
-                                              //         ),
-                                              //         child: TextFormField(
-                                              //           controller:
-                                              //               parcelheightController,
-                                              //           keyboardType:
-                                              //               TextInputType
-                                              //                   .number,
-                                              //           cursorColor:
-                                              //               Colors.black,
-                                              //           style: primaryfont
-                                              //               .copyWith(
-                                              //             fontSize: 14.sp,
-                                              //             fontWeight:
-                                              //                 FontWeight.w500,
-                                              //             color: Colors.black,
-                                              //           ),
-                                              //           decoration:
-                                              //               InputDecoration(
-                                              //             contentPadding:
-                                              //                 const EdgeInsets
-                                              //                     .only(
-                                              //                     top: 5,
-                                              //                     left: 5),
-                                              //             hintText: 'h',
-                                              //             hintStyle: primaryfont
-                                              //                 .copyWith(
-                                              //               fontSize: 14.sp,
-                                              //               fontWeight:
-                                              //                   FontWeight.w500,
-                                              //               color: const Color(
-                                              //                   0xff455A64),
-                                              //             ),
-                                              //             border:
-                                              //                 InputBorder.none,
-                                              //             enabledBorder:
-                                              //                 OutlineInputBorder(
-                                              //               borderRadius:
-                                              //                   BorderRadius
-                                              //                       .circular(
-                                              //                           4),
-                                              //               borderSide:
-                                              //                   BorderSide(
-                                              //                 width: 1,
-                                              //                 color: Colors.grey
-                                              //                     .withOpacity(
-                                              //                         .32),
-                                              //               ),
-                                              //             ),
-                                              //             focusedBorder:
-                                              //                 OutlineInputBorder(
-                                              //               borderRadius:
-                                              //                   BorderRadius
-                                              //                       .circular(
-                                              //                           4),
-                                              //               borderSide:
-                                              //                   BorderSide(
-                                              //                 width: 1,
-                                              //                 color: Colors.grey
-                                              //                     .withOpacity(
-                                              //                         .32),
-                                              //               ),
-                                              //             ),
-                                              //           ),
-                                              //         ),
-                                              //       ),
-                                              //       Container(
-                                              //         height: 45.h,
-                                              //         width: 60.w,
-                                              //         decoration:
-                                              //             const BoxDecoration(
-                                              //                 color: AppColors
-                                              //                     .kwhite),
-                                              //         child: TextFormField(
-                                              //           controller:
-                                              //               parcelkgController,
-                                              //           decoration:
-                                              //               InputDecoration(
-                                              //             contentPadding:
-                                              //                 const EdgeInsets
-                                              //                     .only(
-                                              //                     top: 5,
-                                              //                     left: 10),
-                                              //             hintText: 'Kg',
-                                              //             hintStyle: primaryfont
-                                              //                 .copyWith(
-                                              //                     fontSize:
-                                              //                         14.sp,
-                                              //                     fontWeight:
-                                              //                         FontWeight
-                                              //                             .w500,
-                                              //                     color: Color(
-                                              //                         0xff455A64)),
-                                              //             border:
-                                              //                 OutlineInputBorder(
-                                              //               borderRadius:
-                                              //                   BorderRadius
-                                              //                       .circular(
-                                              //                           4),
-                                              //               borderSide:
-                                              //                   BorderSide(
-                                              //                 width: 1,
-                                              //                 color: Colors.grey
-                                              //                     .withOpacity(
-                                              //                         .32),
-                                              //               ),
-                                              //             ),
-                                              //             enabledBorder:
-                                              //                 OutlineInputBorder(
-                                              //               borderRadius:
-                                              //                   BorderRadius
-                                              //                       .circular(
-                                              //                           4),
-                                              //               borderSide:
-                                              //                   BorderSide(
-                                              //                 width: 1,
-                                              //                 color: Colors.grey
-                                              //                     .withOpacity(
-                                              //                         .32),
-                                              //               ),
-                                              //             ),
-                                              //             focusedBorder:
-                                              //                 OutlineInputBorder(
-                                              //               borderRadius:
-                                              //                   BorderRadius
-                                              //                       .circular(
-                                              //                           4),
-                                              //               borderSide:
-                                              //                   const BorderSide(
-                                              //                 width: 1,
-                                              //               ),
-                                              //             ),
-                                              //           ),
-                                              //         ),
-                                              //       ),
-                                              //       Container(
-                                              //         height: 45.h,
-                                              //         width: 60.w,
-                                              //         decoration:
-                                              //             const BoxDecoration(
-                                              //                 color: AppColors
-                                              //                     .kwhite),
-                                              //         child: TextFormField(
-                                              //           controller:
-                                              //               quantityController,
-                                              //           decoration:
-                                              //               InputDecoration(
-                                              //             contentPadding:
-                                              //                 const EdgeInsets
-                                              //                     .only(
-                                              //                     top: 5,
-                                              //                     left: 10),
-                                              //             hintText: 'Qty',
-                                              //             hintStyle: primaryfont
-                                              //                 .copyWith(
-                                              //                     fontSize:
-                                              //                         14.sp,
-                                              //                     fontWeight:
-                                              //                         FontWeight
-                                              //                             .w500,
-                                              //                     color: Color(
-                                              //                         0xff455A64)),
-                                              //             border:
-                                              //                 OutlineInputBorder(
-                                              //               borderRadius:
-                                              //                   BorderRadius
-                                              //                       .circular(
-                                              //                           4),
-                                              //               borderSide:
-                                              //                   BorderSide(
-                                              //                 width: 1,
-                                              //                 color: Colors.grey
-                                              //                     .withOpacity(
-                                              //                         .32),
-                                              //               ),
-                                              //             ),
-                                              //             enabledBorder:
-                                              //                 OutlineInputBorder(
-                                              //               borderRadius:
-                                              //                   BorderRadius
-                                              //                       .circular(
-                                              //                           4),
-                                              //               borderSide:
-                                              //                   BorderSide(
-                                              //                 width: 1,
-                                              //                 color: Colors.grey
-                                              //                     .withOpacity(
-                                              //                         .32),
-                                              //               ),
-                                              //             ),
-                                              //             focusedBorder:
-                                              //                 OutlineInputBorder(
-                                              //               borderRadius:
-                                              //                   BorderRadius
-                                              //                       .circular(
-                                              //                           4),
-                                              //               borderSide:
-                                              //                   const BorderSide(
-                                              //                 width: 1,
-                                              //               ),
-                                              //             ),
-                                              //           ),
-                                              //         ),
-                                              //       ),
-                                              //     ],
-                                              //   ),
-                                              // ),

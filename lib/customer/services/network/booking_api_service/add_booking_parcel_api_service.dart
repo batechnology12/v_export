@@ -22,6 +22,7 @@ class AddBookingParcelsApiService extends BaseApiServices {
       final String? authtoken = prefs.getString('auth_token');
       FormData formData = FormData.fromMap({
         "delivery_type_id": addBookingParcelModel.deliveryTypeid,
+        "pickup_addreess": addBookingParcelModel.pickupAddress,
         "payment_mode": "500",
         "booking_amount": "500",
         "gst": "500",

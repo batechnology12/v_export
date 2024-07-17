@@ -1,3 +1,7 @@
+// To parse this JSON data, do
+//
+//     final getBookingdetailsModeldata = getBookingdetailsModeldataFromJson(jsonString);
+
 import 'dart:convert';
 
 GetBookingdetailsModeldata getBookingdetailsModeldataFromJson(String str) =>
@@ -9,7 +13,7 @@ String getBookingdetailsModeldataToJson(GetBookingdetailsModeldata data) =>
 class GetBookingdetailsModeldata {
   bool status;
   String message;
-  Bookingdata data;
+  BookingData data;
 
   GetBookingdetailsModeldata({
     required this.status,
@@ -21,7 +25,7 @@ class GetBookingdetailsModeldata {
       GetBookingdetailsModeldata(
         status: json["status"],
         message: json["message"],
-        data: Bookingdata.fromJson(json["data"]),
+        data: BookingData.fromJson(json["data"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -31,7 +35,7 @@ class GetBookingdetailsModeldata {
       };
 }
 
-class Bookingdata {
+class BookingData {
   String bookingId;
   int userId;
   dynamic vehicleId;
@@ -40,6 +44,7 @@ class Bookingdata {
   String paymentMode;
   String bookingAmount;
   String gst;
+  dynamic pickupAddreess;
   String latitude;
   String longitude;
   String distance;
@@ -56,9 +61,11 @@ class Bookingdata {
   String additionalServicesId;
   List<BookingProduct> bookingProducts;
   List<BookingDeliveryAddress> bookingDeliveryAddresses;
+  List<AdditionalService> additionalServices;
+  String deliveryTypeName;
   dynamic parcelPhoto;
 
-  Bookingdata({
+  BookingData({
     required this.bookingId,
     required this.userId,
     required this.vehicleId,
@@ -67,6 +74,7 @@ class Bookingdata {
     required this.paymentMode,
     required this.bookingAmount,
     required this.gst,
+    required this.pickupAddreess,
     required this.latitude,
     required this.longitude,
     required this.distance,
@@ -83,38 +91,45 @@ class Bookingdata {
     required this.additionalServicesId,
     required this.bookingProducts,
     required this.bookingDeliveryAddresses,
+    required this.additionalServices,
+    required this.deliveryTypeName,
     required this.parcelPhoto,
   });
 
-  factory Bookingdata.fromJson(Map<String, dynamic> json) => Bookingdata(
-        bookingId: json["booking_id"] ?? "",
-        userId: json["user_id"] ?? 0,
-        vehicleId: json["vehicle_id"] ?? "",
+  factory BookingData.fromJson(Map<String, dynamic> json) => BookingData(
+        bookingId: json["booking_id"],
+        userId: json["user_id"],
+        vehicleId: json["vehicle_id"],
         bookingDate: DateTime.parse(json["booking_date"]),
-        deliveryTypeId: json["delivery_type_id"] ?? "",
-        paymentMode: json["payment_mode"] ?? "",
-        bookingAmount: json["booking_amount"] ?? "",
-        gst: json["gst"] ?? "",
-        latitude: json["latitude"] ?? "",
-        longitude: json["longitude"] ?? "",
-        distance: json["distance"] ?? "",
-        additionalTotal: json["additional_total"] ?? "",
-        totalAmount: json["total_amount"] ?? "",
-        isRoundTrip: json["is_round_trip"] ?? "",
-        notes: json["notes"] ?? "",
-        isConfirmed: json["is_confirmed"] ?? "",
-        bookingStatus: json["booking_status"] ?? "",
-        bookingType: json["booking_type"] ?? "",
+        deliveryTypeId: json["delivery_type_id"],
+        paymentMode: json["payment_mode"],
+        bookingAmount: json["booking_amount"],
+        gst: json["gst"],
+        pickupAddreess: json["pickup_addreess"],
+        latitude: json["latitude"],
+        longitude: json["longitude"],
+        distance: json["distance"],
+        additionalTotal: json["additional_total"],
+        totalAmount: json["total_amount"],
+        isRoundTrip: json["is_round_trip"],
+        notes: json["notes"],
+        isConfirmed: json["is_confirmed"],
+        bookingStatus: json["booking_status"],
+        bookingType: json["booking_type"],
         updatedAt: DateTime.parse(json["updated_at"]),
         createdAt: DateTime.parse(json["created_at"]),
-        id: json["id"] ?? 0,
-        additionalServicesId: json["additional_services_id"] ?? "",
+        id: json["id"],
+        additionalServicesId: json["additional_services_id"],
         bookingProducts: List<BookingProduct>.from(
             json["booking_products"].map((x) => BookingProduct.fromJson(x))),
         bookingDeliveryAddresses: List<BookingDeliveryAddress>.from(
             json["booking_delivery_addresses"]
                 .map((x) => BookingDeliveryAddress.fromJson(x))),
-        parcelPhoto: json["parcel_photo"] ?? "",
+        additionalServices: List<AdditionalService>.from(
+            json["additional_services"]
+                .map((x) => AdditionalService.fromJson(x))),
+        deliveryTypeName: json["delivery_type_name"],
+        parcelPhoto: json["parcel_photo"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -126,6 +141,7 @@ class Bookingdata {
         "payment_mode": paymentMode,
         "booking_amount": bookingAmount,
         "gst": gst,
+        "pickup_addreess": pickupAddreess,
         "latitude": latitude,
         "longitude": longitude,
         "distance": distance,
@@ -144,7 +160,55 @@ class Bookingdata {
             List<dynamic>.from(bookingProducts.map((x) => x.toJson())),
         "booking_delivery_addresses":
             List<dynamic>.from(bookingDeliveryAddresses.map((x) => x.toJson())),
+        "additional_services":
+            List<dynamic>.from(additionalServices.map((x) => x.toJson())),
+        "delivery_type_name": deliveryTypeName,
         "parcel_photo": parcelPhoto,
+      };
+}
+
+class AdditionalService {
+  int id;
+  String name;
+  String description;
+  String type;
+  String amount;
+  String status;
+  DateTime createdAt;
+  DateTime updatedAt;
+
+  AdditionalService({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.type,
+    required this.amount,
+    required this.status,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory AdditionalService.fromJson(Map<String, dynamic> json) =>
+      AdditionalService(
+        id: json["id"],
+        name: json["name"],
+        description: json["description"],
+        type: json["type"],
+        amount: json["amount"],
+        status: json["status"],
+        createdAt: DateTime.parse(json["created_at"]),
+        updatedAt: DateTime.parse(json["updated_at"]),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "description": description,
+        "type": type,
+        "amount": amount,
+        "status": status,
+        "created_at": createdAt.toIso8601String(),
+        "updated_at": updatedAt.toIso8601String(),
       };
 }
 
@@ -179,16 +243,16 @@ class BookingDeliveryAddress {
 
   factory BookingDeliveryAddress.fromJson(Map<String, dynamic> json) =>
       BookingDeliveryAddress(
-        id: json["id"] ?? 0,
-        bookingId: json["booking_id"] ?? '',
-        customerName: json["customer_name"] ?? "",
-        customerMobile: json["customer_mobile"] ?? "",
-        unitnoBlockno: json["unitno_blockno"] ?? "",
-        address: json["address"] ?? "",
-        postalcode: json["postalcode"] ?? "",
-        latitude: json["latitude"] ?? "",
-        longitude: json["longitude"] ?? "",
-        deliveryStatus: json["delivery_status"] ?? "",
+        id: json["id"],
+        bookingId: json["booking_id"],
+        customerName: json["customer_name"],
+        customerMobile: json["customer_mobile"],
+        unitnoBlockno: json["unitno_blockno"],
+        address: json["address"],
+        postalcode: json["postalcode"],
+        latitude: json["latitude"],
+        longitude: json["longitude"],
+        deliveryStatus: json["delivery_status"],
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
       );
@@ -251,22 +315,22 @@ class BookingProduct {
   });
 
   factory BookingProduct.fromJson(Map<String, dynamic> json) => BookingProduct(
-        id: json["id"] ?? 0,
-        bookingId: json["booking_id"] ?? "",
-        bookingProductId: json["booking_product_id"] ?? "",
-        parcelItems: json["parcel_items"] ?? "",
-        parcelSize: json["parcel_size"] ?? "",
-        productPicture: json["product_picture"] ?? "",
-        length: json["length"] ?? "",
-        bookingProductWith: json["with"] ?? "",
-        height: json["height"] ?? "",
-        qty: json["qty"] ?? "",
-        kg: json["kg"] ?? "",
-        pickuptimeFrom: json["pickuptime_from"] ?? "",
-        pickuptimeTo: json["pickuptime_to"] ?? "",
+        id: json["id"],
+        bookingId: json["booking_id"],
+        bookingProductId: json["booking_product_id"],
+        parcelItems: json["parcel_items"],
+        parcelSize: json["parcel_size"],
+        productPicture: json["product_picture"],
+        length: json["length"],
+        bookingProductWith: json["with"],
+        height: json["height"],
+        qty: json["qty"],
+        kg: json["kg"],
+        pickuptimeFrom: json["pickuptime_from"],
+        pickuptimeTo: json["pickuptime_to"],
         deliveryDate: DateTime.parse(json["delivery_date"]),
-        deliverytimeFrom: json["deliverytime_from"] ?? "",
-        deliverytimeTo: json["deliverytime_to"] ?? "",
+        deliverytimeFrom: json["deliverytime_from"],
+        deliverytimeTo: json["deliverytime_to"],
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
       );

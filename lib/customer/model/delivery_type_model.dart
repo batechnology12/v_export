@@ -67,18 +67,20 @@ class DeliveryTypeData {
 
   factory DeliveryTypeData.fromJson(Map<String, dynamic> json) =>
       DeliveryTypeData(
-        id: json["id"],
-        name: json["name"],
-        description: json["description"],
-        price05Km: json["price_0_5km"],
-        price510Km: json["price_5_10km"],
-        price1015Km: json["price_10_15km"],
-        price1520Km: json["price_15_20km"],
-        price2025Km: json["price_20_25km"],
-        priceAbove25Km: json["price_above_25km"],
-        status: json["status"],
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
+        id: json["id"] ?? 0,
+        name: json["name"] ?? "",
+        description: json["description"] ?? "",
+        price05Km: json["price_0_5km"] ?? "",
+        price510Km: json["price_5_10km"] ?? "",
+        price1015Km: json["price_10_15km"] ?? "",
+        price1520Km: json["price_15_20km"] ?? "",
+        price2025Km: json["price_20_25km"] ?? "",
+        priceAbove25Km: json["price_above_25km"] ?? "",
+        status: json["status"] ?? "",
+        createdAt: json["created_at"] == null? DateTime.now(): DateTime.parse(json["created_at"]),
+        updatedAt: json["updated_at"] == null
+            ? DateTime.now()
+            : DateTime.parse(json["updated_at"]),
       );
 
   Map<String, dynamic> toJson() => {

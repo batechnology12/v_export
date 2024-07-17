@@ -11,9 +11,10 @@ class AccountController extends GetxController {
   ProfileApiServices profileApiServices = ProfileApiServices();
   GetUserModel? getUserData;
   RxBool imageLoading = false.obs;
+
   getProfile() async {
     imageLoading(true);
-    update();
+  
     dio.Response<dynamic> response = await profileApiServices.getProfile();
     imageLoading(false);
 

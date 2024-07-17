@@ -55,7 +55,7 @@ class _VerifiedPasswordScreenState extends State<RegisterPersonalOtpScreen> {
       body: Form(
         key: formKey,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          // crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 20),
@@ -170,65 +170,118 @@ class _VerifiedPasswordScreenState extends State<RegisterPersonalOtpScreen> {
                               fontWeight: FontWeight.w500,
                               color: AppColors.kblue))
                     ],
-                  )
+                  ),
                 ],
+              ),
+            ),
+            Spacer(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Container(
+                height: 70.h,
+                child: Column(
+                  children: [
+                    Obx(() {
+                      return Container(
+                        height: 50.h,
+                        width: MediaQuery.of(context).size.width,
+                        child: authController.personalOtpLoading.isTrue
+                            ? Container(
+                                height: 50.h,
+                                width: size.width,
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(30)),
+                                child: Center(
+                                    child: CircularProgressIndicator(
+                                  color: AppColors.kblue,
+                                )),
+                              )
+                            : GestureDetector(
+                                onTap: () {
+                                  if (formKey.currentState!.validate()) {
+                                    authController.resgisterPersonalOtpUser(
+                                        widget.mobile, otpController.text);
+                                  }
+                                },
+                                child: Container(
+                                  height: 50.h,
+                                  width: size.width,
+                                  decoration: BoxDecoration(
+                                      color: AppColors.kblue,
+                                      borderRadius: BorderRadius.circular(30)),
+                                  child: Center(
+                                    child: Text(
+                                      'Verify',
+                                      style: primaryfont.copyWith(
+                                          fontSize: 18.sp,
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.kwhite),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                      );
+                    }),
+                  ],
+                ),
               ),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(left: 15, right: 15),
-        child: Container(
-          height: 70.h,
-          child: Column(
-            children: [
-              Obx(() {
-                return Container(
-                  height: 50.h,
-                  width: MediaQuery.of(context).size.width,
-                  child: authController.personalOtpLoading.isTrue
-                      ? Container(
-                          height: 50.h,
-                          width: size.width,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(30)),
-                          child: Center(
-                              child: CircularProgressIndicator(
-                            color: AppColors.kblue,
-                          )),
-                        )
-                      : GestureDetector(
-                          onTap: () {
-                            if (formKey.currentState!.validate()) {
-                              authController.resgisterPersonalOtpUser(
-                                  widget.mobile, otpController.text);
-                            }
-                          },
-                          child: Container(
-                            height: 50.h,
-                            width: size.width,
-                            decoration: BoxDecoration(
-                                color: AppColors.kblue,
-                                borderRadius: BorderRadius.circular(30)),
-                            child: Center(
-                              child: Text(
-                                'Verify',
-                                style: primaryfont.copyWith(
-                                    fontSize: 18.sp,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.kwhite),
-                              ),
-                            ),
-                          ),
-                        ),
-                );
-              }),
-            ],
-          ),
-        ),
-      ),
+      // bottomNavigationBar: Padding(
+      //   padding: const EdgeInsets.only(left: 15, right: 15),
+      //   child: Container(
+      //     height: 70.h,
+      //     child: Column(
+      //       children: [
+      //         Obx(() {
+      //           return Container(
+      //             height: 50.h,
+      //             width: MediaQuery.of(context).size.width,
+      //             child: authController.personalOtpLoading.isTrue
+      //                 ? Container(
+      //                     height: 50.h,
+      //                     width: size.width,
+      //                     decoration: BoxDecoration(
+      //                         color: Colors.white,
+      //                         borderRadius: BorderRadius.circular(30)),
+      //                     child: Center(
+      //                         child: CircularProgressIndicator(
+      //                       color: AppColors.kblue,
+      //                     )),
+      //                   )
+      //                 : GestureDetector(
+      //                     onTap: () {
+      //                       if (formKey.currentState!.validate()) {
+      //                         authController.resgisterPersonalOtpUser(
+      //                             widget.mobile, otpController.text);
+      //                       }
+      //                     },
+      //                     child: Container(
+      //                       height: 50.h,
+      //                       width: size.width,
+      //                       decoration: BoxDecoration(
+      //                           color: AppColors.kblue,
+      //                           borderRadius: BorderRadius.circular(30)),
+      //                       child: Center(
+      //                         child: Text(
+      //                           'Verify',
+      //                           style: primaryfont.copyWith(
+      //                               fontSize: 18.sp,
+      //                               fontWeight: FontWeight.w500,
+      //                               color: AppColors.kwhite),
+      //                         ),
+      //                       ),
+      //                     ),
+      //                   ),
+      //           );
+      //         }),
+      //       ],
+      //     ),
+      //   ),
+      // ),
     );
   }
 }

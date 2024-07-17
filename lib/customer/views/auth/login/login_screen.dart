@@ -89,7 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: size.height * 0.25,
                 child: Center(
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 25),
+                    padding: const EdgeInsets.only(top: 60),
                     child: SvgPicture.asset(
                       'assets/icons/VEELGO.svg',
                       height: 35.h,
@@ -143,7 +143,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           ksizedbox5,
                           TextFormField(
                             keyboardType: TextInputType.phone,
-                           
                             inputFormatters: [
                               selectedValues == "+65"
                                   ? LengthLimitingTextInputFormatter(8)
@@ -368,12 +367,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                     onTap: _onLoginPressed,
                                     child: Container(
                                       height: 50,
-                                      width:
-                                          MediaQuery.of(context).size.width,
+                                      width: MediaQuery.of(context).size.width,
                                       decoration: BoxDecoration(
-                                        color: Colors.blue,
-                                        borderRadius:
-                                            BorderRadius.circular(30),
+                                        color: AppColors.kblue,
+                                        borderRadius: BorderRadius.circular(30),
                                       ),
                                       child: const Center(
                                         child: Text(

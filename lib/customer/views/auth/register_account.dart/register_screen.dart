@@ -128,7 +128,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           child: Padding(
                             padding:
-                                EdgeInsets.only(left: 10, top: 15, right: 10),
+                                EdgeInsets.only(left: 15, top: 15, right: 15),
                             child: SingleChildScrollView(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -533,7 +533,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       )
                                     ],
                                   ),
-                                  ksizedbox20,
+                                  ksizedbox10,
                                   authController.isLoading.isTrue
                                       ? Container(
                                           height: 50.h,
@@ -586,16 +586,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                     BorderRadius.circular(30)),
                                             child: Center(
                                               child: Text(
-                                                'Sign In',
+                                                'Sign Up',
                                                 style: primaryfont.copyWith(
-                                                    fontSize: 17.sp,
-                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 18.sp,
+                                                    fontWeight: FontWeight.bold,
                                                     color: AppColors.kwhite),
                                               ),
                                             ),
                                           ),
                                         ),
-                                  ksizedbox10,
+                                  ksizedbox20,
                                   Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
@@ -618,7 +618,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                   fontWeight: FontWeight.w500)),
                                         )
                                       ]),
-                                  ksizedbox10,
+                                  ksizedbox20,
                                 ],
                               ),
                             ),
@@ -647,7 +647,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           child: Padding(
                             padding:
-                                EdgeInsets.only(left: 10, top: 15, right: 10),
+                                EdgeInsets.only(left: 15, top: 15, right: 15),
                             child: SingleChildScrollView(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -668,7 +668,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       }
                                     },
                                     controller: companynameController,
-                                       textCapitalization:
+                                    textCapitalization:
                                         TextCapitalization.words,
                                     decoration: InputDecoration(
                                       contentPadding: const EdgeInsets.only(
@@ -864,7 +864,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       }
                                     },
                                     controller: contactPersonController,
-                                       textCapitalization:
+                                    textCapitalization:
                                         TextCapitalization.words,
                                     decoration: InputDecoration(
                                       contentPadding:
@@ -913,7 +913,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       }
                                     },
                                     controller: industryController,
-                                       textCapitalization:
+                                    textCapitalization:
                                         TextCapitalization.words,
                                     decoration: InputDecoration(
                                       contentPadding:
@@ -1225,7 +1225,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       )
                                     ],
                                   ),
-                                  ksizedbox20,
+                                  ksizedbox10,
                                   authController.businessLoading.isTrue
                                       ? Container(
                                           height: 50.h,
@@ -1287,16 +1287,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                     BorderRadius.circular(30)),
                                             child: Center(
                                               child: Text(
-                                                'Sign In',
+                                                'Sign Up',
                                                 style: primaryfont.copyWith(
-                                                    fontSize: 17.sp,
-                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 18.sp,
+                                                    fontWeight: FontWeight.bold,
                                                     color: AppColors.kwhite),
                                               ),
                                             ),
                                           ),
                                         ),
-                                  ksizedbox10,
+                                  ksizedbox20,
                                   Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
@@ -1319,7 +1319,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                   fontWeight: FontWeight.w500)),
                                         )
                                       ]),
-                                  ksizedbox10,
+                                  ksizedbox20,
                                 ],
                               ),
                             ),

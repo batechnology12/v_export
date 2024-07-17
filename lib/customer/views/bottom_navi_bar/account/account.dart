@@ -279,7 +279,8 @@ class _AccountState extends State<Account> {
                 children: <Widget>[
                   ClipRRect(
                     borderRadius: BorderRadius.circular(150),
-                    child: GetBuilder<AccountController>(builder: (context) {
+                    child:
+                     GetBuilder<AccountController>(builder: (context) {
                       return GestureDetector(
                         onTap: () {
                           editprofileImage();
@@ -341,23 +342,25 @@ class _AccountState extends State<Account> {
                 ],
               ),
               SizedBox(height: 8),
-              //  accountController.imageLoading.isTrue ? :
-              // GetBuilder<AccountController>(
-              //   builder: (controller) {
-              //     return controller.imageLoading.value
-              //         ? CircularProgressIndicator()
-              //         : Text(
-              //             controller.getUserData != null
-              //                 ? controller.getUserData!.firstName
-              //                 : " ",
-              //             style: TextStyle(
-              //               color: Colors.black,
-              //               fontSize: 17.sp,
-              //               fontWeight: FontWeight.w600,
-              //             ),
-              //           );
-              //   },
-              // ),
+             //  accountController.imageLoading.isTrue ? :
+              GetBuilder<AccountController>(
+                builder: (_) {
+                  return accountController.imageLoading.value
+                      ? Text("Loading...")
+                      : Text(
+                          accountController.getUserData == null
+                              ? ""
+                              : accountController.getUserData!.data.firstName,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 17.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        );
+
+                },
+              ),
+              
             ],
           ),
         ],

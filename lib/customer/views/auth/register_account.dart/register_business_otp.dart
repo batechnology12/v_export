@@ -177,61 +177,114 @@ class _VerifiedPasswordScreenState extends State<RegisterBusinessOtpScreen> {
                 ],
               ),
             ),
+            Spacer(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Container(
+                height: 70.h,
+                child: Column(
+                  children: [
+                    Obx(() {
+                      return Container(
+                        height: 50.h,
+                        width: MediaQuery.of(context).size.width,
+                        child: authController.businessOtpLoading.isTrue
+                            ? Container(
+                                height: 50.h,
+                                width: size.width,
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(30)),
+                                child: Center(
+                                    child: CircularProgressIndicator(
+                                  color: AppColors.kblue,
+                                )),
+                              )
+                            : GestureDetector(
+                                onTap: () {
+                                  if (formKey.currentState!.validate()) {
+                                    authController.registerBusinessOtpUser(
+                                        widget.mobile, otpController.text);
+                                  }
+                                },
+                                child: Container(
+                                  height: 50.h,
+                                  width: size.width,
+                                  decoration: BoxDecoration(
+                                      color: AppColors.kblue,
+                                      borderRadius: BorderRadius.circular(30)),
+                                  child: Center(
+                                    child: Text(
+                                      'Verify',
+                                      style: primaryfont.copyWith(
+                                          fontSize: 18.sp,
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.kwhite),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                      );
+                    }),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(left: 15, right: 15),
-        child: Container(
-          height: 70.h,
-          child: Column(
-            children: [
-              Obx(() {
-                return Container(
-                  height: 50.h,
-                  width: MediaQuery.of(context).size.width,
-                  child: authController.businessOtpLoading.isTrue
-                      ? Container(
-                          height: 50.h,
-                          width: size.width,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(30)),
-                          child: Center(
-                              child: CircularProgressIndicator(
-                            color: AppColors.kblue,
-                          )),
-                        )
-                      : GestureDetector(
-                          onTap: () {
-                            if (formKey.currentState!.validate()) {
-                              authController.registerBusinessOtpUser(
-                                  widget.mobile, otpController.text);
-                            }
-                          },
-                          child: Container(
-                            height: 50.h,
-                            width: size.width,
-                            decoration: BoxDecoration(
-                                color: AppColors.kblue,
-                                borderRadius: BorderRadius.circular(30)),
-                            child: Center(
-                              child: Text(
-                                'Verify',
-                                style: primaryfont.copyWith(
-                                    fontSize: 18.sp,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.kwhite),
-                              ),
-                            ),
-                          ),
-                        ),
-                );
-              }),
-            ],
-          ),
-        ),
-      ),
+      // bottomNavigationBar: Padding(
+      //   padding: const EdgeInsets.only(left: 15, right: 15),
+      //   child: Container(
+      //     height: 70.h,
+      //     child: Column(
+      //       children: [
+      //         Obx(() {
+      //           return Container(
+      //             height: 50.h,
+      //             width: MediaQuery.of(context).size.width,
+      //             child: authController.businessOtpLoading.isTrue
+      //                 ? Container(
+      //                     height: 50.h,
+      //                     width: size.width,
+      //                     decoration: BoxDecoration(
+      //                         color: Colors.white,
+      //                         borderRadius: BorderRadius.circular(30)),
+      //                     child: Center(
+      //                         child: CircularProgressIndicator(
+      //                       color: AppColors.kblue,
+      //                     )),
+      //                   )
+      //                 : GestureDetector(
+      //                     onTap: () {
+      //                       if (formKey.currentState!.validate()) {
+      //                         authController.registerBusinessOtpUser(
+      //                             widget.mobile, otpController.text);
+      //                       }
+      //                     },
+      //                     child: Container(
+      //                       height: 50.h,
+      //                       width: size.width,
+      //                       decoration: BoxDecoration(
+      //                           color: AppColors.kblue,
+      //                           borderRadius: BorderRadius.circular(30)),
+      //                       child: Center(
+      //                         child: Text(
+      //                           'Verify',
+      //                           style: primaryfont.copyWith(
+      //                               fontSize: 18.sp,
+      //                               fontWeight: FontWeight.bold,
+      //                               color: AppColors.kwhite),
+      //                         ),
+      //                       ),
+      //                     ),
+      //                   ),
+      //           );
+      //         }),
+      //       ],
+      //     ),
+      //   ),
+      // ),
     );
   }
 }

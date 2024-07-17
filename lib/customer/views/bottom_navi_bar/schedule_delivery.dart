@@ -8,12 +8,15 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:v_export/customer/controller/parcel_controller.dart';
 import 'package:v_export/customer/model/add_booking_parcel_model.dart';
+import 'package:v_export/customer/model/additional_service_model.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/booking_details.dart';
 import '../../../constant/app_colors.dart';
 import '../../../constant/app_font.dart';
 import '../../../constant/common_container.dart';
+import 'package:intl/intl.dart';
 
 class ScheduleDeliveryScreen extends StatefulWidget {
+  String pickupAddress;
   String pickuplatitude;
   String pickuplogitude;
   List<String> droppingLatitude;
@@ -40,6 +43,7 @@ class ScheduleDeliveryScreen extends StatefulWidget {
 
   ScheduleDeliveryScreen(
       {super.key,
+      required this.pickupAddress,
       required this.pickuplatitude,
       required this.pickuplogitude,
       required this.droppingLatitude,
@@ -82,7 +86,7 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
     });
   }
 
-  List<int> selectedId = [];
+  int? selectedId;
 
   ParcelController parcelController = Get.find<ParcelController>();
   bool ischeck = false;
@@ -95,41 +99,80 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
 
   DateTime selectedDate = DateTime.now();
 
-  TimeOfDay pickTimes = TimeOfDay.now();
-  TimeOfDay dropTimes = TimeOfDay.now();
-  String pickingTimes = "";
-  String dropingTimes = "";
+  // TimeOfDay pickTimes = TimeOfDay.now();
+  // TimeOfDay dropTimes = TimeOfDay.now();
+  // String pickingTimes = "";
+  // String dropingTimes = "";
 
-  Future displayTimePicker(BuildContext context) async {
-    var time = await showTimePicker(
+  // Future displayTimePicker(BuildContext context) async {
+  //   var time = await showTimePicker(
+  //     context: context,
+  //     initialTime: pickTimes,
+  //     initialEntryMode: TimePickerEntryMode.input,
+  //   );
+
+  //   if (time != null) {
+  //     setState(() {
+  //       pickTimes = time;
+  //     });
+
+  //     print(pickTimes);
+  //   }
+  // }
+
+  // Future dropTimePicker(BuildContext context) async {
+  //   var times = await showTimePicker(
+  //     context: context,
+  //     initialTime: pickTimes,
+  //     initialEntryMode: TimePickerEntryMode.input,
+  //   );
+
+  //   if (times != null) {
+  //     setState(() {
+  //       dropTimes = times;
+  //     });
+
+  //     print(dropTimes);
+  //   }
+  // }
+
+  TimeOfDay? deliveryFromTime;
+  TimeOfDay? deliveryToTime;
+
+  void _selectFromTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: pickTimes,
-      initialEntryMode: TimePickerEntryMode.input,
+      initialTime: deliveryFromTime ?? TimeOfDay.now(),
     );
-
-    if (time != null) {
+    if (picked != null && picked != deliveryFromTime) {
       setState(() {
-        pickTimes = time;
+        deliveryFromTime = picked;
       });
-
-      print(pickTimes);
     }
   }
 
-  Future dropTimePicker(BuildContext context) async {
-    var times = await showTimePicker(
+  void _selectToTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: pickTimes,
-      initialEntryMode: TimePickerEntryMode.input,
+      initialTime: deliveryToTime ?? TimeOfDay.now(),
     );
-
-    if (times != null) {
+    if (picked != null && picked != deliveryToTime) {
       setState(() {
-        dropTimes = times;
+        deliveryToTime = picked;
       });
-
-      print(dropTimes);
     }
+  }
+
+  String _formatTime(TimeOfDay time) {
+    final now = DateTime.now();
+    final formattedTime = DateFormat('h:mm a').format(DateTime(
+      now.year,
+      now.month,
+      now.day,
+      time.hour,
+      time.minute,
+    ));
+    return formattedTime;
   }
 
   var deliverydateController = TextEditingController();
@@ -148,7 +191,7 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
     final DateTime? picked = await showDatePicker(
         context: context,
         initialDate: selectedDate,
-        firstDate: DateTime(1901, 1),
+        firstDate: DateTime.now(),
         lastDate: DateTime(2100));
     if (picked != null && picked != selectedDate)
       setState(() {
@@ -276,12 +319,23 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                         fontWeight: FontWeight.w700),
                                   ),
                                   ksizedbox20,
-                                  Text(
-                                    'Delivery Date',
-                                    style: primaryfont.copyWith(
-                                        fontSize: 16.sp,
-                                        fontWeight: FontWeight.w600,
-                                        color: Color(0xff455A64)),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Delivery Date',
+                                        style: primaryfont.copyWith(
+                                            fontSize: 16.sp,
+                                            fontWeight: FontWeight.w600,
+                                            color: Color(0xff455A64)),
+                                      ),
+                                      Text(
+                                        '*',
+                                        style: primaryfont.copyWith(
+                                            fontSize: 16.sp,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.red),
+                                      ),
+                                    ],
                                   ),
                                   ksizedbox10,
                                   GestureDetector(
@@ -340,7 +394,7 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                     children: [
                                       GestureDetector(
                                         onTap: () {
-                                          displayTimePicker(context);
+                                          _selectFromTime(context);
                                         },
                                         child: Container(
                                           padding: EdgeInsets.only(left: 5),
@@ -359,9 +413,9 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
                                               Text(
-                                                //   pickTimes.format(context),
-                                                "${pickTimes.hour < 10 ? "0${pickTimes.hour}" : pickTimes.hour}:${pickTimes.minute.remainder(60) < 10 ? "0${pickTimes.minute.remainder(60)}" : '${pickTimes.minute.remainder(60)}'}:00"
-                                                    .toString(),
+                                                deliveryFromTime == null
+                                                    ? 'select time'
+                                                    : '${_formatTime(deliveryFromTime!)}',
                                                 style: primaryfont.copyWith(
                                                     fontSize: 13.sp,
                                                     fontWeight: FontWeight.w700,
@@ -369,7 +423,7 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                               ),
                                               IconButton(
                                                   onPressed: () {
-                                                    displayTimePicker(context);
+                                                    _selectFromTime(context);
                                                   },
                                                   icon: Image.asset(
                                                       "assets/icons/mylisticon.png",
@@ -387,7 +441,7 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                       ),
                                       GestureDetector(
                                         onTap: () {
-                                          dropTimePicker(context);
+                                          _selectToTime(context);
                                         },
                                         child: Container(
                                           padding: EdgeInsets.only(left: 5),
@@ -406,9 +460,9 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
                                               Text(
-                                                //  dropTimes.format(context),
-                                                "${dropTimes.hour < 10 ? "0${dropTimes.hour}" : dropTimes.hour}:${dropTimes.minute.remainder(60) < 10 ? "0${dropTimes.minute.remainder(60)}" : '${dropTimes.minute.remainder(60)}'}:00"
-                                                    .toString(),
+                                                deliveryToTime == null
+                                                    ? 'select time'
+                                                    : '${_formatTime(deliveryToTime!)}',
                                                 style: primaryfont.copyWith(
                                                     fontSize: 13.sp,
                                                     fontWeight: FontWeight.w700,
@@ -416,7 +470,7 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                               ),
                                               IconButton(
                                                   onPressed: () {
-                                                    dropTimePicker(context);
+                                                    _selectToTime(context);
                                                   },
                                                   icon: Image.asset(
                                                     "assets/icons/mylisticon.png",
@@ -428,61 +482,6 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                       ),
                                     ],
                                   ),
-                                  // Row(
-                                  //   mainAxisAlignment:
-                                  //       MainAxisAlignment.spaceBetween,
-                                  //   children: [
-                                  //     Container(
-                                  //       height: 45,
-                                  //       width: 130,
-                                  //       decoration: BoxDecoration(
-                                  //           color: AppColors.kwhite),
-                                  //       child: TextFormField(
-                                  //         decoration: InputDecoration(
-                                  //             suffixIcon: GestureDetector(
-                                  //               onTap: () {
-                                  //                 selectTime();
-                                  //               },
-                                  //               child: Image.asset(
-                                  //                   "assets/icons/time.png"),
-                                  //             ),
-                                  //             hintText: toTime.format(context),
-                                  //             hintStyle: primaryfont.copyWith(
-                                  //                 fontSize: 12,
-                                  //                 fontWeight: FontWeight.w500),
-                                  //             border: OutlineInputBorder()),
-                                  //       ),
-                                  //     ),
-                                  //     Text(
-                                  //       'To',
-                                  //       style: primaryfont.copyWith(
-                                  //           fontWeight: FontWeight.w500),
-                                  //     ),
-                                  //     Container(
-                                  //       height: 45,
-                                  //       width: 130,
-                                  //       decoration: BoxDecoration(
-                                  //           color: AppColors.kwhite),
-                                  //       child: TextFormField(
-                                  //         //  controller: parcelkgController,
-                                  //         decoration: InputDecoration(
-                                  //             suffixIcon: GestureDetector(
-                                  //               onTap: () {
-                                  //                 toselectTime();
-                                  //               },
-                                  //               child: Image.asset(
-                                  //                   "assets/icons/time.png"),
-                                  //             ),
-                                  //             hintText:
-                                  //                 fromTime.format(context),
-                                  //             hintStyle: primaryfont.copyWith(
-                                  //                 fontSize: 12,
-                                  //                 fontWeight: FontWeight.w500),
-                                  //             border: OutlineInputBorder()),
-                                  //       ),
-                                  //     ),
-                                  //   ],
-                                  // ),
                                   ksizedbox10,
                                   ksizedbox5,
                                   Row(
@@ -598,12 +597,23 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                     ),
                                   ),
                                   ksizedbox10,
-                                  Text(
-                                    'Add deliver note',
-                                    style: primaryfont.copyWith(
-                                        fontSize: 15.sp,
-                                        fontWeight: FontWeight.w600,
-                                        color: Color(0xff455A64)),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Add deliver note',
+                                        style: primaryfont.copyWith(
+                                            fontSize: 15.sp,
+                                            fontWeight: FontWeight.w600,
+                                            color: Color(0xff455A64)),
+                                      ),
+                                      Text(
+                                        '*',
+                                        style: primaryfont.copyWith(
+                                            fontSize: 15.sp,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.red),
+                                      ),
+                                    ],
                                   ),
                                   ksizedbox10,
                                   Container(
@@ -702,20 +712,22 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                           //             )
                           //           :
                           GestureDetector(onTap: () {
+                            List<int> selectedServiceId = [];
+                            selectedServiceId.add(selectedId!);
                             List<Product> products = [
                               Product(
-                                parcelItems: widget.parcelItems,
-                                length: widget.length,
-                                width: widget.width,
-                                height: widget.height,
-                                qty: widget.qty,
-                                kg: widget.kg,
-                                pickupTimeFrom: widget.pickTimeFrom!,
-                                pickupTimeTo: widget.pickTimeTo!,
-                                deliveryDate: formatDateTime,
-                                deliveryTimeFrom: pickTimes.toString(),
-                                deliveryTimeTo: dropTimes.toString(),
-                              ),
+                                  parcelItems: widget.parcelItems,
+                                  length: widget.length,
+                                  width: widget.width,
+                                  height: widget.height,
+                                  qty: widget.qty,
+                                  kg: widget.kg,
+                                  pickupTimeFrom: widget.pickTimeFrom!,
+                                  pickupTimeTo: widget.pickTimeTo!,
+                                  deliveryDate: formatDateTime,
+                                  deliveryTimeFrom:
+                                      _formatTime(deliveryFromTime!),
+                                  deliveryTimeTo: _formatTime(deliveryToTime!)),
                             ];
 
                             List<BookingAddress> bookingAddress = [
@@ -728,11 +740,13 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                   latitude: widget.droppingLatitude,
                                   longitude: widget.droppingLogitude,
                                   deliveryStatus: "0",
-                                  deliveryTimeFrom: pickTimes.toString(),
-                                  deliveryTimeTo: dropTimes.toString()),
+                                  deliveryTimeFrom:
+                                      _formatTime(deliveryFromTime!),
+                                  deliveryTimeTo: _formatTime(deliveryToTime!)),
                             ];
                             AddBookingParcelModel addBookingParcelModel =
                                 AddBookingParcelModel(
+                                    pickupAddress: widget.pickupAddress,
                                     deliveryTypeid: widget.deliverytype,
                                     paymentMode: "500",
                                     bookingAmount: "500",
@@ -744,13 +758,16 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                     pickupTimeFrom: widget.pickTimeFrom!,
                                     pickupTimeTo: widget.pickTimeTo!,
                                     deliveryDate: formatDateTime,
-                                    deliveryTimeFrom: pickTimes.toString(),
-                                    deliveryTimeTo: dropTimes.toString(),
+                                    deliveryTimeFrom:
+                                        _formatTime(deliveryFromTime!),
+                                    deliveryTimeTo:
+                                        _formatTime(deliveryToTime!),
                                     latitude: widget.pickuplatitude,
                                     longitude: widget.pickuplogitude,
                                     distance: "30",
                                     bookingType: "parcel",
-                                    additionalDetails: selectedId,
+                                    additionalDetails:
+                                        selectedServiceId, ////selectid
                                     notes: "",
                                     products: products,
                                     bookingAddress: bookingAddress,
@@ -889,12 +906,12 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
           builder: (BuildContext context, StateSetter setState) {
             return Center(
               child: Dialog(
+                insetPadding: EdgeInsets.symmetric(horizontal: 25),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20.0),
                 ),
                 child: Container(
-                  width: 300.w,
-                  padding: EdgeInsets.all(20.0),
+                  padding: EdgeInsets.all(15.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -942,6 +959,8 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                       controller.additionalServiceData.length,
                                   shrinkWrap: true,
                                   itemBuilder: ((context, index) {
+                                    AdditionalServiceData serviceData =
+                                        controller.additionalServiceData[index];
                                     return Padding(
                                       padding: const EdgeInsets.all(5.0),
                                       child: Row(
@@ -956,10 +975,8 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                                     () {
                                                       isCheck[index] =
                                                           !isCheck[index];
-                                                      selectedId = controller
-                                                          .additionalServiceData[
-                                                              index]
-                                                          .id;
+                                                      selectedId =
+                                                          serviceData.id;
                                                     },
                                                   );
                                                 },

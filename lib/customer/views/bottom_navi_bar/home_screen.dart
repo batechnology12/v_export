@@ -60,7 +60,9 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await homeScreenController.getSlider();
       await parcelController.getonGoingOrders();
+      accountController.getProfile();
       homeScreenController.update();
+      setState(() {});
     });
   }
 
@@ -83,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Color(0xffF4F8FF),
       body: Padding(
-        padding: const EdgeInsets.only(left: 10, right: 10, top: 40),
+        padding: const EdgeInsets.only(left: 10, right: 10, top: 20),
         child: SingleChildScrollView(
           physics: AlwaysScrollableScrollPhysics(),
           child: Column(
@@ -138,13 +140,23 @@ class _HomeScreenState extends State<HomeScreen> {
                               style: secondoryfont.copyWith(
                                   fontSize: 15.sp, fontWeight: FontWeight.w500),
                             ),
-                            Text(
-                              'Syed',
-                              style: primaryfont.copyWith(
-                                fontSize: 15.5.sp,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            )
+                            GetBuilder<AccountController>(
+                              builder: (_) {
+                                return accountController.imageLoading.value
+                                    ? Text("")
+                                    : Text(
+                                        accountController.getUserData == null
+                                            ? ""
+                                            : accountController
+                                                .getUserData!.data.firstName,
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 17.sp,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      );
+                              },
+                            ),
                           ],
                         ),
                       ),
@@ -285,7 +297,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         long: '',
                         unitIdBlockID: [""],
                         sendername: '',
-                        receivername: '',
+                        // receivername: '',
                         mobilenumber: '',
                       ));
                     },

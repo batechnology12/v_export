@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_dash/flutter_dash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:google_places_flutter/model/prediction.dart';
 import 'package:location/location.dart' as loc; // Alias for location package
 import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
@@ -12,19 +13,20 @@ import 'package:v_export/constant/common_container.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:v_export/customer/controller/account_controller.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/package_send_screen.dart';
+import 'package:google_places_flutter/google_places_flutter.dart';
 
 class PickupAddressDetails extends StatefulWidget {
   @override
-  State<PickupAddressDetails> createState() => _MyHomePageState();
+  State<PickupAddressDetails> createState() => _PickupAddressDetailsState();
 }
 
-class _MyHomePageState extends State<PickupAddressDetails> {
+class _PickupAddressDetailsState extends State<PickupAddressDetails> {
   AccountController accountController = Get.find<AccountController>();
 
   late GoogleMapController _controller;
   final Set<Marker> _markers = {};
   late loc.LocationData _currentPosition;
-  loc.Location location = loc.Location(); // Use the alias
+  loc.Location location = loc.Location();
 
   static const CameraPosition _initialPosition = CameraPosition(
     target: LatLng(37.7749, -122.4194), // San Francisco
@@ -34,8 +36,8 @@ class _MyHomePageState extends State<PickupAddressDetails> {
   final TextEditingController _postalCodeController = TextEditingController();
   final TextEditingController _blockUnitController = TextEditingController();
   final TextEditingController _senderNameController = TextEditingController();
-  final TextEditingController _receiverNameController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
+  final TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -46,8 +48,6 @@ class _MyHomePageState extends State<PickupAddressDetails> {
   getData() async {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _getLocation();
-      //  await accountController.getProfile();
-
       _fetchAddress();
       accountController.update();
       setState(() {});
@@ -106,22 +106,6 @@ class _MyHomePageState extends State<PickupAddressDetails> {
             "${place.name},${place.subLocality},${place.locality},${place.postalCode}" ??
                 '';
         _blockUnitController.text = place.street ?? '';
-        // _senderNameController.text = accountController.getUserData != null
-        //     ? accountController.getUserData!.firstName
-        //     : "";
-        // _phoneNumberController.text = place.country ?? '';
-
-        print("------location address");
-        print(place.name ?? '');
-        print(place.street ?? '');
-        // print(place.subAdministrativeArea ?? '');
-        print(place.administrativeArea ?? '');
-        // print(place.subThoroughfare ?? '');
-        print(place.thoroughfare ?? '');
-        print(place.subLocality ?? '');
-        print(place.locality ?? '');
-        print(place.administrativeArea ?? '');
-        print(place.country ?? '');
       });
     } catch (e) {
       print(e);
@@ -129,12 +113,6 @@ class _MyHomePageState extends State<PickupAddressDetails> {
   }
 
   bool ischecked = false;
-
-  // getProfileData() async {
-  //   if (accountController.getUserData != null) {
-  //     _senderNameController.text = accountController.getUserData!.firstName;
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -157,7 +135,7 @@ class _MyHomePageState extends State<PickupAddressDetails> {
         title: Text(
           'Pickup Address Details',
           style: primaryfont.copyWith(
-              fontSize: 20.sp,
+              fontSize: 19.sp,
               color: AppColors.kwhite,
               fontWeight: FontWeight.w600),
         ),
@@ -178,6 +156,70 @@ class _MyHomePageState extends State<PickupAddressDetails> {
                 myLocationEnabled: true,
                 onMapCreated: (GoogleMapController controller) {
                   _controller = controller;
+                },
+              ),
+            ),
+          ),
+          Positioned(
+            top: 5,
+            child: Container(
+              margin: EdgeInsets.only(left: 20),
+              height: 45.h,
+              width: 310.w,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.white,
+              ),
+              child: GooglePlaceAutoCompleteTextField(
+                textEditingController: searchController,
+                googleAPIKey: "AIzaSyD3mDTWZ9Zc6ggSnypFE0Jey_OzeozY3gY",
+                inputDecoration: InputDecoration(
+                  prefixIcon: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Image.asset(
+                      "assets/icons/google-maps.png",
+                    ),
+                  ),
+                  suffixIcon: Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Image.asset(
+                      "assets/icons/search.png",
+                    ),
+                  ),
+                  hintText: 'Search....',
+                  hintStyle: primaryfont.copyWith(
+                      fontSize: 14, fontWeight: FontWeight.w500),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      width: 1,
+                      color: Color(0xff444444),
+                    ),
+                  ),
+                ),
+                debounceTime: 600,
+                isLatLngRequired: true,
+                getPlaceDetailWithLatLng: (Prediction prediction) {
+                  _controller.animateCamera(CameraUpdate.newCameraPosition(
+                    CameraPosition(
+                      target: LatLng(double.parse(prediction.lat!),
+                          double.parse(prediction.lng!)),
+                      zoom: 14.0,
+                    ),
+                  ));
+                  setState(() {
+                    _markers.add(Marker(
+                      markerId: MarkerId(prediction.placeId!),
+                      position: LatLng(double.parse(prediction.lat!),
+                          double.parse(prediction.lng!)),
+                      infoWindow: InfoWindow(title: prediction.description!),
+                    ));
+                  });
+                },
+                itemClick: (Prediction prediction) {
+                  _postalCodeController.text = prediction.description!;
+                  _postalCodeController.selection = TextSelection.fromPosition(
+                      TextPosition(offset: prediction.description!.length));
                 },
               ),
             ),
@@ -310,36 +352,6 @@ class _MyHomePageState extends State<PickupAddressDetails> {
                           ),
                           ksizedbox20,
                           Text(
-                            "Receiver Name",
-                            style: primaryfont.copyWith(
-                                fontSize: 17,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w600),
-                          ),
-                          ksizedbox5,
-                          Container(
-                            height: 45,
-                            width: size.width,
-                            decoration: BoxDecoration(
-                              color: AppColors.kwhite,
-                            ),
-                            child: TextFormField(
-                                controller: _receiverNameController,
-                                decoration: InputDecoration(
-                                    hintText: 'Enter Receiver Name',
-                                    hintStyle: primaryfont.copyWith(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: const BorderSide(
-                                        width: 1,
-                                        color: Color(0xff444444),
-                                      ),
-                                    ))),
-                          ),
-                          ksizedbox20,
-                          Text(
                             "Enter Phone Number",
                             style: primaryfont.copyWith(
                                 fontSize: 17,
@@ -357,10 +369,8 @@ class _MyHomePageState extends State<PickupAddressDetails> {
                                 controller: _phoneNumberController,
                                 keyboardType: TextInputType.number,
                                 inputFormatters: [
-                                  FilteringTextInputFormatter
-                                      .digitsOnly, // Allows only digits
-                                  LengthLimitingTextInputFormatter(
-                                      6), // Limits to 6 digits
+                                  FilteringTextInputFormatter.digitsOnly,
+                                  LengthLimitingTextInputFormatter(8),
                                 ],
                                 decoration: InputDecoration(
                                     hintText: 'Enter Phone Number',
@@ -412,9 +422,7 @@ class _MyHomePageState extends State<PickupAddressDetails> {
                           ksizedbox20,
                           InkWell(
                               onTap: () {
-                                // await _fetchAddress();
                                 if (_senderNameController.text.isNotEmpty &&
-                                    _receiverNameController.text.isNotEmpty &&
                                     _phoneNumberController.text.isNotEmpty) {
                                   Get.to(PackageSendScreen(
                                     unitIdBlockID: [_blockUnitController.text],
@@ -422,7 +430,6 @@ class _MyHomePageState extends State<PickupAddressDetails> {
                                     lat: _currentPosition.latitude.toString(),
                                     long: _currentPosition.longitude.toString(),
                                     sendername: _senderNameController.text,
-                                    receivername: _receiverNameController.text,
                                     mobilenumber: _phoneNumberController.text,
                                   ));
                                 } else {

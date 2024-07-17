@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dash/flutter_dash.dart';
@@ -11,18 +12,29 @@ import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:v_export/constant/common_container.dart';
+import 'package:v_export/customer/controller/parcel_controller.dart';
+import 'package:v_export/customer/model/get_accept_booking_details_model.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/bottomn_navi_bar.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/arrived_destination.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/cancel_booking.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/driver_about_details.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/driver_message.dart';
+import 'package:intl/intl.dart';
 
 class DriverDetailsScreen extends StatefulWidget {
+  GetAcceptBookingdata? getAcceptBookingdata;
+
+  DriverDetailsScreen({
+    super.key,
+    required this.getAcceptBookingdata,
+  });
   @override
   State<DriverDetailsScreen> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<DriverDetailsScreen> {
+  final ParcelController parcelController = Get.find<ParcelController>();
+
   late GoogleMapController _controller;
   final Set<Marker> _markers = {};
   late LocationData _currentPosition;
@@ -43,6 +55,8 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _getLocation();
       popUp1();
+      parcelController
+          .getAcceptBooking(widget.getAcceptBookingdata!.id.toString());
     });
   }
 
@@ -90,6 +104,12 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
         ));
       });
     });
+  }
+
+  String formatTime(String time) {
+    DateTime parsedTime = DateFormat("HH:mm:ss").parse(time);
+    String formattedTime = DateFormat("h a").format(parsedTime);
+    return formattedTime;
   }
 
   @override
@@ -226,7 +246,8 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    'Lee Wong',
+                                                    widget.getAcceptBookingdata!
+                                                        .driver.firstName,
                                                     style: primaryfont.copyWith(
                                                         fontWeight:
                                                             FontWeight.w600,
@@ -257,7 +278,7 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
                                                                     0xff455A64)),
                                                       ),
                                                       Text(
-                                                        ' 9876543210',
+                                                        ' ${widget.getAcceptBookingdata!.driver.phone}',
                                                         style: primaryfont
                                                             .copyWith(
                                                                 color: AppColors
@@ -359,16 +380,16 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
                                                   fontWeight: FontWeight.w500),
                                             ),
                                             Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 2),
-                                                child: Text(
-                                                  'GBL3245N',
-                                                  style: primaryfont.copyWith(
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      color: Color(0xff000000),
-                                                      fontSize: 16.sp),
-                                                ),)
+                                              padding:
+                                                  const EdgeInsets.only(top: 2),
+                                              child: Text(
+                                                'GBL3245N',
+                                                style: primaryfont.copyWith(
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Color(0xff000000),
+                                                    fontSize: 16.sp),
+                                              ),
+                                            )
                                           ],
                                         ),
                                         Column(
@@ -445,7 +466,7 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
                                           Row(
                                             children: [
                                               Text(
-                                                'Booking ID : #ZAG01',
+                                                'Booking ID : ${widget.getAcceptBookingdata!.bookingId}',
                                                 style: primaryfont.copyWith(
                                                     fontWeight: FontWeight.w700,
                                                     fontSize: 17.sp,
@@ -491,7 +512,9 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
                                                   Container(
                                                     width: size.width * 0.60,
                                                     child: Text(
-                                                      '338 Serangoon North ave 6',
+                                                      widget
+                                                          .getAcceptBookingdata!
+                                                          .pickupAddreess,
                                                       style:
                                                           primaryfont.copyWith(
                                                               color: Color(
@@ -517,7 +540,11 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
                                                   Container(
                                                     width: size.width * 0.60,
                                                     child: Text(
-                                                      '338 Serangoon North ave 6',
+                                                      widget
+                                                          .getAcceptBookingdata!
+                                                          .bookingDeliveryAddresses
+                                                          .first
+                                                          .address,
                                                       style:
                                                           primaryfont.copyWith(
                                                               color: Color(
@@ -537,7 +564,7 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
                                                         const EdgeInsets.only(
                                                             bottom: 30),
                                                     child: Text(
-                                                      '2PM to 5PM',
+                                                      '${formatTime(widget.getAcceptBookingdata!.bookingProducts.first.pickuptimeFrom)} to ${formatTime(widget.getAcceptBookingdata!.bookingProducts.first.pickuptimeTo)}',
                                                       style:
                                                           primaryfont.copyWith(
                                                               fontSize: 12.sp,
@@ -556,7 +583,7 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
                                                         const EdgeInsets.only(
                                                             bottom: 10),
                                                     child: Text(
-                                                      '2PM to 5PM',
+                                                      '${formatTime(widget.getAcceptBookingdata!.bookingProducts.first.deliverytimeFrom)} to ${formatTime(widget.getAcceptBookingdata!.bookingProducts.first.deliverytimeTo)}',
                                                       style:
                                                           primaryfont.copyWith(
                                                               fontSize: 12.sp,
@@ -603,7 +630,13 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
                                                   height: 2,
                                                 ),
                                                 Text(
-                                                  '25/04/2024',
+                                                  '${formatDate(DateTime.parse(widget.getAcceptBookingdata!.bookingDate.toString()), [
+                                                        dd,
+                                                        '-',
+                                                        mm,
+                                                        '-',
+                                                        yyyy
+                                                      ])}',
                                                   style: primaryfont.copyWith(
                                                       fontWeight:
                                                           FontWeight.w600,
@@ -636,7 +669,13 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
                                                   height: 2,
                                                 ),
                                                 Text(
-                                                  '25/04/2024',
+                                                  '${formatDate(DateTime.parse(widget.getAcceptBookingdata!.bookingProducts.first.deliveryDate.toString()), [
+                                                        dd,
+                                                        '-',
+                                                        mm,
+                                                        '-',
+                                                        yyyy
+                                                      ])}',
                                                   style: primaryfont.copyWith(
                                                       fontWeight:
                                                           FontWeight.w600,
@@ -661,7 +700,8 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
                                                 fontSize: 16.sp),
                                           ),
                                           Text(
-                                            '3 hours Delivery',
+                                            widget.getAcceptBookingdata!
+                                                .deliveryType.name,
                                             style: primaryfont.copyWith(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 16.sp,
@@ -669,27 +709,27 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
                                           )
                                         ],
                                       ),
-                                      ksizedbox10,
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            'Vechicle Mode:',
-                                            style: primaryfont.copyWith(
-                                                color: Color(0xff000000),
-                                                fontWeight: FontWeight.w700,
-                                                fontSize: 16.sp),
-                                          ),
-                                          Text(
-                                            'All',
-                                            style: primaryfont.copyWith(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 16.sp,
-                                                color: Color(0xff455A64)),
-                                          )
-                                        ],
-                                      ),
+                                      // ksizedbox10,
+                                      // Row(
+                                      //   mainAxisAlignment:
+                                      //       MainAxisAlignment.spaceBetween,
+                                      //   children: [
+                                      //     Text(
+                                      //       'Vechicle Mode:',
+                                      //       style: primaryfont.copyWith(
+                                      //           color: Color(0xff000000),
+                                      //           fontWeight: FontWeight.w700,
+                                      //           fontSize: 16.sp),
+                                      //     ),
+                                      //     Text(
+                                      //       'All',
+                                      //       style: primaryfont.copyWith(
+                                      //           fontWeight: FontWeight.w600,
+                                      //           fontSize: 16.sp,
+                                      //           color: Color(0xff455A64)),
+                                      //     )
+                                      //   ],
+                                      // ),
                                       ksizedbox15,
                                       Row(
                                         mainAxisAlignment:
@@ -703,15 +743,16 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
                                                 fontSize: 16.sp),
                                           ),
                                           Text(
-                                            '1kg',
+                                            widget.getAcceptBookingdata!
+                                                .bookingProducts.first.kg,
                                             style: primaryfont.copyWith(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 16.sp,
                                                 color: Color(0xff455A64)),
-                                          )
+                                          ),
                                         ],
                                       ),
-                                      ksizedbox15,
+                                      ksizedbox10,
                                       Divider(),
                                       ksizedbox15,
                                       Row(

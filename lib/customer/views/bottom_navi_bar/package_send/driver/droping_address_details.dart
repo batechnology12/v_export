@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart' as loc;
 
 import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
@@ -12,8 +11,7 @@ import 'package:v_export/customer/controller/account_controller.dart';
 import 'package:v_export/customer/controller/home_controller.dart';
 
 class DroppingAddressDetails extends StatefulWidget {
-  final int
-      index; // Add an index parameter to identify which location to update
+  final int index;
 
   const DroppingAddressDetails({super.key, required this.index});
 
@@ -26,8 +24,6 @@ class _DroppingAddressDetailsState extends State<DroppingAddressDetails> {
   HomeController homeController = Get.find<HomeController>();
   late GoogleMapController _controller;
   final Set<Marker> _markers = {};
-  late loc.LocationData _currentPosition;
-  loc.Location location = loc.Location(); // Use the alias
   static const CameraPosition _initialPosition = CameraPosition(
     target: LatLng(37.7749, -122.4194), // San Francisco
     zoom: 12,
@@ -42,56 +38,6 @@ class _DroppingAddressDetailsState extends State<DroppingAddressDetails> {
   @override
   void initState() {
     super.initState();
-    getData();
-  }
-
-  getData() async {
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      _getLocation();
-
-      accountController.update();
-    });
-  }
-
-  void _getLocation() async {
-    bool _serviceEnabled;
-    loc.PermissionStatus _permissionGranted;
-
-    _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
-      if (!_serviceEnabled) {
-        return;
-      }
-    }
-
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == loc.PermissionStatus.denied) {
-      _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != loc.PermissionStatus.granted) {
-        return;
-      }
-    }
-
-    _currentPosition = await location.getLocation();
-    location.onLocationChanged.listen((loc.LocationData currentLocation) {
-      _currentPosition = currentLocation;
-      _controller.animateCamera(CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target:
-              LatLng(_currentPosition.latitude!, _currentPosition.longitude!),
-          zoom: 14.0,
-        ),
-      ));
-      setState(() {
-        _markers.add(Marker(
-          markerId: MarkerId('currentLocation'),
-          position:
-              LatLng(_currentPosition.latitude!, _currentPosition.longitude!),
-          infoWindow: InfoWindow(title: 'Your Location'),
-        ));
-      });
-    });
   }
 
   void _fetchAddress() async {
@@ -222,6 +168,45 @@ class _DroppingAddressDetailsState extends State<DroppingAddressDetails> {
                               controller: _addressController,
                               decoration: InputDecoration(
                                 hintText: 'Enter address',
+                                suffixIcon: IconButton(
+                                  icon: Icon(Icons.search),
+                                  onPressed: _fetchAddress,
+                                ),
+                                hintStyle: primaryfont.copyWith(
+                                    fontSize: 14, fontWeight: FontWeight.w500),
+                                contentPadding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: const BorderSide(
+                                    width: 1,
+                                    color: Color(0xff444444),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          ksizedbox20,
+                          Text(
+                            "Receiver Name",
+                            style: primaryfont.copyWith(
+                                fontSize: 17,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          ksizedbox5,
+                          Container(
+                            height: 45,
+                            width: size.width,
+                            decoration: BoxDecoration(
+                              color: AppColors.kwhite,
+                            ),
+                            child: TextFormField(
+                              maxLines: 1,
+                              minLines: 1,
+                              //  controller: _addressController,
+                              decoration: InputDecoration(
+                                hintText: 'Enter receiver name',
                                 hintStyle: primaryfont.copyWith(
                                     fontSize: 14, fontWeight: FontWeight.w500),
                                 contentPadding:
@@ -246,25 +231,20 @@ class _DroppingAddressDetailsState extends State<DroppingAddressDetails> {
                               )),
                           ksizedbox20,
                           InkWell(
-                              onTap: () {
-                                //    _fetchAddress();
-                                homeController.updateDroppingLocation(
-                                    fullAddress,
-                                    _currentPosition.latitude.toString(),
-                                    _currentPosition.longitude.toString(),
-                                    areapincode,
-                                    doorno,
-                                    widget.index);
-                                // print(
-                                //     "-------------------booking latlogn----------");
-                                // print(_currentPosition.latitude.toString());
-                                // print(_currentPosition.longitude.toString());
-
-                                Get.back();
-                              },
-                              child: CommonContainer(
-                                name: 'Confirm',
-                              )),
+                            onTap: () {
+                              homeController.updateDroppingLocation(
+                                  fullAddress,
+                                  _markers.first.position.latitude.toString(),
+                                  _markers.first.position.longitude.toString(),
+                                  areapincode,
+                                  doorno,
+                                  widget.index);
+                              Get.back();
+                            },
+                            child: CommonContainer(
+                              name: 'Confirm',
+                            ),
+                          ),
                         ],
                       ),
                     )),
