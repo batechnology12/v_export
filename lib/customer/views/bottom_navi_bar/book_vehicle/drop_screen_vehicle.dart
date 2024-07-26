@@ -1,97 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_dash/flutter_dash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:google_places_flutter/model/prediction.dart';
 import 'package:location/location.dart' as loc; // Alias for location package
 import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:v_export/constant/common_container.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:v_export/customer/controller/account_controller.dart';
-import 'package:v_export/customer/views/bottom_navi_bar/package_send/package_send_screen.dart';
-import 'package:google_places_flutter/google_places_flutter.dart';
+import 'package:v_export/customer/controller/home_controller.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/book_vehicle/book_vehicle_screen.dart';
 
-class PickupAddressDetails extends StatefulWidget {
+class DroppingVehicleAddressDetails extends StatefulWidget {
+  final int index;
+
+  const DroppingVehicleAddressDetails({super.key, required this.index});
+
   @override
-  State<PickupAddressDetails> createState() => _PickupAddressDetailsState();
+  State<DroppingVehicleAddressDetails> createState() =>
+      _DroppingVehicleAddressDetailsState();
 }
 
-class _PickupAddressDetailsState extends State<PickupAddressDetails> {
+class _DroppingVehicleAddressDetailsState
+    extends State<DroppingVehicleAddressDetails> {
   AccountController accountController = Get.find<AccountController>();
-
-   GoogleMapController? _controller;
+  HomeController homeController = Get.find<HomeController>();
+  GoogleMapController? _controller;
   final Set<Marker> _markers = {};
-  loc.LocationData? _currentPosition; // Make _currentPosition nullable
-  loc.Location location = loc.Location();
-
+  loc.LocationData? _currentPosition;
   static const CameraPosition _initialPosition = CameraPosition(
     target: LatLng(37.7749, -122.4194), // San Francisco
     zoom: 12,
   );
+  String fullAddress = "";
+  String areapincode = "";
+  String doorno = "";
+  List<Placemark> placemarks = [];
 
-  // final TextEditingController _postalCodeController = TextEditingController();
-  final TextEditingController _blockUnitController = TextEditingController();
-  final TextEditingController _senderNameController = TextEditingController();
-  final TextEditingController _phoneNumberController = TextEditingController();
-  final TextEditingController searchController = TextEditingController();
+  // final TextEditingController _addressController = TextEditingController();
+  final TextEditingController receiverNameController = TextEditingController();
+  final TextEditingController receiverNumberController =
+      TextEditingController();
+  final TextEditingController receiverBlockIdUnitIdController =
+      TextEditingController();
+  final TextEditingController searchedController = TextEditingController();
 
-  bool _isManualSelection = false; // Flag to track manual selection
+  bool _isManualSelection = false;
 
   @override
   void initState() {
     super.initState();
-    getData();
   }
-
-  getData() async {
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      //   _getLocation();
-      accountController.update();
-      //  setState(() {});
-    });
-  }
-
-  // void _getLocation() async {
-  //   bool _serviceEnabled;
-  //   loc.PermissionStatus _permissionGranted;
-
-  //   _serviceEnabled = await location.serviceEnabled();
-  //   if (!_serviceEnabled) {
-  //     _serviceEnabled = await location.requestService();
-  //     if (!_serviceEnabled) {
-  //       return;
-  //     }
-  //   }
-
-  //   _permissionGranted = await location.hasPermission();
-  //   if (_permissionGranted == loc.PermissionStatus.denied) {
-  //     _permissionGranted = await location.requestPermission();
-  //     if (_permissionGranted != loc.PermissionStatus.granted) {
-  //       return;
-  //     }
-  //   }
-
-  //   _currentPosition = await location.getLocation();
-  //   location.onLocationChanged.listen((loc.LocationData currentLocation) {
-  //     _currentPosition = currentLocation;
-  //     if (!_isManualSelection) {
-  //       _controller.animateCamera(CameraUpdate.newCameraPosition(
-  //         CameraPosition(
-  //           target: LatLng(
-  //               _currentPosition!.latitude!, _currentPosition!.longitude!),
-  //           zoom: 14.0,
-  //         ),
-  //       ));
-  //       setState(() {
-  //         _fetchAddress();
-  //       });
-  //     }
-  //   });
-  // }
 
   Future<void> _fetchAddress() async {
     if (_currentPosition != null) {
@@ -100,12 +62,12 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
             _currentPosition!.latitude!, _currentPosition!.longitude!);
         Placemark place = placemarks[0];
         setState(() {
-          searchController.text =
+          searchedController.text =
               "${place.name},${place.subLocality},${place.locality},${place.postalCode}" ??
                   '';
           //    _blockUnitController.text = place.name ?? place.name!;
           print("=============address");
-          print(searchController.text =
+          print(searchedController.text =
               "${place.name},${place.subLocality},${place.locality},${place.postalCode}" ??
                   '');
         });
@@ -120,16 +82,14 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
   //     List<Placemark> placemarks = await placemarkFromCoordinates(lat, lng);
   //     Placemark place = placemarks[0];
   //     setState(() {
-  //       //   _blockUnitController.text = place.name ?? '';
+  //       receiverBlockIdUnitIdController.text = place.name ?? '';
   //       print("-----------------street name");
-  //       print(_blockUnitController.text = place.name ?? '');
+  //       print(receiverBlockIdUnitIdController.text = place.name ?? '');
   //     });
   //   } catch (e) {
   //     print(e);
   //   }
   // }
-
-  bool ischecked = false;
 
   @override
   Widget build(BuildContext context) {
@@ -150,9 +110,9 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
           ),
         ),
         title: Text(
-          'Pickup Address Details',
+          'Dropping Address Details',
           style: primaryfont.copyWith(
-              fontSize: 19.sp,
+              fontSize: 20.sp,
               color: AppColors.kwhite,
               fontWeight: FontWeight.w600),
         ),
@@ -170,6 +130,7 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
               child: GoogleMap(
                 initialCameraPosition: _initialPosition,
                 markers: _markers,
+                // myLocationEnabled: true,
                 onMapCreated: (GoogleMapController controller) {
                   _controller = controller;
                 },
@@ -177,8 +138,8 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
             ),
           ),
           DraggableScrollableSheet(
-            initialChildSize: 0.3,
-            minChildSize: 0.3,
+            initialChildSize: 0.35,
+            minChildSize: 0.35,
             maxChildSize: 1.0,
             builder: (BuildContext context, ScrollController scrollController) {
               return Container(
@@ -191,9 +152,7 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                 ),
                 child: Column(
                   children: [
-                    const SizedBox(
-                      height: 5,
-                    ),
+                    const SizedBox(height: 5),
                     Container(
                       height: 5,
                       width: 100,
@@ -208,6 +167,7 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                         physics: AlwaysScrollableScrollPhysics(),
                         controller: scrollController,
                         children: [
+                          ksizedbox20,
                           Text(
                             "Enter Address",
                             style: primaryfont.copyWith(
@@ -216,6 +176,36 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                                 fontWeight: FontWeight.w600),
                           ),
                           ksizedbox5,
+                          // Container(
+                          //   height: 45,
+                          //   width: size.width,
+                          //   decoration: BoxDecoration(
+                          //     color: AppColors.kwhite,
+                          //   ),
+                          //   child: TextFormField(
+                          //     maxLines: 1,
+                          //     minLines: 1,
+                          //     controller: _addressController,
+                          //     decoration: InputDecoration(
+                          //       hintText: 'Enter address',
+                          //       suffixIcon: IconButton(
+                          //         icon: Icon(Icons.search),
+                          //         onPressed: _fetchAddress,
+                          //       ),
+                          //       hintStyle: primaryfont.copyWith(
+                          //           fontSize: 14, fontWeight: FontWeight.w500),
+                          //       contentPadding:
+                          //           const EdgeInsets.symmetric(horizontal: 10),
+                          //       border: OutlineInputBorder(
+                          //         borderRadius: BorderRadius.circular(10),
+                          //         borderSide: const BorderSide(
+                          //           width: 1,
+                          //           color: Color(0xff444444),
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
                           Container(
                             //   margin: EdgeInsets.only(left: 20),
                             height: 45.h,
@@ -225,7 +215,7 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                               color: Colors.white,
                             ),
                             child: GooglePlaceAutoCompleteTextField(
-                              textEditingController: searchController,
+                              textEditingController: searchedController,
                               googleAPIKey:
                                   "AIzaSyAyygarjlqp_t2SPo7vS1oXDq1Yxs-LLNg",
                               inputDecoration: InputDecoration(
@@ -260,8 +250,8 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                               isLatLngRequired: true,
                               getPlaceDetailWithLatLng:
                                   (Prediction prediction) {
-                                    if (_controller != null) {
-                                       _controller!.animateCamera(
+                                if (_controller != null) {
+                                  _controller!.animateCamera(
                                       CameraUpdate.newCameraPosition(
                                     CameraPosition(
                                       target: LatLng(
@@ -270,8 +260,8 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                                       zoom: 14.0,
                                     ),
                                   ));
-                                    }
-                               
+                                }
+
                                 setState(() {
                                   _markers.add(Marker(
                                     markerId: MarkerId(prediction.placeId!),
@@ -290,11 +280,14 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                                 // );
                               },
                               itemClick: (Prediction prediction) {
-                                searchController.text = prediction.description!;
-                                searchController.selection =
-                                    TextSelection.fromPosition(TextPosition(
-                                        offset:
-                                            prediction.description!.length));
+                                setState(() {
+                                  searchedController.text =
+                                      prediction.description!;
+                                  searchedController.selection =
+                                      TextSelection.fromPosition(TextPosition(
+                                          offset:
+                                              prediction.description!.length));
+                                });
                               },
                             ),
                           ),
@@ -314,7 +307,7 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                               color: AppColors.kwhite,
                             ),
                             child: TextFormField(
-                                controller: _blockUnitController,
+                                controller: receiverBlockIdUnitIdController,
                                 decoration: InputDecoration(
                                     hintText: 'Enter Block no / Unit no',
                                     hintStyle: primaryfont.copyWith(
@@ -330,7 +323,7 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                           ),
                           ksizedbox20,
                           Text(
-                            "Sender Name",
+                            "Receiver Name",
                             style: primaryfont.copyWith(
                                 fontSize: 17,
                                 color: Colors.black,
@@ -344,51 +337,19 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                               color: AppColors.kwhite,
                             ),
                             child: TextFormField(
-                                textCapitalization:
-                                    TextCapitalization.sentences,
-                                controller: _senderNameController,
-                                decoration: InputDecoration(
-                                    hintText: 'Enter Sender Name',
-                                    hintStyle: primaryfont.copyWith(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        width: 1,
-                                        color: Color(0xff444444),
-                                      ),
-                                    ))),
-                          ),
-                          ksizedbox20,
-                          Text(
-                            "Enter Phone Number",
-                            style: primaryfont.copyWith(
-                                fontSize: 17,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w600),
-                          ),
-                          ksizedbox5,
-                          Container(
-                            height: 45,
-                            width: size.width,
-                            decoration: BoxDecoration(
-                              color: AppColors.kwhite,
-                            ),
-                            child: TextFormField(
-                              controller: _phoneNumberController,
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly,
-                                LengthLimitingTextInputFormatter(8),
-                              ],
+                                textCapitalization: TextCapitalization.sentences,
+                              maxLines: 1,
+                              minLines: 1,
+                              controller: receiverNameController,
                               decoration: InputDecoration(
-                                hintText: 'Enter Phone Number',
+                                hintText: 'Enter receiver name',
                                 hintStyle: primaryfont.copyWith(
                                     fontSize: 14, fontWeight: FontWeight.w500),
+                                contentPadding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
+                                  borderSide: const BorderSide(
                                     width: 1,
                                     color: Color(0xff444444),
                                   ),
@@ -397,69 +358,98 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                             ),
                           ),
                           ksizedbox20,
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  setState(
-                                    () {
-                                      ischecked = !ischecked;
-                                    },
-                                  );
-                                },
-                                child: Container(
-                                  height: 20.h,
-                                  width: 20.w,
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          width: 1, color: AppColors.kblue),
-                                      borderRadius: BorderRadius.circular(5)),
-                                  child: ischecked == true
-                                      ? Image.asset("assets/icons/7-Check.png")
-                                      : Text(""),
+                          Text(
+                            "Receiver Number",
+                            style: primaryfont.copyWith(
+                                fontSize: 17,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          ksizedbox5,
+                          Container(
+                            height: 45.h,
+                            width: size.width,
+                            decoration: BoxDecoration(
+                              color: AppColors.kwhite,
+                            ),
+                            child: TextFormField(
+                              maxLines: 1,
+                              minLines: 1,
+                              controller: receiverNumberController,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(8),
+                              ],
+                              decoration: InputDecoration(
+                                hintText: 'Enter receiver name',
+                                hintStyle: primaryfont.copyWith(
+                                    fontSize: 14, fontWeight: FontWeight.w500),
+                                contentPadding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: const BorderSide(
+                                    width: 1,
+                                    color: Color(0xff444444),
+                                  ),
                                 ),
                               ),
-                              Ksizedboxw10,
-                              Text(
-                                "Save Address",
-                                style: primaryfont.copyWith(
-                                    fontSize: 14.sp,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                            ],
+                            ),
                           ),
                           ksizedbox20,
                           InkWell(
-                              onTap: () {
-                                if (_senderNameController.text.isNotEmpty &&
-                                    _phoneNumberController.text.isNotEmpty) {
-                                  // Add check for _currentPosition
-                                  Get.to(PackageSendScreen(
-                                    unitIdBlockID: [_blockUnitController.text],
-                                    pickupAdress: searchController.text,
-                                    lat: _markers.first.position.latitude.toString(),
-                                        // _currentPosition?.latitude.toString() ??
-                                        //     "undefined",
-                                    long: _markers.first.position.latitude.toString(),
-                                    // _currentPosition?.longitude
-                                    //         .toString() ??
-                                    //     "undefined",
-                                    sendername: _senderNameController.text,
-                                    mobilenumber: _phoneNumberController.text,
-                                  ));
-                                } else {
-                                  Get.snackbar(
-                                      "Fill all Fields", "Please try again!",
-                                      colorText: AppColors.kwhite,
-                                      backgroundColor: Colors.red,
-                                      snackPosition: SnackPosition.BOTTOM);
-                                }
-                              },
-                              child: CommonContainer(
-                                name: 'Confirm',
-                              )),
+                            onTap: () {
+                              print("Confirm button tapped");
+                              _fetchAddress();
+                              homeController.vehicleDroppingLocation(
+                                searchedController.text,
+                                _markers.first.position.latitude.toString(),
+                                _markers.first.position.longitude.toString(),
+                                areapincode,
+                                doorno,
+                                widget.index,
+                                receiverNameController.text,
+                                receiverNumberController.text,
+                                receiverBlockIdUnitIdController.text,
+                              );
+                              Get.back();
+                              // if (_markers.isNotEmpty) {
+                              //   Get.to(BookVehicleScreen(
+                              //       vehiclepickupAdress: "",
+                              //       vehiclepickuplat: "",
+                              //       vehiclepickuplong: "",
+                              //       vehiclepickupunitIdBlockID: "",
+                              //       vehiclepickupsendername: "",
+                              //       vehicleSenderMobilenumber: "",
+                              //       vehicleDropAddress: [
+                              //         searchedController.text
+                              //       ],
+                              //       vehicledroplat: [
+                              //         _markers.first.position.latitude
+                              //             .toString()
+                              //       ],
+                              //       vehicledroplong: [
+                              //         _markers.first.position.longitude
+                              //             .toString()
+                              //       ],
+                              //       vehicleDropunitIdBlockId: [
+                              //         receiverBlockIdUnitIdController.text
+                              //       ],
+                              //       vehicleDropreceivername: [
+                              //         receiverNameController.text
+                              //       ],
+                              //       vehicleDropreceiverphone: [
+                              //         receiverNumberController.text,
+                              //       ]));
+                              // } else {
+                              //   print("No markers available");
+                              // }
+                            },
+                            child: CommonContainer(
+                              name: 'Confirm',
+                            ),
+                          ),
                         ],
                       ),
                     )),

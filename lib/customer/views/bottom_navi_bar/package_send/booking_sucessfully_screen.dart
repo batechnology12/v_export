@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
 import 'package:v_export/constant/app_font.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/bottomn_navi_bar.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/searching_ride_screen.dart';
 
 class BookingSucessfullyScreen extends StatefulWidget {
@@ -21,7 +22,7 @@ class _BookingSucessfullyScreenState extends State<BookingSucessfullyScreen> {
     // Start a timer that will navigate to the second page after 5 seconds
     Timer(Duration(seconds: 3), () {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => SearchingRideScreen()),
+        MaterialPageRoute(builder: (context) => BottomNavigationScreen()),
       );
     });
   }

@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_places_flutter/google_places_flutter.dart';
+import 'package:google_places_flutter/model/prediction.dart';
+import 'package:location/location.dart' as loc; // Alias for location package
 
 import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
@@ -22,8 +26,9 @@ class DroppingAddressDetails extends StatefulWidget {
 class _DroppingAddressDetailsState extends State<DroppingAddressDetails> {
   AccountController accountController = Get.find<AccountController>();
   HomeController homeController = Get.find<HomeController>();
-  late GoogleMapController _controller;
+  GoogleMapController? _controller;
   final Set<Marker> _markers = {};
+  loc.LocationData? _currentPosition;
   static const CameraPosition _initialPosition = CameraPosition(
     target: LatLng(37.7749, -122.4194), // San Francisco
     zoom: 12,
@@ -33,43 +38,91 @@ class _DroppingAddressDetailsState extends State<DroppingAddressDetails> {
   String doorno = "";
   List<Placemark> placemarks = [];
 
-  final TextEditingController _addressController = TextEditingController();
+  // final TextEditingController _addressController = TextEditingController();
+  final TextEditingController receiverNameController = TextEditingController();
+  final TextEditingController receiverNumberController =
+      TextEditingController();
+  final TextEditingController receiverBlockIdUnitIdController =
+      TextEditingController();
+  final TextEditingController searchedController = TextEditingController();
+
+  bool _isManualSelection = false;
 
   @override
   void initState() {
     super.initState();
   }
 
-  void _fetchAddress() async {
-    List<Location> locations =
-        await locationFromAddress(_addressController.text);
-    if (locations.isNotEmpty) {
-      final location = locations.first;
-      placemarks =
-          await placemarkFromCoordinates(location.latitude, location.longitude);
-      if (placemarks.isNotEmpty) {
-        final placemark = placemarks.first;
-        fullAddress =
-            '${placemark.name}, ${placemark.subLocality}, ${placemark.locality}, ${placemark.postalCode}, ${placemark.country}';
-        areapincode = placemark.postalCode!;
-        doorno = placemark.name!;
+  // void _fetchAddress() async {
+  //   List<Location> locations = await locationFromAddress(searchController.text);
+  //   if (locations.isNotEmpty) {
+  //     final location = locations.first;
+  //     placemarks =
+  //         await placemarkFromCoordinates(location.latitude, location.longitude);
+  //     if (placemarks.isNotEmpty) {
+  //       final placemark = placemarks.first;
+  //       searchController.text =
+  //           '${placemark.name}, ${placemark.subLocality}, ${placemark.locality}, ${placemark.postalCode}, ${placemark.country}';
+  //       areapincode = placemark.postalCode!;
+  //       doorno = placemark.name!;
 
-        print("7890456789054-=Location get----------66666666666");
-        print(fullAddress);
-        _controller.animateCamera(CameraUpdate.newLatLng(
-          LatLng(location.latitude, location.longitude),
-        ));
+  //       print("7890456789054==Location get----------66666666666");
+  //       print(fullAddress);
+  //       if (_controller != null) {
+  //         _controller!.animateCamera(CameraUpdate.newLatLng(
+  //           LatLng(location.latitude, location.longitude),
+  //         ));
+  //       }
+
+  //       setState(
+  //         () {
+  //           // _markers.clear();
+  //           // _markers.add(Marker(
+  //           //   markerId: MarkerId('enteredAddress'),
+  //           //   position: LatLng(location.latitude, location.longitude),
+  //           //   infoWindow: InfoWindow(title: searchController.text),
+  //           // ));
+  //           _fetchAddress();
+  //         },
+  //       );
+  //     }
+  //   }
+  // }
+  Future<void> _fetchAddress() async {
+    if (_currentPosition != null) {
+      try {
+        List<Placemark> placemarks = await placemarkFromCoordinates(
+            _currentPosition!.latitude!, _currentPosition!.longitude!);
+        Placemark place = placemarks[0];
         setState(() {
-          _markers.clear();
-          _markers.add(Marker(
-            markerId: MarkerId('enteredAddress'),
-            position: LatLng(location.latitude, location.longitude),
-            infoWindow: InfoWindow(title: fullAddress),
-          ));
+          searchedController.text =
+              "${place.name},${place.subLocality},${place.locality},${place.postalCode}" ??
+                  '';
+          //    _blockUnitController.text = place.name ?? place.name!;
+          print("=============address");
+          print(searchedController.text =
+              "${place.name},${place.subLocality},${place.locality},${place.postalCode}" ??
+                  '');
         });
+      } catch (e) {
+        print(e);
       }
     }
   }
+
+  // Future<void> _fetchPlaceName(double lat, double lng) async {
+  //   try {
+  //     List<Placemark> placemarks = await placemarkFromCoordinates(lat, lng);
+  //     Placemark place = placemarks[0];
+  //     setState(() {
+  //       receiverBlockIdUnitIdController.text = place.name ?? '';
+  //       print("-----------------street name");
+  //       print(receiverBlockIdUnitIdController.text = place.name ?? '');
+  //     });
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -110,13 +163,87 @@ class _DroppingAddressDetailsState extends State<DroppingAddressDetails> {
               child: GoogleMap(
                 initialCameraPosition: _initialPosition,
                 markers: _markers,
-                myLocationEnabled: true,
+                // myLocationEnabled: true,
                 onMapCreated: (GoogleMapController controller) {
                   _controller = controller;
                 },
               ),
             ),
           ),
+          // Positioned(
+          //   top: 5,
+          //   child: Container(
+          //     margin: EdgeInsets.only(left: 20),
+          //     height: 45.h,
+          //     width: 310.w,
+          //     decoration: BoxDecoration(
+          //       borderRadius: BorderRadius.circular(10),
+          //       color: Colors.white,
+          //     ),
+          //     child: GooglePlaceAutoCompleteTextField(
+          //       textEditingController: searchController,
+          //       googleAPIKey: "AIzaSyAyygarjlqp_t2SPo7vS1oXDq1Yxs-LLNg",
+          //       inputDecoration: InputDecoration(
+          //         prefixIcon: Padding(
+          //           padding: const EdgeInsets.all(8.0),
+          //           child: Image.asset(
+          //             "assets/icons/google-maps.png",
+          //           ),
+          //         ),
+          //         suffixIcon: Padding(
+          //           padding: const EdgeInsets.all(5.0),
+          //           child: Image.asset(
+          //             "assets/icons/search.png",
+          //           ),
+          //         ),
+          //         hintText: 'Search....',
+          //         hintStyle: primaryfont.copyWith(
+          //             fontSize: 14, fontWeight: FontWeight.w500),
+          //         border: OutlineInputBorder(
+          //           borderRadius: BorderRadius.circular(10),
+          //           borderSide: BorderSide(
+          //             width: 1,
+          //             color: Color(0xff444444),
+          //           ),
+          //         ),
+          //       ),
+          //       focusNode: FocusNode(),
+          //       debounceTime: 600,
+          //       isLatLngRequired: true,
+          //       getPlaceDetailWithLatLng: (Prediction prediction) {
+          //         if (_controller != null) {
+          //           _controller!.animateCamera(CameraUpdate.newCameraPosition(
+          //             CameraPosition(
+          //               target: LatLng(double.parse(prediction.lat!),
+          //                   double.parse(prediction.lng!)),
+          //               zoom: 14.0,
+          //             ),
+          //           ));
+          //         }
+
+          //         setState(() {
+          //           _markers.add(Marker(
+          //             markerId: MarkerId(prediction.placeId!),
+          //             position: LatLng(double.parse(prediction.lat!),
+          //                 double.parse(prediction.lng!)),
+          //             infoWindow: InfoWindow(title: prediction.description!),
+          //           ));
+          //         });
+
+          //         // Fetch place name using the coordinates
+          //         _fetchPlaceName(
+          //           double.parse(prediction.lat!),
+          //           double.parse(prediction.lng!),
+          //         );
+          //       },
+          //       itemClick: (Prediction prediction) {
+          //         _addressController.text = prediction.description!;
+          //         _addressController.selection = TextSelection.fromPosition(
+          //             TextPosition(offset: prediction.description!.length));
+          //       },
+          //     ),
+          //   ),
+          // ),
           DraggableScrollableSheet(
             initialChildSize: 0.35,
             minChildSize: 0.35,
@@ -156,6 +283,130 @@ class _DroppingAddressDetailsState extends State<DroppingAddressDetails> {
                                 fontWeight: FontWeight.w600),
                           ),
                           ksizedbox5,
+                          // Container(
+                          //   height: 45,
+                          //   width: size.width,
+                          //   decoration: BoxDecoration(
+                          //     color: AppColors.kwhite,
+                          //   ),
+                          //   child: TextFormField(
+                          //     maxLines: 1,
+                          //     minLines: 1,
+                          //     controller: _addressController,
+                          //     decoration: InputDecoration(
+                          //       hintText: 'Enter address',
+                          //       suffixIcon: IconButton(
+                          //         icon: Icon(Icons.search),
+                          //         onPressed: _fetchAddress,
+                          //       ),
+                          //       hintStyle: primaryfont.copyWith(
+                          //           fontSize: 14, fontWeight: FontWeight.w500),
+                          //       contentPadding:
+                          //           const EdgeInsets.symmetric(horizontal: 10),
+                          //       border: OutlineInputBorder(
+                          //         borderRadius: BorderRadius.circular(10),
+                          //         borderSide: const BorderSide(
+                          //           width: 1,
+                          //           color: Color(0xff444444),
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
+                          Container(
+                            //   margin: EdgeInsets.only(left: 20),
+                            height: 45.h,
+                            width: size.width,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.white,
+                            ),
+                            child: GooglePlaceAutoCompleteTextField(
+                              textEditingController: searchedController,
+                              googleAPIKey:
+                                  "AIzaSyAyygarjlqp_t2SPo7vS1oXDq1Yxs-LLNg",
+                              inputDecoration: InputDecoration(
+                                  isDense: true,
+                                  prefixIcon: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Image.asset(
+                                      "assets/icons/google-maps.png",
+                                    ),
+                                  ),
+                                  // suffixIcon: Padding(
+                                  //   padding: const EdgeInsets.all(5.0),
+                                  //   child: Image.asset(
+                                  //     "assets/icons/search.png",
+                                  //   ),
+                                  // ),
+                                  hintText: 'Enter Your Address....',
+                                  hintStyle: primaryfont.copyWith(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500),
+                                  border: InputBorder.none
+                                  // border: OutlineInputBorder(
+                                  //   borderRadius: BorderRadius.circular(10),
+                                  //   borderSide: BorderSide(
+                                  //     width: 1,
+                                  //     color: Color(0xff444444),
+                                  //   ),
+                                  // ),
+                                  ),
+                              focusNode: FocusNode(),
+                              debounceTime: 600,
+                              isLatLngRequired: true,
+                              getPlaceDetailWithLatLng:
+                                  (Prediction prediction) {
+                                if (_controller != null) {
+                                  _controller!.animateCamera(
+                                      CameraUpdate.newCameraPosition(
+                                    CameraPosition(
+                                      target: LatLng(
+                                          double.parse(prediction.lat!),
+                                          double.parse(prediction.lng!)),
+                                      zoom: 14.0,
+                                    ),
+                                  ));
+                                }
+
+                                setState(() {
+                                  _markers.add(Marker(
+                                    markerId: MarkerId(prediction.placeId!),
+                                    position: LatLng(
+                                        double.parse(prediction.lat!),
+                                        double.parse(prediction.lng!)),
+                                    infoWindow: InfoWindow(
+                                        title: prediction.description!),
+                                  ));
+                                });
+
+                                // Fetch place name using the coordinates
+                                // _fetchPlaceName(
+                                //   double.parse(prediction.lat!),
+                                //   double.parse(prediction.lng!),
+                                // );
+                              },
+                              itemClick: (Prediction prediction) {
+                                setState(() {
+                                  searchedController.text =
+                                      prediction.description!;
+                                  searchedController.selection =
+                                      TextSelection.fromPosition(TextPosition(
+                                          offset:
+                                              prediction.description!.length));
+                                });
+                              },
+                            ),
+                          ),
+                          ksizedbox20,
+                          Text(
+                            "Enter Block no / Unit no",
+                            style: primaryfont.copyWith(
+                                fontSize: 17,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          ksizedbox5,
                           Container(
                             height: 45,
                             width: size.width,
@@ -163,28 +414,19 @@ class _DroppingAddressDetailsState extends State<DroppingAddressDetails> {
                               color: AppColors.kwhite,
                             ),
                             child: TextFormField(
-                              maxLines: 1,
-                              minLines: 1,
-                              controller: _addressController,
-                              decoration: InputDecoration(
-                                hintText: 'Enter address',
-                                suffixIcon: IconButton(
-                                  icon: Icon(Icons.search),
-                                  onPressed: _fetchAddress,
-                                ),
-                                hintStyle: primaryfont.copyWith(
-                                    fontSize: 14, fontWeight: FontWeight.w500),
-                                contentPadding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: const BorderSide(
-                                    width: 1,
-                                    color: Color(0xff444444),
-                                  ),
-                                ),
-                              ),
-                            ),
+                                controller: receiverBlockIdUnitIdController,
+                                decoration: InputDecoration(
+                                    hintText: 'Enter Block no / Unit no',
+                                    hintStyle: primaryfont.copyWith(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                        width: 1,
+                                        color: Color(0xff444444),
+                                      ),
+                                    ))),
                           ),
                           ksizedbox20,
                           Text(
@@ -204,7 +446,48 @@ class _DroppingAddressDetailsState extends State<DroppingAddressDetails> {
                             child: TextFormField(
                               maxLines: 1,
                               minLines: 1,
-                              //  controller: _addressController,
+                              controller: receiverNameController,
+                              textCapitalization: TextCapitalization.sentences,
+                              decoration: InputDecoration(
+                                hintText: 'Enter receiver name',
+                                hintStyle: primaryfont.copyWith(
+                                    fontSize: 14, fontWeight: FontWeight.w500),
+                                contentPadding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: const BorderSide(
+                                    width: 1,
+                                    color: Color(0xff444444),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          ksizedbox20,
+                          Text(
+                            "Receiver Number",
+                            style: primaryfont.copyWith(
+                                fontSize: 17,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          ksizedbox5,
+                          Container(
+                            height: 45,
+                            width: size.width,
+                            decoration: BoxDecoration(
+                              color: AppColors.kwhite,
+                            ),
+                            child: TextFormField(
+                              maxLines: 1,
+                              minLines: 1,
+                              controller: receiverNumberController,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(8),
+                              ],
                               decoration: InputDecoration(
                                 hintText: 'Enter receiver name',
                                 hintStyle: primaryfont.copyWith(
@@ -223,22 +506,19 @@ class _DroppingAddressDetailsState extends State<DroppingAddressDetails> {
                           ),
                           ksizedbox20,
                           InkWell(
-                              onTap: () {
-                                _fetchAddress();
-                              },
-                              child: CommonContainer(
-                                name: 'Show on Map',
-                              )),
-                          ksizedbox20,
-                          InkWell(
                             onTap: () {
+                              _fetchAddress();
                               homeController.updateDroppingLocation(
-                                  fullAddress,
-                                  _markers.first.position.latitude.toString(),
-                                  _markers.first.position.longitude.toString(),
-                                  areapincode,
-                                  doorno,
-                                  widget.index);
+                                searchedController.text,
+                                _markers.first.position.latitude.toString(),
+                                _markers.first.position.longitude.toString(),
+                                areapincode,
+                                doorno,
+                                widget.index,
+                                receiverNameController.text,
+                                receiverNumberController.text,
+                                receiverBlockIdUnitIdController.text,
+                              );
                               Get.back();
                             },
                             child: CommonContainer(

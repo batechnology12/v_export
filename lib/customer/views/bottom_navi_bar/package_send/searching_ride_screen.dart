@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
 import 'package:v_export/customer/controller/parcel_controller.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/bottomn_navi_bar.dart';
@@ -15,58 +16,77 @@ class SearchingRideScreen extends StatefulWidget {
 }
 
 class _SearchingRideScreenState extends State<SearchingRideScreen> {
+  Timer? _timer;
   ParcelController parcelController = Get.find<ParcelController>();
   @override
   void initState() {
     super.initState();
-    getData();
+    // parcelController.getAcceptBooking(parcelController.driverbookingid);
+    _startPolling();
+    // getData();
   }
 
-  getData() async {
-    Timer(Duration(seconds: 5), () async {
-      if (parcelController.status.isTrue) {
-        await parcelController
-            .getAcceptBooking(parcelController.driverbookingid);
-        parcelController.update();
-        print("--1234---------- driver booking id");
-        print(parcelController.driverbookingid);
-      } else {
-        print("Waiting for Driver Accept");
-      }
+  void _startPolling() {
+    _timer = Timer.periodic(Duration(seconds: 5), (timer) async {
+      await parcelController.getAcceptBooking(parcelController.driverbookingid);
+      // if (parcelController.status == true) {
+      // } else {
+
+      //   Get.snackbar("Waiting", "Please wait for driver acceptance",
+      //       colorText: Colors.white,
+      //       backgroundColor: Colors.yellow,
+      //       snackPosition: SnackPosition.BOTTOM);
+      // }
     });
   }
 
   @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  // getData() async {
+  //   Timer(Duration(seconds: 5), () async {
+  //     if (parcelController.status == true) {
+  //       parcelController.getAcceptBooking(parcelController.driverbookingid);
+  //       parcelController.update();
+  //       print("--1234---------- driver booking id");
+  //       print(parcelController.driverbookingid);
+  //     } else {
+  //       Get.snackbar("Waiting", "Please Wait for Driver Accept",
+  //           colorText: AppColors.kwhite,
+  //           backgroundColor: Colors.yellow,
+  //           snackPosition: SnackPosition.BOTTOM);
+  //     }
+  //   });
+  // }
+
+  @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        Get.offAll(BottomNavigationScreen());
-        return false;
-      },
-      child: Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/icons/Truck.gif',
-                fit: BoxFit.fitHeight,
-                height: 120,
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/icons/Truck.gif',
+              fit: BoxFit.fitHeight,
+              height: 120,
+            ),
+            Text(
+              'Searching Ride...',
+              style: secondoryfont.copyWith(
+                  fontWeight: FontWeight.w700, fontSize: 18),
+            ),
+            Text(
+              'This my take a few seconds...',
+              style: thirdsfont.copyWith(
+                fontWeight: FontWeight.w400,
               ),
-              Text(
-                'Searching Ride...',
-                style: secondoryfont.copyWith(
-                    fontWeight: FontWeight.w700, fontSize: 18),
-              ),
-              Text(
-                'This my take a few seconds...',
-                style: thirdsfont.copyWith(
-                  fontWeight: FontWeight.w400,
-                ),
-              )
-            ],
-          ),
+            )
+          ],
         ),
       ),
     );

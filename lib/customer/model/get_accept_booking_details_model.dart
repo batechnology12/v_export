@@ -58,7 +58,8 @@ class GetAcceptBookingdata {
   String isConfirmed;
   String isPickuped;
   String bookingStatus;
-  String pickupAddreess;
+  String senderUnitnoBlockno;
+  dynamic pickupAddreess;
   String latitude;
   String longitude;
   String distance;
@@ -99,6 +100,7 @@ class GetAcceptBookingdata {
     required this.isConfirmed,
     required this.isPickuped,
     required this.bookingStatus,
+    required this.senderUnitnoBlockno,
     required this.pickupAddreess,
     required this.latitude,
     required this.longitude,
@@ -118,7 +120,8 @@ class GetAcceptBookingdata {
     required this.deliveryType,
   });
 
-  factory GetAcceptBookingdata.fromJson(Map<String, dynamic> json) => GetAcceptBookingdata(
+  factory GetAcceptBookingdata.fromJson(Map<String, dynamic> json) =>
+      GetAcceptBookingdata(
         id: json["id"],
         bookingId: json["booking_id"],
         userId: json["user_id"],
@@ -141,6 +144,7 @@ class GetAcceptBookingdata {
         isConfirmed: json["is_confirmed"],
         isPickuped: json["is_pickuped"],
         bookingStatus: json["booking_status"],
+        senderUnitnoBlockno: json["sender_unitno_blockno"],
         pickupAddreess: json["pickup_addreess"],
         latitude: json["latitude"],
         longitude: json["longitude"],
@@ -188,6 +192,7 @@ class GetAcceptBookingdata {
         "is_confirmed": isConfirmed,
         "is_pickuped": isPickuped,
         "booking_status": bookingStatus,
+        "sender_unitno_blockno": senderUnitnoBlockno,
         "pickup_addreess": pickupAddreess,
         "latitude": latitude,
         "longitude": longitude,
@@ -215,6 +220,8 @@ class BookingDeliveryAddress {
   String bookingId;
   String customerName;
   String customerMobile;
+  String reciverName;
+  String reciverMobile;
   String unitnoBlockno;
   String address;
   String postalcode;
@@ -229,6 +236,8 @@ class BookingDeliveryAddress {
     required this.bookingId,
     required this.customerName,
     required this.customerMobile,
+    required this.reciverName,
+    required this.reciverMobile,
     required this.unitnoBlockno,
     required this.address,
     required this.postalcode,
@@ -245,6 +254,8 @@ class BookingDeliveryAddress {
         bookingId: json["booking_id"],
         customerName: json["customer_name"],
         customerMobile: json["customer_mobile"],
+        reciverName: json["reciver_name"],
+        reciverMobile: json["reciver_mobile"],
         unitnoBlockno: json["unitno_blockno"],
         address: json["address"],
         postalcode: json["postalcode"],
@@ -260,6 +271,8 @@ class BookingDeliveryAddress {
         "booking_id": bookingId,
         "customer_name": customerName,
         "customer_mobile": customerMobile,
+        "reciver_name": reciverName,
+        "reciver_mobile": reciverMobile,
         "unitno_blockno": unitnoBlockno,
         "address": address,
         "postalcode": postalcode,
@@ -285,7 +298,7 @@ class BookingProduct {
   String kg;
   String pickuptimeFrom;
   String pickuptimeTo;
-  DateTime deliveryDate;
+  String deliveryDate;
   String deliverytimeFrom;
   String deliverytimeTo;
   DateTime createdAt;
@@ -326,7 +339,7 @@ class BookingProduct {
         kg: json["kg"],
         pickuptimeFrom: json["pickuptime_from"],
         pickuptimeTo: json["pickuptime_to"],
-        deliveryDate: DateTime.parse(json["delivery_date"]),
+        deliveryDate: json["delivery_date"],
         deliverytimeFrom: json["deliverytime_from"],
         deliverytimeTo: json["deliverytime_to"],
         createdAt: DateTime.parse(json["created_at"]),
@@ -347,8 +360,7 @@ class BookingProduct {
         "kg": kg,
         "pickuptime_from": pickuptimeFrom,
         "pickuptime_to": pickuptimeTo,
-        "delivery_date":
-            "${deliveryDate.year.toString().padLeft(4, '0')}-${deliveryDate.month.toString().padLeft(2, '0')}-${deliveryDate.day.toString().padLeft(2, '0')}",
+        "delivery_date": deliveryDate,
         "deliverytime_from": deliverytimeFrom,
         "deliverytime_to": deliverytimeTo,
         "created_at": createdAt.toIso8601String(),
@@ -423,8 +435,8 @@ class Driver {
   String email;
   dynamic companyId;
   String phone;
-  dynamic latitude;
-  dynamic longitude;
+  String latitude;
+  String longitude;
   dynamic contactPersonName;
   dynamic industryNoOfDeliveryInMonth;
   dynamic otp;
@@ -447,6 +459,12 @@ class Driver {
   dynamic ownerType;
   bool isEnable;
   bool isAdmin;
+  String isVerifyCode;
+  String isProfilePicture;
+  String isVehicleDetails;
+  String isNricPicture;
+  String isAccountDetails;
+  String isEmrgencyDetails;
   dynamic image;
   dynamic facebook;
   dynamic linkedin;
@@ -465,7 +483,7 @@ class Driver {
   String statusOnOff;
   String fullName;
   String imageUrl;
-  List<dynamic> media;
+  List<Media> media;
 
   Driver({
     required this.id,
@@ -498,6 +516,12 @@ class Driver {
     required this.ownerType,
     required this.isEnable,
     required this.isAdmin,
+    required this.isVerifyCode,
+    required this.isProfilePicture,
+    required this.isVehicleDetails,
+    required this.isNricPicture,
+    required this.isAccountDetails,
+    required this.isEmrgencyDetails,
     required this.image,
     required this.facebook,
     required this.linkedin,
@@ -550,6 +574,12 @@ class Driver {
         ownerType: json["owner_type"],
         isEnable: json["is_enable"],
         isAdmin: json["is_admin"],
+        isVerifyCode: json["is_verify_code"],
+        isProfilePicture: json["is_profile_picture"],
+        isVehicleDetails: json["is_vehicle_details"],
+        isNricPicture: json["is_nric_picture"],
+        isAccountDetails: json["is_account_details"],
+        isEmrgencyDetails: json["is_emrgency_details"],
         image: json["image"],
         facebook: json["facebook"],
         linkedin: json["linkedin"],
@@ -568,7 +598,7 @@ class Driver {
         statusOnOff: json["status_on_off"],
         fullName: json["full_name"],
         imageUrl: json["image_url"],
-        media: List<dynamic>.from(json["media"].map((x) => x)),
+        media: List<Media>.from(json["media"].map((x) => Media.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -602,6 +632,12 @@ class Driver {
         "owner_type": ownerType,
         "is_enable": isEnable,
         "is_admin": isAdmin,
+        "is_verify_code": isVerifyCode,
+        "is_profile_picture": isProfilePicture,
+        "is_vehicle_details": isVehicleDetails,
+        "is_nric_picture": isNricPicture,
+        "is_account_details": isAccountDetails,
+        "is_emrgency_details": isEmrgencyDetails,
         "image": image,
         "facebook": facebook,
         "linkedin": linkedin,
@@ -620,6 +656,102 @@ class Driver {
         "status_on_off": statusOnOff,
         "full_name": fullName,
         "image_url": imageUrl,
-        "media": List<dynamic>.from(media.map((x) => x)),
+        "media": List<dynamic>.from(media.map((x) => x.toJson())),
+      };
+}
+
+class Media {
+  int id;
+  String modelType;
+  String modelId;
+  String collectionName;
+  String name;
+  String fileName;
+  String mimeType;
+  String disk;
+  String size;
+  List<dynamic> manipulations;
+  List<dynamic> customProperties;
+  List<dynamic> responsiveImages;
+  String orderColumn;
+  DateTime createdAt;
+  DateTime updatedAt;
+  String conversionsDisk;
+  String uuid;
+  List<dynamic> generatedConversions;
+  String originalUrl;
+  String previewUrl;
+
+  Media({
+    required this.id,
+    required this.modelType,
+    required this.modelId,
+    required this.collectionName,
+    required this.name,
+    required this.fileName,
+    required this.mimeType,
+    required this.disk,
+    required this.size,
+    required this.manipulations,
+    required this.customProperties,
+    required this.responsiveImages,
+    required this.orderColumn,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.conversionsDisk,
+    required this.uuid,
+    required this.generatedConversions,
+    required this.originalUrl,
+    required this.previewUrl,
+  });
+
+  factory Media.fromJson(Map<String, dynamic> json) => Media(
+        id: json["id"],
+        modelType: json["model_type"],
+        modelId: json["model_id"],
+        collectionName: json["collection_name"],
+        name: json["name"],
+        fileName: json["file_name"],
+        mimeType: json["mime_type"],
+        disk: json["disk"],
+        size: json["size"],
+        manipulations: List<dynamic>.from(json["manipulations"].map((x) => x)),
+        customProperties:
+            List<dynamic>.from(json["custom_properties"].map((x) => x)),
+        responsiveImages:
+            List<dynamic>.from(json["responsive_images"].map((x) => x)),
+        orderColumn: json["order_column"],
+        createdAt: DateTime.parse(json["created_at"]),
+        updatedAt: DateTime.parse(json["updated_at"]),
+        conversionsDisk: json["conversions_disk"],
+        uuid: json["uuid"],
+        generatedConversions:
+            List<dynamic>.from(json["generated_conversions"].map((x) => x)),
+        originalUrl: json["original_url"],
+        previewUrl: json["preview_url"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "model_type": modelType,
+        "model_id": modelId,
+        "collection_name": collectionName,
+        "name": name,
+        "file_name": fileName,
+        "mime_type": mimeType,
+        "disk": disk,
+        "size": size,
+        "manipulations": List<dynamic>.from(manipulations.map((x) => x)),
+        "custom_properties": List<dynamic>.from(customProperties.map((x) => x)),
+        "responsive_images": List<dynamic>.from(responsiveImages.map((x) => x)),
+        "order_column": orderColumn,
+        "created_at": createdAt.toIso8601String(),
+        "updated_at": updatedAt.toIso8601String(),
+        "conversions_disk": conversionsDisk,
+        "uuid": uuid,
+        "generated_conversions":
+            List<dynamic>.from(generatedConversions.map((x) => x)),
+        "original_url": originalUrl,
+        "preview_url": previewUrl,
       };
 }

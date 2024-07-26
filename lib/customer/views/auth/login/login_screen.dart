@@ -25,11 +25,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final RoundedLoadingButtonController _btnController =
-      RoundedLoadingButtonController();
 
-  final RoundedLoadingButtonController _btnControllerSucess =
-      RoundedLoadingButtonController();
+  final RoundedLoadingButtonController _btnController = RoundedLoadingButtonController();
+
+  final RoundedLoadingButtonController _btnControllerSucess = RoundedLoadingButtonController();
 
   final authController = Get.find<AuthController>();
   bool ishide = true;
@@ -45,30 +44,35 @@ class _LoginScreenState extends State<LoginScreen> {
   int selectedIndex = 0;
   String selectedValues = "+65";
 
-  void _onLoginPressed() {
-    if (formkey.currentState!.validate()) {
-      _btnController.start();
-      authController
-          .loginApi(
-        emailOrmobileNmuber: emailOrmobileController.text,
-        password: passwordController.text,
-      )
-          .then((success) {
-        if (success) {
-          _btnController.success();
-        } else {
-          _btnController.error();
-        }
-      }).catchError((error) {
-        _btnController.error();
-      }).whenComplete(() {
-        // Reset the button controller after some delay
-        Future.delayed(Duration(seconds: 2), () {
-          _btnController.reset();
-        });
-      });
-    }
-  }
+  // void _onLoginPressed() {
+  //   if (formkey.currentState!.validate()) {
+  //     _btnController.start();
+  //     if (authController.loginData!.roles == "client" || authController.loginData!.roles == "business" ) {
+  //         authController
+  //         .loginApi(
+  //       emailOrmobileNmuber: emailOrmobileController.text,
+  //       password: passwordController.text,
+  //     );
+  //     } else {
+
+  //     }
+
+  //         .then((success) {
+  //       if (success) {
+  //         _btnController.success();
+  //       } else {
+  //         _btnController.error();
+  //       }
+  //     }).catchError((error) {
+  //       _btnController.error();
+  //     }).whenComplete(() {
+  //       // Reset the button controller after some delay
+  //       Future.delayed(Duration(seconds: 2), () {
+  //         _btnController.reset();
+  //       });
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -92,8 +96,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     padding: const EdgeInsets.only(top: 60),
                     child: SvgPicture.asset(
                       'assets/icons/VEELGO.svg',
-                      height: 35.h,
-                      width: 35.w,
+                      height: 70.h,
+                      width: 70.w,
                     ),
                   ),
                 ),
@@ -126,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             height: 6.h,
                           ),
                           Text(
-                            'Please enter your Mobile Number \nto sign in',
+                            'Please enter your Mobile Number to sign in',
                             style: primaryfont.copyWith(
                                 color: Color(0XFF0E0E2C),
                                 fontWeight: FontWeight.w500,
@@ -350,40 +354,72 @@ class _LoginScreenState extends State<LoginScreen> {
                           ksizedbox40,
                           ksizedbox10,
                           Obx(() {
-                            return authController.loginLoading.isTrue
-                                ? Container(
-                                    height: 50.h,
-                                    width: size.width,
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius:
-                                            BorderRadius.circular(30)),
-                                    child: Center(
-                                        child: CircularProgressIndicator(
-                                      color: AppColors.kblue,
-                                    )),
-                                  )
-                                : GestureDetector(
-                                    onTap: _onLoginPressed,
-                                    child: Container(
-                                      height: 50,
-                                      width: MediaQuery.of(context).size.width,
+                            return Container(
+                              height: 50.h,
+                              width: MediaQuery.of(context).size.width,
+                              child: authController.loginLoading.isTrue
+                                  ? Container(
+                                      height: 50.h,
+                                      width: size.width,
                                       decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(30)),
+                                      child: Center(
+                                          child: CircularProgressIndicator(
                                         color: AppColors.kblue,
-                                        borderRadius: BorderRadius.circular(30),
-                                      ),
-                                      child: const Center(
-                                        child: Text(
-                                          'Login',
-                                          style: TextStyle(
-                                            fontSize: 17,
-                                            fontWeight: FontWeight.w500,
-                                            color: Colors.white,
+                                      )),
+                                    )
+                                  : GestureDetector(
+                                      onTap: () {
+                                        if (formkey.currentState!.validate()) {
+                                          authController.loginApi(
+                                              emailOrmobileNmuber:
+                                                  emailOrmobileController.text,
+                                              password:
+                                                  passwordController.text);
+                                          // if (authController.loginData!.roles ==
+                                          //         "client" ||
+                                          //     authController.loginData!.roles ==
+                                          //         "business") {
+                                          //   authController.loginApi(
+                                          //       emailOrmobileNmuber:
+                                          //           emailOrmobileController
+                                          //               .text,
+                                          //       password:
+                                          //           passwordController.text);
+                                          // } else {
+                                          //   Get.rawSnackbar(
+                                          //     backgroundColor: Colors.red,
+                                          //     messageText: Text(
+                                          //       "Please login with client or business account",
+                                          //       style: TextStyle(
+                                          //           color: Colors.white,
+                                          //           fontSize: 15.sp),
+                                          //     ),
+                                          //   );
+                                          // }
+                                        }
+                                      },
+                                      child: Container(
+                                        height: 50.h,
+                                        width: size.width,
+                                        decoration: BoxDecoration(
+                                            color: AppColors.kblue,
+                                            borderRadius:
+                                                BorderRadius.circular(30)),
+                                        child: Center(
+                                          child: Text(
+                                            'Login',
+                                            style: primaryfont.copyWith(
+                                                fontSize: 18.sp,
+                                                fontWeight: FontWeight.bold,
+                                                color: AppColors.kwhite),
                                           ),
                                         ),
                                       ),
                                     ),
-                                  );
+                            );
                           }),
 
                           // ksizedbox20,

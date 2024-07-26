@@ -25,21 +25,84 @@ class HomeController extends GetxController {
   var entries = <int>[0].obs;
   var addParcels = <int>[0].obs;
   var isCheck = false.obs;
+  var receiverNameList = <String>[].obs;
+  var receiverNumberList = <String>[].obs;
+  var receiverBlockIdUnitIDs = '';
 
-  void updateDroppingLocation(String location, String lat, String long,
-      String arpincode, String bookingpincode, int index) {
+  void updateDroppingLocation(
+      String location,
+      String lat,
+      String long,
+      String arpincode,
+      String bookingpincode,
+      int index,
+      String reciverName,
+      String reciverNumber,
+      String reciverBlockIdUnitID) {
     if (index < droppingLocations.length) {
       droppingLocations[index] = location;
       droppingLats[index] = lat;
       dropLongs[index] = long;
       pincodes[index] = arpincode;
       doornames[index] = bookingpincode;
+      receiverNameList[index] = reciverName;
+      receiverNumberList[index] = reciverNumber;
+      receiverBlockIdUnitIDs = reciverBlockIdUnitID;
     } else {
       droppingLocations.add(location);
       droppingLats.add(lat);
       dropLongs.add(long);
       pincodes.add(arpincode);
       doornames.add(bookingpincode);
+      receiverNameList.add(reciverName);
+      receiverNumberList.add(reciverNumber);
+      receiverBlockIdUnitIDs = reciverBlockIdUnitID;
+    }
+  }
+
+////////////////////////////////////
+  var vehicledroppingLocations = <String>[].obs;
+  var vehicledroppingLats = <String>[].obs;
+  var vehicledropLongs = <String>[].obs;
+  var vehiclepincodes = <String>[].obs;
+  var vehicledoornames = <String>[].obs;
+  var vehicleentries = <int>[0].obs;
+  var vehicleaddParcels = <int>[0].obs;
+  var vehicleisCheck = false.obs;
+  var vehiclereceiverNameList = <String>[].obs;
+  var vehiclereceiverNumberList = <String>[].obs;
+  var vehiclereceiverBlockIdUnitIDs = '';
+
+  void vehicleDroppingLocation(
+      String locationVehicle,
+      String latVehicle,
+      String longVehicle,
+      String arpincodeVehicle,
+      String bookingpincodeVehicle,
+      int indexVehicle,
+      String reciverNameVehicle,
+      String reciverNumberVehicle,
+      String reciverBlockIdUnitIDVehicle) {
+    if (indexVehicle < vehicledroppingLocations.length) {
+
+      vehicledroppingLocations[indexVehicle] = locationVehicle;
+      vehicledroppingLats[indexVehicle] = latVehicle;
+      vehicledropLongs[indexVehicle] = longVehicle;
+      vehiclepincodes[indexVehicle] = arpincodeVehicle;
+      vehicledoornames[indexVehicle] = bookingpincodeVehicle;
+      vehiclereceiverNameList[indexVehicle] = reciverNameVehicle;
+      vehiclereceiverNumberList[indexVehicle] = reciverNumberVehicle;
+      vehiclereceiverBlockIdUnitIDs = reciverBlockIdUnitIDVehicle;
+      
+    } else {
+      vehicledroppingLocations.add(locationVehicle);
+      vehicledroppingLats.add(latVehicle);
+      vehicledropLongs.add(longVehicle);
+      vehiclepincodes.add(arpincodeVehicle);
+      vehicledoornames.add(bookingpincodeVehicle);
+      vehiclereceiverNameList.add(reciverNameVehicle);
+      vehiclereceiverNumberList.add(reciverNumberVehicle);
+      vehiclereceiverBlockIdUnitIDs = reciverBlockIdUnitIDVehicle;
     }
   }
 
@@ -74,6 +137,11 @@ class HomeController extends GetxController {
     isCheck.value = value;
   }
 
+  var showYellowContainer = false.obs;
+
+  void toggleYellowContainer() {
+    showYellowContainer.value = !showYellowContainer.value;
+  }
   // var entries = <int>[0].obs;
   // var isCheck = false.obs;
   // void addEntry() {

@@ -30,11 +30,11 @@ class _MyListState extends State<MyOrder> {
 
   getData() async {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await myListController.getOngoingOrdersUser("");
+      await myListController.getOngoingOrdersUser("ongoing");
       myListController.update();
       setState(() {});
-      await myListController.getCompletedOrdersUser("");
-      await myListController.getCancelledOrderUser("");
+      await myListController.getCompletedOrdersUser("completed");
+      await myListController.getCancelledOrderUser("canceled");
     });
   }
 
@@ -138,7 +138,17 @@ class _MyListState extends State<MyOrder> {
 
                             if (myListController
                                 .getOngoingOrdersModelData.isEmpty) {
-                              return Center(child: CircularProgressIndicator());
+                              return Center(
+                                  child: Container(
+                                      alignment: Alignment.center,
+                                      height: 200.h,
+                                      width: size.width,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.withOpacity(.09),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Image.asset(
+                                          "assets/images/No Data Found.jpeg")));
                             }
                             return ListView.builder(
                                 shrinkWrap: true,
@@ -182,7 +192,7 @@ class _MyListState extends State<MyOrder> {
                                                               Color(0xffF5F5F5),
                                                           shape:
                                                               BoxShape.circle),
-                                                  child: Icon(
+                                                  child: const Icon(
                                                     Icons.arrow_forward_ios,
                                                     color: Colors.black,
                                                     size: 15,
@@ -211,7 +221,7 @@ class _MyListState extends State<MyOrder> {
                                                       Dash(
                                                           direction:
                                                               Axis.vertical,
-                                                          length: 90,
+                                                          length: 120,
                                                           dashLength: 5,
                                                           dashColor:
                                                               AppColors.kgrey),
@@ -248,14 +258,10 @@ class _MyListState extends State<MyOrder> {
                                                           Container(
                                                             width: 200.h,
                                                             child: Text(
-                                                              // myListController
-                                                              //     .getOngoingOrdersModelData[
-                                                              //         index]
-                                                              //     .fromAddress
-                                                              //     .first
-                                                              //     .address
-                                                              //     ,
-                                                              "338C Anchorvale Cresent, 543338",
+                                                              myListController
+                                                                  .getOngoingOrdersModelData[
+                                                                      index]
+                                                                  .pickupAddreess!,
                                                               style: primaryfont.copyWith(
                                                                   color: Color(
                                                                       0xff1E1E1E),
@@ -292,10 +298,9 @@ class _MyListState extends State<MyOrder> {
                                                               myListController
                                                                   .getOngoingOrdersModelData[
                                                                       index]
-                                                                  .bookingDeliveryAddresses
-                                                                  .first
-                                                                  .address
-                                                                  .toString(),
+                                                                  .bookingDeliveryAddresses[
+                                                                      index]
+                                                                  .address,
                                                               // "jascjj",
                                                               style: primaryfont.copyWith(
                                                                   color: Color(
@@ -323,11 +328,13 @@ class _MyListState extends State<MyOrder> {
                                                               .spaceBetween,
                                                       children: [
                                                         Text(
-                                                          '${formatTime(myListController.getOngoingOrdersModelData[index].bookingProducts.first.pickuptimeFrom)} to ${formatTime(myListController.getOngoingOrdersModelData[index].bookingProducts.first.pickuptimeTo)}',
+                                                          '${myListController.getOngoingOrdersModelData[index].bookingProducts[index].pickuptimeFrom} to ${myListController.getOngoingOrdersModelData[index].bookingProducts[index].pickuptimeTo}',
+
+                                                          //          '${formatTime(myListController.getOngoingOrdersModelData[index].bookingProducts[index].pickuptimeFrom)} to ${formatTime(myListController.getOngoingOrdersModelData[index].bookingProducts[index].pickuptimeTo)}',
                                                           style: primaryfont
                                                               .copyWith(
                                                                   fontSize:
-                                                                      13.sp,
+                                                                      12.sp,
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w600,
@@ -335,11 +342,13 @@ class _MyListState extends State<MyOrder> {
                                                                       0xff455A64)),
                                                         ),
                                                         Text(
-                                                          '${formatTime(myListController.getOngoingOrdersModelData[index].bookingProducts.first.deliverytimeFrom)} to ${formatTime(myListController.getOngoingOrdersModelData[index].bookingProducts.first.deliverytimeTo)}',
+                                                          '${myListController.getOngoingOrdersModelData[index].bookingProducts[index].deliverytimeFrom} to ${myListController.getOngoingOrdersModelData[index].bookingProducts[index].deliverytimeTo}',
+
+                                                          //'${formatTime(myListController.getOngoingOrdersModelData[index].bookingProducts[index].deliverytimeFrom)} to ${formatTime(myListController.getOngoingOrdersModelData[index].bookingProducts[index].deliverytimeTo)}',
                                                           style: primaryfont
                                                               .copyWith(
                                                                   fontSize:
-                                                                      13.sp,
+                                                                      12.sp,
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w600,
@@ -385,7 +394,11 @@ class _MyListState extends State<MyOrder> {
                                                       height: 2.h,
                                                     ),
                                                     Text(
-                                                 
+                                                      // myListController
+                                                      //     .getOngoingOrdersModelData[
+                                                      //         index]
+                                                      //     .bookingDate
+                                                      //     .toString(),
                                                       formatDate(
                                                           DateTime.parse(
                                                               myListController
@@ -434,23 +447,31 @@ class _MyListState extends State<MyOrder> {
                                                       height: 2.h,
                                                     ),
                                                     Text(
-                                                      formatDate(
-                                                          DateTime.parse(
-                                                              myListController
-                                                                  .getOngoingOrdersModelData[
-                                                                      index]
-                                                                  .bookingProducts
-                                                                  .first
-                                                                  .deliveryDate),
-                                                          [
-                                                            dd,
-                                                            '-',
-                                                            mm,
-                                                            '-',
-                                                            yyyy
-                                                          ]),
+                                                      myListController
+                                                          .getOngoingOrdersModelData[
+                                                              index]
+                                                          .bookingProducts[
+                                                              index]
+                                                          .deliveryDate
+                                                          .toString(),
+                                                      // formatDate(
+                                                      //     DateTime.parse(
+                                                      //         myListController
+                                                      //             .getOngoingOrdersModelData[
+                                                      //                 index]
+                                                      //             .bookingProducts[index]
+                                                      //             .deliveryDate
+                                                      //             .toString()),
+                                                      //     [
+                                                      //       dd,
+                                                      //       '-',
+                                                      //       mm,
+                                                      //       '-',
+                                                      //       yyyy
+                                                      //     ]),
                                                       style:
                                                           primaryfont.copyWith(
+                                                        fontSize: 12.sp,
                                                         fontWeight:
                                                             FontWeight.w600,
                                                       ),
@@ -512,6 +533,17 @@ class _MyListState extends State<MyOrder> {
                       physics: BouncingScrollPhysics(),
                       child: Column(
                         children: [
+                          // Center(
+                          //     child: Container(
+                          //         alignment: Alignment.center,
+                          //         height: 200.h,
+                          //         width: size.width,
+                          //         decoration: BoxDecoration(
+                          //           color: Colors.grey.withOpacity(.09),
+                          //           borderRadius: BorderRadius.circular(10),
+                          //         ),
+                          //         child: Image.asset(
+                          //             "assets/images/No Data Found.jpeg"))),
                           GetBuilder<MyListController>(builder: (context) {
                             if (myListController
                                 .getCompletedOrdersLoading.isTrue) {
@@ -520,7 +552,17 @@ class _MyListState extends State<MyOrder> {
 
                             if (myListController
                                 .getCompletedOrdersModelData.isEmpty) {
-                              return Center(child: CircularProgressIndicator());
+                              return Center(
+                                  child: Container(
+                                      alignment: Alignment.center,
+                                      height: 200.h,
+                                      width: size.width,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.withOpacity(.09),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Image.asset(
+                                          "assets/images/No Data Found.jpeg")));
                             }
                             return ListView.builder(
                                 shrinkWrap: true,
@@ -630,7 +672,10 @@ class _MyListState extends State<MyOrder> {
                                                           Container(
                                                             width: 200.h,
                                                             child: Text(
-                                                              '338 Serangoon North',
+                                                              myListController
+                                                                  .getCompletedOrdersModelData[
+                                                                      index]
+                                                                  .pickupAddreess!,
                                                               style: primaryfont.copyWith(
                                                                   color: Color(
                                                                       0xff1E1E1E),
@@ -667,10 +712,9 @@ class _MyListState extends State<MyOrder> {
                                                               myListController
                                                                   .getCompletedOrdersModelData[
                                                                       index]
-                                                                  .bookingDeliveryAddresses
-                                                                  .first
-                                                                  .address
-                                                                  .toString(),
+                                                                  .bookingDeliveryAddresses[
+                                                                      index]
+                                                                  .address,
                                                               style: primaryfont.copyWith(
                                                                   color: Color(
                                                                       0xff1E1E1E),
@@ -698,7 +742,7 @@ class _MyListState extends State<MyOrder> {
                                                               .spaceBetween,
                                                       children: [
                                                         Text(
-                                                          '${formatTime(myListController.getCompletedOrdersModelData[index].bookingProducts.first.pickuptimeFrom)} to ${formatTime(myListController.getCompletedOrdersModelData[index].bookingProducts.first.pickuptimeTo)}',
+                                                          '${formatTime(myListController.getCompletedOrdersModelData[index].bookingProducts[index].pickuptimeFrom)} to ${formatTime(myListController.getCompletedOrdersModelData[index].bookingProducts[index].pickuptimeTo)}',
                                                           style: primaryfont
                                                               .copyWith(
                                                                   fontSize:
@@ -710,7 +754,7 @@ class _MyListState extends State<MyOrder> {
                                                                       0xff455A64)),
                                                         ),
                                                         Text(
-                                                          '${formatTime(myListController.getCompletedOrdersModelData[index].bookingProducts.first.deliverytimeFrom)} to ${formatTime(myListController.getCompletedOrdersModelData[index].bookingProducts.first.deliverytimeTo)}',
+                                                          '${formatTime(myListController.getCompletedOrdersModelData[index].bookingProducts[index].deliverytimeFrom)} to ${formatTime(myListController.getCompletedOrdersModelData[index].bookingProducts[index].deliverytimeTo)}',
                                                           style: primaryfont
                                                               .copyWith(
                                                                   fontSize:
@@ -813,9 +857,9 @@ class _MyListState extends State<MyOrder> {
                                                               myListController
                                                                   .getCancelledOrdersModelData[
                                                                       index]
-                                                                  .bookingProducts
-                                                                  .first
-                                                                  .deliveryDate),
+                                                                  .bookingProducts[index]
+                                                                  .deliveryDate
+                                                                  .toString()),
                                                           [
                                                             dd,
                                                             '-',
@@ -886,24 +930,44 @@ class _MyListState extends State<MyOrder> {
                       physics: BouncingScrollPhysics(),
                       child: Column(
                         children: [
+                          // Center(
+                          //     child: Container(
+                          //         alignment: Alignment.center,
+                          //         height: 200.h,
+                          //         width: size.width,
+                          //         decoration: BoxDecoration(
+                          //           color: Colors.grey.withOpacity(.09),
+                          //           borderRadius: BorderRadius.circular(10),
+                          //         ),
+                          //         child: Image.asset(
+                          //             "assets/images/No Data Found.jpeg"))),
+
                           GetBuilder<MyListController>(builder: (context) {
+                            if (myListController
+                                .getCancelledOrdersLoading.isTrue) {
+                              return Center(child: CircularProgressIndicator());
+                            }
+
+                            if (myListController
+                                .getCancelledOrdersModelData.isEmpty) {
+                              return Center(
+                                  child: Container(
+                                      alignment: Alignment.center,
+                                      height: 200.h,
+                                      width: size.width,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.withOpacity(.09),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Image.asset(
+                                          "assets/images/No Data Found.jpeg")));
+                            }
                             return ListView.builder(
                                 shrinkWrap: true,
                                 itemCount: myListController
                                     .getCancelledOrdersModelData.length,
                                 physics: BouncingScrollPhysics(),
                                 itemBuilder: ((context, index) {
-                                  if (myListController
-                                      .getCancelledOrdersLoading.isTrue) {
-                                    return Center(
-                                        child: CircularProgressIndicator());
-                                  }
-
-                                  if (myListController
-                                      .getCancelledOrdersModelData.isEmpty) {
-                                    return Center(
-                                        child: CircularProgressIndicator());
-                                  }
                                   return Padding(
                                     padding: const EdgeInsets.only(
                                         left: 10, right: 10),
@@ -1006,7 +1070,10 @@ class _MyListState extends State<MyOrder> {
                                                           Container(
                                                             width: 200.h,
                                                             child: Text(
-                                                              '338 Serangoon North',
+                                                              myListController
+                                                                  .getCancelledOrdersModelData[
+                                                                      index]
+                                                                  .pickupAddreess!,
                                                               style: primaryfont.copyWith(
                                                                   color: Color(
                                                                       0xff1E1E1E),
@@ -1028,7 +1095,7 @@ class _MyListState extends State<MyOrder> {
                                                                 .start,
                                                         children: [
                                                           Text(
-                                                            'Delivery details',
+                                                            "Delivery Details",
                                                             style: primaryfont.copyWith(
                                                                 fontSize: 15.sp,
                                                                 fontWeight:
@@ -1043,8 +1110,8 @@ class _MyListState extends State<MyOrder> {
                                                               myListController
                                                                   .getCancelledOrdersModelData[
                                                                       index]
-                                                                  .bookingDeliveryAddresses
-                                                                  .first
+                                                                  .bookingDeliveryAddresses[
+                                                                      index]
                                                                   .address
                                                                   .toString(),
                                                               style: primaryfont.copyWith(
@@ -1073,7 +1140,9 @@ class _MyListState extends State<MyOrder> {
                                                               .spaceBetween,
                                                       children: [
                                                         Text(
-                                                          '${formatTime(myListController.getCancelledOrdersModelData[index].bookingProducts.first.pickuptimeFrom)} to ${formatTime(myListController.getCancelledOrdersModelData[index].bookingProducts.first.pickuptimeTo)}',
+                                                          '${myListController.getCancelledOrdersModelData[index].bookingProducts[index].pickuptimeFrom} to ${myListController.getCancelledOrdersModelData[index].bookingProducts[index].pickuptimeTo}',
+
+                                                          // '${formatTime(myListController.getCancelledOrdersModelData[index].bookingProducts[index].pickuptimeFrom)} to ${formatTime(myListController.getCancelledOrdersModelData[index].bookingProducts[index].pickuptimeTo)}',
                                                           style: primaryfont
                                                               .copyWith(
                                                                   fontSize:
@@ -1085,7 +1154,9 @@ class _MyListState extends State<MyOrder> {
                                                                       0xff455A64)),
                                                         ),
                                                         Text(
-                                                          '${formatTime(myListController.getCancelledOrdersModelData[index].bookingProducts.first.deliverytimeFrom)} to ${formatTime(myListController.getCancelledOrdersModelData[index].bookingProducts.first.deliverytimeTo)}',
+                                                          '${myListController.getCancelledOrdersModelData[index].bookingProducts[index].deliverytimeFrom} to ${myListController.getCancelledOrdersModelData[index].bookingProducts[index].deliverytimeTo}',
+
+                                                          // '${formatTime(myListController.getCancelledOrdersModelData[index].bookingProducts[index].deliverytimeFrom)} to ${formatTime(myListController.getCancelledOrdersModelData[index].bookingProducts[index].deliverytimeTo)}',
                                                           style: primaryfont
                                                               .copyWith(
                                                                   fontSize:
@@ -1135,10 +1206,15 @@ class _MyListState extends State<MyOrder> {
                                                       height: 2.h,
                                                     ),
                                                     Text(
+                                                      // myListController
+                                                      //     .getCancelledOrdersModelData[
+                                                      //         index]
+                                                      //     .bookingDate
+                                                      //     .toString(),
                                                       formatDate(
                                                           DateTime.parse(
                                                               myListController
-                                                                  .getCompletedOrdersModelData[
+                                                                  .getCancelledOrdersModelData[
                                                                       index]
                                                                   .bookingDate
                                                                   .toString()),
@@ -1183,23 +1259,31 @@ class _MyListState extends State<MyOrder> {
                                                       height: 2.h,
                                                     ),
                                                     Text(
-                                                      formatDate(
-                                                          DateTime.parse(
-                                                              myListController
-                                                                  .getCancelledOrdersModelData[
-                                                                      index]
-                                                                  .bookingProducts
-                                                                  .first
-                                                                  .deliveryDate),
-                                                          [
-                                                            dd,
-                                                            '-',
-                                                            mm,
-                                                            '-',
-                                                            yyyy
-                                                          ]),
+                                                      myListController
+                                                          .getCancelledOrdersModelData[
+                                                              index]
+                                                          .bookingProducts[
+                                                              index]
+                                                          .deliveryDate
+                                                          .toString(),
+                                                      // formatDate(
+                                                      //     DateTime.parse(
+                                                      //         myListController
+                                                      //             .getCancelledOrdersModelData[
+                                                      //                 index]
+                                                      //             .bookingProducts[index]
+                                                      //             .deliveryDate
+                                                      //             .toString()),
+                                                      //     [
+                                                      //       dd,
+                                                      //       '-',
+                                                      //       mm,
+                                                      //       '-',
+                                                      //       yyyy
+                                                      //     ]),
                                                       style:
                                                           primaryfont.copyWith(
+                                                        fontSize: 12.sp,
                                                         fontWeight:
                                                             FontWeight.w600,
                                                       ),
@@ -1214,7 +1298,7 @@ class _MyListState extends State<MyOrder> {
                                                     color: Colors.grey.shade200,
                                                     borderRadius:
                                                         BorderRadius.circular(
-                                                            15)),
+                                                            15.sp)),
                                                 child: Column(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.center,

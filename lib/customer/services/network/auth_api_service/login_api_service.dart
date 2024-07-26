@@ -5,8 +5,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:v_export/customer/services/utils/base_url_api.dart';
 
 class LoginApiServices extends BaseApiServices {
-  Future loginApi(
-      {required String emailOrmobileNmuber, required String password}) async {
+  Future loginApi({
+    required String emailOrmobileNmuber,
+    required String password,
+  }) async {
     dynamic responseJson;
     try {
       var dio = Dio();
@@ -17,12 +19,16 @@ class LoginApiServices extends BaseApiServices {
           options: Options(
               headers: {
                 'Content-Type': 'application/json',
+                
               },
               followRedirects: false,
               validateStatus: (status) {
                 return status! <= 500;
               }),
-          data: {"email_or_phone": emailOrmobileNmuber, "password": password});
+          data: {
+            "email_or_phone": emailOrmobileNmuber,
+            "password": password,
+          });
       print(
           "::::::::<Login Api>::::::${emailOrmobileNmuber}::password :${password}:::::::::");
 

@@ -18,7 +18,7 @@ class RegisterPersonalApiService extends BaseApiServices {
                 return status! <= 500;
               }),
           data: {
-            "type": "personal",
+            "type": "client",
             "name": registerPersonalAccount.name,
             "email": registerPersonalAccount.email,
             "mobile": registerPersonalAccount.phone,

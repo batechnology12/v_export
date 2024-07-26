@@ -34,7 +34,7 @@ class DriverDetailsScreen extends StatefulWidget {
 
 class _MyHomePageState extends State<DriverDetailsScreen> {
   final ParcelController parcelController = Get.find<ParcelController>();
-
+  
   late GoogleMapController _controller;
   final Set<Marker> _markers = {};
   late LocationData _currentPosition;
@@ -54,9 +54,9 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
   void _initLocationAndRedirect() async {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _getLocation();
-      popUp1();
-      parcelController
-          .getAcceptBooking(widget.getAcceptBookingdata!.id.toString());
+      //  popUp1();
+      // parcelController
+      //     .getAcceptBooking(widget.getAcceptBookingdata!.id.toString());
     });
   }
 
@@ -107,8 +107,8 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
   }
 
   String formatTime(String time) {
-    DateTime parsedTime = DateFormat("HH:mm:ss").parse(time);
-    String formattedTime = DateFormat("h a").format(parsedTime);
+    DateTime parsedTime = DateFormat("h ma").parse(time);
+    String formattedTime = DateFormat("h ma").format(parsedTime);
     return formattedTime;
   }
 
@@ -425,7 +425,7 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
                                       children: [
                                         GestureDetector(
                                           onTap: () {
-                                            Get.to(DriverAboutDetails());
+                                            //  Get.to(DriverAboutDetails());
                                           },
                                           child: Text(
                                             'View Details',
@@ -557,45 +557,49 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
                                                   ),
                                                 ],
                                               ),
-                                              Column(
-                                                children: [
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            bottom: 30),
-                                                    child: Text(
-                                                      '${formatTime(widget.getAcceptBookingdata!.bookingProducts.first.pickuptimeFrom)} to ${formatTime(widget.getAcceptBookingdata!.bookingProducts.first.pickuptimeTo)}',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                              fontSize: 12.sp,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                              color: const Color(
-                                                                  0xff455A64)),
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 40.h,
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            bottom: 10),
-                                                    child: Text(
-                                                      '${formatTime(widget.getAcceptBookingdata!.bookingProducts.first.deliverytimeFrom)} to ${formatTime(widget.getAcceptBookingdata!.bookingProducts.first.deliverytimeTo)}',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                              fontSize: 12.sp,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                              color: const Color(
-                                                                  0xff455A64)),
-                                                    ),
-                                                  ),
-                                                ],
-                                              )
+                                              // Column(
+                                              //   children: [
+                                              //     Padding(
+                                              //       padding:
+                                              //           const EdgeInsets.only(
+                                              //               bottom: 30),
+                                              //       child: Text(
+                                              //         "jwj",
+                                              //         //   '${formatTime(widget.getAcceptBookingdata!.bookingProducts.first.pickuptimeFrom)} to ${formatTime(widget.getAcceptBookingdata!.bookingProducts.first.pickuptimeTo)}',
+                                              //         style:
+                                              //             primaryfont.copyWith(
+                                              //                 fontSize: 12.sp,
+                                              //                 fontWeight:
+                                              //                     FontWeight
+                                              //                         .w600,
+                                              //                 color: const Color(
+                                              //                     0xff455A64)),
+                                              //       ),
+                                              //     ),
+                                              //     SizedBox(
+                                              //       height: 40.h,
+                                              //     ),
+                                              //     Padding(
+                                              //       padding:
+                                              //           const EdgeInsets.only(
+                                              //               bottom: 10),
+                                              //       child: Container(
+                                              //         width: 80,
+                                              //         child: Text(
+                                              //           //  "usjhjs",
+                                              //           "${widget.getAcceptBookingdata!.bookingProducts.first.deliverytimeFrom} to ${widget.getAcceptBookingdata!.bookingProducts.first.deliverytimeTo}",
+                                              //           //   '${formatTime(widget.getAcceptBookingdata!.bookingProducts.first.deliverytimeFrom)} to ${formatTime(widget.getAcceptBookingdata!.bookingProducts.first.deliverytimeTo)}',
+                                              //           style: primaryfont.copyWith(
+                                              //               fontSize: 12.sp,
+                                              //               fontWeight:
+                                              //                   FontWeight.w600,
+                                              //               color: const Color(
+                                              //                   0xff455A64)),
+                                              //         ),
+                                              //       ),
+                                              //     ),
+                                              //   ],
+                                              // )
                                             ],
                                           ),
                                         ],
@@ -630,6 +634,10 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
                                                   height: 2,
                                                 ),
                                                 Text(
+                                                  //  "sv",
+                                                  // widget.getAcceptBookingdata!
+                                                  //     .bookingDate
+                                                  //     .toString(),
                                                   '${formatDate(DateTime.parse(widget.getAcceptBookingdata!.bookingDate.toString()), [
                                                         dd,
                                                         '-',
@@ -669,13 +677,20 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
                                                   height: 2,
                                                 ),
                                                 Text(
-                                                  '${formatDate(DateTime.parse(widget.getAcceptBookingdata!.bookingProducts.first.deliveryDate.toString()), [
-                                                        dd,
-                                                        '-',
-                                                        mm,
-                                                        '-',
-                                                        yyyy
-                                                      ])}',
+                                                  widget
+                                                      .getAcceptBookingdata!
+                                                      .bookingProducts
+                                                      .first
+                                                      .deliveryDate
+                                                      .toString(),
+                                                  //   "n n", // '${formatDate(DateTime.parse(widget.getAcceptBookingdata!.bookingProducts.first.deliveryDate.toString()), [
+                                                  //       dd,
+                                                  //       '-',
+                                                  //       mm,
+                                                  //       '-',
+                                                  //       yyyy
+                                                  //     ])}',
+
                                                   style: primaryfont.copyWith(
                                                       fontWeight:
                                                           FontWeight.w600,

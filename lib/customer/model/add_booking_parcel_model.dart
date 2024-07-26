@@ -91,6 +91,9 @@ class BookingAddress {
   String deliveryStatus;
   String deliveryTimeFrom;
   String deliveryTimeTo;
+  List<String> reciverName;
+  List<String> reciverMobile;
+  String reciverUnitIdBlockId;
 
   BookingAddress({
     required this.customerName,
@@ -103,6 +106,9 @@ class BookingAddress {
     required this.deliveryStatus,
     required this.deliveryTimeFrom,
     required this.deliveryTimeTo,
+    required this.reciverMobile,
+    required this.reciverName,
+    required this.reciverUnitIdBlockId,
   });
 }
 

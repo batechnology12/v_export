@@ -60,20 +60,22 @@ class GetCompletedOrdersModelData {
   DateTime bookingDate;
   String pickupOtp;
   String deliveryOtp;
-  BookingType? bookingType;
+  BookingType bookingType;
   String deliveryTypeId;
-  PaymentMode paymentMode;
+  String paymentMode;
   String bookingAmount;
   String isRoundTrip;
   String? parcelPhoto;
   String gst;
   String additionalTotal;
   String totalAmount;
-  String? additionalServicesId;
+  String additionalServicesId;
   String notes;
   String isConfirmed;
   String isPickuped;
   String bookingStatus;
+  String? senderUnitnoBlockno;
+  String? pickupAddreess;
   String latitude;
   String longitude;
   String distance;
@@ -87,7 +89,7 @@ class GetCompletedOrdersModelData {
   Driver? driver;
   List<dynamic> vehicleDetails;
   dynamic additionalService;
-  List<FromAddress> fromAddress;
+  List<dynamic> fromAddress;
   List<BookingDeliveryAddress> bookingDeliveryAddresses;
   DeliveryType deliveryType;
 
@@ -114,6 +116,8 @@ class GetCompletedOrdersModelData {
     required this.isConfirmed,
     required this.isPickuped,
     required this.bookingStatus,
+    required this.senderUnitnoBlockno,
+    required this.pickupAddreess,
     required this.latitude,
     required this.longitude,
     required this.distance,
@@ -143,7 +147,7 @@ class GetCompletedOrdersModelData {
         deliveryOtp: json["delivery_otp"],
         bookingType: bookingTypeValues.map[json["booking_type"]]!,
         deliveryTypeId: json["delivery_type_id"],
-        paymentMode: paymentModeValues.map[json["payment_mode"]]!,
+        paymentMode: json["payment_mode"],
         bookingAmount: json["booking_amount"],
         isRoundTrip: json["is_round_trip"],
         parcelPhoto: json["parcel_photo"],
@@ -155,6 +159,8 @@ class GetCompletedOrdersModelData {
         isConfirmed: json["is_confirmed"],
         isPickuped: json["is_pickuped"],
         bookingStatus: json["booking_status"],
+        senderUnitnoBlockno: json["sender_unitno_blockno"],
+        pickupAddreess: json["pickup_addreess"],
         latitude: json["latitude"],
         longitude: json["longitude"],
         distance: json["distance"],
@@ -172,8 +178,7 @@ class GetCompletedOrdersModelData {
         vehicleDetails:
             List<dynamic>.from(json["vehicle_details"].map((x) => x)),
         additionalService: json["additional_service"],
-        fromAddress: List<FromAddress>.from(
-            json["from_address"].map((x) => FromAddress.fromJson(x))),
+        fromAddress: List<dynamic>.from(json["from_address"].map((x) => x)),
         bookingDeliveryAddresses: List<BookingDeliveryAddress>.from(
             json["booking_delivery_addresses"]
                 .map((x) => BookingDeliveryAddress.fromJson(x))),
@@ -192,7 +197,7 @@ class GetCompletedOrdersModelData {
         "delivery_otp": deliveryOtp,
         "booking_type": bookingTypeValues.reverse[bookingType],
         "delivery_type_id": deliveryTypeId,
-        "payment_mode": paymentModeValues.reverse[paymentMode],
+        "payment_mode": paymentMode,
         "booking_amount": bookingAmount,
         "is_round_trip": isRoundTrip,
         "parcel_photo": parcelPhoto,
@@ -204,6 +209,8 @@ class GetCompletedOrdersModelData {
         "is_confirmed": isConfirmed,
         "is_pickuped": isPickuped,
         "booking_status": bookingStatus,
+        "sender_unitno_blockno": senderUnitnoBlockno,
+        "pickup_addreess": pickupAddreess,
         "latitude": latitude,
         "longitude": longitude,
         "distance": distance,
@@ -218,7 +225,7 @@ class GetCompletedOrdersModelData {
         "driver": driver?.toJson(),
         "vehicle_details": List<dynamic>.from(vehicleDetails.map((x) => x)),
         "additional_service": additionalService,
-        "from_address": List<dynamic>.from(fromAddress.map((x) => x.toJson())),
+        "from_address": List<dynamic>.from(fromAddress.map((x) => x)),
         "booking_delivery_addresses":
             List<dynamic>.from(bookingDeliveryAddresses.map((x) => x.toJson())),
         "delivery_type": deliveryType.toJson(),
@@ -228,10 +235,12 @@ class GetCompletedOrdersModelData {
 class BookingDeliveryAddress {
   int id;
   String bookingId;
-  CustomerName customerName;
+  String customerName;
   String customerMobile;
-  String unitnoBlockno;
-  BookingDeliveryAddressAddress address;
+  String reciverName;
+  String reciverMobile;
+  String? unitnoBlockno;
+  String address;
   String postalcode;
   String latitude;
   String longitude;
@@ -244,6 +253,8 @@ class BookingDeliveryAddress {
     required this.bookingId,
     required this.customerName,
     required this.customerMobile,
+    required this.reciverName,
+    required this.reciverMobile,
     required this.unitnoBlockno,
     required this.address,
     required this.postalcode,
@@ -258,10 +269,12 @@ class BookingDeliveryAddress {
       BookingDeliveryAddress(
         id: json["id"],
         bookingId: json["booking_id"],
-        customerName: customerNameValues.map[json["customer_name"]]!,
+        customerName: json["customer_name"],
         customerMobile: json["customer_mobile"],
+        reciverName: json["reciver_name"],
+        reciverMobile: json["reciver_mobile"],
         unitnoBlockno: json["unitno_blockno"],
-        address: bookingDeliveryAddressAddressValues.map[json["address"]]!,
+        address: json["address"],
         postalcode: json["postalcode"],
         latitude: json["latitude"],
         longitude: json["longitude"],
@@ -273,10 +286,12 @@ class BookingDeliveryAddress {
   Map<String, dynamic> toJson() => {
         "id": id,
         "booking_id": bookingId,
-        "customer_name": customerNameValues.reverse[customerName],
+        "customer_name": customerName,
         "customer_mobile": customerMobile,
+        "reciver_name": reciverName,
+        "reciver_mobile": reciverMobile,
         "unitno_blockno": unitnoBlockno,
-        "address": bookingDeliveryAddressAddressValues.reverse[address],
+        "address": address,
         "postalcode": postalcode,
         "latitude": latitude,
         "longitude": longitude,
@@ -286,31 +301,11 @@ class BookingDeliveryAddress {
       };
 }
 
-enum BookingDeliveryAddressAddress {
-  NO_263_KCC_STREET,
-  THE_123_MAIN_STREET,
-  THE_456_ANOTHER_STREET
-}
-
-final bookingDeliveryAddressAddressValues = EnumValues({
-  "NO.263,KCC STREET": BookingDeliveryAddressAddress.NO_263_KCC_STREET,
-  "123 Main Street": BookingDeliveryAddressAddress.THE_123_MAIN_STREET,
-  "456 Another Street": BookingDeliveryAddressAddress.THE_456_ANOTHER_STREET
-});
-
-enum CustomerName { JANE_SMITH, JAY, JOHN_DOE }
-
-final customerNameValues = EnumValues({
-  "Jane Smith": CustomerName.JANE_SMITH,
-  "jay": CustomerName.JAY,
-  "John Doe": CustomerName.JOHN_DOE
-});
-
 class BookingProduct {
   int id;
   String bookingId;
   String bookingProductId;
-  String? parcelItems;
+  String parcelItems;
   String parcelSize;
   dynamic productPicture;
   String length;
@@ -320,7 +315,7 @@ class BookingProduct {
   String kg;
   String pickuptimeFrom;
   String pickuptimeTo;
-  String deliveryDate;
+  DeliveryDate deliveryDate;
   String deliverytimeFrom;
   String deliverytimeTo;
   DateTime createdAt;
@@ -361,7 +356,7 @@ class BookingProduct {
         kg: json["kg"],
         pickuptimeFrom: json["pickuptime_from"],
         pickuptimeTo: json["pickuptime_to"],
-        deliveryDate: json["delivery_date"],
+        deliveryDate: deliveryDateValues.map[json["delivery_date"]]!,
         deliverytimeFrom: json["deliverytime_from"],
         deliverytimeTo: json["deliverytime_to"],
         createdAt: DateTime.parse(json["created_at"]),
@@ -382,7 +377,7 @@ class BookingProduct {
         "kg": kg,
         "pickuptime_from": pickuptimeFrom,
         "pickuptime_to": pickuptimeTo,
-        "delivery_date": deliveryDate,
+        "delivery_date": deliveryDateValues.reverse[deliveryDate],
         "deliverytime_from": deliverytimeFrom,
         "deliverytime_to": deliverytimeTo,
         "created_at": createdAt.toIso8601String(),
@@ -390,9 +385,17 @@ class BookingProduct {
       };
 }
 
-enum BookingType { PARCEL }
+enum DeliveryDate { THE_23072024, THE_25062024 }
 
-final bookingTypeValues = EnumValues({"parcel": BookingType.PARCEL});
+final deliveryDateValues = EnumValues({
+  "23-07-2024": DeliveryDate.THE_23072024,
+  "25-06-2024": DeliveryDate.THE_25062024
+});
+
+enum BookingType { PARCEL, VEHICLE }
+
+final bookingTypeValues =
+    EnumValues({"parcel": BookingType.PARCEL, "vehicle": BookingType.VEHICLE});
 
 class DeliveryType {
   int id;
@@ -466,11 +469,11 @@ final descriptionValues = EnumValues({
       Description.STANDARD_DELIVERY_WITHIN_THE_CITY
 });
 
-enum Name { EXPRESS_DELIVERY, STANDARD_DELIVERY }
+enum Name { EXPRESS_DELIVERY, THE_4_HOURS_DELIVERY }
 
 final nameValues = EnumValues({
   "Express Delivery": Name.EXPRESS_DELIVERY,
-  "Standard Delivery": Name.STANDARD_DELIVERY
+  "4 Hours Delivery": Name.THE_4_HOURS_DELIVERY
 });
 
 class Driver {
@@ -480,22 +483,23 @@ class Driver {
   String email;
   dynamic companyId;
   String phone;
-  String? latitude;
-  String? longitude;
+  String latitude;
+  String longitude;
   dynamic contactPersonName;
   dynamic industryNoOfDeliveryInMonth;
-  String otp;
+  dynamic otp;
   dynamic uenNumber;
   dynamic aecraFile;
-  String? nricPicture;
-  String? bankName;
-  String? accountNumber;
-  String? ifsCode;
-  String? bankProof;
-  String? emergencyContactName;
-  String? emergencyContactNumber;
-  String? relationship;
-  dynamic referralCode;
+  dynamic nricPicture;
+  dynamic bankName;
+  dynamic accountNumber;
+  dynamic ifsCode;
+  dynamic bankProof;
+  dynamic emergencyContactName;
+  dynamic emergencyContactNumber;
+  dynamic relationship;
+  String referralCode;
+  dynamic referredBy;
   dynamic securityToken;
   dynamic cssNo;
   dynamic branch;
@@ -546,6 +550,7 @@ class Driver {
     required this.emergencyContactNumber,
     required this.relationship,
     required this.referralCode,
+    required this.referredBy,
     required this.securityToken,
     required this.cssNo,
     required this.branch,
@@ -597,6 +602,7 @@ class Driver {
         emergencyContactNumber: json["emergency_contact_number"],
         relationship: json["relationship"],
         referralCode: json["referral_code"],
+        referredBy: json["referred_by"],
         securityToken: json["security_token"],
         cssNo: json["css_no"],
         branch: json["branch"],
@@ -648,6 +654,7 @@ class Driver {
         "emergency_contact_number": emergencyContactNumber,
         "relationship": relationship,
         "referral_code": referralCode,
+        "referred_by": referredBy,
         "security_token": securityToken,
         "css_no": cssNo,
         "branch": branch,
@@ -772,139 +779,6 @@ class Media {
         "preview_url": previewUrl,
       };
 }
-
-class FromAddress {
-  int id;
-  String userId;
-  Street street;
-  City city;
-  State state;
-  String zip;
-  Country country;
-  Type type;
-  UnitNo unitNo;
-  BlockNo blockNo;
-  FromAddressAddress address;
-  Landmark landmark;
-  String pincode;
-  CustomerName contactPerson;
-  String contactNumber;
-  String latitude;
-  String longitude;
-  DateTime createdAt;
-  DateTime updatedAt;
-
-  FromAddress({
-    required this.id,
-    required this.userId,
-    required this.street,
-    required this.city,
-    required this.state,
-    required this.zip,
-    required this.country,
-    required this.type,
-    required this.unitNo,
-    required this.blockNo,
-    required this.address,
-    required this.landmark,
-    required this.pincode,
-    required this.contactPerson,
-    required this.contactNumber,
-    required this.latitude,
-    required this.longitude,
-    required this.createdAt,
-    required this.updatedAt,
-  });
-
-  factory FromAddress.fromJson(Map<String, dynamic> json) => FromAddress(
-        id: json["id"],
-        userId: json["user_id"],
-        street: streetValues.map[json["street"]]!,
-        city: cityValues.map[json["city"]]!,
-        state: stateValues.map[json["state"]]!,
-        zip: json["zip"],
-        country: countryValues.map[json["country"]]!,
-        type: typeValues.map[json["type"]]!,
-        unitNo: unitNoValues.map[json["unit_no"]]!,
-        blockNo: blockNoValues.map[json["block_no"]]!,
-        address: fromAddressAddressValues.map[json["address"]]!,
-        landmark: landmarkValues.map[json["landmark"]]!,
-        pincode: json["pincode"],
-        contactPerson: customerNameValues.map[json["contact_person"]]!,
-        contactNumber: json["contact_number"],
-        latitude: json["latitude"],
-        longitude: json["longitude"],
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "user_id": userId,
-        "street": streetValues.reverse[street],
-        "city": cityValues.reverse[city],
-        "state": stateValues.reverse[state],
-        "zip": zip,
-        "country": countryValues.reverse[country],
-        "type": typeValues.reverse[type],
-        "unit_no": unitNoValues.reverse[unitNo],
-        "block_no": blockNoValues.reverse[blockNo],
-        "address": fromAddressAddressValues.reverse[address],
-        "landmark": landmarkValues.reverse[landmark],
-        "pincode": pincode,
-        "contact_person": customerNameValues.reverse[contactPerson],
-        "contact_number": contactNumber,
-        "latitude": latitude,
-        "longitude": longitude,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
-      };
-}
-
-enum FromAddressAddress { THE_123_MAIN_ST_APT_1_A_BLOCK_B1 }
-
-final fromAddressAddressValues = EnumValues({
-  "123 Main St, Apt 1A, Block B1":
-      FromAddressAddress.THE_123_MAIN_ST_APT_1_A_BLOCK_B1
-});
-
-enum BlockNo { B1 }
-
-final blockNoValues = EnumValues({"B1": BlockNo.B1});
-
-enum City { ANYTOWN }
-
-final cityValues = EnumValues({"Anytown": City.ANYTOWN});
-
-enum Country { COUNTRY }
-
-final countryValues = EnumValues({"Country": Country.COUNTRY});
-
-enum Landmark { NEAR_CENTRAL_PARK }
-
-final landmarkValues =
-    EnumValues({"Near Central Park": Landmark.NEAR_CENTRAL_PARK});
-
-enum State { ANYSTATE }
-
-final stateValues = EnumValues({"Anystate": State.ANYSTATE});
-
-enum Street { THE_123_MAIN_ST }
-
-final streetValues = EnumValues({"123 Main St": Street.THE_123_MAIN_ST});
-
-enum Type { HOME }
-
-final typeValues = EnumValues({"Home": Type.HOME});
-
-enum UnitNo { THE_1_A }
-
-final unitNoValues = EnumValues({"1A": UnitNo.THE_1_A});
-
-enum PaymentMode { PAYTM, UPI }
-
-final paymentModeValues =
-    EnumValues({"paytm": PaymentMode.PAYTM, "UPI": PaymentMode.UPI});
 
 class EnumValues<T> {
   Map<String, T> map;

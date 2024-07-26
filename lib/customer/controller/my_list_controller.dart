@@ -26,13 +26,13 @@ class MyListController extends GetxController {
       GetOngoingOrdersModel getOngoingOrdersModel =
           GetOngoingOrdersModel.fromJson(response.data);
       getOngoingOrdersModelData = getOngoingOrdersModel.data.orders;
-      Get.rawSnackbar(
-        backgroundColor: Colors.green,
-        messageText: Text(
-          response.data['message'],
-          style: TextStyle(color: Colors.white, fontSize: 15.sp),
-        ),
-      );
+      // Get.rawSnackbar(
+      //   backgroundColor: Colors.green,
+      //   messageText: Text(
+      //     response.data['message'],
+      //     style: TextStyle(color: Colors.white, fontSize: 15.sp),
+      //   ),
+      // );
       update();
     } else {
       Get.rawSnackbar(
@@ -47,25 +47,25 @@ class MyListController extends GetxController {
 
   GetCompletedOrderApiServices getCompletedOrderApiServices =
       GetCompletedOrderApiServices();
- 
 
   List<GetCompletedOrdersModelData> getCompletedOrdersModelData = [];
   RxBool getCompletedOrdersLoading = false.obs;
   getCompletedOrdersUser(String completedOrder) async {
     getCompletedOrdersLoading(true);
-    dio.Response response = await getCompletedOrderApiServices.getCompletedUser(completedOrder);
+    dio.Response response =
+        await getCompletedOrderApiServices.getCompletedUser(completedOrder);
     getCompletedOrdersLoading(false);
     if (response.data["status"] == true) {
       GetCompletedOrdersModel getCompletedOrdersModel =
           GetCompletedOrdersModel.fromJson(response.data);
       getCompletedOrdersModelData = getCompletedOrdersModel.data.orders;
-      Get.rawSnackbar(
-        backgroundColor: Colors.green,
-        messageText: Text(
-          response.data['message'],
-          style: TextStyle(color: Colors.white, fontSize: 15.sp),
-        ),
-      );
+      // Get.rawSnackbar(
+      //   backgroundColor: Colors.green,
+      //   messageText: Text(
+      //     response.data['message'],
+      //     style: TextStyle(color: Colors.white, fontSize: 15.sp),
+      //   ),
+      // );
     } else {
       Get.rawSnackbar(
         backgroundColor: Colors.red,
@@ -91,13 +91,13 @@ class MyListController extends GetxController {
       GetCancelledOrdersModel getCancelledOrdersModel =
           GetCancelledOrdersModel.fromJson(response.data);
       getCancelledOrdersModelData = getCancelledOrdersModel.data.orders;
-      Get.rawSnackbar(
-        backgroundColor: Colors.green,
-        messageText: Text(
-          response.data['message'],
-          style: TextStyle(color: Colors.white, fontSize: 15.sp),
-        ),
-      );
+      // Get.rawSnackbar(
+      //   backgroundColor: Colors.green,
+      //   messageText: Text(
+      //     response.data['message'],
+      //     style: TextStyle(color: Colors.white, fontSize: 15.sp),
+      //   ),
+      // );
     } else {
       Get.rawSnackbar(
         backgroundColor: Colors.red,

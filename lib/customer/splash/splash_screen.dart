@@ -50,7 +50,7 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Center(
         child: Container(
           child: SvgPicture.asset(
-            'assets/icons/VEELGO.svg',
+            'assets/images/newlogo.svg',
           ),
         ),
       ),

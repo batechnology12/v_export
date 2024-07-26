@@ -1,3 +1,5 @@
+// import 'dart:html';
+
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -19,7 +21,7 @@ class PackageSendScreen extends StatefulWidget {
   String pickupAdress;
   String lat;
   String long;
-  List unitIdBlockID;
+  List<String> unitIdBlockID;
   String sendername;
   // String receivername;
   String mobilenumber;
@@ -49,10 +51,6 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await parcelController.getDeliveryTypes();
       await parcelController.getAdditionalServices();
-      // if (parcelController.deliveryTypesData.isNotEmpty) {
-      //   deliveryItems = parcelController.deliveryTypesData[0];
-      //   deliveryId = deliveryItems?.id;
-      // }
       parcelController.update();
       setState(() {});
     });
@@ -103,14 +101,62 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
   TimeOfDay? pickTime;
   TimeOfDay? dropTime;
 
+  // void _selectpickTime(BuildContext context) async {
+  //   final TimeOfDay? picked = await showTimePicker(
+  //     context: context,
+  //     initialTime: pickTime ?? TimeOfDay.now(),
+  //   );
+  //   if (picked != null && picked != pickTime) {
+
+  //     setState(() {
+  //       pickTime = picked;
+  //       _updateDropTime();
+  //     });
+  //   }
+  // }
+
+  bool isCheckedParcel = false;
+
   void _selectpickTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: pickTime ?? TimeOfDay.now(),
     );
-    if (picked != null && picked != pickTime) {
+
+    if (picked != null) {
+      // Adjust for AM/PM switch if necessary
+      final now = DateTime.now();
+      final pickedDateTime = DateTime(
+        now.year,
+        now.month,
+        now.day,
+        picked.hour,
+        picked.minute,
+      );
+
+      if (pickTime != null) {
+        final previousDateTime = DateTime(
+          now.year,
+          now.month,
+          now.day,
+          pickTime!.hour,
+          pickTime!.minute,
+        );
+
+        // Check if we crossed noon or midnight
+        if (previousDateTime.hour < 12 && pickedDateTime.hour >= 12) {
+          // AM to PM
+          pickedDateTime.add(const Duration(hours: 12));
+        } else if (previousDateTime.hour >= 12 && pickedDateTime.hour < 12) {
+          // PM to AM
+          pickedDateTime.subtract(const Duration(hours: 12));
+        }
+      }
+
       setState(() {
-        pickTime = picked;
+        pickTime = TimeOfDay.fromDateTime(pickedDateTime);
+        // _updateDropTime();
+        //  pickTime = picked;
         _updateDropTime();
       });
     }
@@ -128,24 +174,26 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
     }
   }
 
-String _formatTime(TimeOfDay time) {
-    String hour = time.hour.toString().padLeft(2, '0');
-    String minute = time.minute.toString().padLeft(2, '0');
+// String _formatTime(TimeOfDay time) {
+//     String hour = time.hour.toString().padLeft(2, '0');
+//     String minute = time.minute.toString().padLeft(2, '0');
 
-    return '$hour:$minute';
+//     return '$hour:$minute';
+//   }
+
+  String _formatTime(TimeOfDay time) {
+    final now = DateTime.now();
+    final formattedTime = DateFormat('h:mma')
+        .format(DateTime(
+          now.year,
+          now.month,
+          now.day,
+          time.hour,
+          time.minute,
+        ))
+        .toLowerCase();
+    return formattedTime;
   }
-
-  // String _formatTime(TimeOfDay time) {
-  //   final now = DateTime.now();
-  //   final formattedTime = DateFormat('h:mm a').format(DateTime(
-  //     now.year,
-  //     now.month,
-  //     now.day,
-  //     time.hour,
-  //     time.minute,
-  //   ));
-  //   return formattedTime;
-  // }
 
   TimeOfDay _addMinutes(TimeOfDay pickerTime, int minutes) {
     final now = DateTime.now();
@@ -161,8 +209,13 @@ String _formatTime(TimeOfDay time) {
       _updatedTime = _addMinutes(pickTime!, 60);
       dropTime = _updatedTime;
     } else if (deliveryItems?.name == "4 Hours Delivery") {
-      updatedroptime2 = _addMinutes(pickTime!, 240);
+      updatedroptime2 = _addMinutes(pickTime!, 120);
       dropTime = updatedroptime2;
+    } else if (deliveryItems?.name == "Same day delivery" ||
+        deliveryItems?.name == "Next day delivery") {
+      dropTime = null;
+      pickTime = _addMinutes(pickTime!, 0);
+      ;
     } else {
       dropTime = pickTime;
     }
@@ -428,26 +481,6 @@ String _formatTime(TimeOfDay time) {
                                             ),
                                           ),
                                         ),
-                                        // Row(
-                                        //   mainAxisAlignment:
-                                        //       MainAxisAlignment.end,
-                                        //   children: [
-                                        //     IconButton(
-                                        //         onPressed: () {
-                                        //           setState(() {
-                                        //             homeController
-                                        //                 .removeEntry(index);
-                                        //             homeController
-                                        //                 .removeParcelList(
-                                        //                     index);
-                                        //           });
-                                        //         },
-                                        //         icon: const Icon(
-                                        //           Icons.delete,
-                                        //           color: Colors.red,
-                                        //         ))
-                                        //   ],
-                                        // ),
                                         Padding(
                                           padding: const EdgeInsets.only(
                                             right: 10,
@@ -534,13 +567,15 @@ String _formatTime(TimeOfDay time) {
                                                                 setState(() {
                                                                   homeController
                                                                       .addEntry();
+                                                                  homeController
+                                                                      .addParcelList();
                                                                 });
                                                               },
                                                               child: Icon(
                                                                 Icons.add,
-                                                                color: Color(
+                                                                color: const Color(
                                                                     0xff0072E8),
-                                                                size: 19.sp,
+                                                                size: 17.sp,
                                                               ),
                                                             ),
                                                             GestureDetector(
@@ -550,6 +585,8 @@ String _formatTime(TimeOfDay time) {
                                                                       .addEntry();
                                                                   homeController
                                                                       .addParcelList();
+                                                                  isCheckedParcel =
+                                                                      true;
                                                                 });
                                                               },
                                                               child: Text(
@@ -557,7 +594,7 @@ String _formatTime(TimeOfDay time) {
                                                                 style: primaryfont
                                                                     .copyWith(
                                                                   fontSize:
-                                                                      17.sp,
+                                                                      15.sp,
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w500,
@@ -751,16 +788,6 @@ String _formatTime(TimeOfDay time) {
                                           deliveryId = newValue?.id;
                                           pickTime = TimeOfDay.now();
                                           _updateDropTime();
-                                          // if (deliveryItems?.name ==
-                                          //     "Express Delivery") {
-                                          //   _updatedTime =
-                                          //       _addMinutes(pickTime!, 60);
-
-                                          // } else if (deliveryItems?.name ==
-                                          //     "4 Hours Delivery") {
-                                          //   updatedroptime2 =
-                                          //       _addMinutes(pickTime!, 240);
-                                          // }
                                         });
                                       },
                                     ),
@@ -793,112 +820,340 @@ String _formatTime(TimeOfDay time) {
                                   AnimatedContainer(
                                     duration: Duration(microseconds: 300),
                                     padding: EdgeInsets.only(top: 5),
-                                    //  height: 100.h * homeController.addParcels.length,
                                     child: ListView.builder(
-                                        padding: EdgeInsets.zero,
-                                        shrinkWrap: true,
-                                        physics: NeverScrollableScrollPhysics(),
-                                        itemCount:
-                                            homeController.addParcels.length,
-                                        itemBuilder: (context, index) {
-                                          return Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              index == 1
-                                                  ? Text(
-                                                      "${index + 1}nd Location",
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                              color: AppColors
-                                                                  .kblue),
-                                                    )
-                                                  : index == 2
-                                                      ? Text(
-                                                          "${index + 1}rd Location",
-                                                          style: primaryfont
-                                                              .copyWith(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600,
-                                                                  color: AppColors
-                                                                      .kblue),
-                                                        )
-                                                      : index == 3
-                                                          ? Text(
-                                                              "${index + 1}th Location",
-                                                              style: primaryfont.copyWith(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600,
-                                                                  color: AppColors
-                                                                      .kblue),
-                                                            )
-                                                          : index == 4
-                                                              ? Text(
-                                                                  "${index + 1}th Location",
-                                                                  style: primaryfont.copyWith(
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w600,
-                                                                      color: AppColors
-                                                                          .kblue),
-                                                                )
-                                                              : index >= 5
-                                                                  ? Text(
-                                                                      "${index + 1}th Location",
-                                                                      style: primaryfont.copyWith(
-                                                                          fontWeight: FontWeight
-                                                                              .w600,
-                                                                          color:
-                                                                              AppColors.kblue),
-                                                                    )
-                                                                  : Container(),
-                                              ksizedbox5,
-                                              Padding(
-                                                padding:
-                                                    EdgeInsets.only(bottom: 10),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    _buildTextField(
-                                                        parcellengthController,
-                                                        'L',
-                                                        "L"),
-                                                    Text("X"),
-                                                    _buildTextField(
-                                                        parcelwidthController,
-                                                        'W',
-                                                        "W"),
-                                                    Text("X"),
-                                                    _buildTextField(
-                                                        parcelheightController,
-                                                        'H',
-                                                        "H"),
-                                                    _buildTextField(
-                                                        parcelkgController,
-                                                        'Kg',
-                                                        "Kg"),
-                                                    _buildTextField(
-                                                        quantityController,
-                                                        'Qty',
-                                                        "Qty"),
-                                                  ],
-                                                ),
+                                      padding: EdgeInsets.zero,
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      itemCount:
+                                          homeController.addParcels.length,
+                                      itemBuilder: (context, index) {
+                                        return Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            ksizedbox5,
+                                            Padding(
+                                              padding:
+                                                  EdgeInsets.only(bottom: 10),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  _buildTextField(
+                                                      parcellengthController,
+                                                      'L',
+                                                      "L"),
+                                                  Text("X"),
+                                                  _buildTextField(
+                                                      parcelwidthController,
+                                                      'W',
+                                                      "W"),
+                                                  Text("X"),
+                                                  _buildTextField(
+                                                      parcelheightController,
+                                                      'H',
+                                                      "H"),
+                                                  _buildTextField(
+                                                      parcelkgController,
+                                                      'Kg',
+                                                      "Kg"),
+                                                  _buildTextField(
+                                                      quantityController,
+                                                      'Qty',
+                                                      "Qty"),
+                                                ],
                                               ),
-                                              ksizedbox5,
-                                            ],
-                                          );
-                                        }),
+                                            ),
+                                            ksizedbox5,
+                                            // homeController.addParcels.length -
+                                            //             1 ==
+                                            //         index
+                                            //     ? Row(
+                                            //         mainAxisAlignment:
+                                            //             MainAxisAlignment.end,
+                                            //         children: [
+                                            //           GestureDetector(
+                                            //             onTap: () {
+                                            //               setState(() {
+                                            //                 homeController
+                                            //                     .addParcelList();
+                                            //               });
+                                            //             },
+                                            //             child: Icon(
+                                            //               Icons.add,
+                                            //               color:
+                                            //                   Color(0xff0072E8),
+                                            //               size: 17.sp,
+                                            //             ),
+                                            //           ),
+                                            //           GestureDetector(
+                                            //             onTap: () {
+                                            //               setState(() {
+                                            //                 homeController
+                                            //                     .toggleYellowContainer();
+                                            //               });
+                                            //             },
+                                            //             child: Text(
+                                            //               'Multi Size Parcel',
+                                            //               style: primaryfont
+                                            //                   .copyWith(
+                                            //                 fontSize: 15.sp,
+                                            //                 fontWeight:
+                                            //                     FontWeight.w500,
+                                            //                 color: const Color(
+                                            //                     0xff0072E8),
+                                            //               ),
+                                            //             ),
+                                            //           ),
+                                            //         ],
+                                            //       )
+                                            //     : Row(
+                                            //         mainAxisAlignment:
+                                            //             MainAxisAlignment.end,
+                                            //         children: [
+                                            //           IconButton(
+                                            //             onPressed: () {
+                                            //               setState(() {
+                                            //                 homeController
+                                            //                     .removeEntry(
+                                            //                         index);
+                                            //                 homeController
+                                            //                     .removeParcelList(
+                                            //                         index);
+                                            //               });
+                                            //             },
+                                            //             icon: const Icon(
+                                            //               Icons.delete,
+                                            //               color: Colors.red,
+                                            //             ),
+                                            //           ),
+                                            //         ],
+                                            //       ),
+                                            // Obx(
+                                            //   () => homeController
+                                            //           .showYellowContainer.value
+                                            //       ? Container(
+                                            //           color: Colors.yellow,
+                                            //           child: ListView.builder(
+                                            //             shrinkWrap: true,
+                                            //             itemCount: 1,
+                                            //             itemBuilder:
+                                            //                 (context, index) {
+                                            //               return Padding(
+                                            //                 padding:
+                                            //                     EdgeInsets.only(
+                                            //                         bottom: 10),
+                                            //                 child: Row(
+                                            //                   mainAxisAlignment:
+                                            //                       MainAxisAlignment
+                                            //                           .spaceBetween,
+                                            //                   children: [
+                                            //                     _buildTextField(
+                                            //                         parcellengthController,
+                                            //                         'L',
+                                            //                         "L"),
+                                            //                     Text("X"),
+                                            //                     _buildTextField(
+                                            //                         parcelwidthController,
+                                            //                         'W',
+                                            //                         "W"),
+                                            //                     Text("X"),
+                                            //                     _buildTextField(
+                                            //                         parcelheightController,
+                                            //                         'H',
+                                            //                         "H"),
+                                            //                     _buildTextField(
+                                            //                         parcelkgController,
+                                            //                         'Kg',
+                                            //                         "Kg"),
+                                            //                     _buildTextField(
+                                            //                         quantityController,
+                                            //                         'Qty',
+                                            //                         "Qty"),
+                                            //                   ],
+                                            //                 ),
+                                            //               );
+                                            //             },
+                                            //           ),
+                                            //         )
+                                            //       : Container(),
+                                            // ),
+                                          ],
+                                        );
+                                      },
+                                    ),
                                   ),
+
+                                  // AnimatedContainer(
+                                  //   duration: Duration(microseconds: 300),
+                                  //   padding: EdgeInsets.only(top: 5),
+                                  //   //  height: 100.h * homeController.addParcels.length,
+                                  //   child: ListView.builder(
+                                  //       padding: EdgeInsets.zero,
+                                  //       shrinkWrap: true,
+                                  //       physics: NeverScrollableScrollPhysics(),
+                                  //       itemCount:
+                                  //           homeController.addParcels.length,
+                                  //       itemBuilder: (context, index) {
+                                  //         return Column(
+                                  //           crossAxisAlignment:
+                                  //               CrossAxisAlignment.start,
+                                  //           mainAxisAlignment:
+                                  //               MainAxisAlignment.start,
+                                  //           mainAxisSize: MainAxisSize.min,
+                                  //           children: [
+                                  //             ksizedbox5,
+                                  //             Padding(
+                                  //               padding:
+                                  //                   EdgeInsets.only(bottom: 10),
+                                  //               child: Row(
+                                  //                 mainAxisAlignment:
+                                  //                     MainAxisAlignment
+                                  //                         .spaceBetween,
+                                  //                 children: [
+                                  //                   _buildTextField(
+                                  //                       parcellengthController,
+                                  //                       'L',
+                                  //                       "L"),
+                                  //                   Text("X"),
+                                  //                   _buildTextField(
+                                  //                       parcelwidthController,
+                                  //                       'W',
+                                  //                       "W"),
+                                  //                   Text("X"),
+                                  //                   _buildTextField(
+                                  //                       parcelheightController,
+                                  //                       'H',
+                                  //                       "H"),
+                                  //                   _buildTextField(
+                                  //                       parcelkgController,
+                                  //                       'Kg',
+                                  //                       "Kg"),
+                                  //                   _buildTextField(
+                                  //                       quantityController,
+                                  //                       'Qty',
+                                  //                       "Qty"),
+                                  //                 ],
+                                  //               ),
+                                  //             ),
+                                  //             ksizedbox5,
+                                  //             homeController.addParcels.length -
+                                  //                         1 ==
+                                  //                     index
+                                  //                 ? Row(
+                                  //                     mainAxisAlignment:
+                                  //                         MainAxisAlignment.end,
+                                  //                     children: [
+                                  //                       GestureDetector(
+                                  //                         onTap: () {
+                                  //                           setState(() {
+                                  //                             // homeController
+                                  //                             //     .addVehicalEntry();
+                                  //                             homeController
+                                  //                                 .addParcelList();
+                                  //                           });
+                                  //                         },
+                                  //                         child: Icon(
+                                  //                           Icons.add,
+                                  //                           color: Color(
+                                  //                               0xff0072E8),
+                                  //                           size: 17.sp,
+                                  //                         ),
+                                  //                       ),
+                                  //                       GestureDetector(
+                                  //                         onTap: () {
+                                  //                           setState(() {
+                                  //                             homeController
+                                  //                                 .addParcelList();
+                                  //                           });
+                                  //                         },
+                                  //                         child: Text(
+                                  //                           'Multi Size Parcel',
+                                  //                           style: primaryfont
+                                  //                               .copyWith(
+                                  //                             fontSize: 15.sp,
+                                  //                             fontWeight:
+                                  //                                 FontWeight
+                                  //                                     .w500,
+                                  //                             color: const Color(
+                                  //                                 0xff0072E8),
+                                  //                           ),
+                                  //                         ),
+                                  //                       ),
+                                  //                     ],
+                                  //                   )
+                                  //                 : Row(
+                                  //                     mainAxisAlignment:
+                                  //                         MainAxisAlignment.end,
+                                  //                     children: [
+                                  //                       IconButton(
+                                  //                           onPressed: () {
+                                  //                             setState(() {
+                                  //                               homeController
+                                  //                                   .removeEntry(
+                                  //                                       index);
+                                  //                               homeController
+                                  //                                   .removeParcelList(
+                                  //                                       index);
+                                  //                             });
+                                  //                           },
+                                  //                           icon: const Icon(
+                                  //                             Icons.delete,
+                                  //                             color: Colors.red,
+                                  //                           ))
+                                  //                     ],
+                                  //                   ),
+                                  //             Container(
+                                  //               color: Colors.yellow,
+                                  //               child: ListView.builder(
+                                  //                   shrinkWrap: true,
+                                  //                   itemCount: 1,
+                                  //                   itemBuilder:
+                                  //                       (context, index) {
+                                  //                     return Padding(
+                                  //                       padding:
+                                  //                           EdgeInsets.only(
+                                  //                               bottom: 10),
+                                  //                       child: Row(
+                                  //                         mainAxisAlignment:
+                                  //                             MainAxisAlignment
+                                  //                                 .spaceBetween,
+                                  //                         children: [
+                                  //                           _buildTextField(
+                                  //                               parcellengthController,
+                                  //                               'L',
+                                  //                               "L"),
+                                  //                           Text("X"),
+                                  //                           _buildTextField(
+                                  //                               parcelwidthController,
+                                  //                               'W',
+                                  //                               "W"),
+                                  //                           Text("X"),
+                                  //                           _buildTextField(
+                                  //                               parcelheightController,
+                                  //                               'H',
+                                  //                               "H"),
+                                  //                           _buildTextField(
+                                  //                               parcelkgController,
+                                  //                               'Kg',
+                                  //                               "Kg"),
+                                  //                           _buildTextField(
+                                  //                               quantityController,
+                                  //                               'Qty',
+                                  //                               "Qty"),
+                                  //                         ],
+                                  //                       ),
+                                  //                     );
+                                  //                   }),
+                                  //             )
+                                  //           ],
+                                  //         );
+                                  //       }),
+                                  // ),
                                   ksizedbox10,
                                   Row(
                                     children: [
@@ -1016,7 +1271,6 @@ String _formatTime(TimeOfDay time) {
                                                 pickTime != null
                                                     ? _formatTime(pickTime!)
                                                     : 'select time',
-                                        
                                                 style: primaryfont.copyWith(
                                                     fontSize: 12.sp,
                                                     fontWeight: FontWeight.w700,
@@ -1154,8 +1408,14 @@ String _formatTime(TimeOfDay time) {
                                     sendername: widget.sendername,
                                     phonenumber: widget.mobilenumber,
                                     droppingaddress: droppingAddressList,
-                                    arpincode: homeController.pincodes,
+                                    arpincode: widget.unitIdBlockID,
                                     doorname: homeController.doornames,
+                                    receivername:
+                                        homeController.receiverNameList,
+                                    receiverphone:
+                                        homeController.receiverNumberList,
+                                    receiverUnitIdBlockId:
+                                        homeController.receiverBlockIdUnitIDs,
                                   ));
                                 } else {
                                   Get.snackbar(
@@ -1186,7 +1446,7 @@ String _formatTime(TimeOfDay time) {
       TextEditingController controller, String hintText, String joinText) {
     return Container(
       height: 35,
-      width: 58,
+      width: 60,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(4),
         border: Border.all(width: 1, color: Colors.grey.withOpacity(0.32)),
@@ -1203,8 +1463,8 @@ String _formatTime(TimeOfDay time) {
         decoration: InputDecoration(
           suffixText: joinText,
           contentPadding:
-              EdgeInsets.only(top: 5, left: 5, bottom: 10, right: 10),
-          // hintText: hintText,
+              EdgeInsets.only(top: 5, left: 5, bottom: 10, right: 5),
+          hintText: hintText,
           hintStyle: TextStyle(
             fontSize: 13.sp,
             fontWeight: FontWeight.w500,

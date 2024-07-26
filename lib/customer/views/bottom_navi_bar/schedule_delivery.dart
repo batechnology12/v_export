@@ -40,6 +40,9 @@ class ScheduleDeliveryScreen extends StatefulWidget {
   String phonenumber;
   List<String> arpincode;
   List<String> doorname;
+  List<String> receivername;
+  List<String> receiverphone;
+  String receiverUnitIdBlockId;
 
   ScheduleDeliveryScreen(
       {super.key,
@@ -65,7 +68,10 @@ class ScheduleDeliveryScreen extends StatefulWidget {
       required this.phonenumber,
       required this.droppingaddress,
       required this.arpincode,
-      required this.doorname});
+      required this.doorname,
+      required this.receivername,
+      required this.receiverphone,
+      required this.receiverUnitIdBlockId});
 
   @override
   State<ScheduleDeliveryScreen> createState() => _ScheduleDeliveryScreenState();
@@ -81,12 +87,207 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
   getData() async {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       parcelController.getAdditionalServices();
+      initializeIsCheckList();
       parcelController.update();
+
       setState(() {});
     });
   }
 
-  int? selectedId;
+  void initializeIsCheckList() {
+    isCheck =
+        List<bool>.filled(parcelController.additionalServiceData.length, false);
+    for (int i = 0; i < parcelController.additionalServiceData.length; i++) {
+      if (selectedId.contains(parcelController.additionalServiceData[i].id)) {
+        isCheck[i] = true;
+      }
+    }
+  }
+
+  List<int> selectedId = [];
+  List<int> savedSelectItem = [];
+  List<bool> isCheck = [];
+
+  void showListViewDialog(BuildContext context) {
+    //  final ParcelController parcelController1 = Get.find<ParcelController>();
+    initializeIsCheckList();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Center(
+              child: Dialog(
+                insetPadding: EdgeInsets.symmetric(horizontal: 25),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                child: Container(
+                  padding: EdgeInsets.all(15.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                'Additional Services',
+                                style: primaryfont.copyWith(
+                                    fontSize: 16.sp,
+                                    color: AppColors.kblue,
+                                    fontWeight: FontWeight.w600),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 2),
+                                child: Image.asset(
+                                  'assets/icons/support_icon.png',
+                                ),
+                              )
+                            ],
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Get.back();
+                            },
+                            child: const Icon(
+                              Icons.cancel_outlined,
+                              color: Colors.red,
+                            ),
+                          ),
+                        ],
+                      ),
+                      ksizedbox15,
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            GetBuilder<ParcelController>(builder: (controller) {
+                              return ListView.builder(
+                                  itemCount:
+                                      controller.additionalServiceData.length,
+                                  shrinkWrap: true,
+                                  itemBuilder: ((context, index) {
+                                    AdditionalServiceData serviceData =
+                                        controller.additionalServiceData[index];
+                                    return Padding(
+                                      padding: const EdgeInsets.all(5.0),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          setState(
+                                            () {
+                                              isCheck[index] = !isCheck[index];
+
+                                              if (isCheck[index] == true) {
+                                                selectedId.add(serviceData.id);
+                                              } else {
+                                                selectedId
+                                                    .remove(serviceData.id);
+                                              }
+                                            },
+                                          );
+                                        },
+                                        child: Container(
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      setState(
+                                                        () {
+                                                          isCheck[index] =
+                                                              !isCheck[index];
+
+                                                          if (isCheck[index] ==
+                                                              true) {
+                                                            selectedId.add(
+                                                                serviceData.id);
+                                                          } else {
+                                                            selectedId.remove(
+                                                                serviceData.id);
+                                                          }
+                                                        },
+                                                      );
+                                                    },
+                                                    child: Container(
+                                                      height: 20.h,
+                                                      width: 20.w,
+                                                      decoration: BoxDecoration(
+                                                          border: Border.all(
+                                                              width: 1,
+                                                              color: AppColors
+                                                                  .kblue),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(5)),
+                                                      child: isCheck[index]
+                                                          ? Image.asset(
+                                                              "assets/icons/7-Check.png")
+                                                          : Text(""),
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 10),
+                                                  Text(
+                                                    controller
+                                                        .additionalServiceData[
+                                                            index]
+                                                        .name,
+                                                    style: primaryfont.copyWith(
+                                                      fontSize: 15.sp,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                      "+\$${controller.additionalServiceData[index].amount}",
+                                                      style:
+                                                          primaryfont.copyWith(
+                                                        fontSize: 15.sp,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                      ))
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }));
+                            }),
+                          ],
+                        ),
+                      ),
+                      TextButton(
+                          onPressed: () {
+                            setState(() {
+                              savedSelectItem = selectedId;
+                            });
+                            Navigator.of(context).pop(savedSelectItem);
+                          },
+                          child: CommonContainer(
+                            name: 'Confirm',
+                          )),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 
   ParcelController parcelController = Get.find<ParcelController>();
   bool ischeck = false;
@@ -136,14 +337,12 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
   //   }
   // }
 
-  TimeOfDay? deliveryFromTime;
-  TimeOfDay? deliveryToTime;
+  TimeOfDay deliveryFromTime = TimeOfDay.now();
+  TimeOfDay deliveryToTime = TimeOfDay.now();
 
   void _selectFromTime(BuildContext context) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: deliveryFromTime ?? TimeOfDay.now(),
-    );
+    final TimeOfDay? picked =
+        await showTimePicker(context: context, initialTime: TimeOfDay.now());
     if (picked != null && picked != deliveryFromTime) {
       setState(() {
         deliveryFromTime = picked;
@@ -151,11 +350,21 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
     }
   }
 
+  // void _selectToTime(BuildContext context) async {
+  //   final TimeOfDay? picked = await showTimePicker(
+  //     context: context,
+  //     initialTime: deliveryToTime ?? TimeOfDay.now(),
+  //   );
+  //   if (picked != null && picked != deliveryToTime) {
+  //     setState(() {
+  //       deliveryToTime = picked;
+  //     });
+  //   }
+  // }
+
   void _selectToTime(BuildContext context) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: deliveryToTime ?? TimeOfDay.now(),
-    );
+    final TimeOfDay? picked =
+        await showTimePicker(context: context, initialTime: TimeOfDay.now());
     if (picked != null && picked != deliveryToTime) {
       setState(() {
         deliveryToTime = picked;
@@ -163,15 +372,25 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
     }
   }
 
+  TimeOfDay _addMinutesToTimeOfDay(TimeOfDay time, int minutesToAdd) {
+    final now = DateTime.now();
+    final currentTime =
+        DateTime(now.year, now.month, now.day, time.hour, time.minute);
+    final newTime = currentTime.add(Duration(minutes: minutesToAdd));
+    return TimeOfDay(hour: newTime.hour, minute: newTime.minute);
+  }
+
   String _formatTime(TimeOfDay time) {
     final now = DateTime.now();
-    final formattedTime = DateFormat('h:mm a').format(DateTime(
-      now.year,
-      now.month,
-      now.day,
-      time.hour,
-      time.minute,
-    ));
+    final formattedTime = DateFormat('h:mma')
+        .format(DateTime(
+          now.year,
+          now.month,
+          now.day,
+          time.hour,
+          time.minute,
+        ))
+        .toLowerCase();
     return formattedTime;
   }
 
@@ -223,9 +442,13 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
   }
 
   var signageItems;
+
   final formKey = GlobalKey<FormState>();
 
   bool isChecked = false;
+
+  // List<int> serviceList = [];
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -311,6 +534,7 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   ksizedbox5,
+                                  ////////////
                                   Text(
                                     'Delivery Details',
                                     style: primaryfont.copyWith(
@@ -397,7 +621,7 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                           _selectFromTime(context);
                                         },
                                         child: Container(
-                                          padding: EdgeInsets.only(left: 5),
+                                          padding: EdgeInsets.only(left: 15),
                                           height: 50.h,
                                           width: 130.w,
                                           decoration: BoxDecoration(
@@ -413,21 +637,26 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
                                               Text(
-                                                deliveryFromTime == null
-                                                    ? 'select time'
-                                                    : '${_formatTime(deliveryFromTime!)}',
+                                                // '${_formatTime(deliveryFromTime)}',
+                                                widget.deliverytype ==
+                                                        1.toString()
+                                                    ? '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime, 120))}'
+                                                    : widget.deliverytype ==
+                                                            2.toString()
+                                                        ? '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime, 60))}'
+                                                        : '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime, 0))}',
                                                 style: primaryfont.copyWith(
                                                     fontSize: 13.sp,
                                                     fontWeight: FontWeight.w700,
                                                     color: Colors.black),
                                               ),
-                                              IconButton(
-                                                  onPressed: () {
-                                                    _selectFromTime(context);
-                                                  },
-                                                  icon: Image.asset(
-                                                      "assets/icons/mylisticon.png",
-                                                      color: Colors.grey))
+                                              // IconButton(
+                                              //     onPressed: () {
+                                              //       _selectFromTime(context);
+                                              //     },
+                                              //     icon: Image.asset(
+                                              //         "assets/icons/mylisticon.png",
+                                              //         color: Colors.grey))
                                             ],
                                           ),
                                         ),
@@ -444,7 +673,7 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                           _selectToTime(context);
                                         },
                                         child: Container(
-                                          padding: EdgeInsets.only(left: 5),
+                                          padding: EdgeInsets.only(left: 15),
                                           height: 50.h,
                                           width: 130.w,
                                           decoration: BoxDecoration(
@@ -460,22 +689,27 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
                                               Text(
-                                                deliveryToTime == null
-                                                    ? 'select time'
-                                                    : '${_formatTime(deliveryToTime!)}',
+                                                //    '${_formatTime(_addMinutesToTimeOfDay(deliveryToTime, 120))}',
+                                                widget.deliverytype ==
+                                                        1.toString()
+                                                    ? '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime, 240))}'
+                                                    : widget.deliverytype ==
+                                                            2.toString()
+                                                        ? '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime, 120))}'
+                                                        : '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime, 0))}',
                                                 style: primaryfont.copyWith(
                                                     fontSize: 13.sp,
                                                     fontWeight: FontWeight.w700,
                                                     color: Color(0xff000000)),
                                               ),
-                                              IconButton(
-                                                  onPressed: () {
-                                                    _selectToTime(context);
-                                                  },
-                                                  icon: Image.asset(
-                                                    "assets/icons/mylisticon.png",
-                                                    color: Colors.grey,
-                                                  ))
+                                              // IconButton(
+                                              //     onPressed: () {
+                                              //       _selectToTime(context);
+                                              //     },
+                                              //     icon: Image.asset(
+                                              //       "assets/icons/mylisticon.png",
+                                              //       color: Colors.grey,
+                                              //     ))
                                             ],
                                           ),
                                         ),
@@ -520,7 +754,9 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                     color: Color(0xff0080FF),
                                     child: InkWell(
                                       onTap: () {
-                                        showPickerDialog(context);
+                                        //  showPickerDialog(context);
+                                        pickImage(ImageSource.camera);
+                                        // Navigator.of(context).pop();
                                       },
                                       child: Container(
                                           height: 100.h,
@@ -535,7 +771,7 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                                             .center,
                                                     children: [
                                                       Text(
-                                                        'Image Picked',
+                                                        'Image Uploaded',
                                                         style: TextStyle(
                                                           fontWeight:
                                                               FontWeight.w500,
@@ -552,24 +788,6 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                                       )
                                                     ],
                                                   )
-                                                // ? Container(
-                                                //     height: 140.h,
-                                                //     width: size.width,
-                                                //     decoration: BoxDecoration(
-                                                //         color: AppColors.kblue),
-                                                //     child: Text("Image Picked"),
-                                                //   )
-                                                // Container(
-                                                //     height: 170.h,
-                                                //     width: size.width,
-                                                //     child: ClipRRect(
-                                                //         borderRadius:
-                                                //             BorderRadius
-                                                //                 .circular(5),
-                                                //         child: Image.file(
-                                                //           image!,
-                                                //           fit: BoxFit.cover,
-                                                //         )))
                                                 : Column(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment
@@ -600,7 +818,7 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                   Row(
                                     children: [
                                       Text(
-                                        'Add deliver note',
+                                        'Add Delivery Notes',
                                         style: primaryfont.copyWith(
                                             fontSize: 15.sp,
                                             fontWeight: FontWeight.w600,
@@ -659,6 +877,8 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                     ),
                                   ),
                                   ksizedbox20,
+
+                                  ///
                                   GestureDetector(
                                     onTap: () {
                                       showListViewDialog(context);
@@ -693,27 +913,9 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                             ),
                           ),
                           ksizedbox20,
-                          // Obx(() {
-                          //   return Container(
-                          //       height: 50.h,
-                          //       width: MediaQuery.of(context).size.width,
-                          //       child: parcelController.addBookingLoading.isTrue
-                          //           ? Container(
-                          //               height: 50.h,
-                          //               width: size.width,
-                          //               decoration: BoxDecoration(
-                          //                   color: Color(0xffF4F8FF),
-                          //                   borderRadius:
-                          //                       BorderRadius.circular(30)),
-                          //               child: Center(
-                          //                   child: CircularProgressIndicator(
-                          //                 color: AppColors.kblue,
-                          //               )),
-                          //             )
-                          //           :
                           GestureDetector(onTap: () {
-                            List<int> selectedServiceId = [];
-                            selectedServiceId.add(selectedId!);
+                            // List<int> selectedServiceId = [];
+                            // selectedServiceId.add(selectedId);
                             List<Product> products = [
                               Product(
                                   parcelItems: widget.parcelItems,
@@ -726,14 +928,16 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                   pickupTimeTo: widget.pickTimeTo!,
                                   deliveryDate: formatDateTime,
                                   deliveryTimeFrom:
-                                      _formatTime(deliveryFromTime!),
-                                  deliveryTimeTo: _formatTime(deliveryToTime!)),
+                                      '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime, 60))}',
+                                  deliveryTimeTo: _formatTime(
+                                      _addMinutesToTimeOfDay(
+                                          deliveryToTime, 120))),
                             ];
 
                             List<BookingAddress> bookingAddress = [
                               BookingAddress(
                                   customerName: widget.sendername,
-                                  customerMobile: widget.sendername,
+                                  customerMobile: widget.phonenumber,
                                   unitNoBlockNo: widget.doorname,
                                   address: widget.droppingaddress,
                                   postalCode: widget.arpincode,
@@ -741,8 +945,14 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                   longitude: widget.droppingLogitude,
                                   deliveryStatus: "0",
                                   deliveryTimeFrom:
-                                      _formatTime(deliveryFromTime!),
-                                  deliveryTimeTo: _formatTime(deliveryToTime!)),
+                                      '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime, 60))}',
+                                  deliveryTimeTo: _formatTime(
+                                      _addMinutesToTimeOfDay(
+                                          deliveryToTime, 120)),
+                                  reciverName: widget.receivername,
+                                  reciverMobile: widget.receiverphone,
+                                  reciverUnitIdBlockId:
+                                      widget.receiverUnitIdBlockId),
                             ];
                             AddBookingParcelModel addBookingParcelModel =
                                 AddBookingParcelModel(
@@ -757,65 +967,37 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                     bookingDate: widget.bookingDate,
                                     pickupTimeFrom: widget.pickTimeFrom!,
                                     pickupTimeTo: widget.pickTimeTo!,
-                                    deliveryDate: formatDateTime,
+                                    deliveryDate: formatDateTime.isEmpty
+                                        ? "Select Date"
+                                        // formatDate(DateTime.now(),
+                                        //     [dd, '-', mm, '-', yyyy])
+                                        : formatDateTime,
                                     deliveryTimeFrom:
-                                        _formatTime(deliveryFromTime!),
-                                    deliveryTimeTo:
-                                        _formatTime(deliveryToTime!),
+                                        '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime, 60))}',
+                                    deliveryTimeTo: _formatTime(
+                                        _addMinutesToTimeOfDay(
+                                            deliveryToTime, 120)),
                                     latitude: widget.pickuplatitude,
                                     longitude: widget.pickuplogitude,
                                     distance: "30",
                                     bookingType: "parcel",
-                                    additionalDetails:
-                                        selectedServiceId, ////selectid
-                                    notes: "",
+                                    additionalDetails: selectedId,
+                                    notes: notesController.text,
                                     products: products,
                                     bookingAddress: bookingAddress,
                                     parcelPhoto: imagePath!);
 
-                            // AddBookingParcelModel(
-                            //     latitude: widget.pickuplatitude,
-                            //     longitude: widget.pickuplogitude,
-                            //     latitudeList: widget.droppingLatitude,
-                            //     logitudeList: widget.droppingLogitude,
-                            //     bookingDate: widget.bookingDate,
-                            //     deliveryTypeid: widget.deliverytype,
-                            //     length: widget.length,
-                            //     width: widget.width,
-                            //     height: widget.height,
-                            //     kg: widget.kg,
-                            //     qty: widget.qty,
-                            //     parcelItem: widget.parcelItems,
-                            //     pickupTimeFrom: widget.pickTimeFrom,
-                            //     pickupTimeTo: widget.pickTimeTo,
-                            //     pickupTimeFromList:
-                            //         widget.pickTimeListFrom,
-                            //     pickupTimeToList: widget.pickTimeListTo,
-                            //     deliveryDate: formatDateTime,
-                            //     deliveryDateList: [formatDateTime],
-                            //     deliveryTimeFrom: pickTimes.toString(),
-                            //     deliveryTimeTo: [dropTimes.toString()],
-                            //     deliveryTimeFromList: [pickTimes],
-                            //     deliveryTimeToList: [dropTimes],
-                            //     parcelPhoto: image,
-                            //     notes: notesController.text,
-                            //     customerName: [widget.sendername],
-                            //     customerMobile: [widget.phonenumber],
-                            //     blockNoUnitNo: [widget.doorname],
-                            //     address: [widget.droppingaddress],
-                            //     postalCode: [widget.arpincode],
-                            //     distance: "30",
-                            //     //     additionalDetails: "Fragile Item",
-                            //     addressDeliveryTimeFromList: [
-                            //       pickTimes.toString()
-                            //     ],
-                            //     addressDeliveryTimeToList: [
-                            //       dropTimes.toString()
-                            //     ],
-                            //     deliveryStatus: ["Pending"],
-                            //     additionalDetails: selectedId);
-                            parcelController
-                                .addBookingParcel(addBookingParcelModel);
+                            if (formatDateTime.isNotEmpty) {
+                              parcelController
+                                  .addBookingParcel(addBookingParcelModel);
+                            } else {
+                              Get.snackbar(
+                                  "Fill all Fileds", "Please try again!",
+                                  colorText: AppColors.kwhite,
+                                  backgroundColor: Colors.red,
+                                  snackPosition: SnackPosition.BOTTOM);
+                            }
+
                             //   Get.to(BookingDetailsScreen());
                           }, child: Obx(() {
                             return parcelController.addBookingLoading.isTrue
@@ -830,9 +1012,9 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                 : CommonContainer(
                                     name: "Booking Review",
                                   );
-                          }))
-                          //               );
-                          // })
+                          }
+                          )
+                          ),
                         ],
                       ),
                     ),
@@ -846,236 +1028,225 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
     );
   }
 
-  void showListViewDialog(BuildContext context) {
-    List<String> list = [
-      "Manpower Service",
-      "Post Invoice (Ex, Stamp)",
-      "Staircase",
-      "OTP Verification",
-      "Fragile Item",
-      "Access restricted area"
-    ];
+  // List<int> selectedId = [];
 
-    final ParcelController parcelController1 = Get.find<ParcelController>();
-    // List<bool> isCheck = [false, false, false, false, false];
-    List<bool> isCheck =
-        List<bool>.filled(parcelController.additionalServiceData.length, false);
+  // void showListViewDialog(BuildContext context) {
+  //   List<String> list = [
+  //     "Manpower Service",
+  //     "Post Invoice (Ex, Stamp)",
+  //     "Staircase",
+  //     "OTP Verification",
+  //     "Fragile Item",
+  //     "Access restricted area"
+  //   ];
 
-    int updateValue = 0;
-    int maxValue = 3;
+  //   final ParcelController parcelController1 = Get.find<ParcelController>();
+  //   List<bool> isCheck = List<bool>.filled(
+  //       parcelController1.additionalServiceData.length, false);
+  //   initializeIsCheckList();
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return StatefulBuilder(
+  //         builder: (BuildContext context, StateSetter setState) {
+  //           return Center(
+  //             child: Dialog(
+  //               insetPadding: EdgeInsets.symmetric(horizontal: 25),
+  //               shape: RoundedRectangleBorder(
+  //                 borderRadius: BorderRadius.circular(20.0),
+  //               ),
+  //               child: Container(
+  //                 padding: EdgeInsets.all(15.0),
+  //                 child: Column(
+  //                   mainAxisSize: MainAxisSize.min,
+  //                   children: [
+  //                     Row(
+  //                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                       children: [
+  //                         Row(
+  //                           children: [
+  //                             Text(
+  //                               'Additional Services',
+  //                               style: primaryfont.copyWith(
+  //                                   fontSize: 16.sp,
+  //                                   color: AppColors.kblue,
+  //                                   fontWeight: FontWeight.w600),
+  //                             ),
+  //                             Padding(
+  //                               padding: const EdgeInsets.only(left: 2),
+  //                               child: Image.asset(
+  //                                 'assets/icons/support_icon.png',
+  //                               ),
+  //                             )
+  //                           ],
+  //                         ),
+  //                         GestureDetector(
+  //                           onTap: () {
+  //                             Get.back();
+  //                           },
+  //                           child: const Icon(
+  //                             Icons.cancel_outlined,
+  //                             color: Colors.red,
+  //                           ),
+  //                         ),
+  //                       ],
+  //                     ),
+  //                     ksizedbox15,
+  //                     Padding(
+  //                       padding: const EdgeInsets.only(bottom: 10),
+  //                       child: Column(
+  //                         mainAxisSize: MainAxisSize.min,
+  //                         children: [
+  //                           GetBuilder<ParcelController>(builder: (controller) {
+  //                             return ListView.builder(
+  //                                 itemCount:
+  //                                     controller.additionalServiceData.length,
+  //                                 shrinkWrap: true,
+  //                                 itemBuilder: ((context, index) {
+  //                                   AdditionalServiceData serviceData =
+  //                                       controller.additionalServiceData[index];
+  //                                   return Padding(
+  //                                     padding: const EdgeInsets.all(5.0),
+  //                                     child: GestureDetector(
+  //                                       onTap: () {
+  //                                         setState(
+  //                                           () {
+  //                                             isCheck[index] = !isCheck[index];
 
-    addValue() {
-      setState(() {
-        if (updateValue < maxValue) {
-          updateValue++;
-        }
-      });
-    }
+  //                                             if (isCheck[index] == true) {
+  //                                               selectedId.add(serviceData.id);
+  //                                             } else {
+  //                                               selectedId
+  //                                                   .remove(serviceData.id);
+  //                                             }
+  //                                           },
+  //                                         );
+  //                                       },
+  //                                       child: Container(
+  //                                         child: Row(
+  //                                           mainAxisAlignment:
+  //                                               MainAxisAlignment.spaceBetween,
+  //                                           children: [
+  //                                             Row(
+  //                                               children: [
+  //                                                 GestureDetector(
+  //                                                   onTap: () {
+  //                                                     setState(
+  //                                                       () {
+  //                                                         isCheck[index] =
+  //                                                             !isCheck[index];
 
-    decrementValue() {
-      setState(() {
-        if (updateValue > 0) {
-          updateValue--;
-        }
-      });
-    }
+  //                                                         if (isCheck[index] ==
+  //                                                             true) {
+  //                                                           selectedId.add(
+  //                                                               serviceData.id);
+  //                                                         } else {
+  //                                                           selectedId.remove(
+  //                                                               serviceData.id);
+  //                                                         }
+  //                                                       },
+  //                                                     );
+  //                                                   },
+  //                                                   child: Container(
+  //                                                     height: 20.h,
+  //                                                     width: 20.w,
+  //                                                     decoration: BoxDecoration(
+  //                                                         border: Border.all(
+  //                                                             width: 1,
+  //                                                             color: AppColors
+  //                                                                 .kblue),
+  //                                                         borderRadius:
+  //                                                             BorderRadius
+  //                                                                 .circular(5)),
+  //                                                     child: isCheck[index]
+  //                                                         ? Image.asset(
+  //                                                             "assets/icons/7-Check.png")
+  //                                                         : Text(""),
+  //                                                   ),
+  //                                                 ),
+  //                                                 SizedBox(width: 10),
+  //                                                 Text(
+  //                                                   controller
+  //                                                       .additionalServiceData[
+  //                                                           index]
+  //                                                       .name,
+  //                                                   style: primaryfont.copyWith(
+  //                                                     fontSize: 15.sp,
+  //                                                     fontWeight:
+  //                                                         FontWeight.w600,
+  //                                                   ),
+  //                                                 ),
+  //                                               ],
+  //                                             ),
+  //                                             Row(
+  //                                               children: [
+  //                                                 Text(
+  //                                                     "+\$${controller.additionalServiceData[index].amount}",
+  //                                                     style:
+  //                                                         primaryfont.copyWith(
+  //                                                       fontSize: 15.sp,
+  //                                                       fontWeight:
+  //                                                           FontWeight.w600,
+  //                                                     ))
+  //                                               ],
+  //                                             ),
+  //                                           ],
+  //                                         ),
+  //                                       ),
+  //                                     ),
+  //                                   );
+  //                                 }));
+  //                           }),
+  //                         ],
+  //                       ),
+  //                     ),
+  //                     TextButton(
+  //                         onPressed: () {
+  //                           setState(() {
+  //                             savedSelectItem = selectedId;
+  //                           });
+  //                           Navigator.of(context).pop(savedSelectItem);
+  //                         },
+  //                         child: CommonContainer(
+  //                           name: 'Confirm',
+  //                         )),
+  //                   ],
+  //                 ),
+  //               ),
+  //             ),
+  //           );
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
 
-    int count = 0;
-    int maxCount = 12;
-
-    addCount() {
-      setState(() {
-        if (count < maxCount) {
-          count++;
-        }
-      });
-    }
-
-    decrementCount() {
-      setState(() {
-        if (count > 0) {
-          count--;
-        }
-      });
-    }
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return Center(
-              child: Dialog(
-                insetPadding: EdgeInsets.symmetric(horizontal: 25),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0),
-                ),
-                child: Container(
-                  padding: EdgeInsets.all(15.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                'Additional Services',
-                                style: primaryfont.copyWith(
-                                    fontSize: 16.sp,
-                                    color: AppColors.kblue,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                              Ksizedboxw10,
-                              Padding(
-                                padding: const EdgeInsets.only(left: 2),
-                                child: Image.asset(
-                                  'assets/icons/support_icon.png',
-                                ),
-                              )
-                            ],
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Get.back();
-                            },
-                            child: const Icon(
-                              Icons.cancel_outlined,
-                              color: Colors.red,
-                            ),
-                          ),
-                        ],
-                      ),
-                      ksizedbox15,
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            GetBuilder<ParcelController>(builder: (controller) {
-                              return ListView.builder(
-                                  itemCount:
-                                      controller.additionalServiceData.length,
-                                  shrinkWrap: true,
-                                  itemBuilder: ((context, index) {
-                                    AdditionalServiceData serviceData =
-                                        controller.additionalServiceData[index];
-                                    return Padding(
-                                      padding: const EdgeInsets.all(5.0),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              GestureDetector(
-                                                onTap: () {
-                                                  setState(
-                                                    () {
-                                                      isCheck[index] =
-                                                          !isCheck[index];
-                                                      selectedId =
-                                                          serviceData.id;
-                                                    },
-                                                  );
-                                                },
-                                                child: Container(
-                                                  height: 20.h,
-                                                  width: 20.w,
-                                                  decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          width: 1,
-                                                          color:
-                                                              AppColors.kblue),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              5)),
-                                                  child: isCheck[index] == true
-                                                      ? Image.asset(
-                                                          "assets/icons/7-Check.png")
-                                                      : Text(""),
-                                                ),
-                                              ),
-                                              Ksizedboxw10,
-                                              Text(
-                                                controller
-                                                    .additionalServiceData[
-                                                        index]
-                                                    .name,
-                                                style: primaryfont.copyWith(
-                                                  fontSize: 15.sp,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                  "+\$${controller.additionalServiceData[index].amount}",
-                                                  style: primaryfont.copyWith(
-                                                    fontSize: 15.sp,
-                                                    fontWeight: FontWeight.w600,
-                                                  ))
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  }));
-                            }),
-                          ],
-                        ),
-                      ),
-                      TextButton(
-                          onPressed: () {
-                            // if (isChecked == true) {
-
-                            // }
-
-                            Navigator.of(context).pop();
-                          },
-                          child: CommonContainer(
-                            name: 'Confirm',
-                          )),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  void showPickerDialog(BuildContext context) {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext bc) {
-          return SafeArea(
-            child: Wrap(
-              children: <Widget>[
-                ListTile(
-                  leading: Icon(Icons.photo_library),
-                  title: Text('Photo Library'),
-                  onTap: () {
-                    pickImage(ImageSource.gallery);
-                    Navigator.of(context).pop();
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.photo_camera),
-                  title: Text('Camera'),
-                  onTap: () {
-                    pickImage(ImageSource.camera);
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            ),
-          );
-        });
-  }
+  // void showPickerDialog(BuildContext context) {
+  //   showModalBottomSheet(
+  //       context: context,
+  //       builder: (BuildContext bc) {
+  //         return SafeArea(
+  //           child: Wrap(
+  //             children: <Widget>[
+  //               // ListTile(
+  //               //   leading: Icon(Icons.photo_library),
+  //               //   title: Text('Photo Library'),
+  //               //   onTap: () {
+  //               //     pickImage(ImageSource.gallery);
+  //               //     Navigator.of(context).pop();
+  //               //   },
+  //               // ),
+  //               ListTile(
+  //                 leading: Icon(Icons.photo_camera),
+  //                 title: Text('Camera'),
+  //                 onTap: () {
+  //                   pickImage(ImageSource.camera);
+  //                   Navigator.of(context).pop();
+  //                 },
+  //               ),
+  //             ],
+  //           ),
+  //         );
+  //       });
+  // }
 }

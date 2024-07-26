@@ -44,7 +44,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   var emailController = TextEditingController();
 
   bool ischecked = false;
-
+  
   bool ishiding = true;
   bool confirmhide = true;
 
@@ -708,7 +708,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         color: Color(0xff7C86A2)),
                                   ),
                                   ksizedbox5,
-                                  TextFormField(
+                                    TextFormField(
                                     keyboardType: TextInputType.phone,
                                     inputFormatters: [
                                       selectedValuess == "+65"
@@ -743,7 +743,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                             child: Container(
                                                 height: 30,
                                                 width: 50,
-                                                child: Text(selectedValues)),
+                                                child: Text(selectedValuess)),
                                             onSelected: (value) {
                                               setState(() {
                                                 selectedIndexes = value;
@@ -800,6 +800,98 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       ),
                                     ),
                                   ),
+                                  // TextFormField(
+                                  //   keyboardType: TextInputType.phone,
+                                  //   inputFormatters: [
+                                  //     selectedValuess == "+65"
+                                  //         ? LengthLimitingTextInputFormatter(8)
+                                  //         : LengthLimitingTextInputFormatter(
+                                  //             10),
+                                  //     FilteringTextInputFormatter.digitsOnly,
+                                  //   ],
+                                  //   validator: selectedValuess == "+65"
+                                  //       ? (value) {
+                                  //           if (value!.length < 8 ||
+                                  //               value.length > 8) {
+                                  //             return 'Mobile number should be in 8 digits';
+                                  //           } else {
+                                  //             return null;
+                                  //           }
+                                  //         }
+                                  //       : (value) {
+                                  //           if (value!.length < 10 ||
+                                  //               value.length > 10) {
+                                  //             return 'Mobile number should be in 10 digits';
+                                  //           } else {
+                                  //             return null;
+                                  //           }
+                                  //         },
+                                  //   controller: businessphoneController,
+                                  //   decoration: InputDecoration(
+                                  //     prefixIcon: Padding(
+                                  //         padding: const EdgeInsets.only(
+                                  //             left: 10, top: 13),
+                                  //         child: PopupMenuButton(
+                                  //           child: Container(
+                                  //               height: 30,
+                                  //               width: 50,
+                                  //               child: Text(selectedValues)),
+                                  //           onSelected: (value) {
+                                  //             setState(() {
+                                  //               selectedIndexes = value;
+                                  //               selectedValuess =
+                                  //                   value == 0 ? "+65" : "+91";
+                                  //             });
+                                  //           },
+                                  //           itemBuilder: (context) => [
+                                  //             PopupMenuItem<int>(
+                                  //               value: 0,
+                                  //               child: Container(
+                                  //                 height: 30,
+                                  //                 width: 50,
+                                  //                 child: Text("+65"),
+                                  //               ),
+                                  //             ),
+                                  //             PopupMenuItem<int>(
+                                  //               value: 1,
+                                  //               child: Container(
+                                  //                 height: 30,
+                                  //                 width: 50,
+                                  //                 child: Text("+91"),
+                                  //               ),
+                                  //             ),
+                                  //           ],
+                                  //         )),
+                                  //     contentPadding:
+                                  //         EdgeInsets.only(bottom: 5, left: 20),
+                                  //     fillColor: Color(0xffF8F8F8),
+                                  //     filled: true,
+                                  //     border: OutlineInputBorder(
+                                  //       borderSide: BorderSide.none,
+                                  //       borderRadius:
+                                  //           BorderRadius.circular(25.0),
+                                  //     ),
+                                  //     enabledBorder: OutlineInputBorder(
+                                  //       borderSide: BorderSide.none,
+                                  //       borderRadius:
+                                  //           BorderRadius.circular(25.0),
+                                  //     ),
+                                  //     errorBorder: OutlineInputBorder(
+                                  //       borderSide: BorderSide.none,
+                                  //       borderRadius: BorderRadius.circular(25),
+                                  //     ),
+                                  //     focusedBorder: OutlineInputBorder(
+                                  //       borderSide: BorderSide.none,
+                                  //       borderRadius:
+                                  //           BorderRadius.circular(25.0),
+                                  //     ),
+                                  //     focusedErrorBorder: OutlineInputBorder(
+                                  //       borderSide: BorderSide.none,
+                                  //       borderRadius:
+                                  //           BorderRadius.circular(25.0),
+                                  //     ),
+                                  //   ),
+                                  // ),
                                   ksizedbox20,
                                   Text(
                                     'Business Email Id * ',

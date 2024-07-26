@@ -12,18 +12,21 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:v_export/constant/common_container.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:v_export/customer/controller/account_controller.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/book_vehicle/book_vehicle_screen.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/package_send_screen.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
 
-class PickupAddressDetails extends StatefulWidget {
+class PickupVehicleAddressDetails extends StatefulWidget {
   @override
-  State<PickupAddressDetails> createState() => _PickupAddressDetailsState();
+  State<PickupVehicleAddressDetails> createState() =>
+      _PickupVehicleAddressDetailsState();
 }
 
-class _PickupAddressDetailsState extends State<PickupAddressDetails> {
+class _PickupVehicleAddressDetailsState
+    extends State<PickupVehicleAddressDetails> {
   AccountController accountController = Get.find<AccountController>();
 
-   GoogleMapController? _controller;
+  GoogleMapController? _controller;
   final Set<Marker> _markers = {};
   loc.LocationData? _currentPosition; // Make _currentPosition nullable
   loc.Location location = loc.Location();
@@ -260,8 +263,8 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                               isLatLngRequired: true,
                               getPlaceDetailWithLatLng:
                                   (Prediction prediction) {
-                                    if (_controller != null) {
-                                       _controller!.animateCamera(
+                                if (_controller != null) {
+                                  _controller!.animateCamera(
                                       CameraUpdate.newCameraPosition(
                                     CameraPosition(
                                       target: LatLng(
@@ -270,8 +273,8 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                                       zoom: 14.0,
                                     ),
                                   ));
-                                    }
-                               
+                                }
+
                                 setState(() {
                                   _markers.add(Marker(
                                     markerId: MarkerId(prediction.placeId!),
@@ -435,20 +438,29 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                               onTap: () {
                                 if (_senderNameController.text.isNotEmpty &&
                                     _phoneNumberController.text.isNotEmpty) {
-                                  // Add check for _currentPosition
-                                  Get.to(PackageSendScreen(
-                                    unitIdBlockID: [_blockUnitController.text],
-                                    pickupAdress: searchController.text,
-                                    lat: _markers.first.position.latitude.toString(),
-                                        // _currentPosition?.latitude.toString() ??
-                                        //     "undefined",
-                                    long: _markers.first.position.latitude.toString(),
-                                    // _currentPosition?.longitude
-                                    //         .toString() ??
-                                    //     "undefined",
-                                    sendername: _senderNameController.text,
-                                    mobilenumber: _phoneNumberController.text,
-                                  ));
+                                  Get.to(BookVehicleScreen(
+                                      vehiclepickupAdress:
+                                          searchController.text,
+                                      vehiclepickuplat: _markers
+                                          .first.position.latitude
+                                          .toString(),
+                                      vehiclepickuplong: _markers
+                                          .first.position.latitude
+                                          .toString(),
+                                      vehiclepickupunitIdBlockID:
+                                          _blockUnitController.text,
+                                      vehiclepickupsendername:
+                                          _senderNameController.text,
+                                      vehicleSenderMobilenumber:
+                                          _phoneNumberController.text,
+                                      vehicleDropAddress: [],
+                                      vehicledroplat: [],
+                                      vehicledroplong: [],
+                                      vehicleDropunitIdBlockId: [],
+                                      vehicleDropreceivername: [],
+                                      vehiclearpincode: [],
+                                      vehicledoorname: [],
+                                      vehicleDropreceiverphone: []));
                                 } else {
                                   Get.snackbar(
                                       "Fill all Fields", "Please try again!",

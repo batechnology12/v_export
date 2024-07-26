@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:carousel_slider/carousel_controller.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,6 +21,7 @@ import 'package:v_export/customer/views/bottom_navi_bar/package_send/booking_suc
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/arrived_destination.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/driver_about_details.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/driver_details_screen.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/payment_screen.dart/make_payment_screen.dart';
 
 import 'customer/controller/easebuzz_controller.dart';
 import 'package:device_preview/device_preview.dart';
@@ -40,6 +42,7 @@ void main() {
   Get.put(EasebuszzController());
   Get.put(ParcelController());
   Get.put(MyListController());
+  Get.put(CarouselController());
 }
 
 class MyApp extends StatelessWidget {

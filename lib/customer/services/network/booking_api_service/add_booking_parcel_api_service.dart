@@ -39,7 +39,8 @@ class AddBookingParcelsApiService extends BaseApiServices {
         "longitude": addBookingParcelModel.longitude,
         "distance": addBookingParcelModel.distance,
         "booking_type": "parcel",
-        "additional_services_id[]": addBookingParcelModel.additionalDetails,
+        for (int i = 0; i < addBookingParcelModel.additionalDetails.length; i++)
+          "additional_services_id[$i]": addBookingParcelModel.additionalDetails[i],
         "notes": addBookingParcelModel.notes,
         "products": addBookingParcelModel.products
             .map((product) => {
@@ -55,7 +56,7 @@ class AddBookingParcelsApiService extends BaseApiServices {
                   "deliverytime_from": product.deliveryTimeFrom,
                   "deliverytime_to": product.deliveryTimeTo,
                 })
-            .toList(),
+.toList(),
         "booking_address": addBookingParcelModel.bookingAddress
             .map((address) => {
                   "customer_name": address.customerName,
@@ -68,6 +69,9 @@ class AddBookingParcelsApiService extends BaseApiServices {
                   "delivery_status": address.deliveryStatus,
                   "deliverytime_from": address.deliveryTimeFrom,
                   "deliverytime_to": address.deliveryTimeTo,
+                  "reciver_name": address.reciverName,
+                  "reciver_mobile": address.reciverMobile,
+                  "sender_unitno_blockno": address.reciverUnitIdBlockId,
                 })
             .toList(),
         "parcel_photo":

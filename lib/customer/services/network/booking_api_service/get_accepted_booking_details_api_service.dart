@@ -17,7 +17,7 @@ class GetAcceptBookingDetailsApiServices extends BaseApiServices {
           options: Options(
               headers: {
                 'Content-Type': 'application/json',
-                'Authorization': '$authtoken'
+                'Authorization': 'Bearer $authtoken'
               },
               followRedirects: false,
               validateStatus: (status) {
@@ -26,7 +26,6 @@ class GetAcceptBookingDetailsApiServices extends BaseApiServices {
           data: {"booking_id": bookingId});
       print("acceptbooking details---------");
       print(response.data);
-
       responseJson = response;
     } on SocketException {
       print("no internet");

@@ -8,6 +8,7 @@ import 'package:dio/dio.dart' as dio;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:v_export/constant/app_constant.dart';
 import 'package:v_export/constant/app_font.dart';
+import 'package:v_export/customer/model/login_model.dart';
 import 'package:v_export/customer/model/register_person_business_account_model.dart';
 import 'package:v_export/customer/services/network/auth_api_service/forget_password_api_service.dart';
 import 'package:v_export/customer/services/network/auth_api_service/login_api_service.dart';
@@ -17,7 +18,7 @@ import 'package:v_export/customer/services/network/auth_api_service/register_bus
 import 'package:v_export/customer/services/network/auth_api_service/register_personal_otp_service.dart';
 import 'package:v_export/customer/services/network/auth_api_service/register_personal_api_service.dart';
 import 'package:v_export/customer/services/network/auth_api_service/verification_otp_api_service.dart';
-import 'package:v_export/customer/services/network/start_api_services.dart';
+// import 'package:v_export/customer/services/network/start_api_services.dart';
 import 'package:v_export/customer/services/utils/base_url_api.dart';
 import 'package:v_export/customer/views/auth/login/forgot/create_new_password.dart';
 import 'package:v_export/customer/views/auth/login/forgot/verified_password.dart';
@@ -151,6 +152,7 @@ class AuthController extends GetxController {
 
   LoginApiServices loginApiServices = LoginApiServices();
   RxBool loginLoading = false.obs;
+  LoginData? loginData;
   loginApi(
       {required String emailOrmobileNmuber, required String password}) async {
     loginLoading(true);
@@ -160,16 +162,28 @@ class AuthController extends GetxController {
     print(response.data);
     loginLoading(false);
     if (response.data["status"] == true) {
+      LoginModel loginModel = LoginModel.fromJson(response.data);
+      loginData = loginModel.user;
       // AppSnackBar.showSnackbar(
       //   headText: response.data['message'],
       //   content: "Signing in...",
       //   position: SnackPosition.BOTTOM,
       // );
-      Get.offAll(BottomNavigationScreen());
+      if (loginData!.roles == "client" || loginData!.roles == "business") {
+        Get.offAll(BottomNavigationScreen());
+      } else {
+        Get.rawSnackbar(
+          backgroundColor: Colors.red,
+          messageText: Text(
+            "Please login with client or business account",
+            style: TextStyle(color: Colors.white, fontSize: 15.sp),
+          ),
+        );
+      }
       print("----auth_token-------------");
-      print(response.data["data"]["token"]);
+      print(response.data["token"]);
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString("auth_token", response.data["data"]["token"]);
+      await prefs.setString("auth_token", response.data["token"]);
     } else {
       Get.rawSnackbar(
         backgroundColor: Colors.red,
