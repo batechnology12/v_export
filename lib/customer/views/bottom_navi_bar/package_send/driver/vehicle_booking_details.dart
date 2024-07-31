@@ -566,7 +566,7 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Driver Notes',
+                                        'Drivery Notes',
                                         style: primaryfont.copyWith(
                                             fontWeight: FontWeight.w600,
                                             fontSize: 16.sp),
@@ -697,19 +697,20 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
                                       // Text("data"),
                                       ListView.builder(
                                           shrinkWrap: true,
-                                          itemCount: 2,
-                                          // widget
-                                          //     .getVehicleBookingDetailsDataList!
-                                          //     .additionalServices
-                                          //     .length,
+                                          itemCount: widget
+                                              .selectedvehicleservice.length,
                                           itemBuilder: (context, index) {
+                                            AdditionalServiceData
+                                                additionalServiceDat1 =
+                                                widget.selectedvehicleservice[
+                                                    index];
                                             return Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment
                                                       .spaceBetween,
                                               children: [
                                                 Text(
-                                                  "items",
+                                                  additionalServiceDat1.name,
                                                   // widget
                                                   //     .getVehicleBookingDetailsDataList!
                                                   //     .additionalServices[index]
@@ -721,7 +722,7 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
                                                       color: Color(0xff455A64)),
                                                 ),
                                                 Text(
-                                                  "items2",
+                                                  additionalServiceDat1.amount,
                                                   // '\$${widget.getVehicleBookingDetailsDataList!.additionalServices[index].amount}',
                                                   style: primaryfont.copyWith(
                                                       fontSize: 15,
@@ -762,66 +763,89 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
                           ksizedbox40,
                           Padding(
                             padding: const EdgeInsets.only(left: 10, right: 10),
-                            child: InkWell(
-                                onTap: () {
-                                  //
-                                  List<BookingVehicleAddress> bookingAddress = [
-                                    BookingVehicleAddress(
-                                        senderName:
-                                            widget.vehiclepickupsendername,
-                                        senderMobile:
-                                            widget.vehicleSenderMobilenumber,
-                                        unitNoBlockNo:
-                                            widget.vehiclepickupunitIdBlockID,
-                                        address: widget.vehicleDropAddress,
-                                        postalCode: ["78677"],
-                                        latitude:
-                                            homeController.vehicledroppingLats,
-                                        longitude:
-                                            homeController.vehicledropLongs,
-                                        deliveryStatus: "0",
-                                        reciverName: homeController
-                                            .vehiclereceiverNameList,
-                                        reciverMobile: homeController
-                                            .vehiclereceiverNumberList,
-                                        reciverUnitIdBlockId:
-                                            widget.vehicleDropunitIdBlockId),
-                                  ];
-                                  AddBookingVehicleModel
-                                      addBookingVehicleModel =
-                                      AddBookingVehicleModel(
-                                          bookingTime: widget.pickupTime,
-                                          // _formatTime(pickTime!),
-                                          pickupAddress:
-                                              widget.vehiclepickupAdress,
-                                          vehicleType: widget.vehicleItemsname,
-                                          paymentMode: "500",
-                                          bookingAmount: "500",
-                                          gst: "500",
-                                          additionalTotal: "500",
-                                          totalAmount: "500",
-                                          isRoundTrip: "1",
-                                          pickupDate: widget.pickupDate,
-                                          pickupTimeFrom: widget.pickupTime,
-                                          pickupTimeTo: widget.pickupTime,
-                                          latitude: widget.vehiclepickuplat,
-                                          longitude: widget.vehiclepickuplong,
-                                          distance: "30",
-                                          bookingType: "vehicle",
-                                          additionalDetails:
-                                              additionalServiceIds,
-                                          //widget.additionServiceId,
-                                          notes: widget.notes,
-                                          bookingVehicleAddress: bookingAddress,
-                                          parcelPhoto: widget.imagePath);
-                                  parcelController.addBookingVehicleApi(
-                                      addBookingVehicleModel);
-                                  // easebuzzController
-                                  //     .tablepayUseingEaseBuzzSubs();
-                                },
-                                child: CommonContainer(
-                                  name: "Confirm Payment",
-                                )),
+                            child: Obx(() {
+                              return parcelController
+                                      .addBookingVehicleLoading.isTrue
+                                  ? Container(
+                                      height: 50.h,
+                                      width: size.width,
+                                      decoration: BoxDecoration(
+                                          // color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(30)),
+                                      child: Center(
+                                          child: CircularProgressIndicator(
+                                        color: AppColors.kblue,
+                                      )),
+                                    )
+                                  : InkWell(
+                                      onTap: () {
+                                        //
+                                        List<BookingVehicleAddress>
+                                            bookingAddress = [
+                                          BookingVehicleAddress(
+                                              senderName: widget
+                                                  .vehiclepickupsendername,
+                                              senderMobile: widget
+                                                  .vehicleSenderMobilenumber,
+                                              unitNoBlockNo: widget
+                                                  .vehiclepickupunitIdBlockID,
+                                              address:
+                                                  widget.vehicleDropAddress,
+                                              postalCode: ["78677"],
+                                              latitude: homeController
+                                                  .vehicledroppingLats,
+                                              longitude: homeController
+                                                  .vehicledropLongs,
+                                              deliveryStatus: "0",
+                                              reciverName: homeController
+                                                  .vehiclereceiverNameList,
+                                              reciverMobile: homeController
+                                                  .vehiclereceiverNumberList,
+                                              vehiclereciverUnitIdBlockId: widget
+                                                  .vehicleDropunitIdBlockId),
+                                        ];
+                                        AddBookingVehicleModel
+                                            addBookingVehicleModel =
+                                            AddBookingVehicleModel(
+                                                bookingTime: widget.pickupTime,
+                                                // _formatTime(pickTime!),
+                                                pickupAddress:
+                                                    widget.vehiclepickupAdress,
+                                                vehicleType:
+                                                    widget.vehicleItemsname,
+                                                paymentMode: "500",
+                                                bookingAmount: "500",
+                                                gst: "500",
+                                                additionalTotal: "500",
+                                                totalAmount: "500",
+                                                isRoundTrip: "1",
+                                                pickupDate: widget.pickupDate,
+                                                pickupTimeFrom:
+                                                    widget.pickupTime,
+                                                pickupTimeTo: widget.pickupTime,
+                                                latitude:
+                                                    widget.vehiclepickuplat,
+                                                longitude:
+                                                    widget.vehiclepickuplong,
+                                                distance: "30",
+                                                bookingType: "vehicle",
+                                                additionalDetails:
+                                                    additionalServiceIds,
+                                                //widget.additionServiceId,
+                                                notes: widget.notes,
+                                                bookingVehicleAddress:
+                                                    bookingAddress,
+                                                parcelPhoto: widget.imagePath);
+                                        parcelController.addBookingVehicleApi(
+                                            addBookingVehicleModel);
+                                        // easebuzzController
+                                        //     .tablepayUseingEaseBuzzSubs();
+                                      },
+                                      child: CommonContainer(
+                                        name: "Confirm Payment",
+                                      ));
+                            }),
                           ),
                           ksizedbox20,
                         ],

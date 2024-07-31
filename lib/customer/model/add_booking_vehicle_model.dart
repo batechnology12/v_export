@@ -60,7 +60,7 @@ class BookingVehicleAddress {
   String deliveryStatus;
   List<String> reciverName;
   List<String> reciverMobile;
-  List<String> reciverUnitIdBlockId;
+  List<String> vehiclereciverUnitIdBlockId;
 
   BookingVehicleAddress({
     required this.senderName,
@@ -73,7 +73,7 @@ class BookingVehicleAddress {
     required this.deliveryStatus,
     required this.reciverMobile,
     required this.reciverName,
-    required this.reciverUnitIdBlockId,
+    required this.vehiclereciverUnitIdBlockId,
   });
 }
 

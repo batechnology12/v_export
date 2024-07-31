@@ -4,8 +4,11 @@ import 'package:get/get.dart';
 import 'package:svg_flutter/svg_flutter.dart';
 import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
+import 'package:v_export/constant/common_container.dart';
 import 'package:v_export/customer/controller/easebuzz_controller.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/bottomn_navi_bar.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/searching_ride_screen.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/payment_screen.dart/placed_order.dart';
 
 class MakePayment extends StatefulWidget {
   const MakePayment({super.key});
@@ -99,8 +102,10 @@ class _MakePaymentState extends State<MakePayment> {
                                       for (int i = 0; i < isCheck.length; i++) {
                                         isCheck[i] = i == index;
                                       }
-                                      if (index == 4) {
-                                        Get.to(SearchingRideScreen());
+                                      if (index == 3) {
+                                        showListViewDialog(context);
+
+                                        //  Get.to(BottomNavigationScreen());
                                       } else {
                                         easebuzzController
                                             .tablepayUseingEaseBuzzSubs();
@@ -163,6 +168,160 @@ class _MakePaymentState extends State<MakePayment> {
           ),
         ),
       ),
+    );
+  }
+
+  void showListViewDialog(BuildContext context) {
+    int isSelected = -1;
+
+    selected(int value) {
+      setState(() {
+        isSelected = value;
+      });
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Center(
+              child: Dialog(
+                insetPadding: EdgeInsets.symmetric(horizontal: 25),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                child: Container(
+                  padding: EdgeInsets.all(15.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                'Collect Payment From',
+                                style: primaryfont.copyWith(
+                                    fontSize: 18.sp,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w600),
+                              ),
+                            ],
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Get.back();
+                            },
+                            child: const Icon(
+                              Icons.cancel_outlined,
+                              color: Colors.red,
+                            ),
+                          ),
+                        ],
+                      ),
+                      ksizedbox30,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 30),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      selected(0);
+                                    });
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.all(20),
+                                    height: 120,
+                                    width: 120,
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: isSelected == 0
+                                                ? AppColors.kblue
+                                                : Colors.transparent),
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    child: Image.asset(
+                                      "assets/images/OBJECTS.png",
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      selected(1);
+                                    });
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.all(20),
+                                    height: 120,
+                                    width: 120,
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: isSelected == 1
+                                                ? AppColors.kblue
+                                                : Colors.transparent),
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    child: Image.asset(
+                                      "assets/images/Group (3).png",
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                            ksizedbox30,
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text("Sender",
+                                      style: primaryfont.copyWith(
+                                        fontSize: 16.sp,
+                                        color: isSelected == 0
+                                            ? AppColors.kblue
+                                            : Colors.black,
+                                        fontWeight: FontWeight.w600,
+                                      )),
+                                  Text("Receiver",
+                                      style: primaryfont.copyWith(
+                                        fontSize: 16.sp,
+                                        color: isSelected == 1
+                                            ? AppColors.kblue
+                                            : Colors.black,
+                                        fontWeight: FontWeight.w600,
+                                      )),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      ksizedbox30,
+                      TextButton(
+                          onPressed: () {
+                            Get.to(PlacedOrder());
+                          },
+                          child: CommonContainer(
+                            name: 'Submit',
+                          )),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

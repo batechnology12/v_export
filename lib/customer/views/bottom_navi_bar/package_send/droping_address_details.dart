@@ -12,18 +12,17 @@ import 'package:v_export/constant/common_container.dart';
 import 'package:v_export/customer/controller/account_controller.dart';
 import 'package:v_export/customer/controller/home_controller.dart';
 import 'package:location/location.dart' as loc;
-import 'package:v_export/customer/views/bottom_navi_bar/book_vehicle/book_vehicle_screen.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/package_send_screen.dart';
 
-class DropVehicleLocation extends StatefulWidget {
+class DropLocation extends StatefulWidget {
   final int index;
-  DropVehicleLocation({super.key, required this.index});
+  DropLocation({super.key, required this.index});
 
   @override
-  State<DropVehicleLocation> createState() => _DropVehicleLocationState();
+  State<DropLocation> createState() => _DropLocationState();
 }
 
-class _DropVehicleLocationState extends State<DropVehicleLocation> {
+class _DropLocationState extends State<DropLocation> {
   AccountController accountController = Get.find<AccountController>();
   HomeController homeController = Get.find<HomeController>();
   GoogleMapController? _controller;
@@ -75,9 +74,10 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
     }
   }
 
+  bool ischecked = false;
   final formKey = GlobalKey<FormState>();
 
-  void _showFullScreenVehicleAddressDetailsInput() {
+  void _showFullScreenAddressDetailsInput() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -117,7 +117,6 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                           //   margin: EdgeInsets.only(left: 20),
                           height: 47.h,
                           width: double.infinity,
-
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             color: Colors.white,
@@ -134,24 +133,10 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                                     "assets/icons/google-maps.png",
                                   ),
                                 ),
-                                // suffixIcon: Padding(
-                                //   padding: const EdgeInsets.all(5.0),
-                                //   child: Image.asset(
-                                //     "assets/icons/search.png",
-                                //   ),
-                                // ),
                                 hintText: 'Enter Your Address....',
                                 hintStyle: primaryfont.copyWith(
                                     fontSize: 14, fontWeight: FontWeight.w500),
-                                border: InputBorder.none
-                                // border: OutlineInputBorder(
-                                //   borderRadius: BorderRadius.circular(10),
-                                //   borderSide: BorderSide(
-                                //     width: 1,
-                                //     color: Color(0xff444444),
-                                //   ),
-                                // ),
-                                ),
+                                border: InputBorder.none),
                             focusNode: FocusNode(),
                             debounceTime: 600,
                             isLatLngRequired: true,
@@ -178,12 +163,6 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                                       title: prediction.description!),
                                 ));
                               });
-
-                              // Fetch place name using the coordinates
-                              // _fetchPlaceName(
-                              //   double.parse(prediction.lat!),
-                              //   double.parse(prediction.lng!),
-                              // );
                             },
                             itemClick: (Prediction prediction) {
                               setState(() {
@@ -211,19 +190,11 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                             height: 47,
                             width: double.infinity,
                             decoration: BoxDecoration(
-                                color: AppColors.kwhite,
-                                border: Border.all(
-                                  color: Color(0xff444444),
-                                ),
-                                borderRadius: BorderRadius.circular(10)),
+                              color: AppColors.kwhite,
+                            ),
                             child: TextFormField(
                                 controller: receiverBlockIdUnitIdController,
                                 decoration: InputDecoration(
-                                    contentPadding: const EdgeInsets.only(
-                                        left: 10,
-                                        right: 10,
-                                        top: 10,
-                                        bottom: 16),
                                     hintText: 'Enter Block no / Unit no',
                                     hintStyle: primaryfont.copyWith(
                                         fontSize: 14,
@@ -250,22 +221,19 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                           height: 47,
                           width: double.infinity,
                           decoration: BoxDecoration(
-                              color: AppColors.kwhite,
-                              border: Border.all(
-                                color: Color(0xff444444),
-                              ),
-                              borderRadius: BorderRadius.circular(10)),
+                            color: AppColors.kwhite,
+                          ),
                           child: TextFormField(
-                            textCapitalization: TextCapitalization.sentences,
                             maxLines: 1,
                             minLines: 1,
                             controller: receiverNameController,
+                            textCapitalization: TextCapitalization.sentences,
                             decoration: InputDecoration(
-                              contentPadding: const EdgeInsets.only(
-                                  left: 10, right: 10, top: 10, bottom: 16),
                               hintText: 'Enter receiver name',
                               hintStyle: primaryfont.copyWith(
                                   fontSize: 14, fontWeight: FontWeight.w500),
+                              contentPadding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide: const BorderSide(
@@ -315,7 +283,7 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                             filled: true,
                             contentPadding:
                                 const EdgeInsets.fromLTRB(10, 4, 4, 4),
-                            hintText: "Enter Sender Number",
+                            hintText: "Enter Receiver Number",
                             hintStyle: primaryfont.copyWith(
                                 color: Colors.grey,
                                 fontSize: 15,
@@ -346,7 +314,7 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                               if (receiverNameController.text.isNotEmpty &&
                                   receiverNumberController.text.isNotEmpty) {
                                 _fetchAddress();
-                                homeController.vehicleDroppingLocation(
+                                homeController.updateDroppingLocation(
                                   searchedController.text,
                                   _markers.first.position.latitude.toString(),
                                   _markers.first.position.longitude.toString(),
@@ -357,22 +325,14 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                                   receiverNumberController.text,
                                   receiverBlockIdUnitIdController.text,
                                 );
-                                // Get.to(BookVehicleScreen(
-                                //     vehiclepickupAdress: "",
-                                //     vehiclepickuplat: "",
-                                //     vehiclepickuplong: "",
-                                //     vehiclepickupunitIdBlockID: "",
-                                //     vehiclepickupsendername: "",
-                                //     vehicleSenderMobilenumber: "",
-                                //     vehicleDropAddress: [],
-                                //     vehicledroplat: [],
-                                //     vehiclearpincode: [],
-                                //     vehicledoorname: [],
-                                //     vehicledroplong: [],
-                                //     vehicleDropunitIdBlockId: [],
-                                //     vehicleDropreceivername: [],
-                                //     vehicleDropreceiverphone: []));
                                 Get.back();
+                                // Get.offAll(PackageSendScreen(
+                                //     pickupAdress: "",
+                                //     lat: "",
+                                //     long: "",
+                                //     unitIdBlockID: [],
+                                //     sendername: "",
+                                //     mobilenumber: ""));
                               } else {
                                 Get.snackbar(
                                     "Fill all Fields", "Please try again!",
@@ -485,9 +445,8 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                           ),
                           ksizedbox5,
                           GestureDetector(
-                            onTap: _showFullScreenVehicleAddressDetailsInput,
+                            onTap: _showFullScreenAddressDetailsInput,
                             child: Container(
-                              //   margin: EdgeInsets.only(left: 20),
                               height: 47.h,
                               width: size.width,
                               decoration: BoxDecoration(
@@ -499,33 +458,27 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                                 googleAPIKey:
                                     "AIzaSyAyygarjlqp_t2SPo7vS1oXDq1Yxs-LLNg",
                                 inputDecoration: InputDecoration(
-                                    enabled: false,
-                                    isDense: true,
-                                    prefixIcon: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Image.asset(
-                                        "assets/icons/google-maps.png",
-                                      ),
+                                  isDense: true,
+                                  enabled: false,
+                                  prefixIcon: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Image.asset(
+                                      "assets/icons/google-maps.png",
                                     ),
-                                    // suffixIcon: Padding(
-                                    //   padding: const EdgeInsets.all(5.0),
-                                    //   child: Image.asset(
-                                    //     "assets/icons/search.png",
-                                    //   ),
-                                    // ),
-                                    hintText: 'Enter Your Address....',
-                                    hintStyle: primaryfont.copyWith(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500),
-                                    border: InputBorder.none
-                                    // border: OutlineInputBorder(
-                                    //   borderRadius: BorderRadius.circular(10),
-                                    //   borderSide: BorderSide(
-                                    //     width: 1,
-                                    //     color: Color(0xff444444),
-                                    //   ),
-                                    // ),
-                                    ),
+                                  ),
+                                  hintText: 'Enter Your Address....',
+                                  hintStyle: primaryfont.copyWith(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500),
+                                  border: InputBorder.none,
+                                  // border: OutlineInputBorder(
+                                  //   borderRadius: BorderRadius.circular(10),
+                                  //   borderSide: BorderSide(
+                                  //     width: 1,
+                                  //     color: Colors.black,
+                                  //   ),
+                                  // )
+                                ),
                                 focusNode: FocusNode(),
                                 debounceTime: 600,
                                 isLatLngRequired: true,
@@ -553,12 +506,6 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                                           title: prediction.description!),
                                     ));
                                   });
-
-                                  // Fetch place name using the coordinates
-                                  // _fetchPlaceName(
-                                  //   double.parse(prediction.lat!),
-                                  //   double.parse(prediction.lng!),
-                                  // );
                                 },
                                 itemClick: (Prediction prediction) {
                                   setState(() {
@@ -583,7 +530,7 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                           ),
                           ksizedbox5,
                           GestureDetector(
-                            onTap: _showFullScreenVehicleAddressDetailsInput,
+                            onTap: _showFullScreenAddressDetailsInput,
                             child: Container(
                               height: 47,
                               width: size.width,
@@ -606,13 +553,7 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                                       hintStyle: primaryfont.copyWith(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w500),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: BorderSide(
-                                          width: 1,
-                                          color: Color(0xff444444),
-                                        ),
-                                      ))),
+                                      border: InputBorder.none)),
                             ),
                           ),
                           ksizedbox20,
@@ -625,7 +566,7 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                           ),
                           ksizedbox5,
                           GestureDetector(
-                            onTap: _showFullScreenVehicleAddressDetailsInput,
+                            onTap: _showFullScreenAddressDetailsInput,
                             child: Container(
                               height: 47,
                               width: size.width,
@@ -636,27 +577,31 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                                   ),
                                   borderRadius: BorderRadius.circular(10)),
                               child: TextFormField(
-                                textCapitalization:
-                                    TextCapitalization.sentences,
                                 maxLines: 1,
                                 minLines: 1,
                                 controller: receiverNameController,
+                                textCapitalization:
+                                    TextCapitalization.sentences,
                                 decoration: InputDecoration(
-                                  contentPadding: const EdgeInsets.only(
-                                      left: 10, right: 10, top: 10, bottom: 16),
-                                  enabled: false,
-                                  hintText: 'Enter receiver name',
-                                  hintStyle: primaryfont.copyWith(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: const BorderSide(
-                                      width: 1,
-                                      color: Color(0xff444444),
+                                    enabled: false,
+                                    hintText: 'Enter receiver name',
+                                    hintStyle: primaryfont.copyWith(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500),
+                                    contentPadding: const EdgeInsets.only(
+                                        left: 10,
+                                        right: 10,
+                                        top: 10,
+                                        bottom: 16),
+                                    border: InputBorder.none
+                                    // OutlineInputBorder(
+                                    //   borderRadius: BorderRadius.circular(10),
+                                    //   borderSide: const BorderSide(
+                                    //     width: 1,
+                                    //     color: Color(0xff444444),
+                                    //   ),
+                                    // ),
                                     ),
-                                  ),
-                                ),
                               ),
                             ),
                           ),
@@ -670,7 +615,7 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                           ),
                           ksizedbox5,
                           GestureDetector(
-                            onTap: _showFullScreenVehicleAddressDetailsInput,
+                            onTap: _showFullScreenAddressDetailsInput,
                             child: TextFormField(
                               controller: receiverNumberController,
                               validator: (value) {
@@ -681,7 +626,7 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                               },
                               keyboardType: TextInputType.phone,
                               inputFormatters: [
-                                LengthLimitingTextInputFormatter(0),
+                                LengthLimitingTextInputFormatter(8),
                                 FilteringTextInputFormatter.digitsOnly,
                                 FilteringTextInputFormatter.deny(RegExp(r'\s')),
                               ],
@@ -729,10 +674,11 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                           ksizedbox20,
                           InkWell(
                             onTap: () {
+                              //  if (formKey.currentState!.validate()) {
                               if (receiverNameController.text.isNotEmpty &&
                                   receiverNumberController.text.isNotEmpty) {
                                 _fetchAddress();
-                                homeController.vehicleDroppingLocation(
+                                homeController.updateDroppingLocation(
                                   searchedController.text,
                                   _markers.first.position.latitude.toString(),
                                   _markers.first.position.longitude.toString(),
@@ -744,21 +690,13 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                                   receiverBlockIdUnitIdController.text,
                                 );
                                 Get.back();
-                                // Get.to(BookVehicleScreen(
-                                //     vehiclepickupAdress: "",
-                                //     vehiclepickuplat: "",
-                                //     vehiclepickuplong: "",
-                                //     vehiclepickupunitIdBlockID: "",
-                                //     vehiclepickupsendername: "",
-                                //     vehicleSenderMobilenumber: "",
-                                //     vehicleDropAddress: [],
-                                //     vehicledroplat: [],
-                                //     vehiclearpincode: [],
-                                //     vehicledoorname: [],
-                                //     vehicledroplong: [],
-                                //     vehicleDropunitIdBlockId: [],
-                                //     vehicleDropreceivername: [],
-                                //     vehicleDropreceiverphone: []));
+                                // Get.offAll(PackageSendScreen(
+                                //     pickupAdress: "",
+                                //     lat: "",
+                                //     long: "",
+                                //     unitIdBlockID: [],
+                                //     sendername: "",
+                                //     mobilenumber: ""));
                               } else {
                                 Get.snackbar(
                                     "Fill all Fields", "Please try again!",
@@ -766,6 +704,7 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                                     backgroundColor: Colors.red,
                                     snackPosition: SnackPosition.BOTTOM);
                               }
+                              // }
                             },
                             child: CommonContainer(
                               name: 'Confirm',

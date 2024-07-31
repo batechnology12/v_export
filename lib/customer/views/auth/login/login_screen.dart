@@ -25,10 +25,11 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final RoundedLoadingButtonController _btnController =
+      RoundedLoadingButtonController();
 
-  final RoundedLoadingButtonController _btnController = RoundedLoadingButtonController();
-
-  final RoundedLoadingButtonController _btnControllerSucess = RoundedLoadingButtonController();
+  final RoundedLoadingButtonController _btnControllerSucess =
+      RoundedLoadingButtonController();
 
   final authController = Get.find<AuthController>();
   bool ishide = true;

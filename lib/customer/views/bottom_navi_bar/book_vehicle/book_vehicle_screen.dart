@@ -15,6 +15,7 @@ import 'package:v_export/customer/model/add_booking_vehicle_model.dart';
 import 'package:v_export/customer/model/additional_service_model.dart';
 import 'package:v_export/customer/model/vehicle_type_model.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/book_vehicle/drop_screen_vehicle.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/book_vehicle/drop_screen_vehicle.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/book_vehicle/pickup_screen_vehicle.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/bottomn_navi_bar.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/pickup_address_details.dart';
@@ -73,7 +74,7 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
   getData() async {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await parcelController.getVehicleTypes();
-      await parcelController.getAdditionalServices();
+      await parcelController.getAdditionalServices("booking_van");
 
       //  initializeIsCheckList();
       parcelController.update();
@@ -576,9 +577,8 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                                 horizontal: 10, vertical: 10),
                                             child: GestureDetector(
                                               onTap: () {
-                                                Get.to(
-                                                    DroppingVehicleAddressDetails(
-                                                        index: index));
+                                                Get.to(DropVehicleLocation(
+                                                    index: index));
                                               },
                                               child: Container(
                                                 height: 50.h,
@@ -612,7 +612,7 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                                       child: GestureDetector(
                                                         onTap: () {
                                                           Get.to(
-                                                              DroppingVehicleAddressDetails(
+                                                              DropVehicleLocation(
                                                                   index:
                                                                       index));
                                                         },
@@ -1101,7 +1101,7 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                       ),
                                       ksizedbox10,
                                       Text(
-                                        'Add deliver note',
+                                        'Add Delivery Notes',
                                         style: primaryfont.copyWith(
                                             fontSize: 15.sp,
                                             fontWeight: FontWeight.w600,
@@ -1255,66 +1255,6 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                               homeController
                                                   .vehiclereceiverNumberList,
                                         ));
-
-                                        // List<BookingVehicleAddress>
-                                        //     bookingAddress = [
-                                        //   BookingVehicleAddress(
-                                        //       senderName: widget
-                                        //           .vehiclepickupsendername,
-                                        //       senderMobile: widget
-                                        //           .vehicleSenderMobilenumber,
-                                        //       unitNoBlockNo: widget
-                                        //           .vehiclepickupunitIdBlockID,
-                                        //       address:
-                                        //           droppingvehivleAddressList,
-                                        //       postalCode: ["78677"],
-                                        //       latitude: homeController
-                                        //           .vehicledroppingLats,
-                                        //       longitude: homeController
-                                        //           .vehicledropLongs,
-
-                                        //       deliveryStatus: "0",
-                                        //       reciverName: homeController
-                                        //           .vehiclereceiverNameList,
-                                        //       reciverMobile: homeController
-                                        //           .vehiclereceiverNumberList,
-                                        //       reciverUnitIdBlockId: widget
-                                        //           .vehicleDropunitIdBlockId),
-                                        // ];
-                                        // AddBookingVehicleModel addBookingVehicleModel =
-                                        //     AddBookingVehicleModel(
-                                        //         bookingTime:
-                                        //             _formatTime(pickTime!),
-                                        //         pickupAddress:
-                                        //             widget.vehiclepickupAdress,
-                                        //         vehicleType: vehicleItemsNames
-                                        //             .toString(),
-                                        //         paymentMode: "500",
-                                        //         bookingAmount: "500",
-                                        //         gst: "500",
-                                        //         additionalTotal: "500",
-                                        //         totalAmount: "500",
-                                        //         isRoundTrip: "1",
-                                        //         pickupDate: formatDateTime,
-                                        //         pickupTimeFrom:
-                                        //             _formatTime(pickTime!),
-                                        //         pickupTimeTo:
-                                        //             _formatTime(pickTime!),
-                                        //         latitude:
-                                        //             widget.vehiclepickuplat,
-                                        //         longitude:
-                                        //             widget.vehiclepickuplong,
-                                        //         distance: "30",
-                                        //         bookingType: "vehicle",
-                                        //         additionalDetails:
-                                        //             selectedvehicleId,
-                                        //         notes: deliveryNotesController
-                                        //             .text,
-                                        //         bookingVehicleAddress:
-                                        //             bookingAddress,
-                                        //         parcelPhoto: _imagePath!);
-                                        // parcelController.addBookingVehicleApi(
-                                        //     addBookingVehicleModel);
                                       }
                                     },
                                     child: Padding(

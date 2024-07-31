@@ -9,9 +9,11 @@ import 'package:v_export/customer/controller/home_controller.dart';
 import 'package:v_export/customer/controller/parcel_controller.dart';
 import 'package:v_export/customer/model/delivery_type_model.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/bottomn_navi_bar.dart';
-import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/droping_address_details.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/package_send/droping_address_details.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/package_send/droping_address_details.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/dropping_address_details_screen.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/pickup_address_details.dart';
-import 'package:v_export/customer/views/bottom_navi_bar/schedule_delivery.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/package_send/schedule_delivery.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../constant/app_colors.dart';
@@ -50,9 +52,12 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
   getData() async {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await parcelController.getDeliveryTypes();
-      await parcelController.getAdditionalServices();
+      await parcelController.getAdditionalServices("booking_parcel");
       parcelController.update();
-      setState(() {});
+      for (var controller in homeController.parcelKgControllers) {
+        controller.addListener(updateTotalWeight);
+      }
+      // setState(() {});
     });
   }
 
@@ -66,16 +71,16 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
 //  HomeController homeController = Get.find<HomeController>();
   var datebookingController = TextEditingController();
   var delivarytypeController = TextEditingController();
-  var parcellengthController = TextEditingController();
-  var parcelwidthController = TextEditingController();
-  var parcelheightController = TextEditingController();
+  // var parcellengthController = TextEditingController();
+  // var parcelwidthController = TextEditingController();
+  // var parcelheightController = TextEditingController();
 
-  var parcelkgController = TextEditingController();
-  var numberofparcelController = TextEditingController();
+  // var parcelkgController = TextEditingController();
+  // var numberofparcelController = TextEditingController();
   var parcelitemController = TextEditingController();
-  var pickuptimeController = TextEditingController();
-  var droptimeController = TextEditingController();
-  var quantityController = TextEditingController();
+  // var pickuptimeController = TextEditingController();
+  // var droptimeController = TextEditingController();
+  // var quantityController = TextEditingController();
 
   String formatDateTime = "";
   String pickingTime = "";
@@ -115,8 +120,6 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
   //   }
   // }
 
-  bool isCheckedParcel = false;
-
   void _selectpickTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
@@ -124,7 +127,6 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
     );
 
     if (picked != null) {
-      // Adjust for AM/PM switch if necessary
       final now = DateTime.now();
       final pickedDateTime = DateTime(
         now.year,
@@ -143,20 +145,15 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
           pickTime!.minute,
         );
 
-        // Check if we crossed noon or midnight
         if (previousDateTime.hour < 12 && pickedDateTime.hour >= 12) {
-          // AM to PM
           pickedDateTime.add(const Duration(hours: 12));
         } else if (previousDateTime.hour >= 12 && pickedDateTime.hour < 12) {
-          // PM to AM
           pickedDateTime.subtract(const Duration(hours: 12));
         }
       }
 
       setState(() {
         pickTime = TimeOfDay.fromDateTime(pickedDateTime);
-        // _updateDropTime();
-        //  pickTime = picked;
         _updateDropTime();
       });
     }
@@ -177,7 +174,6 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
 // String _formatTime(TimeOfDay time) {
 //     String hour = time.hour.toString().padLeft(2, '0');
 //     String minute = time.minute.toString().padLeft(2, '0');
-
 //     return '$hour:$minute';
 //   }
 
@@ -205,6 +201,7 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
   }
 
   void _updateDropTime() {
+    String displayText = "";
     if (deliveryItems?.name == "Express Delivery") {
       _updatedTime = _addMinutes(pickTime!, 60);
       dropTime = _updatedTime;
@@ -216,29 +213,69 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
       dropTime = null;
       pickTime = _addMinutes(pickTime!, 0);
       ;
-    } else {
-      dropTime = pickTime;
     }
+    //  else {
+    //   displayText == "Select Time";
+    //      dropTime = pickTime;
+    // }
   }
 
-  var deliveryItems;
+  // DeliveryTypeData? deliveryItems;
+
+  // DeliveryTypeData? deliveryName;
+
+  DeliveryTypeData? deliveryItems;
+  String? deliveryName;
   int? deliveryId;
 
-  List<String> deliveryItemsList = [
-    "Express Delvery - 24/7 (1 Hour)",
-    "4 Hours Delivery",
-    "Specific Time",
-    "Same Day Delivery",
-    "Next Day Delivery"
-  ];
+  // List<String> deliveryItemsList = [
+  //   "Express Delvery - 24/7 (1 Hour)",
+  //   "4 Hours Delivery",
+  //   "Specific Time",
+  //   "Same Day Delivery",
+  //   "Next Day Delivery"
+  // ];
 
   bool checkParcelorMulti = false;
+  bool hideDeleteButton = false;
+
+  String _getLocationSuffix(int number) {
+    if (number % 10 == 1 && number != 11) return "st";
+    if (number % 10 == 2 && number != 12) return "nd";
+    if (number % 10 == 3 && number != 13) return "rd";
+    return "th";
+  }
 
   final formKey = GlobalKey<FormState>();
   String formatTime(String time) {
     DateTime parsedTime = DateFormat("HH:mm:ss").parse(time);
     String formattedTime = DateFormat("h a").format(parsedTime);
     return formattedTime;
+  }
+
+  double totalWeight = 0.0;
+
+  void updateTotalWeight() {
+    setState(() {
+      totalWeight = calculateTotalWeight();
+    });
+  }
+
+  double calculateTotalWeight() {
+    double totalWeight = 0.0;
+    for (var controller in homeController.parcelKgControllers) {
+      double value = double.tryParse(controller.text) ?? 0.0;
+      totalWeight += value;
+    }
+    return totalWeight;
+  }
+
+  @override
+  void dispose() {
+    for (var controller in homeController.parcelKgControllers) {
+      controller.removeListener(updateTotalWeight);
+    }
+    super.dispose();
   }
 
   @override
@@ -261,12 +298,17 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
             ),
           ),
         ),
-        title: Text(
-          'Parcel Booking',
-          style: primaryfont.copyWith(
-              fontSize: 21.sp,
-              color: Color(0xffF4F8FF),
-              fontWeight: FontWeight.w600),
+        title: GestureDetector(
+          onTap: () {
+            //   Get.to(MyAppData());
+          },
+          child: Text(
+            'Parcel Booking',
+            style: primaryfont.copyWith(
+                fontSize: 21.sp,
+                color: Color(0xffF4F8FF),
+                fontWeight: FontWeight.w600),
+          ),
         ),
       ),
       body: Form(
@@ -310,43 +352,110 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                               top: 5,
                             ),
                             child: AnimatedContainer(
-                              padding: const EdgeInsets.only(
-                                top: 10,
-                              ),
+                              padding: const EdgeInsets.only(top: 10),
                               duration: const Duration(milliseconds: 300),
                               width: size.width,
                               decoration: BoxDecoration(
-                                  // color: Colors.yellow,
-                                  color: AppColors.kwhite,
-                                  boxShadow: const <BoxShadow>[
-                                    BoxShadow(
-                                        offset: Offset(0.0, 0.75),
-                                        blurRadius: 1,
-                                        color: AppColors.kgrey)
-                                  ],
-                                  borderRadius: BorderRadius.circular(5)),
-                              child: Obx(
-                                () => ListView.builder(
-                                  padding: EdgeInsets.zero,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemCount: homeController.entries.length,
-                                  shrinkWrap: true,
-                                  itemBuilder: (context, index) {
-                                    return Column(
-                                      children: [
-                                        if (index == 0)
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                              right: 10,
-                                              left: 10,
+                                color: AppColors.kwhite,
+                                boxShadow: const <BoxShadow>[
+                                  BoxShadow(
+                                      offset: Offset(0.0, 0.75),
+                                      blurRadius: 1,
+                                      color: AppColors.kgrey)
+                                ],
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: Obx(() => ListView.builder(
+                                    padding: EdgeInsets.zero,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemCount: homeController.entries.length,
+                                    shrinkWrap: true,
+                                    itemBuilder: (context, index) {
+                                      return Column(
+                                        children: [
+                                          if (index == 0)
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 10, left: 10),
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Get.to(
+                                                      PickupAddressDetails());
+                                                },
+                                                child: Container(
+                                                  padding:
+                                                      EdgeInsets.only(right: 5),
+                                                  height: 50.h,
+                                                  width: size.width,
+                                                  decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                        color: Colors.grey
+                                                            .withOpacity(.32),
+                                                        width: 1),
+                                                    color: Colors.white,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5),
+                                                  ),
+                                                  child: Row(
+                                                    children: [
+                                                      const Icon(
+                                                          Icons.location_on,
+                                                          color: Color(
+                                                              0xffF74354)),
+                                                      const VerticalDivider(
+                                                        indent: 10,
+                                                        thickness: 1,
+                                                        width: 5,
+                                                        color:
+                                                            Color(0xff455A64),
+                                                        endIndent: 10,
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(left: 5),
+                                                        child: GestureDetector(
+                                                          onTap: () {
+                                                            Get.to(
+                                                                PickupAddressDetails());
+                                                          },
+                                                          child: Container(
+                                                            width: 250.w,
+                                                            child: Text(
+                                                              widget
+                                                                  .pickupAdress,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                              style: primaryfont
+                                                                  .copyWith(
+                                                                fontSize: 13.sp,
+                                                                color: Color(
+                                                                    0xff455A64),
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
                                             ),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 10, vertical: 10),
                                             child: GestureDetector(
                                               onTap: () {
-                                                Get.to(PickupAddressDetails());
+                                                Get.to(
+                                                    DropLocation(index: index));
                                               },
                                               child: Container(
-                                                padding:
-                                                    EdgeInsets.only(right: 5),
                                                 height: 50.h,
                                                 width: size.width,
                                                 decoration: BoxDecoration(
@@ -361,9 +470,9 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                 child: Row(
                                                   children: [
                                                     const Icon(
-                                                      Icons.location_on,
-                                                      color: Color(0xffF74354),
-                                                    ),
+                                                        Icons.location_on,
+                                                        color:
+                                                            Color(0xff038484)),
                                                     const VerticalDivider(
                                                       indent: 10,
                                                       thickness: 1,
@@ -372,24 +481,79 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                       endIndent: 10,
                                                     ),
                                                     Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              left: 5),
+                                                      padding: EdgeInsets.only(
+                                                          left: 5),
                                                       child: GestureDetector(
                                                         onTap: () {
-                                                          Get.to(
-                                                              PickupAddressDetails());
+                                                          Get.to(DropLocation(
+                                                              index: index));
                                                         },
-                                                        child: Container(
-                                                          width: 250.w,
-                                                          child: Text(
-                                                            widget.pickupAdress,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
+                                                        child:
+                                                            Obx(() => Container(
+                                                                  width: 250.w,
+                                                                  child: Text(
+                                                                    homeController.droppingLocations.length >
+                                                                            index
+                                                                        ? homeController
+                                                                            .droppingLocations[index]
+                                                                        : 'Enter Drop here...',
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .ellipsis,
+                                                                    style: primaryfont
+                                                                        .copyWith(
+                                                                      fontSize:
+                                                                          13.sp,
+                                                                      color: const Color(
+                                                                          0xff455A64),
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500,
+                                                                    ),
+                                                                  ),
+                                                                )),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                right: 10),
+                                            child: Row(
+                                              mainAxisAlignment: homeController
+                                                      .isRoundTripVisible.value
+                                                  ? MainAxisAlignment
+                                                      .spaceBetween
+                                                  : MainAxisAlignment.end,
+                                              children: [
+                                                // if (homeController
+                                                //             .entries.length -
+                                                //         1 ==
+                                                //     index)
+                                                homeController
+                                                        .isRoundTripVisible
+                                                        .value
+                                                    ? Row(
+                                                        children: [
+                                                          Checkbox(
+                                                            value:
+                                                                homeController
+                                                                    .isCheck
+                                                                    .value,
+                                                            onChanged: (value) {
+                                                              homeController
+                                                                  .toggleCheck(
+                                                                      value!);
+                                                            },
+                                                          ),
+                                                          Text(
+                                                            'Round Trip',
                                                             style: primaryfont
                                                                 .copyWith(
-                                                              fontSize: 13.sp,
+                                                              fontSize: 17.sp,
                                                               color: Color(
                                                                   0xff455A64),
                                                               fontWeight:
@@ -397,244 +561,105 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                                       .w500,
                                                             ),
                                                           ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 10, vertical: 10),
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              Get.to(DroppingAddressDetails(
-                                                  index: index));
-                                            },
-                                            child: Container(
-                                              height: 50.h,
-                                              width: size.width,
-                                              decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    color: Colors.grey
-                                                        .withOpacity(.32),
-                                                    width: 1),
-                                                color: Colors.white,
-                                                borderRadius:
-                                                    BorderRadius.circular(5),
-                                              ),
-                                              child: Row(
-                                                children: [
-                                                  const Icon(
-                                                    Icons.location_on,
-                                                    color: Color(0xff038484),
-                                                  ),
-                                                  const VerticalDivider(
-                                                    indent: 10,
-                                                    thickness: 1,
-                                                    width: 5,
-                                                    color: Color(0xff455A64),
-                                                    endIndent: 10,
-                                                  ),
-                                                  Padding(
-                                                    padding: EdgeInsets.only(
-                                                        left: 5),
-                                                    child: GestureDetector(
-                                                        onTap: () {
-                                                          Get.to(
-                                                              DroppingAddressDetails(
-                                                                  index:
-                                                                      index));
-                                                        },
-                                                        child: Obx(
-                                                          () => Container(
-                                                            width: 250.w,
-                                                            child: Text(
-                                                              homeController
-                                                                          .droppingLocations
-                                                                          .length >
-                                                                      index
-                                                                  ? homeController
-                                                                          .droppingLocations[
-                                                                      index]
-                                                                  : 'Enter Drop here...',
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                              style: primaryfont
-                                                                  .copyWith(
-                                                                fontSize: 13.sp,
-                                                                color: const Color(
-                                                                    0xff455A64),
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        )),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                            right: 10,
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment: homeController
-                                                            .entries.length -
-                                                        1 ==
-                                                    index
-                                                ? MainAxisAlignment.spaceBetween
-                                                : MainAxisAlignment.end,
-                                            children: [
-                                              if (homeController
-                                                          .entries.length -
-                                                      1 ==
-                                                  index)
-                                                Row(
-                                                  children: [
-                                                    Checkbox(
-                                                      value: homeController
-                                                          .isCheck.value,
-                                                      onChanged: (value) {
-                                                        setState(() {
-                                                          homeController
-                                                              .toggleCheck(
-                                                                  value!);
-                                                        });
-                                                      },
-                                                    ),
-                                                    Text(
-                                                      'Round Trip',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                        fontSize: 17.sp,
-                                                        color:
-                                                            Color(0xff455A64),
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              index ==
-                                                      homeController
-                                                              .entries.length -
-                                                          1
-                                                  ? Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .end,
-                                                      children: [
-                                                        if (index != 0)
-                                                          Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .end,
-                                                            children: [
-                                                              IconButton(
+                                                        ],
+                                                      )
+                                                    : Container(),
+                                                index ==
+                                                        homeController.entries
+                                                                .length -
+                                                            1
+                                                    ? Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .end,
+                                                        children: [
+                                                          if (index != 0)
+                                                            Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .end,
+                                                              children: [
+                                                                IconButton(
                                                                   onPressed:
                                                                       () {
-                                                                    setState(
-                                                                        () {
-                                                                      homeController
-                                                                          .removeEntry(
-                                                                              index);
-                                                                      homeController
-                                                                          .removeParcelList(
-                                                                              index);
-                                                                    });
+                                                                    homeController
+                                                                        .removeEntry(
+                                                                            index);
+                                                                    homeController
+                                                                        .removeParcelList(
+                                                                            index);
+                                                                    homeController
+                                                                        .removeSecondContainer(
+                                                                            index);
+                                                                    homeController
+                                                                            .isCheckedParcel =
+                                                                        true;
+                                                                    hideDeleteButton =
+                                                                        true;
                                                                   },
-                                                                  icon:
-                                                                      const Icon(
-                                                                    Icons
-                                                                        .delete,
-                                                                    color: Colors
-                                                                        .red,
-                                                                  ))
-                                                            ],
-                                                          ),
-                                                        Row(
-                                                          children: [
-                                                            GestureDetector(
-                                                              onTap: () {
-                                                                setState(() {
-                                                                  homeController
-                                                                      .addEntry();
-                                                                  homeController
-                                                                      .addParcelList();
-                                                                });
-                                                              },
-                                                              child: Icon(
-                                                                Icons.add,
-                                                                color: const Color(
-                                                                    0xff0072E8),
-                                                                size: 17.sp,
-                                                              ),
+                                                                  icon: const Icon(
+                                                                      Icons
+                                                                          .delete,
+                                                                      color: Colors
+                                                                          .red),
+                                                                ),
+                                                              ],
                                                             ),
-                                                            GestureDetector(
-                                                              onTap: () {
-                                                                setState(() {
+                                                          Row(
+                                                            children: [
+                                                              // GestureDetector(
+                                                              //   onTap: () {
+                                                              //     homeController
+                                                              //         .addEntry();
+                                                              //     homeController
+                                                              //         .addParcelList();
+                                                              //     homeController
+                                                              //         .addSecondContainer();
+                                                              //   },
+                                                              //   child: Icon(
+                                                              //     Icons.add,
+                                                              //     color: const Color(
+                                                              //         0xff0072E8),
+                                                              //     size: 17.sp,
+                                                              //   ),
+                                                              // ),
+                                                              GestureDetector(
+                                                                onTap: () {
                                                                   homeController
                                                                       .addEntry();
                                                                   homeController
                                                                       .addParcelList();
-                                                                  isCheckedParcel =
-                                                                      true;
-                                                                });
-                                                              },
-                                                              child: Text(
-                                                                'Add Location',
-                                                                style: primaryfont
-                                                                    .copyWith(
-                                                                  fontSize:
-                                                                      15.sp,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500,
-                                                                  color: const Color(
-                                                                      0xff0072E8),
+                                                                  homeController
+                                                                      .addSecondContainer();
+                                                                  hideDeleteButton =
+                                                                      false;
+                                                                },
+                                                                child: Text(
+                                                                  '+Add Location',
+                                                                  style: primaryfont
+                                                                      .copyWith(
+                                                                    fontSize:
+                                                                        15.sp,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w500,
+                                                                    color: const Color(
+                                                                        0xff0072E8),
+                                                                  ),
                                                                 ),
                                                               ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ],
-                                                    )
-                                                  : Container()
-                                              // : Row(
-                                              //     children: [
-                                              //       IconButton(
-                                              //           onPressed: () {
-                                              //             setState(() {
-                                              //               homeController
-                                              //                   .removeEntry(
-                                              //                       index);
-                                              //               homeController
-                                              //                   .removeParcelList(
-                                              //                       index);
-                                              //             });
-                                              //           },
-                                              //           icon: const Icon(
-                                              //             Icons.delete,
-                                              //             color: Colors.red,
-                                              //           ))
-                                              //     ],
-                                              //   ),
-                                            ],
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      )
+                                                    : Container(),
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                ),
-                              ),
+                                        ],
+                                      );
+                                    },
+                                  )),
                             ),
                           ),
                           ksizedbox30,
@@ -785,7 +810,16 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                       onChanged: (DeliveryTypeData? newValue) {
                                         setState(() {
                                           deliveryItems = newValue;
+                                          deliveryName = newValue?.name;
                                           deliveryId = newValue?.id;
+
+                                          print(
+                                              'Selected Delivery Name: $deliveryName');
+                                          print(
+                                              'Selected Delivery ID: $deliveryId');
+
+                                          //    print(deliveryItems);
+                                          // deliveryName = newValue!.id;
                                           pickTime = TimeOfDay.now();
                                           _updateDropTime();
                                         });
@@ -797,9 +831,6 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       Text(
-                                        // homeController.entries.length > 1
-                                        //     ? "Multi Size"
-                                        //     :
                                         "Parcel Size ",
                                         style: primaryfont.copyWith(
                                             fontSize: 17.sp,
@@ -817,343 +848,401 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                     ],
                                   ),
                                   ksizedbox5,
-                                  AnimatedContainer(
-                                    duration: Duration(microseconds: 300),
-                                    padding: EdgeInsets.only(top: 5),
-                                    child: ListView.builder(
-                                      padding: EdgeInsets.zero,
-                                      shrinkWrap: true,
-                                      physics: NeverScrollableScrollPhysics(),
-                                      itemCount:
-                                          homeController.addParcels.length,
-                                      itemBuilder: (context, index) {
-                                        return Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            ksizedbox5,
-                                            Padding(
-                                              padding:
-                                                  EdgeInsets.only(bottom: 10),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  _buildTextField(
-                                                      parcellengthController,
-                                                      'L',
-                                                      "L"),
-                                                  Text("X"),
-                                                  _buildTextField(
-                                                      parcelwidthController,
-                                                      'W',
-                                                      "W"),
-                                                  Text("X"),
-                                                  _buildTextField(
-                                                      parcelheightController,
-                                                      'H',
-                                                      "H"),
-                                                  _buildTextField(
-                                                      parcelkgController,
-                                                      'Kg',
-                                                      "Kg"),
-                                                  _buildTextField(
-                                                      quantityController,
-                                                      'Qty',
-                                                      "Qty"),
-                                                ],
-                                              ),
+                                  Obx(() => ListView.builder(
+                                        padding: EdgeInsets.zero,
+                                        shrinkWrap: true,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        itemCount: homeController
+                                            .secondContainers.length,
+                                        itemBuilder: (context, index) {
+                                          return AnimatedContainer(
+                                            duration:
+                                                Duration(milliseconds: 300),
+                                            padding: EdgeInsets.only(top: 5),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                ksizedbox5,
+
+                                                // index == 0
+                                                //     ? Text(
+                                                //         "${index + 1}st location",
+                                                //         style: primaryfont
+                                                //             .copyWith(
+                                                //           fontSize: 15.sp,
+                                                //           fontWeight:
+                                                //               FontWeight.bold,
+                                                //           color: const Color(
+                                                //               0xff0072E8),
+                                                //         ),
+                                                //       )
+                                                //     : index == 1
+                                                //         ? Text(
+                                                //             "${index + 1}nd location",
+                                                //             style: primaryfont
+                                                //                 .copyWith(
+                                                //               fontSize: 15.sp,
+                                                //               fontWeight:
+                                                //                   FontWeight
+                                                //                       .bold,
+                                                //               color: const Color(
+                                                //                   0xff0072E8),
+                                                //             ),
+                                                //           )
+                                                //         : index == 2
+                                                //             ? Text(
+                                                //                 "${index + 1}rd location",
+                                                //                 style: primaryfont
+                                                //                     .copyWith(
+                                                //                   fontSize:
+                                                //                       15.sp,
+                                                //                   fontWeight:
+                                                //                       FontWeight
+                                                //                           .bold,
+                                                //                   color: const Color(
+                                                //                       0xff0072E8),
+                                                //                 ),
+                                                //               )
+                                                //             : index >= 3
+                                                //                 ? Text(
+                                                //                     "${index + 1}th location",
+                                                //                     style: primaryfont
+                                                //                         .copyWith(
+                                                //                       fontSize:
+                                                //                           15.sp,
+                                                //                       fontWeight:
+                                                //                           FontWeight
+                                                //                               .bold,
+                                                //                       color: const Color(
+                                                //                           0xff0072E8),
+                                                //                     ),
+                                                //                   )
+                                                //                 : Container(),
+                                                Text(
+                                                  "${index + 1}${_getLocationSuffix(index + 1)} location",
+                                                  style: primaryfont.copyWith(
+                                                    fontSize: 15.sp,
+                                                    fontWeight: FontWeight.bold,
+                                                    color:
+                                                        const Color(0xff0072E8),
+                                                  ),
+                                                ),
+
+                                                Padding(
+                                                  padding: EdgeInsets.only(
+                                                      bottom: 10),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Container(
+                                                        height: 35,
+                                                        width: 180,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(4),
+                                                          border: Border.all(
+                                                              width: 1,
+                                                              color: Colors.grey
+                                                                  .withOpacity(
+                                                                      0.32)),
+                                                        ),
+                                                        child: Row(
+                                                          children: [
+                                                            _buildTextField(
+                                                                homeController
+                                                                        .parcelLengthControllers[
+                                                                    index],
+                                                                'L',
+                                                                "cm"),
+                                                            const Text(
+                                                              "X",
+                                                              style: TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                            ),
+                                                            _buildTextField(
+                                                                homeController
+                                                                        .parcelWidthControllers[
+                                                                    index],
+                                                                'W',
+                                                                "cm"),
+                                                            const Text(
+                                                              "X",
+                                                              style: TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                            ),
+                                                            _buildTextField(
+                                                                homeController
+                                                                        .parcelHeightControllers[
+                                                                    index],
+                                                                'H',
+                                                                "cm"),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        height: 35,
+                                                        width: 60,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(4),
+                                                          border: Border.all(
+                                                              width: 1,
+                                                              color: Colors.grey
+                                                                  .withOpacity(
+                                                                      0.32)),
+                                                        ),
+                                                        child: TextFormField(
+                                                          controller: homeController
+                                                                  .parcelKgControllers[
+                                                              index],
+                                                          keyboardType:
+                                                              TextInputType
+                                                                  .number,
+                                                          cursorColor:
+                                                              Colors.black,
+                                                          style: TextStyle(
+                                                            fontSize: 13.sp,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                            color: Colors.black,
+                                                          ),
+                                                          decoration:
+                                                              InputDecoration(
+                                                            suffixText: "Kg",
+                                                            contentPadding:
+                                                                EdgeInsets.only(
+                                                                    top: 5,
+                                                                    left: 5,
+                                                                    bottom: 10,
+                                                                    right: 5),
+                                                            hintText: "Kg",
+                                                            hintStyle:
+                                                                TextStyle(
+                                                              fontSize: 13.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                              color: Color(
+                                                                  0xff455A64),
+                                                            ),
+                                                            border: InputBorder
+                                                                .none,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        height: 35,
+                                                        width: 60,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(4),
+                                                          border: Border.all(
+                                                              width: 1,
+                                                              color: Colors.grey
+                                                                  .withOpacity(
+                                                                      0.32)),
+                                                        ),
+                                                        //  width: 50,
+                                                        child: TextFormField(
+                                                          controller: homeController
+                                                                  .quantityControllers[
+                                                              index],
+                                                          keyboardType:
+                                                              TextInputType
+                                                                  .number,
+                                                          cursorColor:
+                                                              Colors.black,
+                                                          style: TextStyle(
+                                                            fontSize: 13.sp,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                            color: Colors.black,
+                                                          ),
+                                                          decoration:
+                                                              InputDecoration(
+                                                            suffixText: "Qty",
+                                                            contentPadding:
+                                                                EdgeInsets.only(
+                                                                    top: 5,
+                                                                    left: 5,
+                                                                    bottom: 10,
+                                                                    right: 5),
+                                                            hintText: "Qty",
+                                                            hintStyle:
+                                                                TextStyle(
+                                                              fontSize: 13.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                              color: Color(
+                                                                  0xff455A64),
+                                                            ),
+                                                            border: InputBorder
+                                                                .none,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                // ksizedbox5,
+                                                if (index ==
+                                                        homeController.entries
+                                                                .length -
+                                                            1 ||
+                                                    index ==
+                                                        homeController
+                                                                .secondContainers
+                                                                .length -
+                                                            1)
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.end,
+                                                    children: [
+                                                      Column(
+                                                        children: [
+                                                          homeController
+                                                                      .isCheckedParcel ==
+                                                                  true
+                                                              //     ||
+                                                              // hideDeleteButton ==
+                                                              //     false
+                                                              ? Container()
+                                                              : IconButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    homeController
+                                                                        .removeSecondContainer(
+                                                                            index);
+                                                                  },
+                                                                  icon: const Icon(
+                                                                      Icons
+                                                                          .delete,
+                                                                      color: Colors
+                                                                          .red),
+                                                                ),
+                                                          if (index ==
+                                                              homeController
+                                                                      .secondContainers
+                                                                      .length -
+                                                                  1)
+                                                            GestureDetector(
+                                                              onTap: () {
+                                                                homeController
+                                                                    .addSecondContainer();
+                                                              },
+                                                              child: Text(
+                                                                "+Add Parcel",
+                                                                style: primaryfont
+                                                                    .copyWith(
+                                                                  fontSize:
+                                                                      15.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  color: const Color(
+                                                                      0xff0072E8),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                              ],
                                             ),
-                                            ksizedbox5,
-                                            // homeController.addParcels.length -
-                                            //             1 ==
-                                            //         index
-                                            //     ? Row(
-                                            //         mainAxisAlignment:
-                                            //             MainAxisAlignment.end,
-                                            //         children: [
-                                            //           GestureDetector(
-                                            //             onTap: () {
-                                            //               setState(() {
-                                            //                 homeController
-                                            //                     .addParcelList();
-                                            //               });
-                                            //             },
-                                            //             child: Icon(
-                                            //               Icons.add,
-                                            //               color:
-                                            //                   Color(0xff0072E8),
-                                            //               size: 17.sp,
-                                            //             ),
-                                            //           ),
-                                            //           GestureDetector(
-                                            //             onTap: () {
-                                            //               setState(() {
-                                            //                 homeController
-                                            //                     .toggleYellowContainer();
-                                            //               });
-                                            //             },
-                                            //             child: Text(
-                                            //               'Multi Size Parcel',
-                                            //               style: primaryfont
-                                            //                   .copyWith(
-                                            //                 fontSize: 15.sp,
-                                            //                 fontWeight:
-                                            //                     FontWeight.w500,
-                                            //                 color: const Color(
-                                            //                     0xff0072E8),
-                                            //               ),
-                                            //             ),
-                                            //           ),
-                                            //         ],
-                                            //       )
-                                            //     : Row(
-                                            //         mainAxisAlignment:
-                                            //             MainAxisAlignment.end,
-                                            //         children: [
-                                            //           IconButton(
-                                            //             onPressed: () {
-                                            //               setState(() {
-                                            //                 homeController
-                                            //                     .removeEntry(
-                                            //                         index);
-                                            //                 homeController
-                                            //                     .removeParcelList(
-                                            //                         index);
-                                            //               });
-                                            //             },
-                                            //             icon: const Icon(
-                                            //               Icons.delete,
-                                            //               color: Colors.red,
-                                            //             ),
-                                            //           ),
-                                            //         ],
-                                            //       ),
-                                            // Obx(
-                                            //   () => homeController
-                                            //           .showYellowContainer.value
-                                            //       ? Container(
-                                            //           color: Colors.yellow,
-                                            //           child: ListView.builder(
-                                            //             shrinkWrap: true,
-                                            //             itemCount: 1,
-                                            //             itemBuilder:
-                                            //                 (context, index) {
-                                            //               return Padding(
-                                            //                 padding:
-                                            //                     EdgeInsets.only(
-                                            //                         bottom: 10),
-                                            //                 child: Row(
-                                            //                   mainAxisAlignment:
-                                            //                       MainAxisAlignment
-                                            //                           .spaceBetween,
-                                            //                   children: [
-                                            //                     _buildTextField(
-                                            //                         parcellengthController,
-                                            //                         'L',
-                                            //                         "L"),
-                                            //                     Text("X"),
-                                            //                     _buildTextField(
-                                            //                         parcelwidthController,
-                                            //                         'W',
-                                            //                         "W"),
-                                            //                     Text("X"),
-                                            //                     _buildTextField(
-                                            //                         parcelheightController,
-                                            //                         'H',
-                                            //                         "H"),
-                                            //                     _buildTextField(
-                                            //                         parcelkgController,
-                                            //                         'Kg',
-                                            //                         "Kg"),
-                                            //                     _buildTextField(
-                                            //                         quantityController,
-                                            //                         'Qty',
-                                            //                         "Qty"),
-                                            //                   ],
-                                            //                 ),
-                                            //               );
-                                            //             },
-                                            //           ),
-                                            //         )
-                                            //       : Container(),
-                                            // ),
-                                          ],
-                                        );
-                                      },
-                                    ),
-                                  ),
+                                          );
+                                        },
+                                      )),
 
                                   // AnimatedContainer(
                                   //   duration: Duration(microseconds: 300),
                                   //   padding: EdgeInsets.only(top: 5),
-                                  //   //  height: 100.h * homeController.addParcels.length,
                                   //   child: ListView.builder(
-                                  //       padding: EdgeInsets.zero,
-                                  //       shrinkWrap: true,
-                                  //       physics: NeverScrollableScrollPhysics(),
-                                  //       itemCount:
-                                  //           homeController.addParcels.length,
-                                  //       itemBuilder: (context, index) {
-                                  //         return Column(
-                                  //           crossAxisAlignment:
-                                  //               CrossAxisAlignment.start,
-                                  //           mainAxisAlignment:
-                                  //               MainAxisAlignment.start,
-                                  //           mainAxisSize: MainAxisSize.min,
-                                  //           children: [
-                                  //             ksizedbox5,
-                                  //             Padding(
-                                  //               padding:
-                                  //                   EdgeInsets.only(bottom: 10),
-                                  //               child: Row(
-                                  //                 mainAxisAlignment:
-                                  //                     MainAxisAlignment
-                                  //                         .spaceBetween,
-                                  //                 children: [
-                                  //                   _buildTextField(
-                                  //                       parcellengthController,
-                                  //                       'L',
-                                  //                       "L"),
-                                  //                   Text("X"),
-                                  //                   _buildTextField(
-                                  //                       parcelwidthController,
-                                  //                       'W',
-                                  //                       "W"),
-                                  //                   Text("X"),
-                                  //                   _buildTextField(
-                                  //                       parcelheightController,
-                                  //                       'H',
-                                  //                       "H"),
-                                  //                   _buildTextField(
-                                  //                       parcelkgController,
-                                  //                       'Kg',
-                                  //                       "Kg"),
-                                  //                   _buildTextField(
-                                  //                       quantityController,
-                                  //                       'Qty',
-                                  //                       "Qty"),
-                                  //                 ],
-                                  //               ),
+                                  //     padding: EdgeInsets.zero,
+                                  //     shrinkWrap: true,
+                                  //     physics: NeverScrollableScrollPhysics(),
+                                  //     itemCount: homeController.addParcels.length,
+                                  //     itemBuilder: (context, index) {
+                                  //       return Column(
+                                  //         crossAxisAlignment:
+                                  //             CrossAxisAlignment.start,
+                                  //         mainAxisAlignment:
+                                  //             MainAxisAlignment.start,
+                                  //         mainAxisSize: MainAxisSize.min,
+                                  //         children: [
+                                  //           ksizedbox5,
+                                  //           Padding(
+                                  //             padding:
+                                  //                 EdgeInsets.only(bottom: 10),
+                                  //             child: Row(
+                                  //               mainAxisAlignment:
+                                  //                   MainAxisAlignment
+                                  //                       .spaceBetween,
+                                  //               children: [
+                                  //                 _buildTextField(
+                                  //                     parcellengthController,
+                                  //                     'L',
+                                  //                     "L"),
+                                  //                 Text("X"),
+                                  //                 _buildTextField(
+                                  //                     parcelwidthController,
+                                  //                     'W',
+                                  //                     "W"),
+                                  //                 Text("X"),
+                                  //                 _buildTextField(
+                                  //                     parcelheightController,
+                                  //                     'H',
+                                  //                     "H"),
+                                  //                 _buildTextField(
+                                  //                     parcelkgController,
+                                  //                     'Kg',
+                                  //                     "Kg"),
+                                  //                 _buildTextField(
+                                  //                     quantityController,
+                                  //                     'Qty',
+                                  //                     "Qty"),
+                                  //               ],
                                   //             ),
-                                  //             ksizedbox5,
-                                  //             homeController.addParcels.length -
-                                  //                         1 ==
-                                  //                     index
-                                  //                 ? Row(
-                                  //                     mainAxisAlignment:
-                                  //                         MainAxisAlignment.end,
-                                  //                     children: [
-                                  //                       GestureDetector(
-                                  //                         onTap: () {
-                                  //                           setState(() {
-                                  //                             // homeController
-                                  //                             //     .addVehicalEntry();
-                                  //                             homeController
-                                  //                                 .addParcelList();
-                                  //                           });
-                                  //                         },
-                                  //                         child: Icon(
-                                  //                           Icons.add,
-                                  //                           color: Color(
-                                  //                               0xff0072E8),
-                                  //                           size: 17.sp,
-                                  //                         ),
-                                  //                       ),
-                                  //                       GestureDetector(
-                                  //                         onTap: () {
-                                  //                           setState(() {
-                                  //                             homeController
-                                  //                                 .addParcelList();
-                                  //                           });
-                                  //                         },
-                                  //                         child: Text(
-                                  //                           'Multi Size Parcel',
-                                  //                           style: primaryfont
-                                  //                               .copyWith(
-                                  //                             fontSize: 15.sp,
-                                  //                             fontWeight:
-                                  //                                 FontWeight
-                                  //                                     .w500,
-                                  //                             color: const Color(
-                                  //                                 0xff0072E8),
-                                  //                           ),
-                                  //                         ),
-                                  //                       ),
-                                  //                     ],
-                                  //                   )
-                                  //                 : Row(
-                                  //                     mainAxisAlignment:
-                                  //                         MainAxisAlignment.end,
-                                  //                     children: [
-                                  //                       IconButton(
-                                  //                           onPressed: () {
-                                  //                             setState(() {
-                                  //                               homeController
-                                  //                                   .removeEntry(
-                                  //                                       index);
-                                  //                               homeController
-                                  //                                   .removeParcelList(
-                                  //                                       index);
-                                  //                             });
-                                  //                           },
-                                  //                           icon: const Icon(
-                                  //                             Icons.delete,
-                                  //                             color: Colors.red,
-                                  //                           ))
-                                  //                     ],
-                                  //                   ),
-                                  //             Container(
-                                  //               color: Colors.yellow,
-                                  //               child: ListView.builder(
-                                  //                   shrinkWrap: true,
-                                  //                   itemCount: 1,
-                                  //                   itemBuilder:
-                                  //                       (context, index) {
-                                  //                     return Padding(
-                                  //                       padding:
-                                  //                           EdgeInsets.only(
-                                  //                               bottom: 10),
-                                  //                       child: Row(
-                                  //                         mainAxisAlignment:
-                                  //                             MainAxisAlignment
-                                  //                                 .spaceBetween,
-                                  //                         children: [
-                                  //                           _buildTextField(
-                                  //                               parcellengthController,
-                                  //                               'L',
-                                  //                               "L"),
-                                  //                           Text("X"),
-                                  //                           _buildTextField(
-                                  //                               parcelwidthController,
-                                  //                               'W',
-                                  //                               "W"),
-                                  //                           Text("X"),
-                                  //                           _buildTextField(
-                                  //                               parcelheightController,
-                                  //                               'H',
-                                  //                               "H"),
-                                  //                           _buildTextField(
-                                  //                               parcelkgController,
-                                  //                               'Kg',
-                                  //                               "Kg"),
-                                  //                           _buildTextField(
-                                  //                               quantityController,
-                                  //                               'Qty',
-                                  //                               "Qty"),
-                                  //                         ],
-                                  //                       ),
-                                  //                     );
-                                  //                   }),
-                                  //             )
-                                  //           ],
-                                  //         );
-                                  //       }),
+                                  //           ),
+                                  //           ksizedbox5,
+                                  //           Row(
+                                  //             mainAxisAlignment:
+                                  //                 MainAxisAlignment.end,
+                                  //             children: [
+                                  //               Text(
+                                  //                 "+ Add stop",
+                                  //                 style: primaryfont.copyWith(
+                                  //                   fontSize: 15.sp,
+                                  //                   fontWeight: FontWeight.w500,
+                                  //                   color:
+                                  //                       const Color(0xff0072E8),
+                                  //                 ),
+                                  //               )
+                                  //             ],
+                                  //           )
+                                  //         ],
+                                  //       );
+                                  //     },
+                                  //   ),
                                   // ),
+
                                   ksizedbox10,
                                   Row(
                                     children: [
@@ -1367,11 +1456,16 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                     _formatTime(dropTime!).isNotEmpty &&
                                     formatDateTime.isNotEmpty &&
                                     deliveryId.toString().isNotEmpty &&
-                                    parcellengthController.text.isNotEmpty &&
-                                    parcelwidthController.text.isNotEmpty &&
-                                    parcelheightController.text.isNotEmpty &&
-                                    quantityController.text.isNotEmpty &&
-                                    parcelkgController.text.isNotEmpty &&
+                                    homeController
+                                        .parcelLengthControllers.isNotEmpty &&
+                                    homeController
+                                        .parcelWidthControllers.isNotEmpty &&
+                                    homeController
+                                        .parcelHeightControllers.isNotEmpty &&
+                                    homeController
+                                        .quantityControllers.isNotEmpty &&
+                                    homeController
+                                        .parcelKgControllers.isNotEmpty &&
                                     parcelitemController.text.isNotEmpty &&
                                     widget.unitIdBlockID
                                         .toString()
@@ -1382,6 +1476,8 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                     homeController.pincodes.isNotEmpty &&
                                     homeController.doornames.isNotEmpty) {
                                   Get.to(ScheduleDeliveryScreen(
+                                    totalWeight: totalWeight.toString(),
+                                    displayTimes: "Select Time",
                                     pickupAddress: widget.pickupAdress,
                                     pickuplatitude: widget.lat,
                                     pickuplogitude: widget.long,
@@ -1389,12 +1485,26 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                         homeController.droppingLats,
                                     droppingLogitude: homeController.dropLongs,
                                     bookingDate: formatDateTime,
-                                    deliverytype: deliveryId.toString(),
-                                    length: parcellengthController.text,
-                                    width: parcelwidthController.text,
-                                    height: parcelheightController.text,
-                                    qty: int.parse(quantityController.text),
-                                    kg: parcelkgController.text,
+                                    deliverytype: deliveryName!,
+                                    deliVerytypeID: deliveryId!,
+                                    length: homeController
+                                        .parcelLengthControllers
+                                        .map((controller) => controller.text)
+                                        .toList(),
+                                    width: homeController
+                                        .parcelLengthControllers
+                                        .map((controller) => controller.text)
+                                        .toList(),
+                                    height: homeController
+                                        .parcelLengthControllers
+                                        .map((controller) => controller.text)
+                                        .toList(),
+                                    qty: homeController.parcelLengthControllers
+                                        .map((controller) => controller.text)
+                                        .toList(),
+                                    kg: homeController.parcelLengthControllers
+                                        .map((controller) => controller.text)
+                                        .toList(),
                                     parcelItems: parcelitemController.text,
                                     unitIdBlockId: [
                                       widget.unitIdBlockID.toString()
@@ -1445,12 +1555,13 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
   Widget _buildTextField(
       TextEditingController controller, String hintText, String joinText) {
     return Container(
-      height: 35,
-      width: 60,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(width: 1, color: Colors.grey.withOpacity(0.32)),
-      ),
+      // height: 35,
+      // width: 60,
+      // decoration: BoxDecoration(
+      //   borderRadius: BorderRadius.circular(4),
+      //   border: Border.all(width: 1, color: Colors.grey.withOpacity(0.32)),
+      // ),
+      width: 50,
       child: TextFormField(
         controller: controller,
         keyboardType: TextInputType.number,

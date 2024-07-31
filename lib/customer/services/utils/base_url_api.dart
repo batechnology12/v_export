@@ -25,6 +25,8 @@ abstract class BaseApiServices {
   String get addAddressUrl => "${baseUrl}add_address";
   String get getAcceptBookingDetailsUrl => "${baseUrl}getAcceptedBookingDetails";
   String get getVehicleTypeUrl => "${baseUrl}vehicle_types";
+  String get getKmUrl => "${baseUrl}km_get";
+  String get updatePayable => "${baseUrl}updatePayable";
 
 }
 

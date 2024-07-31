@@ -50,7 +50,7 @@ class OngoingOrderData {
   String paymentMode;
   String bookingAmount;
   String isRoundTrip;
-  dynamic parcelPhoto;
+  String parcelPhoto;
   String gst;
   String additionalTotal;
   String totalAmount;
@@ -62,6 +62,10 @@ class OngoingOrderData {
   String senderUnitnoBlockno;
   String pickupAddreess;
   String bookingTimeFromVehicle;
+  dynamic pickuptimeFrom;
+  dynamic pickuptimeTo;
+  dynamic deliverytimeFrom;
+  dynamic deliverytimeTo;
   String latitude;
   String longitude;
   String distance;
@@ -71,7 +75,7 @@ class OngoingOrderData {
   dynamic packagePictures;
   DateTime createdAt;
   DateTime updatedAt;
-  List<dynamic> bookingProducts;
+  List<BookingProduct> bookingProducts;
   dynamic driver;
   List<dynamic> vehicleDetails;
   dynamic additionalService;
@@ -106,6 +110,10 @@ class OngoingOrderData {
     required this.senderUnitnoBlockno,
     required this.pickupAddreess,
     required this.bookingTimeFromVehicle,
+    required this.pickuptimeFrom,
+    required this.pickuptimeTo,
+    required this.deliverytimeFrom,
+    required this.deliverytimeTo,
     required this.latitude,
     required this.longitude,
     required this.distance,
@@ -136,7 +144,7 @@ class OngoingOrderData {
         deliveryOtp: json["delivery_otp"] ?? "",
         bookingType: json["booking_type"] ?? "",
         vehicleType: json["vehicle_type"] ?? "",
-        deliveryTypeId: json["delivery_type_id"] ?? "",
+        deliveryTypeId: json["delivery_type_id"],
         paymentMode: json["payment_mode"] ?? "",
         bookingAmount: json["booking_amount"] ?? "",
         isRoundTrip: json["is_round_trip"] ?? "",
@@ -151,7 +159,11 @@ class OngoingOrderData {
         bookingStatus: json["booking_status"] ?? "",
         senderUnitnoBlockno: json["sender_unitno_blockno"] ?? "",
         pickupAddreess: json["pickup_addreess"] ?? "",
-        bookingTimeFromVehicle: json["booking_time_from_vehicle"],
+        bookingTimeFromVehicle: json["booking_time_from_vehicle"] ?? "",
+        pickuptimeFrom: json["pickuptime_from"] ?? "",
+        pickuptimeTo: json["pickuptime_to"] ?? "",
+        deliverytimeFrom: json["deliverytime_from"] ?? "",
+        deliverytimeTo: json["deliverytime_to"] ?? "",
         latitude: json["latitude"] ?? "",
         longitude: json["longitude"] ?? "",
         distance: json["distance"] ?? "",
@@ -161,8 +173,8 @@ class OngoingOrderData {
         packagePictures: json["package_pictures"] ?? "",
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
-        bookingProducts:
-            List<dynamic>.from(json["booking_products"].map((x) => x)),
+        bookingProducts: List<BookingProduct>.from(
+            json["booking_products"].map((x) => BookingProduct.fromJson(x))),
         driver: json["driver"] ?? "",
         vehicleDetails:
             List<dynamic>.from(json["vehicle_details"].map((x) => x)),
@@ -203,6 +215,10 @@ class OngoingOrderData {
         "sender_unitno_blockno": senderUnitnoBlockno,
         "pickup_addreess": pickupAddreess,
         "booking_time_from_vehicle": bookingTimeFromVehicle,
+        "pickuptime_from": pickuptimeFrom,
+        "pickuptime_to": pickuptimeTo,
+        "deliverytime_from": deliverytimeFrom,
+        "deliverytime_to": deliverytimeTo,
         "latitude": latitude,
         "longitude": longitude,
         "distance": distance,
@@ -212,7 +228,8 @@ class OngoingOrderData {
         "package_pictures": packagePictures,
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
-        "booking_products": List<dynamic>.from(bookingProducts.map((x) => x)),
+        "booking_products":
+            List<dynamic>.from(bookingProducts.map((x) => x.toJson())),
         "driver": driver,
         "vehicle_details": List<dynamic>.from(vehicleDetails.map((x) => x)),
         "additional_service": additionalService,
@@ -292,6 +309,90 @@ class BookingDeliveryAddress {
       };
 }
 
+class BookingProduct {
+  int id;
+  String bookingId;
+  String bookingProductId;
+  String parcelItems;
+  String parcelSize;
+  dynamic productPicture;
+  String length;
+  String bookingProductWith;
+  String height;
+  String qty;
+  String kg;
+  String pickuptimeFrom;
+  String pickuptimeTo;
+  String deliveryDate;
+  String deliverytimeFrom;
+  String deliverytimeTo;
+  DateTime createdAt;
+  DateTime updatedAt;
+
+  BookingProduct({
+    required this.id,
+    required this.bookingId,
+    required this.bookingProductId,
+    required this.parcelItems,
+    required this.parcelSize,
+    required this.productPicture,
+    required this.length,
+    required this.bookingProductWith,
+    required this.height,
+    required this.qty,
+    required this.kg,
+    required this.pickuptimeFrom,
+    required this.pickuptimeTo,
+    required this.deliveryDate,
+    required this.deliverytimeFrom,
+    required this.deliverytimeTo,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory BookingProduct.fromJson(Map<String, dynamic> json) => BookingProduct(
+        id: json["id"] ?? 0,
+        bookingId: json["booking_id"] ?? "",
+        bookingProductId: json["booking_product_id"] ?? "",
+        parcelItems: json["parcel_items"] ?? "",
+        parcelSize: json["parcel_size"] ?? "",
+        productPicture: json["product_picture"] ?? "",
+        length: json["length"] ?? "",
+        bookingProductWith: json["with"] ?? "",
+        height: json["height"] ?? "",
+        qty: json["qty"] ?? "",
+        kg: json["kg"] ?? "",
+        pickuptimeFrom: json["pickuptime_from"] ?? "",
+        pickuptimeTo: json["pickuptime_to"] ?? "",
+        deliveryDate: json["delivery_date"] ?? "",
+        deliverytimeFrom: json["deliverytime_from"] ?? "",
+        deliverytimeTo: json["deliverytime_to"] ?? "",
+        createdAt: DateTime.parse(json["created_at"]),
+        updatedAt: DateTime.parse(json["updated_at"]),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "booking_id": bookingId,
+        "booking_product_id": bookingProductId,
+        "parcel_items": parcelItems,
+        "parcel_size": parcelSize,
+        "product_picture": productPicture,
+        "length": length,
+        "with": bookingProductWith,
+        "height": height,
+        "qty": qty,
+        "kg": kg,
+        "pickuptime_from": pickuptimeFrom,
+        "pickuptime_to": pickuptimeTo,
+        "delivery_date": deliveryDate,
+        "deliverytime_from": deliverytimeFrom,
+        "deliverytime_to": deliverytimeTo,
+        "created_at": createdAt.toIso8601String(),
+        "updated_at": updatedAt.toIso8601String(),
+      };
+}
+
 class DeliveryType {
   int id;
   String name;
@@ -332,8 +433,8 @@ class DeliveryType {
         price2025Km: json["price_20_25km"] ?? "",
         priceAbove25Km: json["price_above_25km"] ?? "",
         status: json["status"] ?? "",
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
+        createdAt: json["created_at"]== null ? DateTime.now() : DateTime.parse(json["created_at"]),
+        updatedAt: json["updated_at"]== null ? DateTime.now() : DateTime.parse(json["updated_at"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -411,8 +512,8 @@ class FromAddress {
         pincode: json["pincode"] ?? "",
         contactPerson: json["contact_person"] ?? "",
         contactNumber: json["contact_number"] ?? "",
-        latitude: json["latitude"],
-        longitude: json["longitude"],
+        latitude: json["latitude"] ?? "",
+        longitude: json["longitude"] ?? "",
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
       );

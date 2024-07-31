@@ -35,13 +35,13 @@ class MyListController extends GetxController {
       // );
       update();
     } else {
-      Get.rawSnackbar(
-        backgroundColor: Colors.red,
-        messageText: Text(
-          response.data['message'],
-          style: TextStyle(color: Colors.white, fontSize: 15.sp),
-        ),
-      );
+      // Get.rawSnackbar(
+      //   backgroundColor: Colors.red,
+      //   messageText: Text(
+      //     response.data['message'],
+      //     style: TextStyle(color: Colors.white, fontSize: 15.sp),
+      //   ),
+      // );
     }
   }
 

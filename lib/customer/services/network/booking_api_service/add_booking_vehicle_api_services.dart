@@ -72,7 +72,7 @@ class AddBookingVehicleApiService extends BaseApiServices {
                   "delivery_status": address.deliveryStatus,
                   "reciver_name": address.reciverName,
                   "reciver_mobile": address.reciverMobile,
-                  "sender_unitno_blockno": address.reciverUnitIdBlockId,
+                  "sender_unitno_blockno": address.vehiclereciverUnitIdBlockId,
                 })
             .toList(),
         "parcel_photo":

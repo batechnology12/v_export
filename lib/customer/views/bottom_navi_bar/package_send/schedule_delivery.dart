@@ -6,13 +6,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:v_export/customer/controller/home_controller.dart';
 import 'package:v_export/customer/controller/parcel_controller.dart';
 import 'package:v_export/customer/model/add_booking_parcel_model.dart';
 import 'package:v_export/customer/model/additional_service_model.dart';
+import 'package:v_export/customer/model/delivery_type_model.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/booking_details.dart';
-import '../../../constant/app_colors.dart';
-import '../../../constant/app_font.dart';
-import '../../../constant/common_container.dart';
+import '../../../../constant/app_colors.dart';
+import '../../../../constant/app_font.dart';
+import '../../../../constant/common_container.dart';
 import 'package:intl/intl.dart';
 
 class ScheduleDeliveryScreen extends StatefulWidget {
@@ -22,14 +24,15 @@ class ScheduleDeliveryScreen extends StatefulWidget {
   List<String> droppingLatitude;
   List<String> droppingLogitude;
   List<String> droppingaddress;
-
+  String displayTimes;
   String bookingDate;
   String deliverytype;
-  String length;
-  String width;
-  String height;
-  String kg;
-  int qty;
+  int deliVerytypeID;
+  List<String> length;
+  List<String> width;
+  List<String> height;
+  List<String> kg;
+  List<String> qty;
   String parcelItems;
   List<String> unitIdBlockId;
   String? pickTimeFrom;
@@ -43,6 +46,7 @@ class ScheduleDeliveryScreen extends StatefulWidget {
   List<String> receivername;
   List<String> receiverphone;
   String receiverUnitIdBlockId;
+  String totalWeight;
 
   ScheduleDeliveryScreen(
       {super.key,
@@ -53,6 +57,8 @@ class ScheduleDeliveryScreen extends StatefulWidget {
       required this.droppingLogitude,
       required this.bookingDate,
       required this.deliverytype,
+      required this.deliVerytypeID,
+      required this.displayTimes,
       required this.length,
       required this.width,
       required this.height,
@@ -71,25 +77,30 @@ class ScheduleDeliveryScreen extends StatefulWidget {
       required this.doorname,
       required this.receivername,
       required this.receiverphone,
-      required this.receiverUnitIdBlockId});
+      required this.receiverUnitIdBlockId,
+      required this.totalWeight,
+      });
 
   @override
   State<ScheduleDeliveryScreen> createState() => _ScheduleDeliveryScreenState();
 }
 
 class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
+  final HomeController homeController = Get.find<HomeController>();
+
   @override
   void initState() {
     super.initState();
     getData();
   }
 
-  getData() async {
+  double totalAmount = 0.0;
+
+  void getData() async {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      parcelController.getAdditionalServices();
+      parcelController.getAdditionalServices("booking_parcel");
       initializeIsCheckList();
       parcelController.update();
-
       setState(() {});
     });
   }
@@ -98,18 +109,26 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
     isCheck =
         List<bool>.filled(parcelController.additionalServiceData.length, false);
     for (int i = 0; i < parcelController.additionalServiceData.length; i++) {
-      if (selectedId.contains(parcelController.additionalServiceData[i].id)) {
+      if (savedSelectItem1
+          .contains(parcelController.additionalServiceData[i])) {
         isCheck[i] = true;
       }
     }
+    updateTotalAmount();
   }
 
-  List<int> selectedId = [];
-  List<int> savedSelectItem = [];
+  List<AdditionalServiceData> selectedparcelServiceItems = [];
+  List<AdditionalServiceData> savedSelectItem1 = [];
   List<bool> isCheck = [];
 
+  void updateTotalAmount() {
+    totalAmount = selectedparcelServiceItems.fold(0.0, (sum, item) {
+      double itemAmount = double.tryParse(item.amount) ?? 0.0;
+      return sum + itemAmount;
+    });
+  }
+
   void showListViewDialog(BuildContext context) {
-    //  final ParcelController parcelController1 = Get.find<ParcelController>();
     initializeIsCheckList();
 
     showDialog(
@@ -167,103 +186,106 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                           children: [
                             GetBuilder<ParcelController>(builder: (controller) {
                               return ListView.builder(
-                                  itemCount:
-                                      controller.additionalServiceData.length,
-                                  shrinkWrap: true,
-                                  itemBuilder: ((context, index) {
-                                    AdditionalServiceData serviceData =
-                                        controller.additionalServiceData[index];
-                                    return Padding(
-                                      padding: const EdgeInsets.all(5.0),
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          setState(
-                                            () {
-                                              isCheck[index] = !isCheck[index];
+                                itemCount:
+                                    controller.additionalServiceData.length,
+                                shrinkWrap: true,
+                                itemBuilder: ((context, index) {
+                                  AdditionalServiceData serviceData =
+                                      controller.additionalServiceData[index];
+                                  return Padding(
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        setState(
+                                          () {
+                                            isCheck[index] = !isCheck[index];
 
-                                              if (isCheck[index] == true) {
-                                                selectedId.add(serviceData.id);
-                                              } else {
-                                                selectedId
-                                                    .remove(serviceData.id);
-                                              }
-                                            },
-                                          );
-                                        },
-                                        child: Container(
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  GestureDetector(
-                                                    onTap: () {
-                                                      setState(
-                                                        () {
-                                                          isCheck[index] =
-                                                              !isCheck[index];
+                                            if (isCheck[index] == true) {
+                                              selectedparcelServiceItems
+                                                  .add(serviceData);
+                                            } else {
+                                              selectedparcelServiceItems
+                                                  .remove(serviceData);
+                                            }
+                                            updateTotalAmount();
+                                          },
+                                        );
+                                      },
+                                      child: Container(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    setState(
+                                                      () {
+                                                        isCheck[index] =
+                                                            !isCheck[index];
 
-                                                          if (isCheck[index] ==
-                                                              true) {
-                                                            selectedId.add(
-                                                                serviceData.id);
-                                                          } else {
-                                                            selectedId.remove(
-                                                                serviceData.id);
-                                                          }
-                                                        },
-                                                      );
-                                                    },
-                                                    child: Container(
-                                                      height: 20.h,
-                                                      width: 20.w,
-                                                      decoration: BoxDecoration(
-                                                          border: Border.all(
-                                                              width: 1,
-                                                              color: AppColors
-                                                                  .kblue),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(5)),
-                                                      child: isCheck[index]
-                                                          ? Image.asset(
-                                                              "assets/icons/7-Check.png")
-                                                          : Text(""),
-                                                    ),
+                                                        if (isCheck[index] ==
+                                                            true) {
+                                                          selectedparcelServiceItems
+                                                              .add(serviceData);
+                                                        } else {
+                                                          selectedparcelServiceItems
+                                                              .remove(
+                                                                  serviceData);
+                                                        }
+                                                        updateTotalAmount();
+                                                      },
+                                                    );
+                                                  },
+                                                  child: Container(
+                                                    height: 18.h,
+                                                    width: 18.w,
+                                                    decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                            width: 1,
+                                                            color: AppColors
+                                                                .kblue),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(5)),
+                                                    child: isCheck[index]
+                                                        ? Image.asset(
+                                                            "assets/icons/7-Check.png")
+                                                        : Text(""),
                                                   ),
-                                                  SizedBox(width: 10),
-                                                  Text(
-                                                    controller
-                                                        .additionalServiceData[
-                                                            index]
-                                                        .name,
+                                                ),
+                                                SizedBox(width: 8),
+                                                Text(
+                                                  controller
+                                                      .additionalServiceData[
+                                                          index]
+                                                      .name,
+                                                  style: primaryfont.copyWith(
+                                                    fontSize: 13.sp,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                    "+\$${controller.additionalServiceData[index].amount}",
                                                     style: primaryfont.copyWith(
-                                                      fontSize: 15.sp,
+                                                      fontSize: 13.sp,
                                                       fontWeight:
                                                           FontWeight.w600,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Row(
-                                                children: [
-                                                  Text(
-                                                      "+\$${controller.additionalServiceData[index].amount}",
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                        fontSize: 15.sp,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                      ))
-                                                ],
-                                              ),
-                                            ],
-                                          ),
+                                                    ))
+                                              ],
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                    );
-                                  }));
+                                    ),
+                                  );
+                                }),
+                              );
                             }),
                           ],
                         ),
@@ -271,9 +293,10 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                       TextButton(
                           onPressed: () {
                             setState(() {
-                              savedSelectItem = selectedId;
+                              savedSelectItem1 =
+                                  List.from(selectedparcelServiceItems);
                             });
-                            Navigator.of(context).pop(savedSelectItem);
+                            Navigator.of(context).pop(savedSelectItem1);
                           },
                           child: CommonContainer(
                             name: 'Confirm',
@@ -337,12 +360,14 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
   //   }
   // }
 
-  TimeOfDay deliveryFromTime = TimeOfDay.now();
-  TimeOfDay deliveryToTime = TimeOfDay.now();
+  TimeOfDay? deliveryFromTime;
+  TimeOfDay? deliveryToTime;
 
   void _selectFromTime(BuildContext context) async {
-    final TimeOfDay? picked =
-        await showTimePicker(context: context, initialTime: TimeOfDay.now());
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: deliveryFromTime ?? TimeOfDay.now(),
+    );
     if (picked != null && picked != deliveryFromTime) {
       setState(() {
         deliveryFromTime = picked;
@@ -363,8 +388,8 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
   // }
 
   void _selectToTime(BuildContext context) async {
-    final TimeOfDay? picked =
-        await showTimePicker(context: context, initialTime: TimeOfDay.now());
+    final TimeOfDay? picked = await showTimePicker(
+        context: context, initialTime: deliveryToTime ?? TimeOfDay.now());
     if (picked != null && picked != deliveryToTime) {
       setState(() {
         deliveryToTime = picked;
@@ -534,7 +559,7 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   ksizedbox5,
-                                  ////////////
+
                                   Text(
                                     'Delivery Details',
                                     style: primaryfont.copyWith(
@@ -542,6 +567,13 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                         color: Color(0xff000000),
                                         fontWeight: FontWeight.w700),
                                   ),
+                                  // Text(
+                                  //   totalAmount.toString(),
+                                  //   style: primaryfont.copyWith(
+                                  //       fontSize: 17.sp,
+                                  //       color: Color(0xff000000),
+                                  //       fontWeight: FontWeight.w700),
+                                  // ),
                                   ksizedbox20,
                                   Row(
                                     children: [
@@ -637,26 +669,22 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
                                               Text(
-                                                // '${_formatTime(deliveryFromTime)}',
                                                 widget.deliverytype ==
                                                         1.toString()
-                                                    ? '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime, 120))}'
+                                                    ? '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime!, 120))}'
                                                     : widget.deliverytype ==
                                                             2.toString()
-                                                        ? '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime, 60))}'
-                                                        : '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime, 0))}',
+                                                        ? '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime!, 60))}'
+                                                        : deliveryFromTime !=
+                                                                null
+                                                            ? _formatTime(
+                                                                deliveryFromTime!)
+                                                            : "Select Time",
                                                 style: primaryfont.copyWith(
                                                     fontSize: 13.sp,
                                                     fontWeight: FontWeight.w700,
                                                     color: Colors.black),
                                               ),
-                                              // IconButton(
-                                              //     onPressed: () {
-                                              //       _selectFromTime(context);
-                                              //     },
-                                              //     icon: Image.asset(
-                                              //         "assets/icons/mylisticon.png",
-                                              //         color: Colors.grey))
                                             ],
                                           ),
                                         ),
@@ -692,11 +720,13 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                                 //    '${_formatTime(_addMinutesToTimeOfDay(deliveryToTime, 120))}',
                                                 widget.deliverytype ==
                                                         1.toString()
-                                                    ? '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime, 240))}'
+                                                    ? '${_formatTime(_addMinutesToTimeOfDay(deliveryToTime!, 240))}'
                                                     : widget.deliverytype ==
                                                             2.toString()
-                                                        ? '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime, 120))}'
-                                                        : '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime, 0))}',
+                                                        ? '${_formatTime(_addMinutesToTimeOfDay(deliveryToTime!, 120))}'
+                                                        : deliveryToTime != null
+                                                            ? '${_formatTime(_addMinutesToTimeOfDay(deliveryToTime!, 60))}'
+                                                            : "Select Time",
                                                 style: primaryfont.copyWith(
                                                     fontSize: 13.sp,
                                                     fontWeight: FontWeight.w700,
@@ -914,82 +944,61 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                           ),
                           ksizedbox20,
                           GestureDetector(onTap: () {
-                            // List<int> selectedServiceId = [];
-                            // selectedServiceId.add(selectedId);
-                            List<Product> products = [
-                              Product(
-                                  parcelItems: widget.parcelItems,
-                                  length: widget.length,
-                                  width: widget.width,
-                                  height: widget.height,
-                                  qty: widget.qty,
-                                  kg: widget.kg,
-                                  pickupTimeFrom: widget.pickTimeFrom!,
-                                  pickupTimeTo: widget.pickTimeTo!,
-                                  deliveryDate: formatDateTime,
-                                  deliveryTimeFrom:
-                                      '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime, 60))}',
-                                  deliveryTimeTo: _formatTime(
-                                      _addMinutesToTimeOfDay(
-                                          deliveryToTime, 120))),
-                            ];
-
-                            List<BookingAddress> bookingAddress = [
-                              BookingAddress(
-                                  customerName: widget.sendername,
-                                  customerMobile: widget.phonenumber,
-                                  unitNoBlockNo: widget.doorname,
-                                  address: widget.droppingaddress,
-                                  postalCode: widget.arpincode,
-                                  latitude: widget.droppingLatitude,
-                                  longitude: widget.droppingLogitude,
-                                  deliveryStatus: "0",
-                                  deliveryTimeFrom:
-                                      '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime, 60))}',
-                                  deliveryTimeTo: _formatTime(
-                                      _addMinutesToTimeOfDay(
-                                          deliveryToTime, 120)),
-                                  reciverName: widget.receivername,
-                                  reciverMobile: widget.receiverphone,
-                                  reciverUnitIdBlockId:
-                                      widget.receiverUnitIdBlockId),
-                            ];
-                            AddBookingParcelModel addBookingParcelModel =
-                                AddBookingParcelModel(
-                                    pickupAddress: widget.pickupAddress,
-                                    deliveryTypeid: widget.deliverytype,
-                                    paymentMode: "500",
-                                    bookingAmount: "500",
-                                    gst: "500",
-                                    additionalTotal: "500",
-                                    totalAmount: "500",
-                                    isRoundTrip: '1',
-                                    bookingDate: widget.bookingDate,
-                                    pickupTimeFrom: widget.pickTimeFrom!,
-                                    pickupTimeTo: widget.pickTimeTo!,
-                                    deliveryDate: formatDateTime.isEmpty
-                                        ? "Select Date"
-                                        // formatDate(DateTime.now(),
-                                        //     [dd, '-', mm, '-', yyyy])
-                                        : formatDateTime,
-                                    deliveryTimeFrom:
-                                        '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime, 60))}',
-                                    deliveryTimeTo: _formatTime(
-                                        _addMinutesToTimeOfDay(
-                                            deliveryToTime, 120)),
-                                    latitude: widget.pickuplatitude,
-                                    longitude: widget.pickuplogitude,
-                                    distance: "30",
-                                    bookingType: "parcel",
-                                    additionalDetails: selectedId,
-                                    notes: notesController.text,
-                                    products: products,
-                                    bookingAddress: bookingAddress,
-                                    parcelPhoto: imagePath!);
-
                             if (formatDateTime.isNotEmpty) {
-                              parcelController
-                                  .addBookingParcel(addBookingParcelModel);
+                              parcelController.getKiloMeterApi(
+                                  lat1: double.parse(widget.pickuplatitude),
+                                  lon1: double.parse(widget.pickuplogitude),
+                                  lat2: double.parse(
+                                      widget.droppingLatitude.first),
+                                  lon2: double.parse(
+                                      widget.droppingLogitude.first),
+                                  unit: "k");
+                              Get.to(BookingDetailsScreen(
+                                totalWeights: widget.totalWeight,
+                                  totalAmount: totalAmount.toString(),
+                                  distance:
+                                      parcelController.distance.toString(),
+                                  selectedParcelservice:
+                                      selectedparcelServiceItems,
+                                  pickupADDRESS: widget.pickupAddress,
+                                  pickpLATITUDE: widget.pickuplatitude,
+                                  pickupLOGITUDE: widget.pickuplogitude,
+                                  droppingLATITUDE: widget.droppingLatitude,
+                                  droppingLOGITUDE: widget.droppingLogitude,
+                                  droppingADDRESS: widget.droppingaddress,
+                                  bookingDATE: widget.bookingDate,
+                                  deliveryTYPE: widget.deliverytype,
+                                  deliveryTypeID: widget.deliVerytypeID,
+                                  parcelLengtH: widget.length,
+                                  parcelWidth: widget.width,
+                                  parcelHeight: widget.height,
+                                  parcelKg: widget.kg,
+                                  parcelQty: widget.qty,
+                                  parcelITEMS: widget.parcelItems,
+                                  unitIdBlockID: widget.unitIdBlockId,
+                                  pickTimeFROM: widget.pickTimeFrom!,
+                                  pickTimeTO: widget.pickTimeTo!,
+                                  pickTimeListFROM: widget.pickTimeListFrom,
+                                  pickTimeListTO: widget.pickTimeListTo,
+                                  senderNAME: widget.sendername,
+                                  phoneNUMBER: widget.phonenumber,
+                                  arpinCODE: widget.arpincode,
+                                  doorNAME: homeController.doornames,
+                                  receiverNAME: homeController.receiverNameList,
+                                  receiverPHONE:
+                                      homeController.receiverNumberList,
+                                  receiverUnitIdBlockID:
+                                      homeController.receiverBlockIdUnitIDs,
+                                  deliveyDate: formatDateTime.isEmpty
+                                      ? "Select Date"
+                                      : formatDateTime,
+                                  deliveryTimeFROM:
+                                      '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime!, 60))}',
+                                  deliveryTimeTO: _formatTime(
+                                      _addMinutesToTimeOfDay(
+                                          deliveryToTime!, 120)),
+                                  imagePath: imagePath!,
+                                  notes: notesController.text));
                             } else {
                               Get.snackbar(
                                   "Fill all Fileds", "Please try again!",
@@ -1012,9 +1021,7 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                 : CommonContainer(
                                     name: "Booking Review",
                                   );
-                          }
-                          )
-                          ),
+                          })),
                         ],
                       ),
                     ),

@@ -448,7 +448,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     borderRadius: BorderRadius.circular(10),
                     color: AppColors.kwhite),
                 child: Padding(
-                    padding: EdgeInsets.only(left: 7, right: 7, top: 10),
+                    padding: EdgeInsets.only(left: 7, top: 10),
                     child: GetBuilder<ParcelController>(builder: (_) {
                       return parcelController.ongoingorderLoading.isTrue
                           ? Center(
@@ -466,7 +466,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       child: Image.asset(
-                                          "assets/images/No Data Found.jpeg")))
+                                          "assets/images/Group 42002.png")))
                               :
                               //  ListView.builder(
                               //     padding: EdgeInsets.zero,
@@ -489,23 +489,33 @@ class _HomeScreenState extends State<HomeScreen> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
+                                          parcelController.ongoingOrdersData!
+                                                      .isConfirmed ==
+                                                  "0"
+                                              ? Text(
+                                                  "Pending Order",
+                                                  style: primaryfont.copyWith(
+                                                      color: Colors.red,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      fontSize: 15.sp),
+                                                )
+                                              : Text(
+                                                  "Ongoing Order",
+                                                  style: primaryfont.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: AppColors.kblue,
+                                                      fontSize: 15.sp),
+                                                ),
+
                                           Text(
-                                            'Ongoing Order',
+                                            'BookingID :- ${parcelController.ongoingOrdersData!.bookingId}',
                                             style: primaryfont.copyWith(
                                                 fontWeight: FontWeight.w700,
                                                 fontSize: 15.sp),
                                           ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                right: 10),
-                                            child: Text(
-                                              parcelController
-                                                  .ongoingOrdersData!.bookingId,
-                                              style: primaryfont.copyWith(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 14.sp),
-                                            ),
-                                          )
+                                      
                                         ],
                                       ),
                                       Divider(),
@@ -600,12 +610,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       Container(
                                                         width: 230.h,
                                                         child: Text(
-                                                          "jkdj",
-                                                          // parcelController
-                                                          //     .ongoingOrdersData!
-                                                          //     .bookingDeliveryAddresses
-                                                          //     .first
-                                                          //     .address,
+                                                          //   "jkdj",
+                                                          parcelController
+                                                              .ongoingOrdersData!
+                                                              .bookingDeliveryAddresses
+                                                              .first
+                                                              .address,
                                                           style: primaryfont.copyWith(
                                                               color: const Color(
                                                                   0xff1E1E1E),
@@ -628,31 +638,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 MainAxisAlignment.spaceAround,
                                             children: [
                                               Text(
-                                                //  "hj",
-                                                parcelController
-                                                    .ongoingOrdersData!
-                                                    .bookingTimeFromVehicle,
-                                                // parcelController
-                                                //             .ongoingOrdersData!
-                                                //             .bookingType ==
-                                                //         "vehicle"
-                                                //     ? parcelController
-                                                //         .ongoingOrdersData!
-                                                //         .bookingTimeFromVehicle
-                                                //     : "",
-                                                // parcelController
-                                                //             .ongoingOrdersData!
-                                                //             .bookingType ==
-                                                //         "parcel"
-                                                //     ? '${formatTime(parcelController.ongoingOrdersData!.bookingProducts.first.pickuptimeFrom)}'
-                                                //     : "",
-                                                // "ghgh",
-                                                // parcelController
-                                                //     .ongoingOrdersData!
-                                                //     .bookingTimeFromVehicle,
-                                                // '${formatTime(parcelController.ongoingOrdersData!.bookingProducts.first.pickuptimeFrom)}',
+                                                //     "hj",
 
-                                                //   parcelController.ongoingOrdersData[index].bookingProducts[index].pickuptimeFrom,
+                                                parcelController
+                                                            .ongoingOrdersData!
+                                                            .bookingType ==
+                                                        "parcel"
+                                                    ? "${parcelController.ongoingOrdersData!.bookingProducts.first.pickuptimeFrom} \nto \n${parcelController.ongoingOrdersData!.bookingProducts.first.pickuptimeTo}"
+                                                    : parcelController
+                                                        .ongoingOrdersData!
+                                                        .bookingTimeFromVehicle,
+// '${formatTime(parcelController.ongoingOrdersData!.bookingProducts.first.pickuptimeFrom)}'
                                                 textAlign: TextAlign.center,
                                                 style: primaryfont.copyWith(
                                                     fontSize: 12.sp,
@@ -663,17 +659,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                               ksizedbox40,
                                               ksizedbox40,
                                               Text(
+                                                parcelController
+                                                            .ongoingOrdersData!
+                                                            .bookingType ==
+                                                        "parcel"
+                                                    ? "${parcelController.ongoingOrdersData!.bookingProducts.first.deliverytimeFrom} \nto \n${parcelController.ongoingOrdersData!.bookingProducts.first.deliverytimeTo}"
+                                                    : "",
+                                                //  "djkbjked",
                                                 // parcelController
-                                                //         .ongoingOrdersData!
-                                                //         .bookingProducts
-                                                //         .isEmpty
-                                                //     ? ""
+                                                //             .ongoingOrdersData!
+                                                //             .bookingType ==
+                                                //         "parcel"
+                                                //     ? '${formatTime(parcelController.ongoingOrdersData!.bookingProducts.first.deliverytimeFrom)}'
                                                 //     : "",
-                                                "",
-                                                // '${formatTime(parcelController.ongoingOrdersData[index].bookingProducts[index].deliverytimeFrom)}
-                                                //  '${parcelController.ongoingOrdersData!.bookingProducts.first.deliverytimeFrom} \nto \n${parcelController.ongoingOrdersData!.bookingProducts.first.deliverytimeTo}',
-                                                // "djasdj",
-                                                //   '${formatTime(parcelController.ongoingOrdersData[index].bookingProducts[index].deliverytimeFrom)} to ${formatTime(parcelController.ongoingOrdersData[index].bookingProducts[index].deliverytimeTo)}',
                                                 textAlign: TextAlign.center,
                                                 style: primaryfont.copyWith(
                                                     fontSize: 12.sp,
@@ -688,497 +686,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ],
                                   ),
                                 );
-                      // });
                     })),
               ),
-              // : Container(
-              //     padding: EdgeInsets.only(bottom: 5),
-              //     width: size.width,
-              //     decoration: BoxDecoration(
-              //         borderRadius: BorderRadius.circular(10),
-              //         color: AppColors.kwhite),
-              //     child: Padding(
-              //         padding: EdgeInsets.only(left: 7, right: 7, top: 10),
-              //         child: GetBuilder<ParcelController>(builder: (_) {
-              //           return parcelController
-              //                   .parcelongoingorderLoading.isTrue
-              //               ? Center(
-              //                   child: CircularProgressIndicator(
-              //                   color: AppColors.kblue,
-              //                 ))
-              //               : parcelController.parcelOngoingOrderData ==
-              //                       null
-              //                   ? Center(
-              //                       child: Container(
-              //                           alignment: Alignment.center,
-              //                           height: 200.h,
-              //                           width: size.width,
-              //                           decoration: BoxDecoration(
-              //                             color:
-              //                                 Colors.grey.withOpacity(.09),
-              //                             borderRadius:
-              //                                 BorderRadius.circular(10),
-              //                           ),
-              //                           child: Image.asset(
-              //                               "assets/images/No Data Found.jpeg")))
-              //                   :
-              //                   //  ListView.builder(
-              //                   //     padding: EdgeInsets.zero,
-              //                   //     physics: NeverScrollableScrollPhysics(),
-              //                   //     shrinkWrap: true,
-              //                   //     itemCount:
-              //                   //         parcelController.ongoingOrdersData.length,
-              //                   //     itemBuilder: (context, index) {
-              //                   //       return
-              //                   Container(
-              //                       padding: EdgeInsets.all(5),
-              //                       decoration: BoxDecoration(
-              //                         color: Colors.grey.withOpacity(.09),
-              //                         borderRadius:
-              //                             BorderRadius.circular(10),
-              //                       ),
-              //                       margin: EdgeInsets.only(bottom: 10),
-              //                       child: Column(
-              //                         children: [
-              //                           Row(
-              //                             mainAxisAlignment:
-              //                                 MainAxisAlignment
-              //                                     .spaceBetween,
-              //                             children: [
-              //                               Text(
-              //                                 'Ongoing Order',
-              //                                 style: primaryfont.copyWith(
-              //                                     fontWeight:
-              //                                         FontWeight.w700,
-              //                                     fontSize: 15.sp),
-              //                               ),
-              //                               Padding(
-              //                                 padding:
-              //                                     const EdgeInsets.only(
-              //                                         right: 10),
-              //                                 child: Text(
-              //                                   parcelController
-              //                                       .parcelOngoingOrderData!
-              //                                       .bookingId,
-              //                                   style: primaryfont.copyWith(
-              //                                       fontWeight:
-              //                                           FontWeight.w600,
-              //                                       fontSize: 14.sp),
-              //                                 ),
-              //                               )
-              //                             ],
-              //                           ),
-              //                           Divider(),
-              //                           ksizedbox10,
-              //                           Row(
-              //                             mainAxisAlignment:
-              //                                 MainAxisAlignment
-              //                                     .spaceBetween,
-              //                             children: [
-              //                               Row(
-              //                                 children: [
-              //                                   const Column(
-              //                                     mainAxisAlignment:
-              //                                         MainAxisAlignment
-              //                                             .start,
-              //                                     children: [
-              //                                       Icon(
-              //                                         Icons.location_on,
-              //                                         color:
-              //                                             Color(0xff038484),
-              //                                       ),
-              //                                       Dash(
-              //                                           direction:
-              //                                               Axis.vertical,
-              //                                           length: 100,
-              //                                           dashLength: 5,
-              //                                           dashColor: AppColors
-              //                                               .kgrey),
-              //                                       Icon(
-              //                                         Icons.location_on,
-              //                                         color:
-              //                                             Color(0xffF74354),
-              //                                       ),
-              //                                     ],
-              //                                   ),
-              //                                   SizedBox(
-              //                                     width: 5.w,
-              //                                   ),
-              //                                   Column(
-              //                                     mainAxisAlignment:
-              //                                         MainAxisAlignment
-              //                                             .spaceBetween,
-              //                                     children: [
-              //                                       Column(
-              //                                         crossAxisAlignment:
-              //                                             CrossAxisAlignment
-              //                                                 .start,
-              //                                         children: [
-              //                                           Text(
-              //                                             'Pickup Address',
-              //                                             style: primaryfont.copyWith(
-              //                                                 fontSize:
-              //                                                     14.sp,
-              //                                                 fontWeight:
-              //                                                     FontWeight
-              //                                                         .w600,
-              //                                                 color: Color(
-              //                                                     0xff455A64)),
-              //                                           ),
-              //                                           Container(
-              //                                             width: 230.h,
-              //                                             child: Text(
-              //                                               // parcelController
-              //                                               //     .ongoingOrdersData[
-              //                                               //         index]
-              //                                               //     .fromAddress
-              //                                               //     .first
-              //                                               //     .address,
-              //                                               parcelController
-              //                                                   .parcelOngoingOrderData!
-              //                                                   .pickupAddreess,
-              //                                               style: primaryfont.copyWith(
-              //                                                   color: const Color(
-              //                                                       0xff1E1E1E),
-              //                                                   fontWeight:
-              //                                                       FontWeight
-              //                                                           .w600,
-              //                                                   fontSize:
-              //                                                       13.sp),
-              //                                             ),
-              //                                           ),
-              //                                         ],
-              //                                       ),
-              //                                       SizedBox(
-              //                                         height: 40.h,
-              //                                       ),
-              //                                       Column(
-              //                                         crossAxisAlignment:
-              //                                             CrossAxisAlignment
-              //                                                 .start,
-              //                                         children: [
-              //                                           Text(
-              //                                             'Drop Address',
-              //                                             style: primaryfont.copyWith(
-              //                                                 fontSize:
-              //                                                     14.sp,
-              //                                                 fontWeight:
-              //                                                     FontWeight
-              //                                                         .w600,
-              //                                                 color: Color(
-              //                                                     0xff455A64)),
-              //                                           ),
-              //                                           Container(
-              //                                             width: 230.h,
-              //                                             child: Text(
-              //                                               parcelController
-              //                                                   .parcelOngoingOrderData!
-              //                                                   .bookingDeliveryAddresses
-              //                                                   .first
-              //                                                   .address,
-              //                                               style: primaryfont.copyWith(
-              //                                                   color: const Color(
-              //                                                       0xff1E1E1E),
-              //                                                   fontWeight:
-              //                                                       FontWeight
-              //                                                           .w600,
-              //                                                   fontSize:
-              //                                                       13.sp),
-              //                                             ),
-              //                                           ),
-              //                                         ],
-              //                                       )
-              //                                     ],
-              //                                   ),
-              //                                 ],
-              //                               ),
-              //                               // Container(
-              //                               // child:
-              //                               Column(
-              //                                 mainAxisAlignment:
-              //                                     MainAxisAlignment
-              //                                         .spaceAround,
-              //                                 children: [
-              //                                   Text(
-              //                                     parcelController
-              //                                         .parcelOngoingOrderData!
-              //                                         .bookingProducts
-              //                                         .first
-              //                                         .pickuptimeFrom,
-              //                                     // '${formatTime(parcelController.parcelOngoingOrderData!.bookingProducts.first.pickuptimeFrom)}',
-              //                                     // parcelController
-              //                                     //         .parcelOngoingOrderData!
-              //                                     //         .bookingTimeFromVehicle,
-              //                                     // parcelController
-              //                                     //             .ongoingOrdersData!
-              //                                     //             .bookingType ==
-              //                                     //         "vehicle"
-              //                                     //     ? parcelController
-              //                                     //         .ongoingOrdersData!
-              //                                     //         .bookingTimeFromVehicle
-              //                                     //     : "",
-              //                                     // parcelController
-              //                                     //             .ongoingOrdersData!
-              //                                     //             .bookingType ==
-              //                                     //         "parcel"
-              //                                     //     ? '${formatTime(parcelController.ongoingOrdersData!.bookingProducts.first.pickuptimeFrom)}'
-              //                                     //     : "",
-              //                                     // "ghgh",
-              //                                     // parcelController
-              //                                     //     .ongoingOrdersData!
-              //                                     //     .bookingTimeFromVehicle,
-              //                                     // '${formatTime(parcelController.ongoingOrdersData!.bookingProducts.first.pickuptimeFrom)}',
-
-              //                                     //   parcelController.ongoingOrdersData[index].bookingProducts[index].pickuptimeFrom,
-              //                                     textAlign:
-              //                                         TextAlign.center,
-              //                                     style:
-              //                                         primaryfont.copyWith(
-              //                                             fontSize: 12.sp,
-              //                                             fontWeight:
-              //                                                 FontWeight
-              //                                                     .w600,
-              //                                             color: const Color(
-              //                                                 0xff455A64)),
-              //                                   ),
-              //                                   ksizedbox40,
-              //                                   ksizedbox40,
-              //                                   Text(
-              //                                     parcelController
-              //                                         .parcelOngoingOrderData!
-              //                                         .bookingProducts
-              //                                         .first
-              //                                         .deliverytimeFrom,
-              //                                     // '${formatTime(parcelController.ongoingOrdersData[index].bookingProducts[index].deliverytimeFrom)}
-              //                                     //  '${parcelController.ongoingOrdersData!.bookingProducts.first.deliverytimeFrom} \nto \n${parcelController.ongoingOrdersData!.bookingProducts.first.deliverytimeTo}',
-              //                                     // "djasdj",
-              //                                     //   '${formatTime(parcelController.ongoingOrdersData[index].bookingProducts[index].deliverytimeFrom)} to ${formatTime(parcelController.ongoingOrdersData[index].bookingProducts[index].deliverytimeTo)}',
-              //                                     textAlign:
-              //                                         TextAlign.center,
-              //                                     style:
-              //                                         primaryfont.copyWith(
-              //                                             fontSize: 12.sp,
-              //                                             fontWeight:
-              //                                                 FontWeight
-              //                                                     .w600,
-              //                                             color: Color(
-              //                                                 0xff455A64)),
-              //                                   ),
-              //                                 ],
-              //                               ),
-              //                             ],
-              //                           ),
-              //                           ksizedbox10,
-              //                         ],
-              //                       ),
-              //                     );
-              //           // });
-              //         })),
-              //   ),
-              //////////////////////
-              // Container(
-              //   padding: EdgeInsets.only(bottom: 5),
-              //   width: size.width,
-              //   decoration: BoxDecoration(
-              //     borderRadius: BorderRadius.circular(10),
-              //     color: AppColors.kwhite,
-              //   ),
-              //   child: Padding(
-              //     padding: EdgeInsets.only(left: 7, right: 7, top: 10),
-              //     child: GetBuilder<ParcelController>(builder: (_) {
-              //       return parcelController.ongoingorderLoading.isTrue
-              //           ? Center(
-              //               child: CircularProgressIndicator(
-              //               color: AppColors.kblue,
-              //             ))
-              //           : parcelController.ongoingOrdersData == null
-              //               ? Center(
-              //                   child: Container(
-              //                       alignment: Alignment.center,
-              //                       height: 200.h,
-              //                       width: size.width,
-              //                       decoration: BoxDecoration(
-              //                         color: Colors.grey.withOpacity(.09),
-              //                         borderRadius: BorderRadius.circular(10),
-              //                       ),
-              //                       child: Image.asset(
-              //                           "assets/images/No Data Found.jpeg")))
-              //               : LayoutBuilder(builder: (context, constraints) {
-              //                   return Container(
-              //                     padding: EdgeInsets.all(5),
-              //                     decoration: BoxDecoration(
-              //                       color: Colors.grey.withOpacity(.09),
-              //                       borderRadius: BorderRadius.circular(10),
-              //                     ),
-              //                     margin: EdgeInsets.only(bottom: 10),
-              //                     child: Column(
-              //                       children: [
-              //                         Row(
-              //                           mainAxisAlignment:
-              //                               MainAxisAlignment.spaceBetween,
-              //                           children: [
-              //                             Text(
-              //                               'Ongoing Order',
-              //                               style: primaryfont.copyWith(
-              //                                   fontWeight: FontWeight.w700,
-              //                                   fontSize: 15.sp),
-              //                             ),
-              //                             Padding(
-              //                               padding: const EdgeInsets.only(
-              //                                   right: 10),
-              //                               child: Text(
-              //                                 parcelController
-              //                                     .ongoingOrdersData!.bookingId,
-              //                                 style: primaryfont.copyWith(
-              //                                     fontWeight: FontWeight.w600,
-              //                                     fontSize: 14.sp),
-              //                               ),
-              //                             )
-              //                           ],
-              //                         ),
-              //                         Divider(),
-              //                         ksizedbox10,
-              //                         Row(
-              //                           mainAxisAlignment:
-              //                               MainAxisAlignment.spaceBetween,
-              //                           children: [
-              //                             Column(
-              //                               mainAxisAlignment:
-              //                                   MainAxisAlignment.start,
-              //                               children: [
-              //                                 Icon(
-              //                                   Icons.location_on,
-              //                                   color: Color(0xff038484),
-              //                                 ),
-              //                                 Dash(
-              //                                   direction: Axis.vertical,
-              //                                   length: constraints.maxHeight /
-              //                                       2, // Adjust the length dynamically
-              //                                   dashLength: 5,
-              //                                   dashColor: AppColors.kgrey,
-              //                                 ),
-              //                                 Icon(
-              //                                   Icons.location_on,
-              //                                   color: Color(0xffF74354),
-              //                                 ),
-              //                               ],
-              //                             ),
-              //                             SizedBox(
-              //                               width: 5.w,
-              //                             ),
-              //                             Column(
-              //                               mainAxisAlignment:
-              //                                   MainAxisAlignment.spaceBetween,
-              //                               children: [
-              //                                 Column(
-              //                                   crossAxisAlignment:
-              //                                       CrossAxisAlignment.start,
-              //                                   children: [
-              //                                     Text(
-              //                                       'Pickup Address',
-              //                                       style: primaryfont.copyWith(
-              //                                           fontSize: 14.sp,
-              //                                           fontWeight:
-              //                                               FontWeight.w600,
-              //                                           color:
-              //                                               Color(0xff455A64)),
-              //                                     ),
-              //                                     Container(
-              //                                       width: 230.h,
-              //                                       child: Text(
-              //                                         parcelController
-              //                                             .ongoingOrdersData!
-              //                                             .pickupAddreess,
-              //                                         style:
-              //                                             primaryfont.copyWith(
-              //                                                 color: const Color(
-              //                                                     0xff1E1E1E),
-              //                                                 fontWeight:
-              //                                                     FontWeight
-              //                                                         .w600,
-              //                                                 fontSize: 13.sp),
-              //                                       ),
-              //                                     ),
-              //                                   ],
-              //                                 ),
-              //                                 SizedBox(
-              //                                   height: 40.h,
-              //                                 ),
-              //                                 Column(
-              //                                   crossAxisAlignment:
-              //                                       CrossAxisAlignment.start,
-              //                                   children: [
-              //                                     Text(
-              //                                       'Drop Address',
-              //                                       style: primaryfont.copyWith(
-              //                                           fontSize: 14.sp,
-              //                                           fontWeight:
-              //                                               FontWeight.w600,
-              //                                           color:
-              //                                               Color(0xff455A64)),
-              //                                     ),
-              //                                     Container(
-              //                                       width: 230.h,
-              //                                       child: Text(
-              //                                         parcelController
-              //                                             .ongoingOrdersData!
-              //                                             .bookingDeliveryAddresses
-              //                                             .first
-              //                                             .address,
-              //                                         style:
-              //                                             primaryfont.copyWith(
-              //                                                 color: const Color(
-              //                                                     0xff1E1E1E),
-              //                                                 fontWeight:
-              //                                                     FontWeight
-              //                                                         .w600,
-              //                                                 fontSize: 13.sp),
-              //                                       ),
-              //                                     ),
-              //                                   ],
-              //                                 )
-              //                               ],
-              //                             ),
-              //                             Column(
-              //                               mainAxisAlignment:
-              //                                   MainAxisAlignment.spaceAround,
-              //                               children: [
-              //                                 Text(
-              //                                   "hsdffhd",
-              //                                   //  '${parcelController.ongoingOrdersData!.bookingProducts.first.pickuptimeFrom} \nto \n${parcelController.ongoingOrdersData!.bookingProducts.first.pickuptimeTo}',
-              //                                   textAlign: TextAlign.center,
-              //                                   style: primaryfont.copyWith(
-              //                                       fontSize: 12.sp,
-              //                                       fontWeight: FontWeight.w600,
-              //                                       color: const Color(
-              //                                           0xff455A64)),
-              //                                 ),
-              //                                 ksizedbox40,
-              //                                 // parcelController.ongoingOrdersData!.bookingProducts.first.deliverytimeFrom ==
-              //                                 //         null
-              //                                 //     ? Text("")
-              //                                 //     :
-              //                                 Text(
-              //                                   "jvvjjh",
-              //                                   //  '${parcelController.ongoingOrdersData!.bookingProducts.first.deliverytimeFrom} \nto \n${parcelController.ongoingOrdersData!.bookingProducts.first.deliverytimeTo}',
-              //                                   textAlign: TextAlign.center,
-              //                                   style: primaryfont.copyWith(
-              //                                       fontSize: 12.sp,
-              //                                       fontWeight: FontWeight.w600,
-              //                                       color: Color(0xff455A64)),
-              //                                 ),
-              //                               ],
-              //                             ),
-              //                           ],
-              //                         ),
-              //                         ksizedbox10,
-              //                       ],
-              //                     ),
-              //                   );
-              //                 });
-              //     }),
-              //   ),
-              // ),
 
               ksizedbox10,
             ],

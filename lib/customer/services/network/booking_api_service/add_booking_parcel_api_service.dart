@@ -29,6 +29,7 @@ class AddBookingParcelsApiService extends BaseApiServices {
         "additional_total": "600",
         "total_amount": "500",
         "is_round_trip": '0',
+        "vehicle_type": "Two Wheeler",
         "booking_date": addBookingParcelModel.bookingDate,
         "pickuptime_from": addBookingParcelModel.pickupTimeFrom,
         "pickuptime_to": addBookingParcelModel.pickupTimeTo,
@@ -40,7 +41,8 @@ class AddBookingParcelsApiService extends BaseApiServices {
         "distance": addBookingParcelModel.distance,
         "booking_type": "parcel",
         for (int i = 0; i < addBookingParcelModel.additionalDetails.length; i++)
-          "additional_services_id[$i]": addBookingParcelModel.additionalDetails[i],
+          "additional_services_id[$i]":
+              addBookingParcelModel.additionalDetails[i],
         "notes": addBookingParcelModel.notes,
         "products": addBookingParcelModel.products
             .map((product) => {
@@ -56,7 +58,7 @@ class AddBookingParcelsApiService extends BaseApiServices {
                   "deliverytime_from": product.deliveryTimeFrom,
                   "deliverytime_to": product.deliveryTimeTo,
                 })
-.toList(),
+            .toList(),
         "booking_address": addBookingParcelModel.bookingAddress
             .map((address) => {
                   "customer_name": address.customerName,

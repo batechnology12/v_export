@@ -9,7 +9,7 @@ import 'package:v_export/customer/model/delivery_type_model.dart';
 import 'package:v_export/customer/model/get_accept_booking_details_model.dart';
 import 'package:v_export/customer/model/get_vehicle_booking_details_model.dart';
 import 'package:v_export/customer/model/parcel_ongoing_order_model.dart';
-import 'package:v_export/customer/model/vehicle_onGoing_order_model.dart';
+import 'package:v_export/customer/model/onGoing_order_model.dart';
 import 'package:v_export/customer/model/vehicle_type_model.dart';
 import 'package:v_export/customer/services/network/booking_api_service/add_booking_parcel_api_service.dart';
 import 'package:v_export/customer/services/network/booking_api_service/add_booking_vehicle_api_services.dart';
@@ -18,9 +18,11 @@ import 'package:v_export/customer/services/network/booking_api_service/cancel_bo
 import 'package:v_export/customer/services/network/booking_api_service/get_accepted_booking_details_api_service.dart';
 import 'package:v_export/customer/services/network/booking_api_service/get_booking_api_service.dart';
 import 'package:v_export/customer/services/network/booking_api_service/get_delivery_type_api_services.dart';
+import 'package:v_export/customer/services/network/booking_api_service/get_km_api_service.dart';
 import 'package:v_export/customer/services/network/booking_api_service/get_vehicle_type_api_service.dart';
 import 'package:v_export/customer/services/network/booking_api_service/ongoing_orders_api_service.dart';
 import 'package:dio/dio.dart' as dio;
+import 'package:v_export/customer/services/network/booking_api_service/sender_receiver_api_service.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/booking_details.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/vehicle_booking_details.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/driver_details_screen.dart';
@@ -132,10 +134,10 @@ class ParcelController extends GetxController {
 
   List additionalServiceData = <AdditionalServiceData>[].obs;
   RxBool additionalServiceLoading = false.obs;
-  getAdditionalServices() async {
+  getAdditionalServices(String serviceType) async {
     additionalServiceLoading(true);
     dio.Response<dynamic> response =
-        await getAdditionalApiServices.getAdditionalServices();
+        await getAdditionalApiServices.getAdditionalServices(serviceType);
     additionalServiceLoading(false);
     if (response.data["status"] == true) {
       AdditionalServicesModel additionalServicesModel =
@@ -163,7 +165,7 @@ class ParcelController extends GetxController {
 
   AddBookingParcelsApiService addBookingParcelsApiService =
       AddBookingParcelsApiService();
-  String driverbookingid = "";
+  // String driverbookingid = "";
   RxBool addBookingLoading = false.obs;
   BookingData? data;
   addBookingParcel(AddBookingParcelModel addBookingParcelModel) async {
@@ -175,10 +177,11 @@ class ParcelController extends GetxController {
     print("---------response");
     print(response.data);
     if (response.data["status"] == true) {
-      GetBookingdetailsModeldata getBookingdetailsModeldata =
-          GetBookingdetailsModeldata.fromJson(response.data);
-      data = getBookingdetailsModeldata.data;
-      driverbookingid = data!.id.toString();
+      // GetBookingdetailsModeldata getBookingdetailsModeldata =
+      //     GetBookingdetailsModeldata.fromJson(response.data);
+      // data = getBookingdetailsModeldata.data;
+      //  driverbookingid = data!.id.toString();
+      Get.to(MakePayment());
       // Get.rawSnackbar(
       //   backgroundColor: Colors.green,
       //   messageText: Text(
@@ -187,9 +190,9 @@ class ParcelController extends GetxController {
       //   ),
       // );
       //  data.add(Bookingdata.fromJson(bookingData));
-      Get.to(BookingDetailsScreen(
-        bookingdatalist: data!,
-      ));
+      // Get.to(BookingDetailsScreen(
+
+      // ));
       addBookingLoading(false);
       update();
     } else {
@@ -305,6 +308,69 @@ class ParcelController extends GetxController {
       getacceptBookingLoading(false);
     } else {
       update();
+      Get.rawSnackbar(
+        backgroundColor: Colors.red,
+        messageText: Text(
+          response.data['message'],
+          style: TextStyle(color: Colors.white, fontSize: 15.sp),
+        ),
+      );
+    }
+  }
+
+  GetKiloMeterApiServices getKiloMeterApiServices = GetKiloMeterApiServices();
+  //   RxBool getKiloMeterLoading = false.obs;
+  double distance = 0;
+  getKiloMeterApi(
+      {required double lat1,
+      required double lon1,
+      required double lat2,
+      required double lon2,
+      required String unit}) async {
+    dio.Response<dynamic> response = await getKiloMeterApiServices.getKiloMeter(
+        lat1: lat1, lon1: lon1, lat2: lat2, lon2: lon2, unit: unit);
+
+    distance = response.data["distance"];
+    print("------distance");
+    print(distance);
+    // if (response.data["status"] == true) {
+    //     
+    //   Get.rawSnackbar(
+    //     backgroundColor: Colors.green,
+    //     messageText: Text(
+    //       response.data['message'],
+    //       style: TextStyle(color: Colors.white, fontSize: 15.sp),
+    //     ),
+    //   );
+    //   update();
+    // } else {
+    //   update();
+    //   Get.rawSnackbar(
+    //     backgroundColor: Colors.red,
+    //     messageText: Text(
+    //       response.data['message'],
+    //       style: TextStyle(color: Colors.white, fontSize: 15.sp),
+    //     ),
+    //   );
+    // }
+  }
+
+  SenderReceiverApiServices senderReceiverApiServices =
+      SenderReceiverApiServices();
+
+  senderReceiverApi(String bookingID, String payable) async {
+    dio.Response<dynamic> response =
+        await senderReceiverApiServices.senderReceiver(bookingID, payable);
+    if (response.data["status"] == true) {
+      Get.rawSnackbar(
+        backgroundColor: Colors.green,
+        messageText: Text(
+          response.data['message'],
+          style: TextStyle(color: Colors.white, fontSize: 15.sp),
+        ),
+      );
+      update();
+    } else {
       Get.rawSnackbar(
         backgroundColor: Colors.red,
         messageText: Text(

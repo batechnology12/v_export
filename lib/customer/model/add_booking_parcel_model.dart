@@ -54,11 +54,11 @@ class AddBookingParcelModel {
 
 class Product {
   String parcelItems;
-  String length;
-  String width;
-  String height;
-  int qty;
-  String kg;
+  List<String> length;
+  List<String> width;
+  List<String> height;
+  List<String> qty;
+  List<String> kg;
   String pickupTimeFrom;
   String pickupTimeTo;
   String deliveryDate;

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
@@ -28,6 +29,7 @@ class HomeController extends GetxController {
   var receiverNameList = <String>[].obs;
   var receiverNumberList = <String>[].obs;
   var receiverBlockIdUnitIDs = '';
+  var secondContainers = <int>[0].obs; // Initialize with one item
 
   void updateDroppingLocation(
       String location,
@@ -84,7 +86,6 @@ class HomeController extends GetxController {
       String reciverNumberVehicle,
       String reciverBlockIdUnitIDVehicle) {
     if (indexVehicle < vehicledroppingLocations.length) {
-
       vehicledroppingLocations[indexVehicle] = locationVehicle;
       vehicledroppingLats[indexVehicle] = latVehicle;
       vehicledropLongs[indexVehicle] = longVehicle;
@@ -93,7 +94,6 @@ class HomeController extends GetxController {
       vehiclereceiverNameList[indexVehicle] = reciverNameVehicle;
       vehiclereceiverNumberList[indexVehicle] = reciverNumberVehicle;
       vehiclereceiverBlockIdUnitIDs = reciverBlockIdUnitIDVehicle;
-      
     } else {
       vehicledroppingLocations.add(locationVehicle);
       vehicledroppingLats.add(latVehicle);
@@ -106,8 +106,14 @@ class HomeController extends GetxController {
     }
   }
 
+  ////////////////////////
+  var isRoundTripVisible = true.obs;
+
   void addEntry() {
     entries.add(entries.length);
+    if (entries.length > 1) {
+      isRoundTripVisible.value = false;
+    }
   }
 
   void removeEntry(int index) {
@@ -120,6 +126,9 @@ class HomeController extends GetxController {
         pincodes.removeAt(index);
         doornames.removeAt(index);
       }
+    }
+    if (entries.length == 1) {
+      isRoundTripVisible.value = true;
     }
   }
 
@@ -137,58 +146,61 @@ class HomeController extends GetxController {
     isCheck.value = value;
   }
 
+  var hideDeleteIcon = true.obs;
+
+  bool isCheckedParcel = true;
+
+  void setDeleteIconVisibility(bool value) {
+    hideDeleteIcon.value = value;
+  }
+
+  // Lists of TextEditingController
+  var parcelLengthControllers = <TextEditingController>[].obs;
+  var parcelWidthControllers = <TextEditingController>[].obs;
+  var parcelHeightControllers = <TextEditingController>[].obs;
+  var parcelKgControllers = <TextEditingController>[].obs;
+  var quantityControllers = <TextEditingController>[].obs;
+
+  // Initialize TextEditingController for the first item
+  HomeController() {
+    parcelLengthControllers.add(TextEditingController());
+    parcelWidthControllers.add(TextEditingController());
+    parcelHeightControllers.add(TextEditingController());
+    parcelKgControllers.add(TextEditingController());
+    quantityControllers.add(TextEditingController());
+  }
+
+//  var isChecklocationindex = true.obs;
+  void addSecondContainer() {
+    secondContainers.add(secondContainers.length);
+    parcelLengthControllers.add(TextEditingController());
+    parcelWidthControllers.add(TextEditingController());
+    parcelHeightControllers.add(TextEditingController());
+    parcelKgControllers.add(TextEditingController());
+    quantityControllers.add(TextEditingController());
+  }
+
+  void removeSecondContainer(int index) {
+    if (secondContainers.length > 1) {
+      secondContainers.removeAt(index);
+      parcelLengthControllers[index].dispose();
+      parcelWidthControllers[index].dispose();
+      parcelHeightControllers[index].dispose();
+      parcelKgControllers[index].dispose();
+      quantityControllers[index].dispose();
+      parcelLengthControllers.removeAt(index);
+      parcelWidthControllers.removeAt(index);
+      parcelHeightControllers.removeAt(index);
+      parcelKgControllers.removeAt(index);
+      quantityControllers.removeAt(index);
+    }
+  }
+
   var showYellowContainer = false.obs;
 
   void toggleYellowContainer() {
     showYellowContainer.value = !showYellowContainer.value;
   }
-  // var entries = <int>[0].obs;
-  // var isCheck = false.obs;
-  // void addEntry() {
-  //   entries.add(entries.length);
-  // }
-
-  // void removeEntry(int index) {
-  //   if (entries.length > 1) {
-  //     entries.removeAt(index);
-  //     if (index < droppingLocations.length) {
-  //       droppingLocations.removeAt(index);
-  //     }
-  //   }
-  // }
-
-  // void toggleCheck(bool value) {
-  //   isCheck.value = value;
-  // }
-
-  // List<String> droppingLocations = <String>[].obs;
-
-  // String droppingLat = "";
-  // String dropLong = "";
-  // String pincode = "";
-  // String doorname = "";
-
-  // void updateDroppingLocation(String location, String lat, String long,
-  //     String arpincode, String bookingpincode) {
-  //   // if (index < droppingLocations.length) {
-  //   droppingLocations.add(location);
-  //   droppingLat = lat;
-  //   dropLong = long;
-  //   pincode = arpincode;
-  //   doorname = bookingpincode;
-  // }
-
-  // var addParcels = <int>[0].obs;
-
-  // addParcelList() {
-  //   addParcels.add(addParcels.length);
-  // }
-
-  // removeParcelList(index) {
-  //   if (addParcels.length > 1) {
-  //     addParcels.removeAt(index);
-  //   }
-  // }
 
   var vehicalEntries = <int>[0].obs;
   var vehicalCheck = false.obs;
