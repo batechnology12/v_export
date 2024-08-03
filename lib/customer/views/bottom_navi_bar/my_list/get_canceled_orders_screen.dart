@@ -90,7 +90,7 @@ class _GetCancelledScreenDataState extends State<GetCancelledScreenData> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Booking ID : ${myListController.getCancelledOrdersModelData[index].bookingId}',
+                                'Booking ID : ${myListController.getCancelledOrdersModelData.first.bookingId}',
                                 style: primaryfont.copyWith(
                                     fontWeight: FontWeight.w700,
                                     fontSize: 15.5),
@@ -192,8 +192,8 @@ class _GetCancelledScreenDataState extends State<GetCancelledScreenData> {
                                               myListController
                                                   .getCancelledOrdersModelData[
                                                       index]
-                                                  .bookingDeliveryAddresses[
-                                                      index]
+                                                  .bookingDeliveryAddresses
+                                                  .first
                                                   .address
                                                   .toString(),
                                               style: primaryfont.copyWith(
@@ -217,20 +217,22 @@ class _GetCancelledScreenDataState extends State<GetCancelledScreenData> {
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                          '${myListController.getCancelledOrdersModelData[index].bookingProducts[index].pickuptimeFrom} to ${myListController.getCancelledOrdersModelData[index].bookingProducts[index].pickuptimeTo}',
+                                          '${myListController.getCancelledOrdersModelData[index].bookingProducts.first.pickuptimeFrom} \nto \n${myListController.getCancelledOrdersModelData[index].bookingProducts.first.pickuptimeTo}',
 
                                           // '${formatTime(myListController.getCancelledOrdersModelData[index].bookingProducts[index].pickuptimeFrom)} to ${formatTime(myListController.getCancelledOrdersModelData[index].bookingProducts[index].pickuptimeTo)}',
+                                          textAlign: TextAlign.center,
                                           style: primaryfont.copyWith(
-                                              fontSize: 13.sp,
+                                              fontSize: 11.sp,
                                               fontWeight: FontWeight.w600,
                                               color: Color(0xff455A64)),
                                         ),
                                         Text(
-                                          '${myListController.getCancelledOrdersModelData[index].bookingProducts[index].deliverytimeFrom} to ${myListController.getCancelledOrdersModelData[index].bookingProducts[index].deliverytimeTo}',
+                                          '${myListController.getCancelledOrdersModelData[index].bookingProducts.first.deliverytimeFrom} \nto \n${myListController.getCancelledOrdersModelData[index].bookingProducts.first.deliverytimeTo}',
 
                                           // '${formatTime(myListController.getCancelledOrdersModelData[index].bookingProducts[index].deliverytimeFrom)} to ${formatTime(myListController.getCancelledOrdersModelData[index].bookingProducts[index].deliverytimeTo)}',
+                                          textAlign: TextAlign.center,
                                           style: primaryfont.copyWith(
-                                              fontSize: 13.sp,
+                                              fontSize: 11.sp,
                                               fontWeight: FontWeight.w600,
                                               color: Color(0xff455A64)),
                                         ),
@@ -306,7 +308,8 @@ class _GetCancelledScreenDataState extends State<GetCancelledScreenData> {
                                     Text(
                                       myListController
                                           .getCancelledOrdersModelData[index]
-                                          .bookingProducts[index]
+                                          .bookingProducts
+                                          .first
                                           .deliveryDate
                                           .toString(),
                                       // formatDate(

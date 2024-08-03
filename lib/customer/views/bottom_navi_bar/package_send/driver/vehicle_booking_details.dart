@@ -102,6 +102,8 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
 
   List<int> selectedId = [];
 
+  // double totalAmountVehicle = 0.0;
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -240,59 +242,79 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          RichText(
-                                            text: TextSpan(
-                                              text: 'Date: ',
-                                              style: primaryfont.copyWith(
-                                                  color: Colors.black,
-                                                  fontSize: 16.sp,
-                                                  fontWeight: FontWeight.bold),
-                                              children: <TextSpan>[
-                                                TextSpan(
-                                                  text: widget.pickupDate,
-                                                  //"sjdjd",
-                                                  // '${formatDate(DateTime.parse(widget.getVehicleBookingDetailsDataList!.bookingDate.toString()), [
-                                                  //   dd,
-                                                  //   '-',
-                                                  //   mm,
-                                                  //   '-',
-                                                  //   yyyy
-                                                  // ])}',
-                                                  style: primaryfont.copyWith(
-                                                      color: Colors.black,
-                                                      fontSize: 15.sp,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                              ],
-                                            ),
+                                          Text(
+                                            widget.pickupDate,
+                                            style: primaryfont.copyWith(
+                                                color: Colors.black,
+                                                fontSize: 15.sp,
+                                                fontWeight: FontWeight.w500),
                                           ),
-                                          RichText(
-                                            text: TextSpan(
-                                              text: 'Time: ',
-                                              style: primaryfont.copyWith(
-                                                  color: Colors.black,
-                                                  fontSize: 16.sp,
-                                                  fontWeight: FontWeight.bold),
-                                              children: <TextSpan>[
-                                                TextSpan(
-                                                  text: widget.pickupTime,
-                                                  // widget
-                                                  //     .getVehicleBookingDetailsDataList!
-                                                  //     .bookingTimeFromVehicle,
-                                                  //   '${widget.getVehicleBookingDetailsDataList!.bookingProducts.first.pickuptimeFrom}',
-                                                  // to ${widget.getVehicleBookingDetailsDataList!.bookingProducts.first.pickuptimeTo}',
-                                                  style: primaryfont.copyWith(
-                                                      color: Colors.black,
-                                                      fontSize: 15.sp,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                              ],
-                                            ),
+                                          Text(
+                                            widget.pickupTime,
+                                            style: primaryfont.copyWith(
+                                                color: Colors.black,
+                                                fontSize: 15.sp,
+                                                fontWeight: FontWeight.w500),
                                           ),
                                         ],
                                       ),
+                                      // Row(
+                                      //   mainAxisAlignment:
+                                      //       MainAxisAlignment.spaceBetween,
+                                      //   children: [
+                                      //     RichText(
+                                      //       text: TextSpan(
+                                      //         text: 'Date: ',
+                                      //         style: primaryfont.copyWith(
+                                      //             color: Colors.black,
+                                      //             fontSize: 16.sp,
+                                      //             fontWeight: FontWeight.bold),
+                                      //         children: <TextSpan>[
+                                      //           TextSpan(
+                                      //             text: widget.pickupDate,
+                                      //             //"sjdjd",
+                                      //             // '${formatDate(DateTime.parse(widget.getVehicleBookingDetailsDataList!.bookingDate.toString()), [
+                                      //             //   dd,
+                                      //             //   '-',
+                                      //             //   mm,
+                                      //             //   '-',
+                                      //             //   yyyy
+                                      //             // ])}',
+                                      //             style: primaryfont.copyWith(
+                                      //                 color: Colors.black,
+                                      //                 fontSize: 15.sp,
+                                      //                 fontWeight:
+                                      //                     FontWeight.w500),
+                                      //           ),
+                                      //         ],
+                                      //       ),
+                                      //     ),
+                                      //     RichText(
+                                      //       text: TextSpan(
+                                      //         text: 'Time: ',
+                                      //         style: primaryfont.copyWith(
+                                      //             color: Colors.black,
+                                      //             fontSize: 16.sp,
+                                      //             fontWeight: FontWeight.bold),
+                                      //         children: <TextSpan>[
+                                      //           TextSpan(
+                                      //             text: widget.pickupTime,
+                                      //             // widget
+                                      //             //     .getVehicleBookingDetailsDataList!
+                                      //             //     .bookingTimeFromVehicle,
+                                      //             //   '${widget.getVehicleBookingDetailsDataList!.bookingProducts.first.pickuptimeFrom}',
+                                      //             // to ${widget.getVehicleBookingDetailsDataList!.bookingProducts.first.pickuptimeTo}',
+                                      //             style: primaryfont.copyWith(
+                                      //                 color: Colors.black,
+                                      //                 fontSize: 15.sp,
+                                      //                 fontWeight:
+                                      //                     FontWeight.w500),
+                                      //           ),
+                                      //         ],
+                                      //       ),
+                                      //     ),
+                                      //   ],
+                                      // ),
                                       ksizedbox5,
                                       Padding(
                                         padding: const EdgeInsets.only(top: 4),
@@ -324,7 +346,7 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
                                       ksizedbox5,
                                       RichText(
                                         text: TextSpan(
-                                          text: 'Sender Name: ',
+                                          text: 'Name : ',
                                           style: primaryfont.copyWith(
                                               color: Colors.black,
                                               fontSize: 16.sp,
@@ -346,7 +368,7 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
                                       ksizedbox5,
                                       RichText(
                                         text: TextSpan(
-                                          text: 'Sender Mobile Number: ',
+                                          text: 'Phone: ',
                                           style: primaryfont.copyWith(
                                               color: Colors.black,
                                               fontSize: 16.sp,
@@ -416,7 +438,7 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
                                       ksizedbox5,
                                       RichText(
                                         text: TextSpan(
-                                          text: 'Receiver Name: ',
+                                          text: 'Name: ',
                                           style: primaryfont.copyWith(
                                               color: Colors.black,
                                               fontSize: 16.sp,
@@ -438,7 +460,7 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
                                       ksizedbox5,
                                       RichText(
                                         text: TextSpan(
-                                          text: 'Receiver Mobile Number: ',
+                                          text: 'Phone: ',
                                           style: primaryfont.copyWith(
                                               color: Colors.black,
                                               fontSize: 16.sp,

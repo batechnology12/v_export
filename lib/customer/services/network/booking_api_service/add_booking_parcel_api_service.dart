@@ -27,7 +27,7 @@ class AddBookingParcelsApiService extends BaseApiServices {
         "booking_amount": "500",
         "gst": "500",
         "additional_total": "600",
-        "total_amount": "500",
+        "total_amount": addBookingParcelModel.totalAmountCost,
         "is_round_trip": '0',
         "vehicle_type": "Two Wheeler",
         "booking_date": addBookingParcelModel.bookingDate,

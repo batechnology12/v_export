@@ -24,8 +24,10 @@ class AddBookingParcelModel {
   List<Product> products;
   List<BookingAddress> bookingAddress;
   String parcelPhoto;
+  String totalAmountCost;
 
   AddBookingParcelModel({
+    required this.totalAmountCost,
     required this.pickupAddress,
     required this.deliveryTypeid,
     required this.paymentMode,

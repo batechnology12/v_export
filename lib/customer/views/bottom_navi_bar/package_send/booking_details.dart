@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -15,7 +17,7 @@ import 'package:intl/intl.dart';
 import '../../../../constant/app_font.dart';
 
 class BookingDetailsScreen extends StatefulWidget {
-  String totalAmount;
+  String additionalservicetotalAmount;
   String pickupADDRESS;
   String pickpLATITUDE;
   String pickupLOGITUDE;
@@ -54,7 +56,7 @@ class BookingDetailsScreen extends StatefulWidget {
 
   BookingDetailsScreen({
     super.key,
-    required this.totalAmount,
+    required this.additionalservicetotalAmount,
     required this.pickupADDRESS,
     required this.pickpLATITUDE,
     required this.pickupLOGITUDE,
@@ -97,9 +99,17 @@ class BookingDetailsScreen extends StatefulWidget {
 }
 
 class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setState(() {});
+  }
+
   var couponController = TextEditingController();
 
   ParcelController parcelController = Get.find<ParcelController>();
+
   final easebuzzController = Get.find<EasebuszzController>();
 
   List paymentDetails = [
@@ -125,20 +135,45 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
     String formattedTime = DateFormat("h a").format(parsedTime);
     return formattedTime;
   }
-  //   String formatTime(TimeOfDay time) {
-  //   final now = DateTime.now();
-  //   final formattedTime = DateFormat('h:mm a').format(DateTime(
-  //     now.year,
-  //     now.month,
-  //     now.day,
-  //     time.hour,
-  //     time.minute,
-  //   ));
-  //   return formattedTime;
-  // }
+
+  // Define a function that returns farePrice and perKm as a tuple
+  Map<String, double> deliveryCost(String deliveryType) {
+    double farePrice = 0.00;
+    double perKm = 0.00;
+
+    if (deliveryType == "4 Hours Delivery") {
+      farePrice = 9.00;
+      perKm = 0.40;
+    } else if (deliveryType == "Express Delivery") {
+      farePrice = 12.00;
+      perKm = 0.50;
+    } else if (deliveryType == "Same day delivery") {
+      farePrice = 8.00;
+      perKm = 0.30;
+    } else if (deliveryType == "Specific Time") {
+      farePrice = 11.00;
+      perKm = 0.40;
+    }
+
+    return {'farePrice': farePrice, 'perKm': perKm};
+  }
 
   @override
   Widget build(BuildContext context) {
+    final double distance = double.tryParse(widget.distance) ?? 0.0;
+    final double serviceAmount =
+        double.tryParse(widget.additionalservicetotalAmount) ?? 0.0;
+    final cost = deliveryCost(widget.deliveryTYPE);
+    final farePrice = cost['farePrice']!;
+    final perKm = cost['perKm']!;
+    final amountValue = farePrice + (perKm * distance);
+    final allTotalAmount = serviceAmount + farePrice + (perKm * distance);
+    print("------3456---------");
+    print(serviceAmount);
+    print(distance);
+    print(farePrice + (perKm * distance));
+    print(amountValue.toStringAsFixed(2));
+    print(allTotalAmount.toStringAsFixed(2));
     final size = MediaQuery.of(context).size;
     List<int> additionalServiceParcelIds =
         widget.selectedParcelservice.map((service) => service.id).toList();
@@ -251,7 +286,6 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                             'Booking Details',
                                             style: primaryfont.copyWith(
                                                 fontWeight: FontWeight.w700,
-                                                color: Color(0xff1E1E1E),
                                                 fontSize: 19.sp),
                                           ),
                                         ],
@@ -280,55 +314,75 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          RichText(
-                                            text: TextSpan(
-                                              text: 'Date: ',
-                                              style: primaryfont.copyWith(
-                                                  color: Colors.black,
-                                                  fontSize: 16.sp,
-                                                  fontWeight: FontWeight.bold),
-                                              children: <TextSpan>[
-                                                TextSpan(
-                                                  text: widget.bookingDATE,
-                                                  // '${formatDate(DateTime.parse(widget.bookingdatalist.bookingDate.toString()), [
-                                                  //   dd,
-                                                  //   '-',
-                                                  //   mm,
-                                                  //   '-',
-                                                  //   yyyy
-                                                  // ])}',
-                                                  style: primaryfont.copyWith(
-                                                      color: Colors.black,
-                                                      fontSize: 15.sp,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                              ],
-                                            ),
+                                          Text(
+                                            widget.bookingDATE,
+                                            style: primaryfont.copyWith(
+                                                color: Colors.black,
+                                                fontSize: 15.sp,
+                                                fontWeight: FontWeight.w500),
                                           ),
-                                          RichText(
-                                            text: TextSpan(
-                                              text: 'Time: ',
-                                              style: primaryfont.copyWith(
-                                                  color: Colors.black,
-                                                  fontSize: 16.sp,
-                                                  fontWeight: FontWeight.bold),
-                                              children: <TextSpan>[
-                                                TextSpan(
-                                                  text:
-                                                      "${widget.pickTimeFROM} to ${widget.pickTimeTO}",
-                                                  // '${widget.bookingdatalist.bookingProducts.first.pickuptimeFrom} to ${widget.bookingdatalist.bookingProducts.first.pickuptimeTo}',
-                                                  style: primaryfont.copyWith(
-                                                      color: Colors.black,
-                                                      fontSize: 15.sp,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                              ],
-                                            ),
+                                          Text(
+                                            "${widget.pickTimeFROM} to ${widget.pickTimeTO}",
+                                            style: primaryfont.copyWith(
+                                                color: Colors.black,
+                                                fontSize: 15.sp,
+                                                fontWeight: FontWeight.w500),
                                           ),
                                         ],
                                       ),
+                                      // Row(
+                                      //   mainAxisAlignment:
+                                      //       MainAxisAlignment.spaceBetween,
+                                      //   children: [
+                                      //     RichText(
+                                      //       text: TextSpan(
+                                      //         text: 'Date: ',
+                                      //         style: primaryfont.copyWith(
+                                      //             color: Colors.black,
+                                      //             fontSize: 16.sp,
+                                      //             fontWeight: FontWeight.bold),
+                                      //         children: <TextSpan>[
+                                      //           TextSpan(
+                                      //             text: widget.bookingDATE,
+                                      //             // '${formatDate(DateTime.parse(widget.bookingdatalist.bookingDate.toString()), [
+                                      //             //   dd,
+                                      //             //   '-',
+                                      //             //   mm,
+                                      //             //   '-',
+                                      //             //   yyyy
+                                      //             // ])}',
+                                      //             style: primaryfont.copyWith(
+                                      //                 color: Colors.black,
+                                      //                 fontSize: 15.sp,
+                                      //                 fontWeight:
+                                      //                     FontWeight.w500),
+                                      //           ),
+                                      //         ],
+                                      //       ),
+                                      //     ),
+                                      //     RichText(
+                                      //       text: TextSpan(
+                                      //         text: 'Time: ',
+                                      //         style: primaryfont.copyWith(
+                                      //             color: Colors.black,
+                                      //             fontSize: 16.sp,
+                                      //             fontWeight: FontWeight.bold),
+                                      //         children: <TextSpan>[
+                                      //           TextSpan(
+                                      //             text:
+                                      //                 "${widget.pickTimeFROM} to ${widget.pickTimeTO}",
+                                      //             // '${widget.bookingdatalist.bookingProducts.first.pickuptimeFrom} to ${widget.bookingdatalist.bookingProducts.first.pickuptimeTo}',
+                                      //             style: primaryfont.copyWith(
+                                      //                 color: Colors.black,
+                                      //                 fontSize: 15.sp,
+                                      //                 fontWeight:
+                                      //                     FontWeight.w500),
+                                      //           ),
+                                      //         ],
+                                      //       ),
+                                      //     ),
+                                      //   ],
+                                      // ),
                                       ksizedbox5,
                                       Padding(
                                         padding: const EdgeInsets.only(top: 4),
@@ -417,55 +471,75 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                         ),
                                       ),
                                       ksizedbox5,
+                                      // Row(
+                                      //   mainAxisAlignment:
+                                      //       MainAxisAlignment.spaceBetween,
+                                      //   children: [
+                                      //     RichText(
+                                      //       text: TextSpan(
+                                      //         text: 'Date: ',
+                                      //         style: primaryfont.copyWith(
+                                      //             color: Colors.black,
+                                      //             fontSize: 16.sp,
+                                      //             fontWeight: FontWeight.bold),
+                                      //         children: <TextSpan>[
+                                      //           TextSpan(
+                                      //             text: widget.deliveyDate,
+                                      //             // widget
+                                      //             //     .bookingdatalist
+                                      //             //     .bookingProducts
+                                      //             //     .first
+                                      //             //     .deliveryDate
+                                      //             //     .toString(),
+                                      //             style: primaryfont.copyWith(
+                                      //                 color: Colors.black,
+                                      //                 fontSize: 15.sp,
+                                      //                 fontWeight:
+                                      //                     FontWeight.w500),
+                                      //           ),
+                                      //         ],
+                                      //       ),
+                                      //     ),
+                                      //     RichText(
+                                      //       text: TextSpan(
+                                      //         text: 'Time: ',
+                                      //         style: primaryfont.copyWith(
+                                      //             color: Colors.black,
+                                      //             fontSize: 16.sp,
+                                      //             fontWeight: FontWeight.bold),
+                                      //         children: <TextSpan>[
+                                      //           TextSpan(
+                                      //             text:
+                                      //                 "${widget.deliveryTimeFROM} to ${widget.deliveryTimeTO}",
+                                      //             //   "${widget.bookingdatalist.bookingProducts.first.deliverytimeFrom} to ${widget.bookingdatalist.bookingProducts.first.deliverytimeTo}",
+                                      //             style: primaryfont.copyWith(
+                                      //                 color: Colors.black,
+                                      //                 fontSize: 15.sp,
+                                      //                 fontWeight:
+                                      //                     FontWeight.w500),
+                                      //           ),
+                                      //         ],
+                                      //       ),
+                                      //     ),
+                                      //   ],
+                                      // ),
                                       Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          RichText(
-                                            text: TextSpan(
-                                              text: 'Date: ',
-                                              style: primaryfont.copyWith(
-                                                  color: Colors.black,
-                                                  fontSize: 16.sp,
-                                                  fontWeight: FontWeight.bold),
-                                              children: <TextSpan>[
-                                                TextSpan(
-                                                  text: widget.deliveyDate,
-                                                  // widget
-                                                  //     .bookingdatalist
-                                                  //     .bookingProducts
-                                                  //     .first
-                                                  //     .deliveryDate
-                                                  //     .toString(),
-                                                  style: primaryfont.copyWith(
-                                                      color: Colors.black,
-                                                      fontSize: 15.sp,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                              ],
-                                            ),
+                                          Text(
+                                            widget.deliveyDate,
+                                            style: primaryfont.copyWith(
+                                                color: Colors.black,
+                                                fontSize: 15.sp,
+                                                fontWeight: FontWeight.w500),
                                           ),
-                                          RichText(
-                                            text: TextSpan(
-                                              text: 'Time: ',
-                                              style: primaryfont.copyWith(
-                                                  color: Colors.black,
-                                                  fontSize: 16.sp,
-                                                  fontWeight: FontWeight.bold),
-                                              children: <TextSpan>[
-                                                TextSpan(
-                                                  text:
-                                                      "${widget.deliveryTimeFROM} to ${widget.deliveryTimeTO}",
-                                                  //   "${widget.bookingdatalist.bookingProducts.first.deliverytimeFrom} to ${widget.bookingdatalist.bookingProducts.first.deliverytimeTo}",
-                                                  style: primaryfont.copyWith(
-                                                      color: Colors.black,
-                                                      fontSize: 15.sp,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                              ],
-                                            ),
+                                          Text(
+                                            "${widget.deliveryTimeFROM} to ${widget.deliveryTimeTO}",
+                                            style: primaryfont.copyWith(
+                                                color: Colors.black,
+                                                fontSize: 15.sp,
+                                                fontWeight: FontWeight.w500),
                                           ),
                                         ],
                                       ),
@@ -542,157 +616,148 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                       ksizedbox10,
                                       Divider(),
                                       ksizedbox10,
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            'Delivery Type :',
-                                            style: primaryfont.copyWith(
-                                                fontSize: 15.sp,
-                                                fontWeight: FontWeight.w700),
-                                          ),
-                                          Text(
-                                            widget.deliveryTYPE,
-                                            // widget.bookingdatalist
-                                            //     .deliveryTypeName,
-                                            style: primaryfont.copyWith(
-                                                fontSize: 15.sp,
-                                                fontWeight: FontWeight.w500,
-                                                color: Color(0xff455A64)),
-                                          )
-                                        ],
-                                      ),
-                                      ksizedbox5,
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            'Parcel Item:',
-                                            style: primaryfont.copyWith(
-                                                fontSize: 15.sp,
-                                                fontWeight: FontWeight.w700),
-                                          ),
-                                          Text(
-                                            widget.parcelITEMS,
-                                            //   "${widget.bookingdatalist.bookingProducts.first.parcelItems}",
-                                            style: primaryfont.copyWith(
-                                                fontSize: 15.sp,
-                                                fontWeight: FontWeight.w500,
-                                                color: Color(0xff455A64)),
-                                          )
-                                        ],
-                                      ),
-                                      ksizedbox5,
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            'Parcel Weight :',
-                                            style: primaryfont.copyWith(
-                                                fontSize: 15.sp,
-                                                fontWeight: FontWeight.w700),
-                                          ),
-                                          Text(
-                                            "${widget.totalWeights} kg",
-                                            //  "${widget.parcelKg.map((e) => e.replaceAll(RegExp(r'\[|\]'), '').trim()).join(' ')} kg",
-                                            // "${widget.bookingdatalist.bookingProducts.first.kg} Kg",
-                                            style: primaryfont.copyWith(
-                                                fontSize: 15.sp,
-                                                fontWeight: FontWeight.w500,
-                                                color: Color(0xff455A64)),
-                                          )
-                                        ],
-                                      ),
-                                      ksizedbox5,
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            'Parcel Quantity :',
-                                            style: primaryfont.copyWith(
-                                                fontSize: 15.sp,
-                                                fontWeight: FontWeight.w700),
-                                          ),
-                                          Text(
-                                            "${widget.parcelQty.map((e) => e.replaceAll(RegExp(r'\[|\]'), '').trim()).join(' ')} kg",
 
-                                            // "${widget.bookingdatalist.bookingProducts.first.qty} Qty",
-                                            style: primaryfont.copyWith(
-                                                fontSize: 15.sp,
-                                                fontWeight: FontWeight.w500,
-                                                color: Color(0xff455A64)),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Delivery Type :',
+                                                style: primaryfont.copyWith(
+                                                    fontSize: 15.sp,
+                                                    fontWeight:
+                                                        FontWeight.w700),
+                                              ),
+                                              ksizedbox5,
+                                              Text(
+                                                'Parcel Item :',
+                                                style: primaryfont.copyWith(
+                                                    fontSize: 15.sp,
+                                                    fontWeight:
+                                                        FontWeight.w700),
+                                              ),
+                                              ksizedbox5,
+                                              Text(
+                                                'Parcel Weight:',
+                                                style: primaryfont.copyWith(
+                                                    fontSize: 15.sp,
+                                                    fontWeight:
+                                                        FontWeight.w700),
+                                              ),
+                                              ksizedbox5,
+                                              Text(
+                                                'Parcel Quantity:',
+                                                style: primaryfont.copyWith(
+                                                    fontSize: 15.sp,
+                                                    fontWeight:
+                                                        FontWeight.w700),
+                                              ),
+                                            ],
+                                          ),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                widget.deliveryTYPE,
+                                                // widget.bookingdatalist
+                                                //     .deliveryTypeName,
+                                                //   textAlign: TextAlign.right,
+                                                style: primaryfont.copyWith(
+                                                    fontSize: 15.sp,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Color(0xff455A64)),
+                                              ),
+                                              ksizedbox5,
+                                              Text(
+                                                widget.parcelITEMS,
+                                                //  textAlign: TextAlign.left,
+                                                //   "${widget.bookingdatalist.bookingProducts.first.parcelItems}",
+                                                style: primaryfont.copyWith(
+                                                    fontSize: 15.sp,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Color(0xff455A64)),
+                                              ),
+                                              ksizedbox5,
+                                              Text(
+                                                "${widget.totalWeights} kg",
+                                                //   textAlign: TextAlign.left,
+                                                //  "${widget.parcelKg.map((e) => e.replaceAll(RegExp(r'\[|\]'), '').trim()).join(' ')} kg",
+                                                // "${widget.bookingdatalist.bookingProducts.first.kg} Kg",
+                                                style: primaryfont.copyWith(
+                                                    fontSize: 15.sp,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Color(0xff455A64)),
+                                              ),
+                                              ksizedbox5,
+                                              Text(
+                                                "${widget.parcelQty.map((e) => e.replaceAll(RegExp(r'\[|\]'), '').trim()).join(' ')} kg",
+                                                textAlign: TextAlign.left,
+                                                // "${widget.bookingdatalist.bookingProducts.first.qty} Qty",
+                                                style: primaryfont.copyWith(
+                                                    fontSize: 15.sp,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Color(0xff455A64)),
+                                              ),
+                                            ],
                                           )
                                         ],
                                       ),
+
                                       ksizedbox15,
                                       Divider(),
+
                                       Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text(
-                                            'Additional Services :',
-                                            style: primaryfont.copyWith(
-                                                fontSize: 15.sp,
-                                                fontWeight: FontWeight.w700),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Additional Services :',
+                                                style: primaryfont.copyWith(
+                                                    fontSize: 15.sp,
+                                                    fontWeight:
+                                                        FontWeight.w700),
+                                              ),
+                                            ],
                                           ),
-                                          Expanded(
+                                          Container(
+                                            width: 150,
                                             child: ListView.builder(
-                                                shrinkWrap: true,
-                                                itemCount: widget
-                                                    .selectedParcelservice
-                                                    .length,
-                                                itemBuilder: (context, index) {
-                                                  AdditionalServiceData
-                                                      additionalparcelServiceData =
-                                                      widget.selectedParcelservice[
-                                                          index];
-                                                  return widget
-                                                          .selectedParcelservice
-                                                          .isEmpty
-                                                      ? Text(
-                                                          "No",
-                                                          style: primaryfont
-                                                              .copyWith(
-                                                                  fontSize:
-                                                                      15.sp,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500,
-                                                                  color: Color(
-                                                                      0xff455A64)),
-                                                        )
-                                                      : Container(
-                                                          width: 200,
-                                                          alignment: Alignment
-                                                              .centerRight,
-                                                          child: Text(
-                                                            additionalparcelServiceData
-                                                                .name,
-                                                            // widget
-                                                            //     .bookingdatalist
-                                                            //     .additionalServices[
-                                                            //         index]
-                                                            //     .name,
-                                                            textAlign:
-                                                                TextAlign.right,
-                                                            style: primaryfont.copyWith(
-                                                                fontSize: 15.sp,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500,
-                                                                color: Color(
-                                                                    0xff455A64)),
-                                                          ),
-                                                        );
-                                                }),
+                                              shrinkWrap: true,
+                                              scrollDirection: Axis.vertical,
+                                              physics:
+                                                  NeverScrollableScrollPhysics(),
+                                              // itemCount: 2,
+                                              itemCount: widget
+                                                  .selectedParcelservice.length,
+                                              itemBuilder: (context, index) {
+                                                AdditionalServiceData
+                                                    additionalparcelServiceData =
+                                                    widget.selectedParcelservice[
+                                                        index];
+                                                return Text(
+                                                  additionalparcelServiceData
+                                                      .name,
+                                                  style: primaryfont.copyWith(
+                                                      fontSize: 15.sp,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color: Color(0xff455A64)),
+                                                );
+                                              },
+                                            ),
                                           ),
                                         ],
                                       ),
+
                                       ksizedbox5,
                                       Divider(),
                                       ksizedbox10,
@@ -839,42 +904,141 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                       ksizedbox5,
                                       Divider(),
                                       ksizedbox10,
+                                      // ListView.builder(
+                                      //     shrinkWrap: true,
+                                      //     itemCount: widget
+                                      //         .selectedParcelservice.length,
+                                      //     itemBuilder: (context, index) {
+                                      //       AdditionalServiceData
+                                      //           additionalparcelServiceData1 =
+                                      //           widget.selectedParcelservice[
+                                      //               index];
+                                      //       return Row(
+                                      //         mainAxisAlignment:
+                                      //             MainAxisAlignment
+                                      //                 .spaceBetween,
+                                      //         children: [
+                                      //           Column(
+                                      //             crossAxisAlignment:
+                                      //                 CrossAxisAlignment.start,
+                                      //             children: [
+                                      //               Text(
+                                      //                 additionalparcelServiceData1
+                                      //                     .name,
+                                      //                 // "fhawbdkvbjkasbvj",
+                                      //                 style:
+                                      //                     primaryfont.copyWith(
+                                      //                         fontSize: 15.sp,
+                                      //                         fontWeight:
+                                      //                             FontWeight
+                                      //                                 .w600,
+                                      //                         color: Color(
+                                      //                             0xff455A64)),
+                                      //               ),
+                                      //             ],
+                                      //           ),
+                                      //           Column(
+                                      //             mainAxisAlignment:
+                                      //                 MainAxisAlignment.start,
+                                      //             children: [
+                                      //               Container(
+                                      //                 color: Colors.amber,
+                                      //                 width: 90,
+                                      //                 alignment:
+                                      //                     Alignment.centerLeft,
+                                      //                 child: Text(
+                                      //                   '\$${additionalparcelServiceData1.amount}',
+                                      //                   textAlign:
+                                      //                       TextAlign.left,
+                                      //                   style: primaryfont
+                                      //                       .copyWith(
+                                      //                           fontSize: 15,
+                                      //                           fontWeight:
+                                      //                               FontWeight
+                                      //                                   .w600,
+                                      //                           color: Color(
+                                      //                               0xff455A64)),
+                                      //                 ),
+                                      //               ),
+                                      //             ],
+                                      //           )
+                                      //         ],
+                                      //       );
+                                      //     }),
+                                      // ksizedbox20,
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            "Delivery Fees",
+                                            // widget
+                                            //     .bookingdatalist
+                                            //     .additionalServices[index]
+                                            //     .name,
+                                            style: primaryfont.copyWith(
+                                                fontSize: 15.sp,
+                                                fontWeight: FontWeight.w600,
+                                                color: Color(0xff455A64)),
+                                          ),
+                                          Text(
+                                            // additionalparcelServiceData1
+                                            //     .amount,
+
+                                            '+\$${amountValue.toStringAsFixed(2)}',
+
+                                            style: primaryfont.copyWith(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w600,
+                                                color: Color(0xff455A64)),
+                                          )
+                                        ],
+                                      ),
+                                      ksizedbox5,
                                       ListView.builder(
                                           shrinkWrap: true,
                                           itemCount: widget
                                               .selectedParcelservice.length,
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
                                           itemBuilder: (context, index) {
                                             AdditionalServiceData
                                                 additionalparcelServiceData1 =
                                                 widget.selectedParcelservice[
                                                     index];
                                             return Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
                                               children: [
-                                                Text(
-                                                  additionalparcelServiceData1
-                                                      .name,
-                                                  // widget
-                                                  //     .bookingdatalist
-                                                  //     .additionalServices[index]
-                                                  //     .name,
-                                                  style: primaryfont.copyWith(
-                                                      fontSize: 15.sp,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      color: Color(0xff455A64)),
+                                                Container(
+                                                  width: 293,
+                                                  child: Text(
+                                                    additionalparcelServiceData1
+                                                        .name,
+                                                    textAlign: TextAlign.left,
+                                                    // widget
+                                                    //     .bookingdatalist
+                                                    //     .additionalServices[index]
+                                                    //     .name,
+                                                    style: primaryfont.copyWith(
+                                                        fontSize: 15.sp,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        color:
+                                                            Color(0xff455A64)),
+                                                  ),
                                                 ),
-                                                Text(
-                                                  // additionalparcelServiceData1
-                                                  //     .amount,
-                                                  '\$${additionalparcelServiceData1.amount}',
-                                                  style: primaryfont.copyWith(
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      color: Color(0xff455A64)),
+                                                Container(
+                                                  child: Text(
+                                                    // additionalparcelServiceData1
+                                                    //     .amount,
+                                                    '+\$${additionalparcelServiceData1.amount}',
+                                                    textAlign: TextAlign.left,
+                                                    style: primaryfont.copyWith(
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        color:
+                                                            Color(0xff455A64)),
+                                                  ),
                                                 )
                                               ],
                                             );
@@ -892,7 +1056,10 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                             ),
                                           ),
                                           Text(
-                                            '\$${widget.totalAmount}',
+                                            "\$${allTotalAmount.toStringAsFixed(2)}",
+                                            // totalAmount.toStringAsFixed(2),
+                                            //  '\$${widget.totalAmount}',\
+
                                             style: primaryfont.copyWith(
                                               fontSize: 16.sp,
                                               fontWeight: FontWeight.w700,
@@ -964,6 +1131,8 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                       AddBookingParcelModel
                                           addBookingParcelModel =
                                           AddBookingParcelModel(
+                                              totalAmountCost: allTotalAmount
+                                                  .toStringAsFixed(2),
                                               pickupAddress:
                                                   widget.pickupADDRESS,
                                               deliveryTypeid: widget
@@ -972,8 +1141,10 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                               paymentMode: "500",
                                               bookingAmount: "500",
                                               gst: "500",
-                                              additionalTotal: "500",
-                                              totalAmount: "500",
+                                              additionalTotal: serviceAmount
+                                                  .toStringAsFixed(2),
+                                              totalAmount: allTotalAmount
+                                                  .toStringAsFixed(2),
                                               isRoundTrip: '1',
                                               bookingDate: widget.bookingDATE,
                                               pickupTimeFrom:

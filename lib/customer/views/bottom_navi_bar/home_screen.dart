@@ -15,6 +15,7 @@ import 'package:v_export/customer/controller/account_controller.dart';
 import 'package:v_export/customer/controller/home_controller.dart';
 import 'package:v_export/customer/controller/home_screen_controller.dart';
 import 'package:v_export/customer/controller/parcel_controller.dart';
+import 'package:v_export/customer/model/onGoing_order_model.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/book_vehicle/book_vehicle_screen.dart';
 import 'package:v_export/customer/views/notification/notification_view.dart';
 
@@ -370,7 +371,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           Image.asset('assets/icons/Group.png'),
                           Text(
-                            'Moving Vehicle',
+                            'Book Vehicle',
                             style: secondoryfont.copyWith(
                                 fontSize: 16.sp,
                                 color: AppColors.kwhite,
@@ -439,256 +440,465 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               ksizedbox20,
-              // parcelController.ongoingOrdersData!.bookingType == "vehicle"
-              //     ?
+              // Container(
+              //   padding: EdgeInsets.only(bottom: 5),
+              //   width: size.width,
+              //   decoration: BoxDecoration(
+              //       borderRadius: BorderRadius.circular(10),
+              //       color: AppColors.kwhite),
+              //   child:
+              // Padding(
+              //     padding: EdgeInsets.only(left: 7, top: 10),
+              //     child:
+              // GetBuilder<ParcelController>(builder: (_) {
+              //   return parcelController.ongoingorderLoading.isTrue
+              //       ? Center(
+              //           child: CircularProgressIndicator(
+              //           color: AppColors.kblue,
+              //         ))
+              //       : parcelController.ongoingOrdersData.isEmpty
+              //           ? Center(
+              //               child: Container(
+              //                   alignment: Alignment.center,
+              //                   height: 200.h,
+              //                   width: size.width,
+              //                   decoration: BoxDecoration(
+              //                     color: Colors.grey.withOpacity(.09),
+              //                     borderRadius: BorderRadius.circular(10),
+              //                   ),
+              //                   child: Image.asset(
+              //                       "assets/images/Group 42002.png")))
+              //           :
               Container(
-                padding: EdgeInsets.only(bottom: 5),
-                width: size.width,
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: AppColors.kwhite),
-                child: Padding(
-                    padding: EdgeInsets.only(left: 7, top: 10),
-                    child: GetBuilder<ParcelController>(builder: (_) {
-                      return parcelController.ongoingorderLoading.isTrue
-                          ? Center(
-                              child: CircularProgressIndicator(
-                              color: AppColors.kblue,
-                            ))
-                          : parcelController.ongoingOrdersData == null
-                              ? Center(
-                                  child: Container(
-                                      alignment: Alignment.center,
-                                      height: 200.h,
-                                      width: size.width,
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey.withOpacity(.09),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: Image.asset(
-                                          "assets/images/Group 42002.png")))
-                              :
-                              //  ListView.builder(
-                              //     padding: EdgeInsets.zero,
-                              //     physics: NeverScrollableScrollPhysics(),
-                              //     shrinkWrap: true,
-                              //     itemCount:
-                              //         parcelController.ongoingOrdersData.length,
-                              //     itemBuilder: (context, index) {
-                              //       return
-                              Container(
-                                  padding: EdgeInsets.all(5),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey.withOpacity(.09),
-                                    borderRadius: BorderRadius.circular(10),
+                  color: Colors.grey.withOpacity(.09),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                margin: EdgeInsets.only(bottom: 10),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // parcelController.ongoingOrdersData
+                          //             .first.isConfirmed ==
+                          //         "0"
+                          //     ? Text(
+                          //         "Pending Order",
+                          //         style: primaryfont.copyWith(
+                          //             color: Colors.red,
+                          //             fontWeight:
+                          //                 FontWeight.w700,
+                          //             fontSize: 15.sp),
+                          //       )
+                          //     : Text(
+                          //         "Ongoing Order",
+                          //         style: primaryfont.copyWith(
+                          //             fontWeight:
+                          //                 FontWeight.w700,
+                          //             color: AppColors.kblue,
+                          //             fontSize: 15.sp),
+                          //       ),
+                          Text("dskjsdjkjs"),
+                          Text(
+                            // 'BookingID :- ${parcelController.ongoingOrdersData.first.bookingId}',
+                            "efhjadvhjbadjkv",
+                            style: primaryfont.copyWith(
+                                fontWeight: FontWeight.w700, fontSize: 15.sp),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Divider(),
+                    ksizedbox10,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(top: 35),
+                              child: Column(
+                                children: [
+                                  Icon(
+                                    Icons.location_on,
+                                    color: Color(0xff038484),
                                   ),
-                                  margin: EdgeInsets.only(bottom: 10),
-                                  child: Column(
+                                  Dash(
+                                      direction: Axis.vertical,
+                                      length: 55,
+                                      dashLength: 5,
+                                      dashColor: AppColors.kgrey),
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              width: 5.w,
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Pickup Address',
+                                  style: primaryfont.copyWith(
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xff455A64)),
+                                ),
+                                Container(
+                                  width: 230.h,
+                                  child: Text(
+                                    // parcelController
+                                    //     .ongoingOrdersData
+                                    //     .first
+                                    //     .pickupAddreess,
+
+                                    "jdj",
+                                    style: primaryfont.copyWith(
+                                        color: const Color(0xff1E1E1E),
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 13.sp),
+                                  ),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Text(
+                              "chjsdhvbhds ",
+                              // parcelController
+                              //             .ongoingOrdersData
+                              //             .first
+                              //             .bookingType ==
+                              //         "parcel"
+                              //     ? "${parcelController.ongoingOrdersData.first.bookingProducts.first.pickuptimeFrom} \nto \n${parcelController.ongoingOrdersData.first.pickuptimeTo}"
+                              //     : parcelController
+                              //         .ongoingOrdersData
+                              //         .first
+                              //         .bookingTimeFromVehicle,
+                              textAlign: TextAlign.center,
+                              style: primaryfont.copyWith(
+                                  fontSize: 12.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xff455A64)),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.symmetric(
+                    //       horizontal: 5),
+                    //   child: Row(
+                    //     mainAxisAlignment:
+                    //         MainAxisAlignment.spaceBetween,
+                    //     children: [
+                    //       Row(
+                    //         children: [
+                    //           const Column(
+                    //             mainAxisAlignment:
+                    //                 MainAxisAlignment.start,
+                    //             children: [
+                    //               Icon(
+                    //                 Icons.location_on,
+                    //                 color: Color(0xff038484),
+                    //               ),
+                    //               Dash(
+                    //                   direction:
+                    //                       Axis.vertical,
+                    //                   length: 100,
+                    //                   dashLength: 5,
+                    //                   dashColor:
+                    //                       AppColors.kgrey),
+                    //               Icon(
+                    //                 Icons.location_on,
+                    //                 color: Color(0xffF74354),
+                    //               ),
+                    //             ],
+                    //           ),
+                    //           SizedBox(
+                    //             width: 5.w,
+                    //           ),
+                    //           Column(
+                    //             mainAxisAlignment:
+                    //                 MainAxisAlignment
+                    //                     .spaceBetween,
+                    //             children: [
+                    //               Column(
+                    //                 crossAxisAlignment:
+                    //                     CrossAxisAlignment
+                    //                         .start,
+                    //                 children: [
+                    //                   Text(
+                    //                     'Pickup Address',
+                    //                     style: primaryfont
+                    //                         .copyWith(
+                    //                             fontSize:
+                    //                                 14.sp,
+                    //                             fontWeight:
+                    //                                 FontWeight
+                    //                                     .w600,
+                    //                             color: Color(
+                    //                                 0xff455A64)),
+                    //                   ),
+                    //                   Container(
+                    //                     width: 230.h,
+                    //                     child: Text(
+                    //                       parcelController
+                    //                           .ongoingOrdersData!
+                    //                           .pickupAddreess,
+                    //                       // "jdj",
+                    //                       style: primaryfont.copyWith(
+                    //                           color: const Color(
+                    //                               0xff1E1E1E),
+                    //                           fontWeight:
+                    //                               FontWeight
+                    //                                   .w600,
+                    //                           fontSize:
+                    //                               13.sp),
+                    //                     ),
+                    //                   ),
+                    //                 ],
+                    //               ),
+                    //               SizedBox(
+                    //                 height: 40.h,
+                    //               ),
+                    //               Column(
+                    //                 crossAxisAlignment:
+                    //                     CrossAxisAlignment
+                    //                         .start,
+                    //                 children: [
+                    //                   Text(
+                    //                     'Drop Address',
+                    //                     style: primaryfont
+                    //                         .copyWith(
+                    //                             fontSize:
+                    //                                 14.sp,
+                    //                             fontWeight:
+                    //                                 FontWeight
+                    //                                     .w600,
+                    //                             color: Color(
+                    //                                 0xff455A64)),
+                    //                   ),
+                    //                   Container(
+                    //                     width: 230.h,
+                    //                     child: Text(
+                    //                       //   "jkdj",
+                    //                       parcelController
+                    //                           .ongoingOrdersData!
+                    //                           .bookingDeliveryAddresses
+                    //                           .first
+                    //                           .address,
+                    //                       style: primaryfont.copyWith(
+                    //                           color: const Color(
+                    //                               0xff1E1E1E),
+                    //                           fontWeight:
+                    //                               FontWeight
+                    //                                   .w600,
+                    //                           fontSize:
+                    //                               13.sp),
+                    //                     ),
+                    //                   ),
+                    //                 ],
+                    //               )
+                    //             ],
+                    //           ),
+                    //         ],
+                    //       ),
+                    //       // Container(
+                    //       // child:
+                    //       Column(
+                    //         mainAxisAlignment:
+                    //             MainAxisAlignment.spaceAround,
+                    //         children: [
+                    //           Text(
+                    //             //     "hj",
+
+                    //             parcelController
+                    //                         .ongoingOrdersData!
+                    //                         .bookingType ==
+                    //                     "parcel"
+                    //                 ? "${parcelController.ongoingOrdersData!.bookingProducts.first.pickuptimeFrom} \nto \n${parcelController.ongoingOrdersData!.bookingProducts.first.pickuptimeTo}"
+                    //                 : parcelController
+                    //                     .ongoingOrdersData!
+                    //                     .bookingTimeFromVehicle,
+                    //             // '${formatTime(parcelController.ongoingOrdersData!.bookingProducts.first.pickuptimeFrom)}'
+                    //             textAlign: TextAlign.center,
+                    //             style: primaryfont.copyWith(
+                    //                 fontSize: 12.sp,
+                    //                 fontWeight:
+                    //                     FontWeight.w600,
+                    //                 color: const Color(
+                    //                     0xff455A64)),
+                    //           ),
+                    //           ksizedbox40,
+                    //           ksizedbox40,
+                    //           Text(
+                    //             parcelController
+                    //                         .ongoingOrdersData!
+                    //                         .bookingType ==
+                    //                     "parcel"
+                    //                 ? "${parcelController.ongoingOrdersData!.bookingProducts.first.deliverytimeFrom} \nto \n${parcelController.ongoingOrdersData!.bookingProducts.first.deliverytimeTo}"
+                    //                 : "",
+                    //             //  "djkbjked",
+                    //             // parcelController
+                    //             //             .ongoingOrdersData!
+                    //             //             .bookingType ==
+                    //             //         "parcel"
+                    //             //     ? '${formatTime(parcelController.ongoingOrdersData!.bookingProducts.first.deliverytimeFrom)}'
+                    //             //     : "",
+                    //             textAlign: TextAlign.center,
+                    //             style: primaryfont.copyWith(
+                    //                 fontSize: 12.sp,
+                    //                 fontWeight:
+                    //                     FontWeight.w600,
+                    //                 color: Color(0xff455A64)),
+                    //           ),
+                    //         ],
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
+                    ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: 3,
+                        // parcelController
+                        //     .ongoingOrdersData.length,
+                        itemBuilder: ((context, index) {
+                          // OngoingOrderData ongoingorderList =
+                          //     parcelController
+                          //         .ongoingOrdersData[index];
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Column(
                                     children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          parcelController.ongoingOrdersData!
-                                                      .isConfirmed ==
-                                                  "0"
-                                              ? Text(
-                                                  "Pending Order",
-                                                  style: primaryfont.copyWith(
-                                                      color: Colors.red,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      fontSize: 15.sp),
-                                                )
-                                              : Text(
-                                                  "Ongoing Order",
-                                                  style: primaryfont.copyWith(
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      color: AppColors.kblue,
-                                                      fontSize: 15.sp),
-                                                ),
-
-                                          Text(
-                                            'BookingID :- ${parcelController.ongoingOrdersData!.bookingId}',
-                                            style: primaryfont.copyWith(
-                                                fontWeight: FontWeight.w700,
-                                                fontSize: 15.sp),
-                                          ),
-                                      
-                                        ],
+                                      Icon(
+                                        Icons.location_on,
+                                        color: Color(0xffF74354),
                                       ),
-                                      Divider(),
-                                      ksizedbox10,
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              const Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  Icon(
-                                                    Icons.location_on,
-                                                    color: Color(0xff038484),
-                                                  ),
-                                                  Dash(
-                                                      direction: Axis.vertical,
-                                                      length: 100,
-                                                      dashLength: 5,
-                                                      dashColor:
-                                                          AppColors.kgrey),
-                                                  Icon(
-                                                    Icons.location_on,
-                                                    color: Color(0xffF74354),
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(
-                                                width: 5.w,
-                                              ),
-                                              Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        'Pickup Address',
-                                                        style: primaryfont
-                                                            .copyWith(
-                                                                fontSize: 14.sp,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600,
-                                                                color: Color(
-                                                                    0xff455A64)),
-                                                      ),
-                                                      Container(
-                                                        width: 230.h,
-                                                        child: Text(
-                                                          parcelController
-                                                              .ongoingOrdersData!
-                                                              .pickupAddreess,
-// "jdj",
-                                                          style: primaryfont.copyWith(
-                                                              color: const Color(
-                                                                  0xff1E1E1E),
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                              fontSize: 13.sp),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  SizedBox(
-                                                    height: 40.h,
-                                                  ),
-                                                  Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        'Drop Address',
-                                                        style: primaryfont
-                                                            .copyWith(
-                                                                fontSize: 14.sp,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600,
-                                                                color: Color(
-                                                                    0xff455A64)),
-                                                      ),
-                                                      Container(
-                                                        width: 230.h,
-                                                        child: Text(
-                                                          //   "jkdj",
-                                                          parcelController
-                                                              .ongoingOrdersData!
-                                                              .bookingDeliveryAddresses
-                                                              .first
-                                                              .address,
-                                                          style: primaryfont.copyWith(
-                                                              color: const Color(
-                                                                  0xff1E1E1E),
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                              fontSize: 13.sp),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  )
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                          // Container(
-                                          // child:
-                                          Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceAround,
-                                            children: [
-                                              Text(
-                                                //     "hj",
-
-                                                parcelController
-                                                            .ongoingOrdersData!
-                                                            .bookingType ==
-                                                        "parcel"
-                                                    ? "${parcelController.ongoingOrdersData!.bookingProducts.first.pickuptimeFrom} \nto \n${parcelController.ongoingOrdersData!.bookingProducts.first.pickuptimeTo}"
-                                                    : parcelController
-                                                        .ongoingOrdersData!
-                                                        .bookingTimeFromVehicle,
-// '${formatTime(parcelController.ongoingOrdersData!.bookingProducts.first.pickuptimeFrom)}'
-                                                textAlign: TextAlign.center,
-                                                style: primaryfont.copyWith(
-                                                    fontSize: 12.sp,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: const Color(
-                                                        0xff455A64)),
-                                              ),
-                                              ksizedbox40,
-                                              ksizedbox40,
-                                              Text(
-                                                parcelController
-                                                            .ongoingOrdersData!
-                                                            .bookingType ==
-                                                        "parcel"
-                                                    ? "${parcelController.ongoingOrdersData!.bookingProducts.first.deliverytimeFrom} \nto \n${parcelController.ongoingOrdersData!.bookingProducts.first.deliverytimeTo}"
-                                                    : "",
-                                                //  "djkbjked",
-                                                // parcelController
-                                                //             .ongoingOrdersData!
-                                                //             .bookingType ==
-                                                //         "parcel"
-                                                //     ? '${formatTime(parcelController.ongoingOrdersData!.bookingProducts.first.deliverytimeFrom)}'
-                                                //     : "",
-                                                textAlign: TextAlign.center,
-                                                style: primaryfont.copyWith(
-                                                    fontSize: 12.sp,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Color(0xff455A64)),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                      ksizedbox10,
+                                      Dash(
+                                          direction: Axis.vertical,
+                                          length: 75,
+                                          dashLength: 5,
+                                          dashColor: AppColors.kgrey),
                                     ],
                                   ),
-                                );
-                    })),
+                                  SizedBox(
+                                    width: 5.w,
+                                  ),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Delivery Address',
+                                        style: primaryfont.copyWith(
+                                            fontSize: 14.sp,
+                                            fontWeight: FontWeight.w600,
+                                            color: Color(0xff455A64)),
+                                      ),
+                                      Container(
+                                        width: 230.h,
+                                        padding: EdgeInsets.only(bottom: 30),
+                                        child: Text(
+                                          "sjdhgfhjadvjhasjhvbjhdsbvhjasdjvjhadb",
+                                          // ongoingorderList
+                                          //     .bookingDeliveryAddresses
+                                          //     .first
+                                          //     .address,
+                                          // "jdj",
+                                          style: primaryfont.copyWith(
+                                              color: const Color(0xff1E1E1E),
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 13.sp),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Text(
+                                    "fjkabjsk v jkd",
+                                    // ongoingorderList
+                                    //             .bookingType ==
+                                    //         "parcel"
+                                    //     ? "${ongoingorderList.bookingProducts.first.pickuptimeFrom} \nto \n${ongoingorderList.bookingProducts.first.pickuptimeTo}"
+                                    //     : ongoingorderList
+                                    //         .bookingTimeFromVehicle,
+                                    textAlign: TextAlign.center,
+                                    style: primaryfont.copyWith(
+                                        fontSize: 12.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: const Color(0xff455A64)),
+                                  ),
+                                ],
+                              )
+                            ],
+                          );
+                        })),
+                    Container(
+                      alignment: Alignment.center,
+                      height: 45.h,
+                      width: size.width,
+                      decoration: const BoxDecoration(
+                          color: AppColors.kblue,
+                          borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(20),
+                              bottomRight: Radius.circular(20))),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "nndsv ands ",
+                            // parcelController.ongoingOrdersData
+                            //             .first.bookingType ==
+                            //         "parcel"
+                            //     ? "Parcel Delivery"
+                            //     : "Book Vehicle",
+                            style: primaryfont.copyWith(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white),
+                          ),
+                          Ksizedboxw10,
+                          // parcelController.ongoingOrdersData
+                          //             .first.bookingType ==
+                          //         "parcel"
+                          //     ? Padding(
+                          //         padding:
+                          //             const EdgeInsets.all(
+                          //                 9.0),
+                          //         child: Image.asset(
+                          //           "assets/images/delivery-man.png",
+                          //           color: Colors.white,
+                          //         ),
+                          //       )
+                          //     : Padding(
+                          //         padding:
+                          //             const EdgeInsets.all(
+                          //                 13.0),
+                          //         child: Image.asset(
+                          //             "assets/images/Group (5).png"),
+                          //       ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                // );
+                // })
+                //   ),
               ),
-
               ksizedbox10,
             ],
           ),

@@ -81,8 +81,7 @@ class _PickupVehicleAddressDetailsState
   }
 
   bool ischecked = false;
-    final formKey = GlobalKey<FormState>();
-
+  final formKey = GlobalKey<FormState>();
 
   void _showFullScreenvehicleAddressInput() {
     showModalBottomSheet(
@@ -133,13 +132,14 @@ class _PickupVehicleAddressDetailsState
                             googleAPIKey:
                                 "AIzaSyAyygarjlqp_t2SPo7vS1oXDq1Yxs-LLNg",
                             inputDecoration: InputDecoration(
+                                contentPadding: EdgeInsets.only(left: 10),
                                 isDense: true,
-                                prefixIcon: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Image.asset(
-                                    "assets/icons/google-maps.png",
-                                  ),
-                                ),
+                                // prefixIcon: Padding(
+                                //   padding: const EdgeInsets.all(8.0),
+                                //   child: Image.asset(
+                                //     "assets/icons/google-maps.png",
+                                //   ),
+                                // ),
                                 // suffixIcon: Padding(
                                 //   padding: const EdgeInsets.all(5.0),
                                 //   child: Image.asset(
@@ -163,26 +163,28 @@ class _PickupVehicleAddressDetailsState
                             isLatLngRequired: true,
                             getPlaceDetailWithLatLng: (Prediction prediction) {
                               if (_controller != null) {
-                                _controller!
-                                    .animateCamera(CameraUpdate.newCameraPosition(
+                                _controller!.animateCamera(
+                                    CameraUpdate.newCameraPosition(
                                   CameraPosition(
-                                    target: LatLng(double.parse(prediction.lat!),
+                                    target: LatLng(
+                                        double.parse(prediction.lat!),
                                         double.parse(prediction.lng!)),
                                     zoom: 14.0,
                                   ),
                                 ));
                               }
-                    
+
                               setState(() {
                                 _markers.add(Marker(
                                   markerId: MarkerId(prediction.placeId!),
-                                  position: LatLng(double.parse(prediction.lat!),
+                                  position: LatLng(
+                                      double.parse(prediction.lat!),
                                       double.parse(prediction.lng!)),
-                                  infoWindow:
-                                      InfoWindow(title: prediction.description!),
+                                  infoWindow: InfoWindow(
+                                      title: prediction.description!),
                                 ));
                               });
-                    
+
                               // Fetch place name using the coordinates
                               // _fetchPlaceName(
                               //   double.parse(prediction.lat!),
@@ -217,7 +219,8 @@ class _PickupVehicleAddressDetailsState
                               decoration: InputDecoration(
                                   hintText: 'Enter Block no / Unit no',
                                   hintStyle: primaryfont.copyWith(
-                                      fontSize: 14, fontWeight: FontWeight.w500),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
                                     borderSide: BorderSide(
@@ -247,7 +250,8 @@ class _PickupVehicleAddressDetailsState
                               decoration: InputDecoration(
                                   hintText: 'Enter Sender Name',
                                   hintStyle: primaryfont.copyWith(
-                                      fontSize: 14, fontWeight: FontWeight.w500),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
                                     borderSide: BorderSide(
@@ -265,7 +269,7 @@ class _PickupVehicleAddressDetailsState
                               fontWeight: FontWeight.w600),
                         ),
                         ksizedbox5,
-                         TextFormField(
+                        TextFormField(
                           controller: _phoneNumberController,
                           validator: (value) {
                             if (value!.length < 8 || value.length > 8) {
@@ -277,7 +281,7 @@ class _PickupVehicleAddressDetailsState
                           inputFormatters: [
                             LengthLimitingTextInputFormatter(8),
                             FilteringTextInputFormatter.digitsOnly,
-                              FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                            FilteringTextInputFormatter.deny(RegExp(r'\s')),
                           ],
                           decoration: InputDecoration(
                             prefixIcon: Padding(
@@ -314,7 +318,8 @@ class _PickupVehicleAddressDetailsState
                                 ),
                                 borderRadius: BorderRadius.circular(10)),
                             errorBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Color(0xff444444)),
+                                borderSide:
+                                    BorderSide(color: Color(0xff444444)),
                                 borderRadius: BorderRadius.circular(10)),
                           ),
                         ),
@@ -356,7 +361,7 @@ class _PickupVehicleAddressDetailsState
                         InkWell(
                             onTap: () {
                               if (formKey.currentState!.validate()) {
-                                 if (_senderNameController.text.isNotEmpty &&
+                                if (_senderNameController.text.isNotEmpty &&
                                     _phoneNumberController.text.isNotEmpty) {
                                   Get.offAll(BookVehicleScreen(
                                       vehiclepickupAdress:
@@ -389,7 +394,6 @@ class _PickupVehicleAddressDetailsState
                                       snackPosition: SnackPosition.BOTTOM);
                                 }
                               }
-                             
                             },
                             child: CommonContainer(
                               name: 'Confirm',
@@ -506,14 +510,15 @@ class _PickupVehicleAddressDetailsState
                                 googleAPIKey:
                                     "AIzaSyAyygarjlqp_t2SPo7vS1oXDq1Yxs-LLNg",
                                 inputDecoration: InputDecoration(
+                                    contentPadding: EdgeInsets.only(left: 10),
                                     enabled: false,
                                     isDense: true,
-                                    prefixIcon: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Image.asset(
-                                        "assets/icons/google-maps.png",
-                                      ),
-                                    ),
+                                    // prefixIcon: Padding(
+                                    //   padding: const EdgeInsets.all(8.0),
+                                    //   child: Image.asset(
+                                    //     "assets/icons/google-maps.png",
+                                    //   ),
+                                    // ),
                                     // suffixIcon: Padding(
                                     //   padding: const EdgeInsets.all(5.0),
                                     //   child: Image.asset(
@@ -592,7 +597,7 @@ class _PickupVehicleAddressDetailsState
                             child: Container(
                               height: 47,
                               width: size.width,
-                             decoration: BoxDecoration(
+                              decoration: BoxDecoration(
                                   color: AppColors.kwhite,
                                   border: Border.all(
                                     color: Color(0xff444444),
@@ -601,7 +606,7 @@ class _PickupVehicleAddressDetailsState
                               child: TextFormField(
                                   controller: _blockUnitController,
                                   decoration: InputDecoration(
-                                     contentPadding: const EdgeInsets.only(
+                                      contentPadding: const EdgeInsets.only(
                                           left: 10,
                                           right: 10,
                                           top: 10,
@@ -634,7 +639,7 @@ class _PickupVehicleAddressDetailsState
                             child: Container(
                               height: 47,
                               width: size.width,
-                             decoration: BoxDecoration(
+                              decoration: BoxDecoration(
                                   color: AppColors.kwhite,
                                   border: Border.all(
                                     color: Color(0xff444444),
@@ -645,7 +650,7 @@ class _PickupVehicleAddressDetailsState
                                       TextCapitalization.sentences,
                                   controller: _senderNameController,
                                   decoration: InputDecoration(
-                                     contentPadding: const EdgeInsets.only(
+                                      contentPadding: const EdgeInsets.only(
                                           left: 10,
                                           right: 10,
                                           top: 10,
@@ -675,7 +680,7 @@ class _PickupVehicleAddressDetailsState
                           ksizedbox5,
                           GestureDetector(
                             onTap: _showFullScreenvehicleAddressInput,
-                            child:  TextFormField(
+                            child: TextFormField(
                               controller: _phoneNumberController,
                               validator: (value) {
                                 if (value!.length < 8 || value.length > 8) {
@@ -687,7 +692,7 @@ class _PickupVehicleAddressDetailsState
                               inputFormatters: [
                                 LengthLimitingTextInputFormatter(8),
                                 FilteringTextInputFormatter.digitsOnly,
-                                  FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                                FilteringTextInputFormatter.deny(RegExp(r'\s')),
                               ],
                               decoration: InputDecoration(
                                 prefixIcon: Padding(

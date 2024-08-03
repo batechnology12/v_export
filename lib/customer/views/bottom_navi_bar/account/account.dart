@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -8,7 +7,6 @@ import 'package:get_storage/get_storage.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:svg_flutter/svg_flutter.dart';
 import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
 import 'package:v_export/customer/controller/account_controller.dart';
@@ -19,6 +17,8 @@ import 'package:v_export/customer/views/bottom_navi_bar/account/corporate_accoun
 import 'package:v_export/customer/views/bottom_navi_bar/account/edit_profile.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/account/refer_friends.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/account/settings.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/my_list/get_completed_orders_screen.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/my_list/my_list.dart';
 import 'package:v_export/customer/views/notification/notification_view.dart';
 
 class Account extends StatefulWidget {
@@ -30,14 +30,15 @@ class Account extends StatefulWidget {
 
 class _AccountState extends State<Account> {
   AccountController accountController = Get.find<AccountController>();
-  // final AccountController accountController = Get.put(AccountController());
+  AuthController authController = Get.find<AuthController>();
+
   @override
   void initState() {
     accountController.getProfile();
     super.initState();
   }
 
-  List accountList = [
+  final List accountList = [
     {
       "accountNames": "Your Profile",
       "image": "assets/icons/profile1.png",
@@ -73,35 +74,32 @@ class _AccountState extends State<Account> {
   ];
 
   File? image;
-  //  var image = Rxn<File>();
   final ImagePicker picker = ImagePicker();
 
-  editprofileImage() async {
+  Future<void> editProfileImage() async {
     final XFile? imageFile =
         await picker.pickImage(source: ImageSource.gallery);
 
-    if (imageFile != null) {
-      if (imageFile.path.isNotEmpty) {
-        CroppedFile? croppedFile = await ImageCropper().cropImage(
-          sourcePath: imageFile.path, // Use the image file path directly
-          compressQuality: 70,
-          aspectRatioPresets: [
-            CropAspectRatioPreset.square,
-            CropAspectRatioPreset.ratio3x2,
-            CropAspectRatioPreset.original,
-            CropAspectRatioPreset.ratio4x3,
-            CropAspectRatioPreset.ratio16x9
-          ],
-        );
-        if (croppedFile != null) {
-          var tempImage = croppedFile.path;
-          setState(() {
-            image = File(tempImage);
-          });
-          accountController.editProfilePicture(profilePicture: tempImage);
-        } else {
-          print("edit picture");
-        }
+    if (imageFile != null && imageFile.path.isNotEmpty) {
+      CroppedFile? croppedFile = await ImageCropper().cropImage(
+        sourcePath: imageFile.path,
+        compressQuality: 70,
+        aspectRatioPresets: [
+          CropAspectRatioPreset.square,
+          CropAspectRatioPreset.ratio3x2,
+          CropAspectRatioPreset.original,
+          CropAspectRatioPreset.ratio4x3,
+          CropAspectRatioPreset.ratio16x9
+        ],
+      );
+      if (croppedFile != null) {
+        var tempImage = croppedFile.path;
+        setState(() {
+          image = File(tempImage);
+        });
+        accountController.editProfilePicture(profilePicture: tempImage);
+      } else {
+        print("edit picture");
       }
     }
   }
@@ -116,6 +114,7 @@ class _AccountState extends State<Account> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+
     return Scaffold(
       backgroundColor: AppColors.kblue,
       appBar: AppBar(
@@ -150,117 +149,130 @@ class _AccountState extends State<Account> {
             children: [
               Expanded(
                 child: Container(
-                    margin: EdgeInsets.only(top: 80.h),
-                    height: size.height,
-                    width: size.width,
-                    decoration: const BoxDecoration(
-                      color: Color(0xffF4F8FF),
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20),
-                      ),
+                  margin: EdgeInsets.only(top: 80.h),
+                  height: size.height,
+                  width: size.width,
+                  decoration: const BoxDecoration(
+                    color: Color(0xffF4F8FF),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
                     ),
-                    child: Padding(
-                      padding:
-                          const EdgeInsets.only(left: 10, top: 160, right: 10),
-                      child: SingleChildScrollView(
-                        physics: AlwaysScrollableScrollPhysics(),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: accountList.length,
-                                itemBuilder: (context, index) {
-                                  return GestureDetector(
-                                    onTap: () {
-                                      switch (index) {
-                                        case 0:
-                                          Get.to(EditProfile());
-                                          break;
-                                        case 1:
-                                          break;
-                                        case 2:
-                                          Get.to(CorporateAccount());
-                                          break;
-                                        case 3:
-                                          Get.to(Settings());
-                                          break;
-                                        case 4:
-                                          Get.to(ChatScreen());
-                                          break;
-                                        case 5:
-                                          Get.to(ReferFriends());
-                                          break;
-                                        case 6:
-                                          ratingPopup();
-                                          break;
-                                        case 7:
-                                          popUp();
-                                          break;
-                                      }
-                                    },
-                                    child: Container(
-                                      color: Color(0xffF4F8FF),
-                                      child: Column(
+                  ),
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.only(left: 10, top: 160, right: 10),
+                    child: SingleChildScrollView(
+                      physics: AlwaysScrollableScrollPhysics(),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: accountList.length,
+                            itemBuilder: (context, index) {
+                              if (accountList[index]["accountNames"] ==
+                                      "Corporate account" &&
+                                  authController.roleName.value == "client") {
+                                return Container(); // Hide "Corporate account" if the condition is met
+                              }
+                              return GestureDetector(
+                                onTap: () {
+                                  switch (index) {
+                                    case 0:
+                                      Get.to(EditProfile());
+                                      break;
+                                    case 1:
+                                      // Get.to(GetCompletedScreenData());
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => MyOrder(),
+                                          settings: RouteSettings(arguments: 1),
+                                        ),
+                                      );
+                                      break;
+                                    case 2:
+                                      Get.to(CorporateAccount());
+                                      break;
+                                    case 3:
+                                      Get.to(Settings());
+                                      break;
+                                    case 4:
+                                      Get.to(ChatScreen());
+                                      break;
+                                    case 5:
+                                      Get.to(ReferFriends());
+                                      break;
+                                    case 6:
+                                      ratingPopup();
+                                      break;
+                                    case 7:
+                                      popUp();
+                                      break;
+                                  }
+                                },
+                                child: Container(
+                                  color: Color(0xffF4F8FF),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
                                             children: [
-                                              Row(
-                                                children: [
-                                                  Image.asset(
-                                                    accountList[index]["image"],
-                                                    height: 20.h,
-                                                    width: 20.w,
-                                                  ),
-                                                  const SizedBox(
-                                                    width: 20,
-                                                  ),
-                                                  Text(
-                                                    accountList[index]
-                                                        ["accountNames"],
-                                                    style: primaryfont.copyWith(
-                                                        fontSize: 15.sp,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        color:
-                                                            Color(0xff212121)),
-                                                  ),
-                                                ],
+                                              Image.asset(
+                                                accountList[index]["image"],
+                                                height: 20.h,
+                                                width: 20.w,
                                               ),
-                                              Row(
-                                                children: [
-                                                  InkWell(
-                                                    onTap: () {},
-                                                    child: const Icon(
-                                                      Icons.arrow_forward_ios,
-                                                      size: 20,
-                                                      color: Color(0XFF0072E8),
-                                                    ),
-                                                  ),
-                                                ],
+                                              const SizedBox(
+                                                width: 20,
+                                              ),
+                                              Text(
+                                                accountList[index]
+                                                    ["accountNames"],
+                                                style: primaryfont.copyWith(
+                                                    fontSize: 15.sp,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Color(0xff212121)),
                                               ),
                                             ],
                                           ),
-                                          ksizedbox10,
-                                          Container(
-                                            height: 2,
-                                            width: size.width,
-                                            color: Color(0xff000000)
-                                                .withOpacity(.20),
+                                          Row(
+                                            children: [
+                                              InkWell(
+                                                onTap: () {},
+                                                child: const Icon(
+                                                  Icons.arrow_forward_ios,
+                                                  size: 20,
+                                                  color: Color(0XFF0072E8),
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                          ksizedbox15,
                                         ],
                                       ),
-                                    ),
-                                  );
-                                }),
-                          ],
-                        ),
+                                      ksizedbox10,
+                                      Container(
+                                        height: 2,
+                                        width: size.width,
+                                        color:
+                                            Color(0xff000000).withOpacity(.20),
+                                      ),
+                                      ksizedbox15,
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                       ),
-                    )),
+                    ),
+                  ),
+                ),
               )
             ],
           ),
@@ -279,11 +291,10 @@ class _AccountState extends State<Account> {
                 children: <Widget>[
                   ClipRRect(
                     borderRadius: BorderRadius.circular(150),
-                    child:
-                     GetBuilder<AccountController>(builder: (context) {
+                    child: GetBuilder<AccountController>(builder: (context) {
                       return GestureDetector(
                         onTap: () {
-                          editprofileImage();
+                          editProfileImage();
                         },
                         child: Container(
                           height: 150,
@@ -318,182 +329,50 @@ class _AccountState extends State<Account> {
                       );
                     }),
                   ),
-                  // CircleAvatar(
-                  //   radius: 75,
-                  //   backgroundImage: Image.network(
-
-                  //       'assets/images/Ellipse 1.png'),
-                  // ),
                   GestureDetector(
                     onTap: () {
-                      editprofileImage();
+                      editProfileImage();
                     },
                     child: CircleAvatar(
                       radius: 25,
                       backgroundColor: Colors.white,
                       child: GestureDetector(
-                          onTap: () {
-                            editprofileImage();
-                          },
-                          child: const Icon(Icons.edit,
-                              color: Colors.blue, size: 22)),
+                        onTap: () {
+                          editProfileImage();
+                        },
+                        child: const Icon(Icons.edit,
+                            color: Colors.blue, size: 22),
+                      ),
                     ),
                   ),
                 ],
               ),
               SizedBox(height: 8),
-             //  accountController.imageLoading.isTrue ? :
-              GetBuilder<AccountController>(
-                builder: (_) {
-                  return accountController.imageLoading.value
-                      ? Text("Loading...")
-                      : Text(
-                          accountController.getUserData == null
-                              ? ""
-                              : accountController.getUserData!.data.firstName,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 17.sp,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        );
-
-                },
-              ),
-              
+              GetBuilder<AccountController>(builder: (controller) {
+                return accountController.getUserData == null
+                    ? Text(
+                        "",
+                        style: TextStyle(
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      )
+                    : Text(
+                        capitalize(accountController.getUserData!.data.firstName
+                            .toString()),
+                        style: TextStyle(
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      );
+              }),
             ],
           ),
         ],
       ),
     );
-  }
-
-  ratingPopup() {
-    double _rating = 0.0;
-    UpateValues(
-      double rating,
-    ) {
-      setState(() {
-        _rating = rating;
-      });
-    }
-
-    return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            alignment: Alignment.center,
-            title: Text(
-              "Rate us experience",
-              textAlign: TextAlign.center,
-              style: primaryfont.copyWith(
-                  fontSize: 19.sp,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xff000000)),
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "Please let us know how do you \nfeel about this app",
-                  textAlign: TextAlign.center,
-                  style: primaryfont.copyWith(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xff949599)),
-                ),
-                ksizedbox10,
-                RatingBar.builder(
-                  glowColor: Color(0xffFFAB18),
-                  initialRating: _rating,
-                  minRating: 0,
-                  direction: Axis.horizontal,
-                  allowHalfRating: false,
-                  itemCount: 5,
-                  //  itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                  itemBuilder: (context, index) {
-                    if (index < _rating) {
-                      return const Padding(
-                        padding: EdgeInsets.only(right: 2),
-                        child: Icon(
-                          Icons.star,
-                          size: 40,
-                          color: Color(0xffFFAB18),
-                        ),
-                      );
-                    } else {
-                      return const Padding(
-                        padding: EdgeInsets.only(right: 2),
-                        child: Icon(
-                          Icons.star_border_outlined,
-                          size: 40,
-                          color: Color(0xffFFAB18),
-                        ),
-                      );
-                    }
-                  },
-                  onRatingUpdate: (
-                    double rating,
-                  ) {
-                    setState(() {
-                      UpateValues(
-                        rating,
-                      );
-                    });
-                  },
-                ),
-                ksizedbox20,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        Get.back();
-                      },
-                      child: Container(
-                        height: 50.h,
-                        width: 110.w,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
-                            border:
-                                Border.all(width: 1, color: Color(0xff0072E8)),
-                            color: Colors.white),
-                        child: Center(
-                          child: Text(
-                            "Cancel",
-                            style: primaryfont.copyWith(
-                                fontSize: 18.sp,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xff0072E8)),
-                          ),
-                        ),
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () {},
-                      child: Container(
-                        height: 50.h,
-                        width: 110.w,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
-                            color: Colors.blue),
-                        child: Center(
-                          child: Text(
-                            "Submit",
-                            style: primaryfont.copyWith(
-                                fontSize: 18.sp,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xffFFFFFF)),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                )
-              ],
-            ),
-          );
-        });
   }
 
   popUp() {
@@ -590,5 +469,74 @@ class _AccountState extends State<Account> {
             ),
           );
         });
+  }
+
+  ratingPopup() {
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Rating & Review',
+              style: primaryfont.copyWith(
+                  fontSize: 16.sp, fontWeight: FontWeight.w600),
+            ),
+            ksizedbox20,
+            Center(
+              child: RatingBar.builder(
+                itemSize: 35,
+                initialRating: 0,
+                minRating: 1,
+                direction: Axis.horizontal,
+                allowHalfRating: true,
+                unratedColor: AppColors.kgrey,
+                itemCount: 5,
+                itemPadding: EdgeInsets.symmetric(horizontal: 2.0),
+                itemBuilder: (context, _) => Icon(
+                  Icons.star,
+                  color: Colors.amber,
+                ),
+                onRatingUpdate: (rating) {
+                  print(rating);
+                },
+              ),
+            ),
+            ksizedbox20,
+            TextField(
+              maxLines: 2,
+              decoration: InputDecoration(
+                hintText: "Tell us what you think",
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black54, width: 1.0),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black54, width: 1.0),
+                ),
+              ),
+            ),
+            ksizedbox10,
+            Container(
+              height: 40,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: AppColors.kblue,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Center(
+                child: Text(
+                  'Submit',
+                  style: primaryfont.copyWith(
+                      color: Colors.white,
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w500),
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
   }
 }

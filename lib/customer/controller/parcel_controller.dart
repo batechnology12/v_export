@@ -31,7 +31,7 @@ import 'package:v_export/customer/views/bottom_navi_bar/payment_screen.dart/make
 
 class ParcelController extends GetxController {
   OngongOrderApiServices ongongOrderApiServices = OngongOrderApiServices();
-  OngoingOrderData? ongoingOrdersData;
+  List<OngoingOrderData> ongoingOrdersData =[] ;
 
   //ParcelOngoingOrderData? parcelOngoingOrderData;
   RxBool ongoingorderLoading = false.obs;
@@ -47,7 +47,7 @@ class ParcelController extends GetxController {
     if (response.data["status"] == true) {
       OngoingOrdersModel ongoingOrdersModel =
           OngoingOrdersModel.fromJson(response.data);
-      ongoingOrdersData = ongoingOrdersModel.data;
+      ongoingOrdersData.add(ongoingOrdersModel.data);
 
       //
       // ParcelOngoingOrdersModel parcelOngoingOrdersModel =
@@ -318,41 +318,52 @@ class ParcelController extends GetxController {
     }
   }
 
-  GetKiloMeterApiServices getKiloMeterApiServices = GetKiloMeterApiServices();
-  //   RxBool getKiloMeterLoading = false.obs;
-  double distance = 0;
-  getKiloMeterApi(
-      {required double lat1,
-      required double lon1,
-      required double lat2,
-      required double lon2,
-      required String unit}) async {
-    dio.Response<dynamic> response = await getKiloMeterApiServices.getKiloMeter(
-        lat1: lat1, lon1: lon1, lat2: lat2, lon2: lon2, unit: unit);
+  // GetKiloMeterApiServices getKiloMeterApiServices = GetKiloMeterApiServices();
+  // //   RxBool getKiloMeterLoading = false.obs;
+  // double distance = 0;
+  // getKiloMeterApi(
+  //     {required double lat1,
+  //     required double lon1,
+  //     required double lat2,
+  //     required double lon2,
+  //     required String unit}) async {
+  //   dio.Response<dynamic> response = await getKiloMeterApiServices.getKiloMeter(
+  //       lat1: lat1, lon1: lon1, lat2: lat2, lon2: lon2, unit: unit);
 
-    distance = response.data["distance"];
-    print("------distance");
-    print(distance);
-    // if (response.data["status"] == true) {
-    //     
-    //   Get.rawSnackbar(
-    //     backgroundColor: Colors.green,
-    //     messageText: Text(
-    //       response.data['message'],
-    //       style: TextStyle(color: Colors.white, fontSize: 15.sp),
-    //     ),
-    //   );
-    //   update();
-    // } else {
-    //   update();
-    //   Get.rawSnackbar(
-    //     backgroundColor: Colors.red,
-    //     messageText: Text(
-    //       response.data['message'],
-    //       style: TextStyle(color: Colors.white, fontSize: 15.sp),
-    //     ),
-    //   );
-    // }
+  //   distance = response.data["distance"];
+  //   print("------distance");
+  //   print(distance);
+  //   update();
+
+  // }
+
+  double distance = 0.0;
+
+  Future<void> getKiloMeterApi({
+    required double lat1,
+    required double lon1,
+    required double lat2,
+    required double lon2,
+    required String unit,
+  }) async {
+    try {
+      GetKiloMeterApiServices getKiloMeterApiServices =
+          GetKiloMeterApiServices();
+      dio.Response<dynamic> response =
+          await getKiloMeterApiServices.getKiloMeter(
+        lat1: lat1,
+        lon1: lon1,
+        lat2: lat2,
+        lon2: lon2,
+        unit: unit,
+      );
+
+      distance = response.data["distance"];
+      update(); // Notify the UI about the state change
+    } catch (e) {
+      // Handle error
+      print("Error: $e");
+    }
   }
 
   SenderReceiverApiServices senderReceiverApiServices =

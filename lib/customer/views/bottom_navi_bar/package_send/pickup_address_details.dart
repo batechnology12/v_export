@@ -12,6 +12,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:v_export/constant/common_container.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:v_export/customer/controller/account_controller.dart';
+import 'package:v_export/customer/controller/home_controller.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/package_send_screen.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
 
@@ -22,6 +23,7 @@ class PickupAddressDetails extends StatefulWidget {
 
 class _PickupAddressDetailsState extends State<PickupAddressDetails> {
   AccountController accountController = Get.find<AccountController>();
+  HomeController homeController = Get.find<HomeController>();
 
   GoogleMapController? _controller;
   final Set<Marker> _markers = {};
@@ -123,13 +125,14 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                             googleAPIKey:
                                 "AIzaSyAyygarjlqp_t2SPo7vS1oXDq1Yxs-LLNg",
                             inputDecoration: InputDecoration(
+                              contentPadding: EdgeInsets.only(left: 10),
                               isDense: true,
-                              prefixIcon: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Image.asset(
-                                  "assets/icons/google-maps.png",
-                                ),
-                              ),
+                              // prefixIcon: Padding(
+                              //   padding: const EdgeInsets.all(8.0),
+                              //   child: Image.asset(
+                              //     "assets/icons/google-maps.png",
+                              //   ),
+                              // ),
                               hintText: 'Enter Your Address....',
                               hintStyle: primaryfont.copyWith(
                                   fontSize: 14, fontWeight: FontWeight.w500),
@@ -314,7 +317,6 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                             FilteringTextInputFormatter.deny(RegExp(r'\s')),
                           ],
                           decoration: InputDecoration(
-                            
                             prefixIcon: Padding(
                               padding: const EdgeInsets.only(
                                   left: 10, right: 5, top: 12),
@@ -395,6 +397,16 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                               if (formKey.currentState!.validate()) {
                                 if (_senderNameController.text.isNotEmpty &&
                                     _phoneNumberController.text.isNotEmpty) {
+                                  homeController.updatepickupLocation(
+                                      searchController.text,
+                                      _markers.first.position.latitude
+                                          .toString(),
+                                      _markers.first.position.longitude
+                                          .toString(),
+                                      _senderNameController.text,
+                                      _phoneNumberController.text,
+                                      _blockUnitController.text);
+                                      
                                   Get.offAll(PackageSendScreen(
                                     unitIdBlockID: [_blockUnitController.text],
                                     pickupAdress: searchController.text,
@@ -528,13 +540,15 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                               child: TextFormField(
                                 controller: searchController,
                                 decoration: InputDecoration(
+                                  contentPadding:
+                                      EdgeInsets.only(left: 10, top: 7),
                                   isDense: true,
-                                  prefixIcon: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Image.asset(
-                                      "assets/icons/google-maps.png",
-                                    ),
-                                  ),
+                                  // prefixIcon: Padding(
+                                  //   padding: const EdgeInsets.all(8.0),
+                                  //   child: Image.asset(
+                                  //     "assets/icons/google-maps.png",
+                                  //   ),
+                                  // ),
                                   hintText: 'Enter Your Address....',
                                   hintStyle: primaryfont.copyWith(
                                       fontSize: 14,
@@ -601,7 +615,7 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                             child: Container(
                               height: 45,
                               width: double.infinity,
-                               decoration: BoxDecoration(
+                              decoration: BoxDecoration(
                                   color: AppColors.kwhite,
                                   border: Border.all(
                                     color: Color(0xff444444),
@@ -654,7 +668,7 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                               inputFormatters: [
                                 LengthLimitingTextInputFormatter(8),
                                 FilteringTextInputFormatter.digitsOnly,
-                               FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                                FilteringTextInputFormatter.deny(RegExp(r'\s')),
                               ],
                               decoration: InputDecoration(
                                 prefixIcon: Padding(
@@ -736,6 +750,15 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                               onTap: () {
                                 if (_senderNameController.text.isNotEmpty &&
                                     _phoneNumberController.text.isNotEmpty) {
+                                  homeController.updatepickupLocation(
+                                      searchController.text,
+                                      _markers.first.position.latitude
+                                          .toString(),
+                                      _markers.first.position.longitude
+                                          .toString(),
+                                      _senderNameController.text,
+                                      _phoneNumberController.text,
+                                      _blockUnitController.text);
                                   Get.to(PackageSendScreen(
                                     unitIdBlockID: [_blockUnitController.text],
                                     pickupAdress: searchController.text,

@@ -1,3 +1,4 @@
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -180,6 +181,14 @@ class _MakePaymentState extends State<MakePayment> {
       });
     }
 
+    // int SelectedCheck = 0;
+    // isCheckselected(int value) {
+    //   setState(() {
+    //     SelectedCheck = value;
+    //   });
+    // }
+    bool isChecked = false;
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -223,7 +232,7 @@ class _MakePaymentState extends State<MakePayment> {
                       ),
                       ksizedbox30,
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 30),
+                        padding: const EdgeInsets.only(left: 25, right: 30),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -276,7 +285,102 @@ class _MakePaymentState extends State<MakePayment> {
                                 )
                               ],
                             ),
-                            ksizedbox30,
+                            ksizedbox10,
+                            // GestureDetector(
+                            //     onTap: () {
+                            //       isCheckselected(0);
+                            //     },
+                            //     child:
+                            //         // Container(
+                            //         //     width: 20.0,
+                            //         //     height: 20.0,
+                            //         //     decoration: BoxDecoration(
+                            //         //       color: isSelected == 0
+                            //         //           ? AppColors.kblue
+                            //         //           : Colors.white,
+                            //         //       borderRadius: BorderRadius.circular(15.0),
+                            //         //       border: Border.all(
+                            //         //         color: isSelected == 0
+                            //         //             ? Colors.blue
+                            //         //             : Colors.grey,
+                            //         //         width: 2.0,
+                            //         //       ),
+                            //         //     ),
+                            //         // child:
+                            //         IconButton(
+                            //             onPressed: () {
+                            //               isCheckselected(0);
+                            //             },
+                            //             icon: Icon(Icons.check_circle))),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      selected(0);
+                                    });
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.only(right: 20),
+                                    width: 25.0,
+                                    height: 25.0,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      color: isSelected == 0
+                                          ? AppColors.kblue
+                                          : Colors.transparent,
+                                      borderRadius: BorderRadius.circular(15.0),
+                                      border: Border.all(
+                                        color: isSelected == 0
+                                            ? AppColors.kblue
+                                            : Colors.transparent,
+                                        width: 2.0,
+                                      ),
+                                    ),
+                                    child: isSelected == 0
+                                        ? Icon(
+                                            Icons.check,
+                                            color: Colors.white,
+                                            size: 15.0,
+                                          )
+                                        : null,
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      selected(1);
+                                    });
+                                  },
+                                  child: Container(
+                                    width: 25.0,
+                                    height: 25.0,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      color: isSelected == 1
+                                          ? AppColors.kblue
+                                          : Colors.transparent,
+                                      borderRadius: BorderRadius.circular(15.0),
+                                      border: Border.all(
+                                        color: isSelected == 1
+                                            ? AppColors.kblue
+                                            : Colors.transparent,
+                                        width: 2.0,
+                                      ),
+                                    ),
+                                    child: isSelected == 1
+                                        ? Icon(
+                                            Icons.check,
+                                            color: Colors.white,
+                                            size: 15.0,
+                                          )
+                                        : null,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            ksizedbox10,
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 16),
@@ -284,14 +388,17 @@ class _MakePaymentState extends State<MakePayment> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text("Sender",
-                                      style: primaryfont.copyWith(
-                                        fontSize: 16.sp,
-                                        color: isSelected == 0
-                                            ? AppColors.kblue
-                                            : Colors.black,
-                                        fontWeight: FontWeight.w600,
-                                      )),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 20),
+                                    child: Text("Sender",
+                                        style: primaryfont.copyWith(
+                                          fontSize: 16.sp,
+                                          color: isSelected == 0
+                                              ? AppColors.kblue
+                                              : Colors.black,
+                                          fontWeight: FontWeight.w600,
+                                        )),
+                                  ),
                                   Text("Receiver",
                                       style: primaryfont.copyWith(
                                         fontSize: 16.sp,

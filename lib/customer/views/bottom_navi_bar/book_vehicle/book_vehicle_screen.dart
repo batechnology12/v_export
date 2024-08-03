@@ -170,17 +170,26 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
     isCheck =
         List<bool>.filled(parcelController.additionalServiceData.length, false);
     for (int i = 0; i < parcelController.additionalServiceData.length; i++) {
-      // if (selectedvehicleservice[i].id
-      //     .contains(parcelController.additionalServiceData[i].id)
-      //     ) {
-      //   isCheck[i] = true;
-      // }
+      if (savedSelectItem
+          .contains(parcelController.additionalServiceData[i].id)) {
+        isCheck[i] = true;
+      }
     }
+    updateVehicleTotalAmount();
   }
 
   List<AdditionalServiceData> selectedvehicleservice = [];
   List<AdditionalServiceData> savedSelectItem = [];
   List<bool> isCheck = [];
+
+  double totalAmountVehicle = 0.0;
+
+  void updateVehicleTotalAmount() {
+    totalAmountVehicle = selectedvehicleservice.fold(0.0, (sum, item) {
+      double itemAmount = double.tryParse(item.amount) ?? 0.0;
+      return sum + itemAmount;
+    });
+  }
 
   void showListViewDialog(BuildContext context) {
     initializeIsCheckList();
@@ -380,7 +389,8 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                       TextButton(
                           onPressed: () {
                             setState(() {
-                              savedSelectItem = selectedvehicleservice;
+                              savedSelectItem =
+                                  List.from(selectedvehicleservice);
                             });
                             Navigator.of(context).pop(savedSelectItem);
                             // selectedvehicleservice.clear();

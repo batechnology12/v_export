@@ -681,7 +681,7 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                               },
                               keyboardType: TextInputType.phone,
                               inputFormatters: [
-                                LengthLimitingTextInputFormatter(0),
+                                LengthLimitingTextInputFormatter(8),
                                 FilteringTextInputFormatter.digitsOnly,
                                 FilteringTextInputFormatter.deny(RegExp(r'\s')),
                               ],

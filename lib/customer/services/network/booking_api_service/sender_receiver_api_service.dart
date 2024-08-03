@@ -29,7 +29,7 @@ class SenderReceiverApiServices extends BaseApiServices {
             "payable": payable //sender // receiver
           }
           );
-      print("get kilo meter---------");
+
       print(response.data);
       responseJson = response;
     } on SocketException {

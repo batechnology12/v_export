@@ -22,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    toHomePage();
+      toHomePage();
   }
 
   bool isLoading = false;
@@ -49,8 +49,10 @@ class _SplashScreenState extends State<SplashScreen> {
       backgroundColor: AppColors.kblue,
       body: Center(
         child: Container(
+          height: 100,
+          width: 200,
           child: SvgPicture.asset(
-            'assets/images/newlogo.svg',
+            'assets/images/VEELGO (1).svg',
           ),
         ),
       ),

@@ -18,6 +18,32 @@ class HomeController extends GetxController {
 //     locationvalue('${address.streetAddress},${address.city}');
 //   }
 
+//// pickup location
+
+  var pickupLocation = ''.obs;
+  var pickuplatitude = ''.obs;
+  var pickuplongitude = ''.obs;
+  var pickupSenderName = ''.obs;
+  var pickupSenderNumber = ''.obs;
+  var pickupblockUnitId = ''.obs;
+
+  updatepickupLocation(
+    String pickuplocation,
+    String pickuplat,
+    String pickuplong,
+    String senderName,
+    String senderNumber,
+    String pickupunitId
+  ) {
+    pickupLocation.value = pickuplocation;
+    pickuplatitude.value = pickuplat;
+    pickuplongitude.value = pickuplong;
+    pickupSenderName.value = senderName;
+    pickupSenderNumber.value = senderNumber;
+    pickupblockUnitId.value = pickupunitId;
+  }
+
+  //// dropping location
   var droppingLocations = <String>[].obs;
   var droppingLats = <String>[].obs;
   var dropLongs = <String>[].obs;
@@ -30,6 +56,163 @@ class HomeController extends GetxController {
   var receiverNumberList = <String>[].obs;
   var receiverBlockIdUnitIDs = '';
   var secondContainers = <int>[0].obs; // Initialize with one item
+
+  // //////
+
+  // List<String> getLengths() {
+  //   List<String> lengths = [];
+  //   for (var location in locationData) {
+  //     for (var item in location.values.first) {
+  //       lengths.add(item['length']?.text ?? '');
+  //     }
+  //   }
+  //   return lengths;
+  // }
+
+  // List<String> getWidths() {
+  //   List<String> widths = [];
+  //   for (var location in locationData) {
+  //     for (var item in location.values.first) {
+  //       widths.add(item['width']?.text ?? '');
+  //     }
+  //   }
+  //   return widths;
+  // }
+
+  // List<String> getHeights() {
+  //   List<String> heights = [];
+  //   for (var location in locationData) {
+  //     for (var item in location.values.first) {
+  //       heights.add(item['height']?.text ?? '');
+  //     }
+  //   }
+  //   return heights;
+  // }
+
+  // List<String> getQuantities() {
+  //   List<String> quantities = [];
+  //   for (var location in locationData) {
+  //     for (var item in location.values.first) {
+  //       quantities.add(item['qty']?.text ?? '');
+  //     }
+  //   }
+  //   return quantities;
+  // }
+
+  // List<String> getWeights() {
+  //   List<String> weights = [];
+  //   for (var location in locationData) {
+  //     for (var item in location.values.first) {
+  //       weights.add(item['kg']?.text ?? '');
+  //     }
+  //   }
+  //   return weights;
+  // }
+/////////
+
+  // var locationData =
+  //     <Map<String, List<Map<String, TextEditingController>>>>[].obs;
+  // @override
+  // void onInit() {
+  //   super.onInit();
+  //   // Initialize with one location
+  //   addLocation();
+  // }
+
+  // void addLocation() {
+  //   locationData.add({
+  //     'Location': [
+  //       {
+  //         'length': TextEditingController(),
+  //         'width': TextEditingController(),
+  //         'height': TextEditingController(),
+  //         'kg': TextEditingController(),
+  //         'qty': TextEditingController(),
+  //       }
+  //     ]
+  //   });
+  // }
+
+  // void printDimensions(int locationIndex, int itemIndex) {
+  //   if (locationIndex < locationData.length) {
+  //     var location = locationData[locationIndex];
+  //     if (location.isNotEmpty && itemIndex < location.values.first.length) {
+  //       var item = location.values.first[itemIndex];
+
+  //       print('Length: ${item['length']?.text}');
+  //       print('Width: ${item['width']?.text}');
+  //       print('Height: ${item['height']?.text}');
+  //     } else {
+  //       print('Item index out of range.');
+  //     }
+  //   } else {
+  //     print('Location index out of range.');
+  //   }
+  // }
+
+  // void addItem(int locationIndex) {
+  //   if (locationIndex < locationData.length) {
+  //     locationData[locationIndex].values.first.add({
+  //       'length': TextEditingController(),
+  //       'width': TextEditingController(),
+  //       'height': TextEditingController(),
+  //       'kg': TextEditingController(),
+  //       'qty': TextEditingController(),
+  //     });
+  //     update(); // Notify listeners
+  //   }
+  // }
+
+  // void deleteItem(int locationIndex, int itemIndex) {
+  //   if (locationIndex < locationData.length) {
+  //     var items = locationData[locationIndex].values.first;
+  //     if (itemIndex < items.length) {
+  //       // Prevent deletion if item is at index 0
+  //       if (itemIndex == 0) {
+  //         print('Cannot delete item at index 0');
+  //         return;
+  //       }
+
+  //       // Dispose of TextEditingControllers before removing the item
+  //       items[itemIndex]['length']?.dispose();
+  //       items[itemIndex]['width']?.dispose();
+  //       items[itemIndex]['height']?.dispose();
+  //       items[itemIndex]['kg']?.dispose();
+  //       items[itemIndex]['qty']?.dispose();
+
+  //       // Remove the item at itemIndex
+  //       items.removeAt(itemIndex);
+
+  //       // If the list is empty, delete the location
+  //       if (items.isEmpty) {
+  //         deleteLocation(locationIndex);
+  //       } else {
+  //         update(); // Notify listeners
+  //       }
+  //     } else {
+  //       // Handle case where itemIndex is out of bounds
+  //       print('Item index out of bounds');
+  //     }
+  //   } else {
+  //     // Handle case where locationIndex is out of bounds
+  //     print('Location index out of bounds');
+  //   }
+  // }
+
+  // void deleteLocation(int locationIndex) {
+  //   if (locationIndex < locationData.length) {
+  //     var items = locationData[locationIndex].values.first;
+  //     items.forEach((item) {
+  //       item['length']?.dispose();
+  //       item['width']?.dispose();
+  //       item['height']?.dispose();
+  //       item['kg']?.dispose();
+  //       item['qty']?.dispose();
+  //     });
+  //     locationData.removeAt(locationIndex);
+  //     update(); // Notify listeners
+  //   }
+  // }
 
   void updateDroppingLocation(
       String location,
@@ -132,13 +315,22 @@ class HomeController extends GetxController {
     }
   }
 
+  bool isCheckedLocation = false;
+
   void addParcelList() {
     addParcels.add(addParcels.length);
+    if (addParcels.length > 1) {
+      isCheckedLocation = true;
+    }
   }
 
   void removeParcelList(int index) {
     if (addParcels.length > 1) {
       addParcels.removeAt(index);
+    }
+
+    if (addParcels.length <= 1) {
+      isCheckedLocation = false;
     }
   }
 
@@ -160,6 +352,16 @@ class HomeController extends GetxController {
   var parcelHeightControllers = <TextEditingController>[].obs;
   var parcelKgControllers = <TextEditingController>[].obs;
   var quantityControllers = <TextEditingController>[].obs;
+
+  void addController() {
+    var controller = TextEditingController();
+    parcelKgControllers.add(controller);
+  }
+
+  void removeController(int index) {
+    parcelKgControllers[index].dispose();
+    parcelKgControllers.removeAt(index);
+  }
 
   // Initialize TextEditingController for the first item
   HomeController() {

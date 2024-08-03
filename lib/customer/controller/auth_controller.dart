@@ -153,6 +153,7 @@ class AuthController extends GetxController {
   LoginApiServices loginApiServices = LoginApiServices();
   RxBool loginLoading = false.obs;
   LoginData? loginData;
+  RxString roleName = "".obs;
   loginApi(
       {required String emailOrmobileNmuber, required String password}) async {
     loginLoading(true);
@@ -164,12 +165,15 @@ class AuthController extends GetxController {
     if (response.data["status"] == true) {
       LoginModel loginModel = LoginModel.fromJson(response.data);
       loginData = loginModel.user;
+      roleName.value = loginModel.user.roles;
       // AppSnackBar.showSnackbar(
       //   headText: response.data['message'],
       //   content: "Signing in...",
       //   position: SnackPosition.BOTTOM,
       // );
       if (loginData!.roles == "client" || loginData!.roles == "business") {
+        print("login type name");
+        print(loginData!.roles);
         Get.offAll(BottomNavigationScreen());
       } else {
         Get.rawSnackbar(

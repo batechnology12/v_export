@@ -20,8 +20,7 @@ class MyListController extends GetxController {
     getOngoingOrdersLoading(true);
     dio.Response response =
         await getOngongOrderApiServices.getOngoingOderUser(ongoingOrder);
-    getOngoingOrdersLoading(false);
-    update();
+
     if (response.data["status"] == true) {
       GetOngoingOrdersModel getOngoingOrdersModel =
           GetOngoingOrdersModel.fromJson(response.data);
@@ -33,6 +32,8 @@ class MyListController extends GetxController {
       //     style: TextStyle(color: Colors.white, fontSize: 15.sp),
       //   ),
       // );
+      // update();
+      getOngoingOrdersLoading(false);
       update();
     } else {
       // Get.rawSnackbar(
@@ -42,6 +43,8 @@ class MyListController extends GetxController {
       //     style: TextStyle(color: Colors.white, fontSize: 15.sp),
       //   ),
       // );
+      getOngoingOrdersLoading(false);
+      update();
     }
   }
 
@@ -52,9 +55,11 @@ class MyListController extends GetxController {
   RxBool getCompletedOrdersLoading = false.obs;
   getCompletedOrdersUser(String completedOrder) async {
     getCompletedOrdersLoading(true);
+
     dio.Response response =
         await getCompletedOrderApiServices.getCompletedUser(completedOrder);
     getCompletedOrdersLoading(false);
+    update();
     if (response.data["status"] == true) {
       GetCompletedOrdersModel getCompletedOrdersModel =
           GetCompletedOrdersModel.fromJson(response.data);
@@ -66,6 +71,8 @@ class MyListController extends GetxController {
       //     style: TextStyle(color: Colors.white, fontSize: 15.sp),
       //   ),
       // );
+      getCompletedOrdersLoading(false);
+      update();
     } else {
       Get.rawSnackbar(
         backgroundColor: Colors.red,
@@ -84,9 +91,10 @@ class MyListController extends GetxController {
   RxBool getCancelledOrdersLoading = false.obs;
   getCancelledOrderUser(String cancelledOrder) async {
     getCancelledOrdersLoading(true);
+
     dio.Response response =
         await getCancelledOrderApiServices.getCancelledUser(cancelledOrder);
-    getCancelledOrdersLoading(false);
+
     if (response.data["status"] == true) {
       GetCancelledOrdersModel getCancelledOrdersModel =
           GetCancelledOrdersModel.fromJson(response.data);
@@ -98,7 +106,11 @@ class MyListController extends GetxController {
       //     style: TextStyle(color: Colors.white, fontSize: 15.sp),
       //   ),
       // );
+      getCancelledOrdersLoading(false);
+      update();
     } else {
+      getCancelledOrdersLoading(false);
+      update();
       Get.rawSnackbar(
         backgroundColor: Colors.red,
         messageText: Text(

@@ -126,13 +126,14 @@ class _DropLocationState extends State<DropLocation> {
                             googleAPIKey:
                                 "AIzaSyAyygarjlqp_t2SPo7vS1oXDq1Yxs-LLNg",
                             inputDecoration: InputDecoration(
+                                contentPadding: EdgeInsets.only(left: 10),
                                 isDense: true,
-                                prefixIcon: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Image.asset(
-                                    "assets/icons/google-maps.png",
-                                  ),
-                                ),
+                                // prefixIcon: Padding(
+                                //   padding: const EdgeInsets.all(8.0),
+                                //   child: Image.asset(
+                                //     "assets/icons/google-maps.png",
+                                //   ),
+                                // ),
                                 hintText: 'Enter Your Address....',
                                 hintStyle: primaryfont.copyWith(
                                     fontSize: 14, fontWeight: FontWeight.w500),
@@ -325,14 +326,19 @@ class _DropLocationState extends State<DropLocation> {
                                   receiverNumberController.text,
                                   receiverBlockIdUnitIdController.text,
                                 );
-                                Get.back();
-                                // Get.offAll(PackageSendScreen(
-                                //     pickupAdress: "",
-                                //     lat: "",
-                                //     long: "",
-                                //     unitIdBlockID: [],
-                                //     sendername: "",
-                                //     mobilenumber: ""));
+                                //  Get.back();
+                                Get.offAll(PackageSendScreen(
+                                    pickupAdress:
+                                        homeController.pickupLocation.value,
+                                    lat: homeController.pickuplatitude.value,
+                                    long: homeController.pickuplongitude.value,
+                                    unitIdBlockID: [
+                                      homeController.pickupblockUnitId.value
+                                    ],
+                                    sendername:
+                                        homeController.pickupSenderName.value,
+                                    mobilenumber: homeController
+                                        .pickupSenderNumber.value));
                               } else {
                                 Get.snackbar(
                                     "Fill all Fields", "Please try again!",
@@ -458,14 +464,15 @@ class _DropLocationState extends State<DropLocation> {
                                 googleAPIKey:
                                     "AIzaSyAyygarjlqp_t2SPo7vS1oXDq1Yxs-LLNg",
                                 inputDecoration: InputDecoration(
+                                  contentPadding: EdgeInsets.only(left: 10),
                                   isDense: true,
                                   enabled: false,
-                                  prefixIcon: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Image.asset(
-                                      "assets/icons/google-maps.png",
-                                    ),
-                                  ),
+                                  // prefixIcon: Padding(
+                                  //   padding: const EdgeInsets.all(8.0),
+                                  //   child: Image.asset(
+                                  //     "assets/icons/google-maps.png",
+                                  //   ),
+                                  // ),
                                   hintText: 'Enter Your Address....',
                                   hintStyle: primaryfont.copyWith(
                                       fontSize: 14,
@@ -552,6 +559,7 @@ class _DropLocationState extends State<DropLocation> {
                                       hintText: 'Enter Block no / Unit no',
                                       hintStyle: primaryfont.copyWith(
                                           fontSize: 14,
+                                          color: Colors.black,
                                           fontWeight: FontWeight.w500),
                                       border: InputBorder.none)),
                             ),
@@ -689,14 +697,19 @@ class _DropLocationState extends State<DropLocation> {
                                   receiverNumberController.text,
                                   receiverBlockIdUnitIdController.text,
                                 );
-                                Get.back();
-                                // Get.offAll(PackageSendScreen(
-                                //     pickupAdress: "",
-                                //     lat: "",
-                                //     long: "",
-                                //     unitIdBlockID: [],
-                                //     sendername: "",
-                                //     mobilenumber: ""));
+                                //  Get.back();
+                                Get.offAll(PackageSendScreen(
+                                    pickupAdress:
+                                        homeController.pickupLocation.value,
+                                    lat: homeController.pickuplatitude.value,
+                                    long: homeController.pickuplongitude.value,
+                                    unitIdBlockID: [
+                                      homeController.pickupblockUnitId.value
+                                    ],
+                                    sendername:
+                                        homeController.pickupSenderName.value,
+                                    mobilenumber: homeController
+                                        .pickupSenderNumber.value));
                               } else {
                                 Get.snackbar(
                                     "Fill all Fields", "Please try again!",

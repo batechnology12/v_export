@@ -132,7 +132,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
                         color: Colors.blue,
                       )
                     : Image.asset("assets/icons/accounticon.png"),
-                label: 'Account',
+                label: 'Profile',
               ),
             ],
             currentIndex: _selectedIndex,

@@ -48,38 +48,38 @@ class ScheduleDeliveryScreen extends StatefulWidget {
   String receiverUnitIdBlockId;
   String totalWeight;
 
-  ScheduleDeliveryScreen(
-      {super.key,
-      required this.pickupAddress,
-      required this.pickuplatitude,
-      required this.pickuplogitude,
-      required this.droppingLatitude,
-      required this.droppingLogitude,
-      required this.bookingDate,
-      required this.deliverytype,
-      required this.deliVerytypeID,
-      required this.displayTimes,
-      required this.length,
-      required this.width,
-      required this.height,
-      required this.kg,
-      required this.qty,
-      required this.parcelItems,
-      required this.pickTimeFrom,
-      required this.pickTimeTo,
-      required this.pickTimeListFrom,
-      required this.pickTimeListTo,
-      required this.unitIdBlockId,
-      required this.sendername,
-      required this.phonenumber,
-      required this.droppingaddress,
-      required this.arpincode,
-      required this.doorname,
-      required this.receivername,
-      required this.receiverphone,
-      required this.receiverUnitIdBlockId,
-      required this.totalWeight,
-      });
+  ScheduleDeliveryScreen({
+    super.key,
+    required this.pickupAddress,
+    required this.pickuplatitude,
+    required this.pickuplogitude,
+    required this.droppingLatitude,
+    required this.droppingLogitude,
+    required this.bookingDate,
+    required this.deliverytype,
+    required this.deliVerytypeID,
+    required this.displayTimes,
+    required this.length,
+    required this.width,
+    required this.height,
+    required this.kg,
+    required this.qty,
+    required this.parcelItems,
+    required this.pickTimeFrom,
+    required this.pickTimeTo,
+    required this.pickTimeListFrom,
+    required this.pickTimeListTo,
+    required this.unitIdBlockId,
+    required this.sendername,
+    required this.phonenumber,
+    required this.droppingaddress,
+    required this.arpincode,
+    required this.doorname,
+    required this.receivername,
+    required this.receiverphone,
+    required this.receiverUnitIdBlockId,
+    required this.totalWeight,
+  });
 
   @override
   State<ScheduleDeliveryScreen> createState() => _ScheduleDeliveryScreenState();
@@ -360,20 +360,31 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
   //   }
   // }
 
-  TimeOfDay? deliveryFromTime;
-  TimeOfDay? deliveryToTime;
+  TimeOfDay? deliveryFromTime = TimeOfDay.now();
+  TimeOfDay? deliveryToTime = TimeOfDay.now();
 
-  void _selectFromTime(BuildContext context) async {
+  Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: deliveryFromTime ?? TimeOfDay.now(),
+      initialTime: deliveryToTime ?? TimeOfDay.now(),
     );
-    if (picked != null && picked != deliveryFromTime) {
+    if (picked != null && picked != deliveryToTime) {
       setState(() {
-        deliveryFromTime = picked;
+        deliveryToTime = picked;
       });
     }
   }
+  // void _selectFromTime(BuildContext context) async {
+  //   final TimeOfDay? picked = await showTimePicker(
+  //     context: context,
+  //     initialTime: deliveryFromTime,
+  //   );
+  //   if (picked != null && picked != deliveryFromTime) {
+  //     setState(() {
+  //       deliveryFromTime = picked;
+  //     });
+  //   }
+  // }
 
   // void _selectToTime(BuildContext context) async {
   //   final TimeOfDay? picked = await showTimePicker(
@@ -388,12 +399,13 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
   // }
 
   void _selectToTime(BuildContext context) async {
-    final TimeOfDay? picked = await showTimePicker(
-        context: context, initialTime: deliveryToTime ?? TimeOfDay.now());
+    final TimeOfDay? picked =
+        await showTimePicker(context: context, initialTime: deliveryToTime!);
     if (picked != null && picked != deliveryToTime) {
       setState(() {
         deliveryToTime = picked;
       });
+      print(deliveryToTime);
     }
   }
 
@@ -650,7 +662,7 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                     children: [
                                       GestureDetector(
                                         onTap: () {
-                                          _selectFromTime(context);
+                                          _selectToTime(context);
                                         },
                                         child: Container(
                                           padding: EdgeInsets.only(left: 15),
@@ -670,16 +682,20 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                             children: [
                                               Text(
                                                 widget.deliverytype ==
-                                                        1.toString()
+                                                        "4 Hours Delivery"
                                                     ? '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime!, 120))}'
                                                     : widget.deliverytype ==
-                                                            2.toString()
+                                                            "Express Delivery"
                                                         ? '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime!, 60))}'
-                                                        : deliveryFromTime !=
-                                                                null
-                                                            ? _formatTime(
-                                                                deliveryFromTime!)
-                                                            : "Select Time",
+                                                        : widget.deliverytype ==
+                                                                "Same day delivery"
+                                                            ? '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime!, 180))}'
+                                                            : '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime!, 180))}',
+                                                //  deliveryFromTime !=
+                                                //         null
+                                                //     ? _formatTime(
+                                                //         deliveryFromTime!)
+                                                //     : "Select Time",
                                                 style: primaryfont.copyWith(
                                                     fontSize: 13.sp,
                                                     fontWeight: FontWeight.w700,
@@ -718,15 +734,35 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                             children: [
                                               Text(
                                                 //    '${_formatTime(_addMinutesToTimeOfDay(deliveryToTime, 120))}',
-                                                widget.deliverytype ==
-                                                        1.toString()
-                                                    ? '${_formatTime(_addMinutesToTimeOfDay(deliveryToTime!, 240))}'
-                                                    : widget.deliverytype ==
-                                                            2.toString()
-                                                        ? '${_formatTime(_addMinutesToTimeOfDay(deliveryToTime!, 120))}'
-                                                        : deliveryToTime != null
-                                                            ? '${_formatTime(_addMinutesToTimeOfDay(deliveryToTime!, 60))}'
-                                                            : "Select Time",
+
+                                                deliveryToTime != null
+                                                    ? widget.deliverytype ==
+                                                            "4 Hours Delivery"
+                                                        ? '${_formatTime(_addMinutesToTimeOfDay(deliveryToTime!, 240))}'
+                                                        : widget.deliverytype ==
+                                                                "Express Delivery"
+                                                            ? '${_formatTime(_addMinutesToTimeOfDay(deliveryToTime!, 120))}'
+                                                            : widget.deliverytype ==
+                                                                    "Same day delivery"
+                                                                ? '${_formatTime(_addMinutesToTimeOfDay(deliveryToTime!, 360))}'
+                                                                : _formatTime(
+                                                                    _addMinutesToTimeOfDay(
+                                                                        deliveryToTime!,
+                                                                        240)) //) //
+                                                    : "Select Time",
+                                                // widget.deliverytype ==
+                                                //         "4 Hours Delivery"
+                                                //     ? '${_formatTime(_addMinutesToTimeOfDay(deliveryToTime, 240))}'
+                                                //     : widget.deliverytype ==
+                                                //             "Express Delivery"
+                                                //         ? '${_formatTime(_addMinutesToTimeOfDay(deliveryToTime, 120))}'
+                                                //         : widget.deliverytype ==
+                                                //                 "Same day delivery"
+                                                //             ? '${_formatTime(_addMinutesToTimeOfDay(deliveryToTime, 360))}'
+                                                //             : "Select Time",
+                                                //deliveryToTime != null
+                                                //     ? '${_formatTime(_addMinutesToTimeOfDay(deliveryToTime!, 60))}'
+                                                //     : "Select Time",
                                                 style: primaryfont.copyWith(
                                                     fontSize: 13.sp,
                                                     fontWeight: FontWeight.w700,
@@ -943,85 +979,86 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                             ),
                           ),
                           ksizedbox20,
-                          GestureDetector(onTap: () {
-                            if (formatDateTime.isNotEmpty) {
-                              parcelController.getKiloMeterApi(
+                          // Obx(() {
+                          //   return
+                          GestureDetector(
+                            onTap: () async {
+                              if (formatDateTime.isNotEmpty) {
+                                await parcelController.getKiloMeterApi(
                                   lat1: double.parse(widget.pickuplatitude),
                                   lon1: double.parse(widget.pickuplogitude),
                                   lat2: double.parse(
                                       widget.droppingLatitude.first),
                                   lon2: double.parse(
                                       widget.droppingLogitude.first),
-                                  unit: "k");
-                              Get.to(BookingDetailsScreen(
-                                totalWeights: widget.totalWeight,
-                                  totalAmount: totalAmount.toString(),
-                                  distance:
-                                      parcelController.distance.toString(),
-                                  selectedParcelservice:
-                                      selectedparcelServiceItems,
-                                  pickupADDRESS: widget.pickupAddress,
-                                  pickpLATITUDE: widget.pickuplatitude,
-                                  pickupLOGITUDE: widget.pickuplogitude,
-                                  droppingLATITUDE: widget.droppingLatitude,
-                                  droppingLOGITUDE: widget.droppingLogitude,
-                                  droppingADDRESS: widget.droppingaddress,
-                                  bookingDATE: widget.bookingDate,
-                                  deliveryTYPE: widget.deliverytype,
-                                  deliveryTypeID: widget.deliVerytypeID,
-                                  parcelLengtH: widget.length,
-                                  parcelWidth: widget.width,
-                                  parcelHeight: widget.height,
-                                  parcelKg: widget.kg,
-                                  parcelQty: widget.qty,
-                                  parcelITEMS: widget.parcelItems,
-                                  unitIdBlockID: widget.unitIdBlockId,
-                                  pickTimeFROM: widget.pickTimeFrom!,
-                                  pickTimeTO: widget.pickTimeTo!,
-                                  pickTimeListFROM: widget.pickTimeListFrom,
-                                  pickTimeListTO: widget.pickTimeListTo,
-                                  senderNAME: widget.sendername,
-                                  phoneNUMBER: widget.phonenumber,
-                                  arpinCODE: widget.arpincode,
-                                  doorNAME: homeController.doornames,
-                                  receiverNAME: homeController.receiverNameList,
-                                  receiverPHONE:
-                                      homeController.receiverNumberList,
-                                  receiverUnitIdBlockID:
-                                      homeController.receiverBlockIdUnitIDs,
-                                  deliveyDate: formatDateTime.isEmpty
-                                      ? "Select Date"
-                                      : formatDateTime,
-                                  deliveryTimeFROM:
-                                      '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime!, 60))}',
-                                  deliveryTimeTO: _formatTime(
-                                      _addMinutesToTimeOfDay(
-                                          deliveryToTime!, 120)),
-                                  imagePath: imagePath!,
-                                  notes: notesController.text));
-                            } else {
-                              Get.snackbar(
-                                  "Fill all Fileds", "Please try again!",
+                                  unit: "k",
+                                );
+
+                                // Wait for the state to update before navigating
+                                Get.to(() => BookingDetailsScreen(
+                                      totalWeights: widget.totalWeight,
+                                      additionalservicetotalAmount: totalAmount.toString(),
+                                      distance:
+                                          parcelController.distance.toString(),
+                                      selectedParcelservice:
+                                          selectedparcelServiceItems,
+                                      pickupADDRESS: widget.pickupAddress,
+                                      pickpLATITUDE: widget.pickuplatitude,
+                                      pickupLOGITUDE: widget.pickuplogitude,
+                                      droppingLATITUDE: widget.droppingLatitude,
+                                      droppingLOGITUDE: widget.droppingLogitude,
+                                      droppingADDRESS: widget.droppingaddress,
+                                      bookingDATE: widget.bookingDate,
+                                      deliveryTYPE: widget.deliverytype,
+                                      deliveryTypeID: widget.deliVerytypeID,
+                                      parcelLengtH: widget.length,
+                                      parcelWidth: widget.width,
+                                      parcelHeight: widget.height,
+                                      parcelKg: widget.kg,
+                                      parcelQty: widget.qty,
+                                      parcelITEMS: widget.parcelItems,
+                                      unitIdBlockID: widget.unitIdBlockId,
+                                      pickTimeFROM: widget.pickTimeFrom!,
+                                      pickTimeTO: widget.pickTimeTo!,
+                                      pickTimeListFROM: widget.pickTimeListFrom,
+                                      pickTimeListTO: widget.pickTimeListTo,
+                                      senderNAME: widget.sendername,
+                                      phoneNUMBER: widget.phonenumber,
+                                      arpinCODE: widget.arpincode,
+                                      doorNAME: homeController.doornames,
+                                      receiverNAME:
+                                          homeController.receiverNameList,
+                                      receiverPHONE:
+                                          homeController.receiverNumberList,
+                                      receiverUnitIdBlockID:
+                                          homeController.receiverBlockIdUnitIDs,
+                                      deliveyDate: formatDateTime.isEmpty
+                                          ? "Select Date"
+                                          : formatDateTime,
+                                      deliveryTimeFROM:
+                                          '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime!, 60))}',
+                                      deliveryTimeTO: _formatTime(
+                                          _addMinutesToTimeOfDay(
+                                              deliveryToTime!, 120)),
+                                      imagePath: imagePath!,
+                                      notes: notesController.text,
+                                    ));
+                              } else {
+                                Get.snackbar(
+                                  "Fill all Fields",
+                                  "Please try again!",
                                   colorText: AppColors.kwhite,
                                   backgroundColor: Colors.red,
-                                  snackPosition: SnackPosition.BOTTOM);
-                            }
+                                  snackPosition: SnackPosition.BOTTOM,
+                                );
+                              }
+                            },
+                            child: CommonContainer(
+                              name: "Booking Review",
+                            ),
+                          ),
 
-                            //   Get.to(BookingDetailsScreen());
-                          }, child: Obx(() {
-                            return parcelController.addBookingLoading.isTrue
-                                ? Container(
-                                    height: 50.h,
-                                    width: size.width,
-                                    child: Center(
-                                        child: CircularProgressIndicator(
-                                      color: AppColors.kblue,
-                                    )),
-                                  )
-                                : CommonContainer(
-                                    name: "Booking Review",
-                                  );
-                          })),
+                          //  }),
                         ],
                       ),
                     ),

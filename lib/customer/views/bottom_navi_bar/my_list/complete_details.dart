@@ -5,9 +5,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
+import 'package:v_export/customer/controller/my_list_controller.dart';
+import 'package:v_export/customer/model/get_completed_orders_model.dart';
 
 class CompleteDetails extends StatefulWidget {
-  const CompleteDetails({super.key});
+  GetCompletedOrdersModelData getCompletedlist;
+  CompleteDetails({super.key, required this.getCompletedlist});
 
   @override
   State<CompleteDetails> createState() => _CompleteDetailsState();
@@ -65,12 +68,6 @@ class _CompleteDetailsState extends State<CompleteDetails> {
                         width: size.width,
                         decoration: BoxDecoration(
                             color: AppColors.kwhite,
-                            // boxShadow: <BoxShadow>[
-                            //   BoxShadow(
-                            //       offset: Offset(0.0, 0.75),
-                            //       blurRadius: 4,
-                            //       color: AppColors.kgrey)
-                            // ],
                             borderRadius: BorderRadius.circular(10)),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -91,7 +88,7 @@ class _CompleteDetailsState extends State<CompleteDetails> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      "Lee Wong",
+                                      widget.getCompletedlist.driver.firstName,
                                       style: primaryfont.copyWith(
                                           fontWeight: FontWeight.w600,
                                           color: Colors.black,
@@ -163,7 +160,7 @@ class _CompleteDetailsState extends State<CompleteDetails> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Booking ID : #ZAG01',
+                                    'Booking ID : ${widget.getCompletedlist.bookingId}',
                                     style: primaryfont.copyWith(
                                         fontWeight: FontWeight.w700,
                                         fontSize: 15.5),
@@ -183,7 +180,7 @@ class _CompleteDetailsState extends State<CompleteDetails> {
                                       ),
                                       Dash(
                                           direction: Axis.vertical,
-                                          length: 85,
+                                          length: 170,
                                           dashLength: 5,
                                           dashColor: AppColors.kgrey),
                                       Icon(
@@ -210,15 +207,19 @@ class _CompleteDetailsState extends State<CompleteDetails> {
                                                 fontWeight: FontWeight.w600,
                                                 color: Color(0xff455A64)),
                                           ),
-                                          Text(
-                                            '338 Serangoon North ave 6',
-                                            style: primaryfont.copyWith(
-                                                color: Color(0xff1E1E1E),
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 15.sp),
+                                          Container(
+                                            width: 300.w,
+                                            child: Text(
+                                              widget.getCompletedlist
+                                                  .pickupAddreess,
+                                              style: primaryfont.copyWith(
+                                                  color: Color(0xff1E1E1E),
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 15.sp),
+                                            ),
                                           ),
                                           Text(
-                                            '2:30 PM',
+                                            "${widget.getCompletedlist.bookingProducts.first.pickuptimeFrom} To ${widget.getCompletedlist.bookingProducts.first.pickuptimeTo}",
                                             style: primaryfont.copyWith(
                                                 fontWeight: FontWeight.w700,
                                                 fontSize: 13.sp,
@@ -240,15 +241,22 @@ class _CompleteDetailsState extends State<CompleteDetails> {
                                                 fontWeight: FontWeight.w600,
                                                 color: Color(0xff455A64)),
                                           ),
-                                          Text(
-                                            '338 Serangoon North ave 6',
-                                            style: primaryfont.copyWith(
-                                                color: Color(0xff1E1E1E),
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 15.sp),
+                                          Container(
+                                            width: 300.w,
+                                            child: Text(
+                                              widget
+                                                  .getCompletedlist
+                                                  .bookingDeliveryAddresses
+                                                  .first
+                                                  .address,
+                                              style: primaryfont.copyWith(
+                                                  color: Color(0xff1E1E1E),
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 15.sp),
+                                            ),
                                           ),
                                           Text(
-                                            '2:30 PM',
+                                            "${widget.getCompletedlist.bookingProducts.first.deliverytimeFrom} To ${widget.getCompletedlist.bookingProducts.first.deliverytimeTo}",
                                             style: primaryfont.copyWith(
                                                 fontWeight: FontWeight.w700,
                                                 fontSize: 13.sp,

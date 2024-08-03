@@ -24,7 +24,6 @@ class _GetOngoingScreenDataState extends State<GetOngoingScreenData> {
   void initState() {
     super.initState();
     getData();
-    //  setState(() {});
   }
 
   getData() async {
@@ -79,7 +78,9 @@ class _GetOngoingScreenDataState extends State<GetOngoingScreenData> {
                     padding: const EdgeInsets.only(left: 10, right: 10),
                     child: GestureDetector(
                       onTap: () {
-                        Get.to(BookingStatus());
+                        Get.to(BookingStatus(
+                          getOngoingOrderlist: getongoingdatas,
+                        ));
                       },
                       child: Container(
                         padding: EdgeInsets.all(5),
@@ -101,7 +102,9 @@ class _GetOngoingScreenDataState extends State<GetOngoingScreenData> {
                                 ),
                                 GestureDetector(
                                   onTap: () {
-                                    Get.to(BookingStatus());
+                                    Get.to(BookingStatus(
+                                      getOngoingOrderlist: getongoingdatas,
+                                    ));
                                   },
                                   child: Container(
                                     height: 35,
@@ -192,10 +195,9 @@ class _GetOngoingScreenDataState extends State<GetOngoingScreenData> {
                                               width: 200.h,
                                               child: Text(
                                                 getongoingdatas
-                                                    .bookingDeliveryAddresses[
-                                                        index]
+                                                    .bookingDeliveryAddresses
+                                                    .first
                                                     .address,
-                                                // "jascjj",
                                                 style: primaryfont.copyWith(
                                                     color: Color(0xff1E1E1E),
                                                     fontWeight: FontWeight.w600,
@@ -219,10 +221,9 @@ class _GetOngoingScreenDataState extends State<GetOngoingScreenData> {
                                           Text(
                                             getongoingdatas.bookingType ==
                                                     "parcel"
-                                                ? '${getongoingdatas.bookingProducts[index].pickuptimeFrom} to ${getongoingdatas.bookingProducts[index].pickuptimeTo}'
+                                                ? '${getongoingdatas.bookingProducts.first.pickuptimeFrom} to ${getongoingdatas.bookingProducts.first.pickuptimeTo}'
                                                 : getongoingdatas
                                                     .bookingTimeFromVehicle,
-                                            //          '${formatTime(myListController.getOngoingOrdersModelData[index].bookingProducts[index].pickuptimeFrom)} to ${formatTime(myListController.getOngoingOrdersModelData[index].bookingProducts[index].pickuptimeTo)}',
                                             style: primaryfont.copyWith(
                                                 fontSize: 12.sp,
                                                 fontWeight: FontWeight.w600,
@@ -231,7 +232,7 @@ class _GetOngoingScreenDataState extends State<GetOngoingScreenData> {
                                           Text(
                                             getongoingdatas.bookingType ==
                                                     "parcel"
-                                                ? '${getongoingdatas.bookingProducts[index].deliverytimeFrom} to ${getongoingdatas.bookingProducts[index].deliverytimeTo}'
+                                                ? '${getongoingdatas.bookingProducts.first.deliverytimeFrom} to ${getongoingdatas.bookingProducts.first.deliverytimeTo}'
                                                 : "",
 
                                             //'${formatTime(myListController.getOngoingOrdersModelData[index].bookingProducts[index].deliverytimeFrom)} to ${formatTime(myListController.getOngoingOrdersModelData[index].bookingProducts[index].deliverytimeTo)}',
@@ -311,15 +312,16 @@ class _GetOngoingScreenDataState extends State<GetOngoingScreenData> {
                                               height: 2.h,
                                             ),
                                             Text(
-                                              getongoingdatas.bookingType ==
-                                                      "parcel"
-                                                  ? myListController
-                                                      .getOngoingOrdersModelData[
-                                                          index]
-                                                      .bookingProducts[index]
-                                                      .deliveryDate
-                                                      .toString()
-                                                  : "",
+                                              "",
+                                              // getongoingdatas.bookingType ==
+                                              //         "parcel"
+                                              //     ? myListController
+                                              //         .getOngoingOrdersModelData[
+                                              //             index]
+                                              //         .bookingProducts[index]
+                                              //         .deliveryDate
+                                              //         .toString()
+                                              //     : "",
                                               // formatDate(
                                               //     DateTime.parse(
                                               //         myListController

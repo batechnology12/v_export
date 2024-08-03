@@ -30,7 +30,10 @@ class _MyListState extends State<MyOrder> {
   void initState() {
     super.initState();
     // getData();
+    initialTabIndex = Get.arguments ?? 0;
   }
+
+  int initialTabIndex = 0;
 
   String formatTime(String time) {
     DateTime parsedTime = DateFormat("HH:mm:ss").parse(time);
@@ -42,6 +45,7 @@ class _MyListState extends State<MyOrder> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return DefaultTabController(
+      initialIndex: initialTabIndex,
       length: 3,
       child: Scaffold(
         backgroundColor: AppColors.kblue,

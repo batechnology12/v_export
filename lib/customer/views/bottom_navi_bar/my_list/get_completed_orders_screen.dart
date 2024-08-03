@@ -7,6 +7,7 @@ import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
 import 'package:v_export/customer/controller/account_controller.dart';
 import 'package:v_export/customer/controller/my_list_controller.dart';
+import 'package:v_export/customer/model/get_completed_orders_model.dart';
 import 'package:v_export/customer/model/get_ongoing_orders_model.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/my_list/booking_status.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/my_list/complete_details.dart';
@@ -42,17 +43,6 @@ class _GetCompletedScreenDataState extends State<GetCompletedScreenData> {
       physics: BouncingScrollPhysics(),
       child: Column(
         children: [
-          // Center(
-          //     child: Container(
-          //         alignment: Alignment.center,
-          //         height: 200.h,
-          //         width: size.width,
-          //         decoration: BoxDecoration(
-          //           color: Colors.grey.withOpacity(.09),
-          //           borderRadius: BorderRadius.circular(10),
-          //         ),
-          //         child: Image.asset(
-          //             "assets/images/No Data Found.jpeg"))),
           GetBuilder<MyListController>(builder: (context) {
             if (myListController.getCompletedOrdersLoading.isTrue) {
               return Center(child: CircularProgressIndicator());
@@ -60,23 +50,31 @@ class _GetCompletedScreenDataState extends State<GetCompletedScreenData> {
 
             if (myListController.getCompletedOrdersModelData.isEmpty) {
               return Center(
-                  child: Container(
-                      alignment: Alignment.center,
-                      height: 200.h,
-                      width: size.width,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(.09),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Image.asset("assets/images/Group 42002.png")));
+                child: Container(
+                  alignment: Alignment.center,
+                  height: 200.h,
+                  width: size.width,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.withOpacity(.09),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Image.asset("assets/images/Group 42002.png"),
+                ),
+              );
             }
+
             return ListView.builder(
-                shrinkWrap: true,
-                itemCount: myListController.getCompletedOrdersModelData.length,
-                physics: BouncingScrollPhysics(),
-                itemBuilder: ((context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(left: 10, right: 10),
+              shrinkWrap: true,
+              itemCount: myListController.getCompletedOrdersModelData.length,
+              physics: BouncingScrollPhysics(),
+              itemBuilder: (context, index) {
+                GetCompletedOrdersModelData order = myListController.getCompletedOrdersModelData[index];
+                return Padding(
+                  padding: const EdgeInsets.only(left: 10, right: 10),
+                  child: GestureDetector(
+                    onTap: () {
+                      Get.to(CompleteDetails(getCompletedlist: order,));
+                    },
                     child: Container(
                       padding: EdgeInsets.all(5),
                       decoration: BoxDecoration(
@@ -90,14 +88,14 @@ class _GetCompletedScreenDataState extends State<GetCompletedScreenData> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Booking ID : ${myListController.getCompletedOrdersModelData[index].bookingId}',
+                                'Booking ID : ${order.bookingId}',
                                 style: primaryfont.copyWith(
                                     fontWeight: FontWeight.w700,
                                     fontSize: 15.5),
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  Get.to(CompleteDetails());
+                                  Get.to(CompleteDetails(getCompletedlist: order,));
                                 },
                                 child: Container(
                                   height: 35,
@@ -139,9 +137,7 @@ class _GetCompletedScreenDataState extends State<GetCompletedScreenData> {
                                       ),
                                     ],
                                   ),
-                                  SizedBox(
-                                    width: 5.w,
-                                  ),
+                                  SizedBox(width: 5.w),
                                   Column(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -160,10 +156,7 @@ class _GetCompletedScreenDataState extends State<GetCompletedScreenData> {
                                           Container(
                                             width: 200.h,
                                             child: Text(
-                                              myListController
-                                                  .getCompletedOrdersModelData[
-                                                      index]
-                                                  .pickupAddreess,
+                                              order.pickupAddreess,
                                               style: primaryfont.copyWith(
                                                   color: Color(0xff1E1E1E),
                                                   fontWeight: FontWeight.w600,
@@ -172,9 +165,7 @@ class _GetCompletedScreenDataState extends State<GetCompletedScreenData> {
                                           ),
                                         ],
                                       ),
-                                      SizedBox(
-                                        height: 40.h,
-                                      ),
+                                      SizedBox(height: 40.h),
                                       Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
@@ -188,18 +179,30 @@ class _GetCompletedScreenDataState extends State<GetCompletedScreenData> {
                                           ),
                                           Container(
                                             width: 200.h,
-                                            child: Text(
-                                              myListController
-                                                  .getCompletedOrdersModelData[
-                                                      index]
-                                                  .bookingDeliveryAddresses[
-                                                      index]
-                                                  .address,
-                                              style: primaryfont.copyWith(
-                                                  color: Color(0xff1E1E1E),
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 14.sp),
-                                            ),
+                                            child: order
+                                                    .bookingDeliveryAddresses
+                                                    .isNotEmpty
+                                                ? Text(
+                                                    order
+                                                        .bookingDeliveryAddresses[
+                                                            0]
+                                                        .address,
+                                                    style: primaryfont.copyWith(
+                                                        color:
+                                                            Color(0xff1E1E1E),
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontSize: 14.sp),
+                                                  )
+                                                : Text(
+                                                    'No delivery address available',
+                                                    style: primaryfont.copyWith(
+                                                        color:
+                                                            Color(0xff1E1E1E),
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontSize: 14.sp),
+                                                  ),
                                           ),
                                         ],
                                       )
@@ -211,25 +214,44 @@ class _GetCompletedScreenDataState extends State<GetCompletedScreenData> {
                                 children: [
                                   Container(
                                     height: 150.h,
-                                    //    color: Colors.yellow,
                                     child: Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(
-                                          '${formatTime(myListController.getCompletedOrdersModelData[index].bookingProducts[index].pickuptimeFrom)} to ${formatTime(myListController.getCompletedOrdersModelData[index].bookingProducts[index].pickuptimeTo)}',
-                                          style: primaryfont.copyWith(
-                                              fontSize: 13.sp,
-                                              fontWeight: FontWeight.w600,
-                                              color: Color(0xff455A64)),
-                                        ),
-                                        Text(
-                                          '${formatTime(myListController.getCompletedOrdersModelData[index].bookingProducts[index].deliverytimeFrom)} to ${formatTime(myListController.getCompletedOrdersModelData[index].bookingProducts[index].deliverytimeTo)}',
-                                          style: primaryfont.copyWith(
-                                              fontSize: 13.sp,
-                                              fontWeight: FontWeight.w600,
-                                              color: Color(0xff455A64)),
-                                        ),
+                                        order.bookingProducts.isNotEmpty
+                                            ? Text(
+                                                "${order.bookingProducts.first.pickuptimeFrom} \nto \n${order.bookingProducts.first.pickuptimeTo}",
+                                                //  '${formatTime(order.bookingProducts[0].pickuptimeFrom)} to ${formatTime(order.bookingProducts[0].pickuptimeTo)}',
+                                                textAlign: TextAlign.center,
+                                                style: primaryfont.copyWith(
+                                                    fontSize: 11.sp,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Color(0xff455A64)),
+                                              )
+                                            : Text(
+                                                'No pickup time available',
+                                                style: primaryfont.copyWith(
+                                                    fontSize: 11.sp,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Color(0xff455A64)),
+                                              ),
+                                        order.bookingProducts.isNotEmpty
+                                            ? Text(
+                                                "${order.bookingProducts.first.deliverytimeFrom} \nto \n${order.bookingProducts.first.deliverytimeTo}",
+                                                //  '${formatTime(order.bookingProducts[0].deliverytimeFrom)} to ${formatTime(order.bookingProducts[0].deliverytimeTo)}',
+                                                textAlign: TextAlign.center,
+                                                style: primaryfont.copyWith(
+                                                    fontSize: 11.sp,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Color(0xff455A64)),
+                                              )
+                                            : Text(
+                                                'No delivery time available',
+                                                style: primaryfont.copyWith(
+                                                    fontSize: 11.sp,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Color(0xff455A64)),
+                                              ),
                                       ],
                                     ),
                                   )
@@ -258,21 +280,20 @@ class _GetCompletedScreenDataState extends State<GetCompletedScreenData> {
                                           fontWeight: FontWeight.w500,
                                           fontSize: 12.sp),
                                     ),
-                                    SizedBox(
-                                      height: 2.h,
-                                    ),
+                                    SizedBox(height: 2.h),
                                     Text(
+                                      //   order.bookingDate.toString(),
+                                      // order.bookingDate != null
+                                      // ?
                                       formatDate(
-                                          DateTime.parse(myListController
-                                              .getCompletedOrdersModelData[
-                                                  index]
-                                              .bookingDate
-                                              .toString()),
+                                          DateTime.parse(
+                                              order.bookingDate.toString()),
                                           [dd, '-', mm, '-', yyyy]),
+                                      //     : 'No date available',
                                       style: primaryfont.copyWith(
                                         fontWeight: FontWeight.w600,
                                       ),
-                                    )
+                                    ),
                                   ],
                                 ),
                               ),
@@ -291,22 +312,28 @@ class _GetCompletedScreenDataState extends State<GetCompletedScreenData> {
                                           fontWeight: FontWeight.w500,
                                           fontSize: 12.sp),
                                     ),
-                                    SizedBox(
-                                      height: 2.h,
-                                    ),
+                                    SizedBox(height: 2.h),
                                     Text(
-                                      formatDate(
-                                          DateTime.parse(myListController
-                                              .getCancelledOrdersModelData[
-                                                  index]
-                                              .bookingProducts[index]
-                                              .deliveryDate
-                                              .toString()),
-                                          [dd, '-', mm, '-', yyyy]),
+                                      //  "dshchjd",
+                                      order.bookingProducts.first.deliveryDate
+                                          .toString(),
+                                      // formatDate(
+                                      //     DateTime.parse(order
+                                      //         .bookingProducts[index].deliveryDate
+                                      //         .toString()),
+                                      //     [dd, '-', mm, '-', yyyy]),
+
+                                      // order.bookingProducts.isNotEmpty
+                                      //     ? formatDate(
+                                      //         DateTime.parse(order
+                                      //             .bookingProducts[0].deliveryDate
+                                      //             .toString()),
+                                      //         [dd, '-', mm, '-', yyyy])
+                                      //     : 'No date available',
                                       style: primaryfont.copyWith(
                                         fontWeight: FontWeight.w600,
                                       ),
-                                    )
+                                    ),
                                   ],
                                 ),
                               ),
@@ -326,9 +353,7 @@ class _GetCompletedScreenDataState extends State<GetCompletedScreenData> {
                                           fontSize: 12,
                                           color: Color(0xff455A64)),
                                     ),
-                                    SizedBox(
-                                      height: 2.h,
-                                    ),
+                                    SizedBox(height: 2.h),
                                     Text(
                                       'Delivered',
                                       style: primaryfont.copyWith(
@@ -343,8 +368,10 @@ class _GetCompletedScreenDataState extends State<GetCompletedScreenData> {
                         ],
                       ),
                     ),
-                  );
-                }));
+                  ),
+                );
+              },
+            );
           }),
         ],
       ),

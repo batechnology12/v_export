@@ -14,6 +14,8 @@ import 'package:intl/intl.dart';
 import 'package:v_export/customer/model/get_ongoing_orders_model.dart';
 
 class BookingStatus extends StatefulWidget {
+  GetOngoingOrdersModelData getOngoingOrderlist;
+  BookingStatus({super.key, required this.getOngoingOrderlist});
   @override
   State<BookingStatus> createState() => _MyHomePageState();
 }
@@ -28,13 +30,6 @@ class _MyHomePageState extends State<BookingStatus> {
     target: LatLng(37.7749, -122.4194), // San Francisco
     zoom: 12,
   );
-
-  @override
-  void initState() {
-    super.initState();
-    //  _getLocation();
-    myListController.getOngoingOrdersUser("ongoing");
-  }
 
   void _getLocation() async {
     bool _serviceEnabled;
@@ -77,7 +72,6 @@ class _MyHomePageState extends State<BookingStatus> {
     });
   }
 
-  MyListController myListController = Get.find<MyListController>();
   ParcelController parcelController = Get.find<ParcelController>();
 
   String formatTime(String time) {
@@ -151,8 +145,8 @@ class _MyHomePageState extends State<BookingStatus> {
             ),
           ),
           DraggableScrollableSheet(
-            initialChildSize: 0.4,
-            minChildSize: 0.4,
+            initialChildSize: 0.7,
+            minChildSize: 0.7,
             maxChildSize: 1.0,
             builder: (BuildContext context, ScrollController scrollController) {
               return Container(
@@ -176,17 +170,9 @@ class _MyHomePageState extends State<BookingStatus> {
                           borderRadius: BorderRadius.circular(5)),
                     ),
                     Expanded(
-                      child: ListView.builder(
-                        controller: scrollController,
-                        scrollDirection: Axis.vertical,
-                        physics: AlwaysScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount:
-                            myListController.getOngoingOrdersModelData.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          GetOngoingOrdersModelData getongoingDatas =
-                              myListController.getOngoingOrdersModelData[index];
-                          return Padding(
+                      child: ListView(
+                        children: [
+                          Padding(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 10),
                             child: ClipRRect(
@@ -210,7 +196,7 @@ class _MyHomePageState extends State<BookingStatus> {
                                             MainAxisAlignment.start,
                                         children: [
                                           Text(
-                                            'Booking ID : ${getongoingDatas.bookingId}',
+                                            'Booking ID : ${widget.getOngoingOrderlist.bookingId}',
                                             style: primaryfont.copyWith(
                                                 fontWeight: FontWeight.w700,
                                                 fontSize: 15.5),
@@ -232,20 +218,21 @@ class _MyHomePageState extends State<BookingStatus> {
                                           ),
                                           Text(
                                             formatDate(
-                                                DateTime.parse(getongoingDatas
+                                                DateTime.parse(widget
+                                                    .getOngoingOrderlist
                                                     .bookingDate
                                                     .toString()),
                                                 [dd, '-', mm, '-', yyyy]),
                                             style: primaryfont.copyWith(
                                                 fontWeight: FontWeight.w600,
-                                                fontSize: 16.sp,
+                                                fontSize: 12.sp,
                                                 color: Color(0xff455A64)),
                                           ),
                                           Text(
-                                            '${getongoingDatas.bookingProducts[index].pickuptimeFrom} to ${getongoingDatas.bookingProducts[index].pickuptimeTo}',
+                                            '${widget.getOngoingOrderlist.bookingProducts.first.pickuptimeFrom} to ${widget.getOngoingOrderlist.bookingProducts.first.pickuptimeTo}',
                                             style: primaryfont.copyWith(
                                                 fontWeight: FontWeight.w600,
-                                                fontSize: 16.sp,
+                                                fontSize: 12.sp,
                                                 color: Color(0xff455A64)),
                                           )
                                         ],
@@ -254,7 +241,8 @@ class _MyHomePageState extends State<BookingStatus> {
                                       Container(
                                         width: size.width,
                                         child: Text(
-                                          getongoingDatas.pickupAddreess,
+                                          widget.getOngoingOrderlist
+                                              .pickupAddreess,
                                           style: primaryfont.copyWith(
                                               color: const Color(0xff1E1E1E),
                                               fontWeight: FontWeight.w600,
@@ -276,26 +264,30 @@ class _MyHomePageState extends State<BookingStatus> {
                                                 fontSize: 16.sp),
                                           ),
                                           Text(
-                                            getongoingDatas.bookingType ==
+                                            widget.getOngoingOrderlist
+                                                        .bookingType ==
                                                     "parcel"
-                                                ? getongoingDatas
-                                                    .bookingProducts[index]
+                                                ? widget
+                                                    .getOngoingOrderlist
+                                                    .bookingProducts
+                                                    .first
                                                     .deliveryDate
                                                     .toString()
                                                 : "",
                                             style: primaryfont.copyWith(
                                                 fontWeight: FontWeight.w600,
-                                                fontSize: 16.sp,
+                                                fontSize: 12.sp,
                                                 color: Color(0xff455A64)),
                                           ),
                                           Text(
-                                            getongoingDatas.bookingType ==
+                                            widget.getOngoingOrderlist
+                                                        .bookingType ==
                                                     "parcel"
-                                                ? '${getongoingDatas.bookingProducts[index].deliverytimeFrom} to ${getongoingDatas.bookingProducts[index].deliverytimeTo}'
+                                                ? '${widget.getOngoingOrderlist.bookingProducts.first.deliverytimeFrom} to ${widget.getOngoingOrderlist.bookingProducts.first.deliverytimeTo}'
                                                 : "",
                                             style: primaryfont.copyWith(
                                                 fontWeight: FontWeight.w600,
-                                                fontSize: 16.sp,
+                                                fontSize: 12.sp,
                                                 color: Color(0xff455A64)),
                                           )
                                         ],
@@ -304,8 +296,10 @@ class _MyHomePageState extends State<BookingStatus> {
                                       Container(
                                         width: size.width,
                                         child: Text(
-                                          getongoingDatas
-                                              .bookingDeliveryAddresses[index]
+                                          widget
+                                              .getOngoingOrderlist
+                                              .bookingDeliveryAddresses
+                                              .first
                                               .address,
                                           style: primaryfont.copyWith(
                                               color: Color(0xff1E1E1E),
@@ -326,7 +320,8 @@ class _MyHomePageState extends State<BookingStatus> {
                                                 fontSize: 16.sp),
                                           ),
                                           Text(
-                                            getongoingDatas.deliveryType.name,
+                                            widget.getOngoingOrderlist
+                                                .deliveryType.name,
                                             style: primaryfont.copyWith(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 16.sp,
@@ -368,8 +363,8 @@ class _MyHomePageState extends State<BookingStatus> {
                                                 fontSize: 16.sp),
                                           ),
                                           Text(
-                                            getongoingDatas
-                                                .bookingProducts[index].kg,
+                                            widget.getOngoingOrderlist
+                                                .bookingProducts.first.kg,
                                             style: primaryfont.copyWith(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 16.sp,
@@ -411,7 +406,7 @@ class _MyHomePageState extends State<BookingStatus> {
                                             fontSize: 16.sp),
                                       ),
                                       Text(
-                                        getongoingDatas.notes,
+                                        widget.getOngoingOrderlist.notes,
                                         style: primaryfont.copyWith(
                                             color: Color(0xff1E1E1E),
                                             fontWeight: FontWeight.w700,
@@ -422,9 +417,259 @@ class _MyHomePageState extends State<BookingStatus> {
                                 ),
                               ),
                             ),
-                          );
-                        },
+                          ),
+                        ],
                       ),
+                      // ListView.builder(
+                      //   controller: scrollController,
+                      //   scrollDirection: Axis.vertical,
+                      //   physics: AlwaysScrollableScrollPhysics(),
+                      //   shrinkWrap: true,
+                      //   itemCount: widget.getOngoingOrderlist.length,
+                      //   itemBuilder: (BuildContext context, int index) {
+                      //     GetOngoingOrdersModelData getongoingDatas =
+                      //         widget.getOngoingOrderlist[index];
+                      //     return Padding(
+                      //       padding: const EdgeInsets.symmetric(
+                      //           horizontal: 10, vertical: 10),
+                      //       child: ClipRRect(
+                      //         borderRadius: BorderRadius.circular(10),
+                      //         child: Container(
+                      //           padding: const EdgeInsets.only(
+                      //               top: 1, bottom: 7, right: 1, left: 1),
+                      //           width: size.width,
+                      //           decoration: const BoxDecoration(
+                      //             color: Colors.white,
+                      //           ),
+                      //           child: Padding(
+                      //             padding: const EdgeInsets.only(
+                      //                 left: 10, right: 10, top: 10),
+                      //             child: Column(
+                      //               crossAxisAlignment:
+                      //                   CrossAxisAlignment.start,
+                      //               children: [
+                      //                 Row(
+                      //                   mainAxisAlignment:
+                      //                       MainAxisAlignment.start,
+                      //                   children: [
+                      //                     Text(
+                      //                       'Booking ID : ${getongoingDatas.bookingId}',
+                      //                       style: primaryfont.copyWith(
+                      //                           fontWeight: FontWeight.w700,
+                      //                           fontSize: 15.5),
+                      //                     ),
+                      //                   ],
+                      //                 ),
+                      //                 Divider(),
+                      //                 ksizedbox10,
+                      //                 Row(
+                      //                   mainAxisAlignment:
+                      //                       MainAxisAlignment.spaceBetween,
+                      //                   children: [
+                      //                     Text(
+                      //                       'Pickup details',
+                      //                       style: primaryfont.copyWith(
+                      //                           color: Color(0xff000000),
+                      //                           fontWeight: FontWeight.w700,
+                      //                           fontSize: 16.sp),
+                      //                     ),
+                      //                     Text(
+                      //                       formatDate(
+                      //                           DateTime.parse(getongoingDatas
+                      //                               .bookingDate
+                      //                               .toString()),
+                      //                           [dd, '-', mm, '-', yyyy]),
+                      //                       style: primaryfont.copyWith(
+                      //                           fontWeight: FontWeight.w600,
+                      //                           fontSize: 12.sp,
+                      //                           color: Color(0xff455A64)),
+                      //                     ),
+                      //                     Text(
+                      //                       '${getongoingDatas.bookingProducts.first.pickuptimeFrom} to ${getongoingDatas.bookingProducts.first.pickuptimeTo}',
+                      //                       style: primaryfont.copyWith(
+                      //                           fontWeight: FontWeight.w600,
+                      //                           fontSize: 12.sp,
+                      //                           color: Color(0xff455A64)),
+                      //                     )
+                      //                   ],
+                      //                 ),
+                      //                 ksizedbox10,
+                      //                 Container(
+                      //                   width: size.width,
+                      //                   child: Text(
+                      //                     getongoingDatas.pickupAddreess,
+                      //                     style: primaryfont.copyWith(
+                      //                         color: const Color(0xff1E1E1E),
+                      //                         fontWeight: FontWeight.w600,
+                      //                         fontSize: 16.sp),
+                      //                   ),
+                      //                 ),
+                      //                 ksizedbox20,
+                      //                 const Divider(),
+                      //                 ksizedbox20,
+                      //                 Row(
+                      //                   mainAxisAlignment:
+                      //                       MainAxisAlignment.spaceBetween,
+                      //                   children: [
+                      //                     Text(
+                      //                       'Delivery details',
+                      //                       style: primaryfont.copyWith(
+                      //                           color: Color(0xff000000),
+                      //                           fontWeight: FontWeight.w700,
+                      //                           fontSize: 16.sp),
+                      //                     ),
+                      //                     Text(
+                      //                       getongoingDatas.bookingType ==
+                      //                               "parcel"
+                      //                           ? getongoingDatas
+                      //                               .bookingProducts
+                      //                               .first
+                      //                               .deliveryDate
+                      //                               .toString()
+                      //                           : "",
+                      //                       style: primaryfont.copyWith(
+                      //                           fontWeight: FontWeight.w600,
+                      //                           fontSize: 12.sp,
+                      //                           color: Color(0xff455A64)),
+                      //                     ),
+                      //                     Text(
+                      //                       getongoingDatas.bookingType ==
+                      //                               "parcel"
+                      //                           ? '${getongoingDatas.bookingProducts.first.deliverytimeFrom} to ${getongoingDatas.bookingProducts.first.deliverytimeTo}'
+                      //                           : "",
+                      //                       style: primaryfont.copyWith(
+                      //                           fontWeight: FontWeight.w600,
+                      //                           fontSize: 12.sp,
+                      //                           color: Color(0xff455A64)),
+                      //                     )
+                      //                   ],
+                      //                 ),
+                      //                 ksizedbox10,
+                      //                 Container(
+                      //                   width: size.width,
+                      //                   child: Text(
+                      //                     getongoingDatas
+                      //                         .bookingDeliveryAddresses
+                      //                         .first
+                      //                         .address,
+                      //                     style: primaryfont.copyWith(
+                      //                         color: Color(0xff1E1E1E),
+                      //                         fontWeight: FontWeight.w600,
+                      //                         fontSize: 16.sp),
+                      //                   ),
+                      //                 ),
+                      //                 ksizedbox20,
+                      //                 Row(
+                      //                   mainAxisAlignment:
+                      //                       MainAxisAlignment.spaceBetween,
+                      //                   children: [
+                      //                     Text(
+                      //                       'Delivery Type:',
+                      //                       style: primaryfont.copyWith(
+                      //                           color: Color(0xff000000),
+                      //                           fontWeight: FontWeight.w700,
+                      //                           fontSize: 16.sp),
+                      //                     ),
+                      //                     Text(
+                      //                       getongoingDatas.deliveryType.name,
+                      //                       style: primaryfont.copyWith(
+                      //                           fontWeight: FontWeight.w600,
+                      //                           fontSize: 16.sp,
+                      //                           color: Color(0xff455A64)),
+                      //                     )
+                      //                   ],
+                      //                 ),
+                      //                 ksizedbox10,
+                      //                 Row(
+                      //                   mainAxisAlignment:
+                      //                       MainAxisAlignment.spaceBetween,
+                      //                   children: [
+                      //                     Text(
+                      //                       'Vechicle Mode:',
+                      //                       style: primaryfont.copyWith(
+                      //                           color: Color(0xff000000),
+                      //                           fontWeight: FontWeight.w700,
+                      //                           fontSize: 16.sp),
+                      //                     ),
+                      //                     Text(
+                      //                       'All',
+                      //                       style: primaryfont.copyWith(
+                      //                           fontWeight: FontWeight.w600,
+                      //                           fontSize: 16.sp,
+                      //                           color: Color(0xff455A64)),
+                      //                     )
+                      //                   ],
+                      //                 ),
+                      //                 ksizedbox15,
+                      //                 Row(
+                      //                   mainAxisAlignment:
+                      //                       MainAxisAlignment.spaceBetween,
+                      //                   children: [
+                      //                     Text(
+                      //                       'Parcel Weight:',
+                      //                       style: primaryfont.copyWith(
+                      //                           color: Color(0xff000000),
+                      //                           fontWeight: FontWeight.w700,
+                      //                           fontSize: 16.sp),
+                      //                     ),
+                      //                     Text(
+                      //                       getongoingDatas
+                      //                           .bookingProducts.first.kg,
+                      //                       style: primaryfont.copyWith(
+                      //                           fontWeight: FontWeight.w600,
+                      //                           fontSize: 16.sp,
+                      //                           color: Color(0xff455A64)),
+                      //                     )
+                      //                   ],
+                      //                 ),
+                      //                 ksizedbox15,
+                      //                 Divider(),
+                      //                 ksizedbox15,
+                      //                 Row(
+                      //                   mainAxisAlignment:
+                      //                       MainAxisAlignment.spaceBetween,
+                      //                   children: [
+                      //                     Text(
+                      //                       'Additional Services:',
+                      //                       style: primaryfont.copyWith(
+                      //                           color: Color(0xff000000),
+                      //                           fontWeight: FontWeight.w700,
+                      //                           fontSize: 16.sp),
+                      //                     ),
+                      //                     Text(
+                      //                       'No',
+                      //                       style: primaryfont.copyWith(
+                      //                           fontWeight: FontWeight.w600,
+                      //                           fontSize: 16.sp,
+                      //                           color: Color(0xff455A64)),
+                      //                     )
+                      //                   ],
+                      //                 ),
+                      //                 ksizedbox10,
+                      //                 Divider(),
+                      //                 ksizedbox10,
+                      //                 Text(
+                      //                   'Driver Notes',
+                      //                   style: primaryfont.copyWith(
+                      //                       color: Color(0xff000000),
+                      //                       fontWeight: FontWeight.w700,
+                      //                       fontSize: 16.sp),
+                      //                 ),
+                      //                 Text(
+                      //                   getongoingDatas.notes,
+                      //                   style: primaryfont.copyWith(
+                      //                       color: Color(0xff1E1E1E),
+                      //                       fontWeight: FontWeight.w700,
+                      //                       fontSize: 16.sp),
+                      //                 ),
+                      //               ],
+                      //             ),
+                      //           ),
+                      //         ),
+                      //       ),
+                      //     );
+                      //   },
+                      // ),
                     ),
                   ],
                 ),

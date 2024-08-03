@@ -379,27 +379,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   emailOrmobileController.text,
                                               password:
                                                   passwordController.text);
-                                          // if (authController.loginData!.roles ==
-                                          //         "client" ||
-                                          //     authController.loginData!.roles ==
-                                          //         "business") {
-                                          //   authController.loginApi(
-                                          //       emailOrmobileNmuber:
-                                          //           emailOrmobileController
-                                          //               .text,
-                                          //       password:
-                                          //           passwordController.text);
-                                          // } else {
-                                          //   Get.rawSnackbar(
-                                          //     backgroundColor: Colors.red,
-                                          //     messageText: Text(
-                                          //       "Please login with client or business account",
-                                          //       style: TextStyle(
-                                          //           color: Colors.white,
-                                          //           fontSize: 15.sp),
-                                          //     ),
-                                          //   );
-                                          // }
                                         }
                                       },
                                       child: Container(
@@ -423,14 +402,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             );
                           }),
 
-                          // ksizedbox20,
-                          // RoundedLoadingButton(
-                          //   child: Text('Press me',
-                          //       style: TextStyle(color: Colors.white)),
-                          //   controller: _btnController,
-                          //   onPressed: _doSomething,
-                          //   color: Colors.blue,
-                          // ),
                           ksizedbox20,
                           Center(
                             child: InkWell(
