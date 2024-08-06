@@ -1583,7 +1583,7 @@ class PackageSendScreen extends StatefulWidget {
   String pickupAdress;
   String lat;
   String long;
-  List<String> unitIdBlockID;
+  String unitIdBlockID;
   String sendername;
   // String receivername;
   String mobilenumber;
@@ -1642,6 +1642,7 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
   String formatDateTime = "";
   String pickingTime = "";
   String dropingTime = "";
+  List<DeliveryTypeData> selectedDeliveryTypes = [];
 
   Future<Null> selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -1760,21 +1761,20 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
 
   void _updateDropTime() {
     //String displayText = "";
-    if (deliveryItems?.name == "Express Delivery") {
+    if (selectedDeliveryTypes.first.name == "Express Delivery") {
       _updatedTime = _addMinutes(pickTime!, 60);
       dropTime = _updatedTime;
-    } else if (deliveryItems?.name == "4 Hours Delivery") {
-      updatedroptime2 = _addMinutes(pickTime!, 120);
+    } else if (selectedDeliveryTypes.first.name == "4 Hours Delivery") {
+      updatedroptime2 = _addMinutes(pickTime!, 240); // 4 hours = 240 minutes
       dropTime = updatedroptime2;
-    } else if (deliveryItems?.name == "Same day delivery") {
+    } else if (selectedDeliveryTypes.first.name == "Same day delivery") {
       updatedroptime3 = _addMinutes(pickTime!, 180);
       dropTime = updatedroptime3;
-    } else if (deliveryItems?.name == "Specific Time") {
+    } else if (selectedDeliveryTypes.first.name == "Specific Time") {
       // dropTime
-    } else if (deliveryItems?.name == "Next day delivery") {
+    } else if (selectedDeliveryTypes.first.name == "Next day delivery") {
       dropTime = null;
       pickTime = _addMinutes(pickTime!, 0);
-      ;
     }
     //  else {
     //   displayText == "Select Time";
@@ -1782,13 +1782,13 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
     // }
   }
 
-  // DeliveryTypeData? deliveryItems;
+  DeliveryTypeData? deliveryItems;
 
   // DeliveryTypeData? deliveryName;
 
-  DeliveryTypeData? deliveryItems;
-  String? deliveryName;
-  int? deliveryId;
+  // DeliveryTypeData? deliveryItems;
+  // String? deliveryName;
+  // int? deliveryId;
 
   // List<String> deliveryItemsList = [
   //   "Express Delvery - 24/7 (1 Hour)",
@@ -1848,8 +1848,7 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.kblue,
         centerTitle: true,
-        leading: 
-        GestureDetector(
+        leading: GestureDetector(
           onTap: () {
             Get.to(BottomNavigationScreen());
           },
@@ -1862,9 +1861,7 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
           ),
         ),
         title: GestureDetector(
-          onTap: () {
-           
-          },
+          onTap: () {},
           child: Text(
             'Parcel Booking',
             style: primaryfont.copyWith(
@@ -2191,12 +2188,21 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                                     onTap: () {
                                                                       // homeController
                                                                       //     .addLocation();
-                                                                      homeController
-                                                                          .addEntry();
-                                                                      homeController
-                                                                          .addParcelList();
-                                                                      homeController
-                                                                          .addSecondContainer();
+                                                                      if (homeController
+                                                                              .entries
+                                                                              .length <
+                                                                          10) {
+                                                                        homeController
+                                                                            .addEntry();
+                                                                        homeController
+                                                                            .addParcelList();
+                                                                        homeController
+                                                                            .addSecondContainer();
+                                                                      } else {
+                                                                        // Optionally show a message to the user that the limit has been reached
+                                                                        print(
+                                                                            'Cannot add more locations. The maximum limit is 10.');
+                                                                      }
                                                                       // hideDeleteButton =
                                                                       //     false;
                                                                     },
@@ -2271,7 +2277,7 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                       selectDate(context);
                                     },
                                     child: Container(
-                                        padding: EdgeInsets.symmetric(
+                                        padding: const EdgeInsets.symmetric(
                                             horizontal: 15),
                                         height: 50.h,
                                         width: size.width,
@@ -2377,15 +2383,21 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                       onChanged: (DeliveryTypeData? newValue) {
                                         setState(() {
                                           deliveryItems = newValue;
-                                          deliveryName = newValue?.name;
-                                          deliveryId = newValue?.id;
+                                          // deliveryName = newValue?.name;
+                                          // deliveryId = newValue?.id;
 
-                                          print(
-                                              'Selected Delivery Name: $deliveryName');
-                                          print(
-                                              'Selected Delivery ID: $deliveryId');
+                                          // print(
+                                          //     'Selected Delivery Name: $deliveryName');
+                                          // print(
+                                          //     'Selected Delivery ID: $deliveryId');
 
-                                          //    print(deliveryItems);
+                                          // Add the selected delivery type to the list
+                                          if (newValue != null) {
+                                            selectedDeliveryTypes.add(newValue);
+                                          }
+                                          print(
+                                              "-----------------------------eere---------------------------");
+                                          print(selectedDeliveryTypes);
                                           // deliveryName = newValue!.id;
                                           pickTime = TimeOfDay.now();
                                           _updateDropTime();
@@ -3153,7 +3165,9 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                     _formatTime(pickTime!).isNotEmpty &&
                                     _formatTime(dropTime!).isNotEmpty &&
                                     formatDateTime.isNotEmpty &&
-                                    deliveryId.toString().isNotEmpty &&
+                                    selectedDeliveryTypes.first.id
+                                        .toString()
+                                        .isNotEmpty &&
                                     homeController
                                         .parcelLengthControllers.isNotEmpty &&
                                     homeController
@@ -3165,9 +3179,7 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                     homeController
                                         .parcelKgControllers.isNotEmpty &&
                                     parcelitemController.text.isNotEmpty &&
-                                    widget.unitIdBlockID
-                                        .toString()
-                                        .isNotEmpty &&
+                                    widget.unitIdBlockID.isNotEmpty &&
                                     widget.sendername.isNotEmpty &&
                                     widget.mobilenumber.isNotEmpty &&
                                     droppingAddressList.isNotEmpty &&
@@ -3192,8 +3204,10 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                         homeController.droppingLats,
                                     droppingLogitude: homeController.dropLongs,
                                     bookingDate: formatDateTime,
-                                    deliverytype: deliveryName!,
-                                    deliVerytypeID: deliveryId!,
+                                    deliverytype:
+                                        selectedDeliveryTypes.first.name,
+                                    deliVerytypeID:
+                                        selectedDeliveryTypes.first.id,
                                     // length: lengths,
                                     length: homeController
                                         .parcelLengthControllers
@@ -3219,9 +3233,7 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                         .map((controller) => controller.text)
                                         .toList(),
                                     parcelItems: parcelitemController.text,
-                                    unitIdBlockId: [
-                                      widget.unitIdBlockID.toString()
-                                    ],
+                                    unitIdBlockId: widget.unitIdBlockID,
                                     pickTimeListFrom: [
                                       _formatTime(pickTime!),
                                     ],
@@ -3231,13 +3243,16 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                     sendername: widget.sendername,
                                     phonenumber: widget.mobilenumber,
                                     droppingaddress: droppingAddressList,
-                                    arpincode: widget.unitIdBlockID,
+                                    arpincode:
+                                        homeController.receiverBlockIdUnitIDs,
                                     doorname: homeController.doornames,
                                     receivername:
                                         homeController.receiverNameList,
                                     receiverphone:
                                         homeController.receiverNumberList,
                                     receiverUnitIdBlockId: "",
+                                    selectedDeliveryTypes:
+                                        selectedDeliveryTypes,
                                     // homeController.receiverBlockIdUnitIDs,
                                   ));
                                 } else {

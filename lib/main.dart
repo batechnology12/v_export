@@ -1,5 +1,4 @@
 import 'dart:collection';
-
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:v_export/customer/controller/account_controller.dart';
-
 import 'package:v_export/customer/controller/auth_controller.dart';
 import 'package:v_export/customer/controller/home_controller.dart';
 import 'package:v_export/customer/controller/home_screen_controller.dart';

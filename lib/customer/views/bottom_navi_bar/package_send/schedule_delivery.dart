@@ -34,7 +34,7 @@ class ScheduleDeliveryScreen extends StatefulWidget {
   List<String> kg;
   List<String> qty;
   String parcelItems;
-  List<String> unitIdBlockId;
+  String unitIdBlockId;
   String? pickTimeFrom;
   String? pickTimeTo;
   List<String> pickTimeListFrom;
@@ -47,39 +47,39 @@ class ScheduleDeliveryScreen extends StatefulWidget {
   List<String> receiverphone;
   String receiverUnitIdBlockId;
   String totalWeight;
-
-  ScheduleDeliveryScreen({
-    super.key,
-    required this.pickupAddress,
-    required this.pickuplatitude,
-    required this.pickuplogitude,
-    required this.droppingLatitude,
-    required this.droppingLogitude,
-    required this.bookingDate,
-    required this.deliverytype,
-    required this.deliVerytypeID,
-    required this.displayTimes,
-    required this.length,
-    required this.width,
-    required this.height,
-    required this.kg,
-    required this.qty,
-    required this.parcelItems,
-    required this.pickTimeFrom,
-    required this.pickTimeTo,
-    required this.pickTimeListFrom,
-    required this.pickTimeListTo,
-    required this.unitIdBlockId,
-    required this.sendername,
-    required this.phonenumber,
-    required this.droppingaddress,
-    required this.arpincode,
-    required this.doorname,
-    required this.receivername,
-    required this.receiverphone,
-    required this.receiverUnitIdBlockId,
-    required this.totalWeight,
-  });
+  List<DeliveryTypeData> selectedDeliveryTypes = [];
+  ScheduleDeliveryScreen(
+      {super.key,
+      required this.pickupAddress,
+      required this.pickuplatitude,
+      required this.pickuplogitude,
+      required this.droppingLatitude,
+      required this.droppingLogitude,
+      required this.bookingDate,
+      required this.deliverytype,
+      required this.deliVerytypeID,
+      required this.displayTimes,
+      required this.length,
+      required this.width,
+      required this.height,
+      required this.kg,
+      required this.qty,
+      required this.parcelItems,
+      required this.pickTimeFrom,
+      required this.pickTimeTo,
+      required this.pickTimeListFrom,
+      required this.pickTimeListTo,
+      required this.unitIdBlockId,
+      required this.sendername,
+      required this.phonenumber,
+      required this.droppingaddress,
+      required this.arpincode,
+      required this.doorname,
+      required this.receivername,
+      required this.receiverphone,
+      required this.receiverUnitIdBlockId,
+      required this.totalWeight,
+      required this.selectedDeliveryTypes});
 
   @override
   State<ScheduleDeliveryScreen> createState() => _ScheduleDeliveryScreenState();
@@ -683,14 +683,17 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                               Text(
                                                 widget.deliverytype ==
                                                         "4 Hours Delivery"
-                                                    ? '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime!, 120))}'
+                                                    ? '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime!, 60))}'
                                                     : widget.deliverytype ==
                                                             "Express Delivery"
                                                         ? '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime!, 60))}'
                                                         : widget.deliverytype ==
                                                                 "Same day delivery"
                                                             ? '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime!, 180))}'
-                                                            : '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime!, 180))}',
+                                                            : widget.deliverytype ==
+                                                                    "Next day delivery"
+                                                                ? '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime!, 0))}'
+                                                                : '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime!, 180))}',
                                                 //  deliveryFromTime !=
                                                 //         null
                                                 //     ? _formatTime(
@@ -997,7 +1000,8 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                 // Wait for the state to update before navigating
                                 Get.to(() => BookingDetailsScreen(
                                       totalWeights: widget.totalWeight,
-                                      additionalservicetotalAmount: totalAmount.toString(),
+                                      additionalservicetotalAmount:
+                                          totalAmount.toString(),
                                       distance:
                                           parcelController.distance.toString(),
                                       selectedParcelservice:
@@ -1042,6 +1046,8 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                               deliveryToTime!, 120)),
                                       imagePath: imagePath!,
                                       notes: notesController.text,
+                                      selectedDeliveryTypes:
+                                          widget.selectedDeliveryTypes,
                                     ));
                               } else {
                                 Get.snackbar(

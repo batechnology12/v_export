@@ -28,13 +28,12 @@ class HomeController extends GetxController {
   var pickupblockUnitId = ''.obs;
 
   updatepickupLocation(
-    String pickuplocation,
-    String pickuplat,
-    String pickuplong,
-    String senderName,
-    String senderNumber,
-    String pickupunitId
-  ) {
+      String pickuplocation,
+      String pickuplat,
+      String pickuplong,
+      String senderName,
+      String senderNumber,
+      String pickupunitId) {
     pickupLocation.value = pickuplocation;
     pickuplatitude.value = pickuplat;
     pickuplongitude.value = pickuplong;
@@ -54,7 +53,7 @@ class HomeController extends GetxController {
   var isCheck = false.obs;
   var receiverNameList = <String>[].obs;
   var receiverNumberList = <String>[].obs;
-  var receiverBlockIdUnitIDs = '';
+  var receiverBlockIdUnitIDs = <String>[].obs;
   var secondContainers = <int>[0].obs; // Initialize with one item
 
   // //////
@@ -232,7 +231,7 @@ class HomeController extends GetxController {
       doornames[index] = bookingpincode;
       receiverNameList[index] = reciverName;
       receiverNumberList[index] = reciverNumber;
-      receiverBlockIdUnitIDs = reciverBlockIdUnitID;
+      receiverBlockIdUnitIDs[index] = reciverBlockIdUnitID;
     } else {
       droppingLocations.add(location);
       droppingLats.add(lat);
@@ -241,7 +240,7 @@ class HomeController extends GetxController {
       doornames.add(bookingpincode);
       receiverNameList.add(reciverName);
       receiverNumberList.add(reciverNumber);
-      receiverBlockIdUnitIDs = reciverBlockIdUnitID;
+      receiverBlockIdUnitIDs.add(reciverBlockIdUnitID);
     }
   }
 
@@ -278,6 +277,8 @@ class HomeController extends GetxController {
       vehiclereceiverNumberList[indexVehicle] = reciverNumberVehicle;
       vehiclereceiverBlockIdUnitIDs = reciverBlockIdUnitIDVehicle;
     } else {
+      vehiclereceiverNumberList.clear();
+      vehiclereceiverNumberList.clear();
       vehicledroppingLocations.add(locationVehicle);
       vehicledroppingLats.add(latVehicle);
       vehicledropLongs.add(longVehicle);

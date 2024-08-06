@@ -297,7 +297,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         pickupAdress: "Pickup address",
                         lat: '',
                         long: '',
-                        unitIdBlockID: [""],
+                        unitIdBlockID: "",
                         sendername: '',
                         // receivername: '',
                         mobilenumber: '',

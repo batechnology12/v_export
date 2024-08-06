@@ -8,6 +8,7 @@ class AddBookingParcelModel {
   String gst;
   String additionalTotal;
   String totalAmount;
+  String paymentdetails;
   String isRoundTrip;
   String bookingDate;
   String pickupTimeFrom;
@@ -35,6 +36,7 @@ class AddBookingParcelModel {
     required this.gst,
     required this.additionalTotal,
     required this.totalAmount,
+    required this.paymentdetails,
     required this.isRoundTrip,
     required this.bookingDate,
     required this.pickupTimeFrom,
@@ -56,11 +58,11 @@ class AddBookingParcelModel {
 
 class Product {
   String parcelItems;
-  List<String> length;
-  List<String> width;
-  List<String> height;
-  List<String> qty;
-  List<String> kg;
+  String length;
+  String width;
+  String height;
+  String qty;
+  String kg;
   String pickupTimeFrom;
   String pickupTimeTo;
   String deliveryDate;
@@ -85,16 +87,16 @@ class Product {
 class BookingAddress {
   String customerName;
   String customerMobile;
-  List<String> unitNoBlockNo;
-  List<String> address;
-  List<String> postalCode;
-  List<String> latitude;
-  List<String> longitude;
+  String unitNoBlockNo;
+  String address;
+  String postalCode;
+  String latitude;
+  String longitude;
   String deliveryStatus;
   String deliveryTimeFrom;
   String deliveryTimeTo;
-  List<String> reciverName;
-  List<String> reciverMobile;
+  String reciverName;
+  String reciverMobile;
   String reciverUnitIdBlockId;
 
   BookingAddress({

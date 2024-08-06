@@ -332,9 +332,8 @@ class _DropLocationState extends State<DropLocation> {
                                         homeController.pickupLocation.value,
                                     lat: homeController.pickuplatitude.value,
                                     long: homeController.pickuplongitude.value,
-                                    unitIdBlockID: [
-                                      homeController.pickupblockUnitId.value
-                                    ],
+                                    unitIdBlockID:
+                                        homeController.pickupblockUnitId.value,
                                     sendername:
                                         homeController.pickupSenderName.value,
                                     mobilenumber: homeController
@@ -703,9 +702,8 @@ class _DropLocationState extends State<DropLocation> {
                                         homeController.pickupLocation.value,
                                     lat: homeController.pickuplatitude.value,
                                     long: homeController.pickuplongitude.value,
-                                    unitIdBlockID: [
-                                      homeController.pickupblockUnitId.value
-                                    ],
+                                    unitIdBlockID:
+                                        homeController.pickupblockUnitId.value,
                                     sendername:
                                         homeController.pickupSenderName.value,
                                     mobilenumber: homeController

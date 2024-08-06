@@ -31,7 +31,7 @@ import 'package:v_export/customer/views/bottom_navi_bar/payment_screen.dart/make
 
 class ParcelController extends GetxController {
   OngongOrderApiServices ongongOrderApiServices = OngongOrderApiServices();
-  List<OngoingOrderData> ongoingOrdersData =[] ;
+  List<OngoingOrderData> ongoingOrdersData = [];
 
   //ParcelOngoingOrderData? parcelOngoingOrderData;
   RxBool ongoingorderLoading = false.obs;

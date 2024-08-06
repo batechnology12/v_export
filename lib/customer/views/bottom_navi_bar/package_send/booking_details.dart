@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:date_format/date_format.dart';
@@ -11,6 +12,7 @@ import 'package:v_export/customer/controller/parcel_controller.dart';
 import 'package:v_export/customer/model/add_booking_parcel_model.dart';
 import 'package:v_export/customer/model/additional_service_model.dart';
 import 'package:v_export/customer/model/booking_review_detalis_model.dart';
+import 'package:v_export/customer/model/delivery_type_model.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/payment_screen.dart/make_payment_screen.dart';
 import 'package:v_export/customer/views/notification/notification_view.dart';
 import 'package:intl/intl.dart';
@@ -34,7 +36,7 @@ class BookingDetailsScreen extends StatefulWidget {
   List<String> parcelKg;
   List<String> parcelQty;
   String parcelITEMS;
-  List<String> unitIdBlockID;
+  String unitIdBlockID;
   String? pickTimeFROM;
   String? pickTimeTO;
   List<String> pickTimeListFROM;
@@ -45,7 +47,7 @@ class BookingDetailsScreen extends StatefulWidget {
   List<String> doorNAME;
   List<String> receiverNAME;
   List<String> receiverPHONE;
-  String receiverUnitIdBlockID;
+  List<String> receiverUnitIdBlockID;
   String deliveyDate;
   String deliveryTimeFROM;
   String deliveryTimeTO;
@@ -53,46 +55,47 @@ class BookingDetailsScreen extends StatefulWidget {
   String notes;
   List<AdditionalServiceData> selectedParcelservice;
   String totalWeights;
+  List<DeliveryTypeData> selectedDeliveryTypes = [];
 
-  BookingDetailsScreen({
-    super.key,
-    required this.additionalservicetotalAmount,
-    required this.pickupADDRESS,
-    required this.pickpLATITUDE,
-    required this.pickupLOGITUDE,
-    required this.droppingLATITUDE,
-    required this.droppingLOGITUDE,
-    required this.droppingADDRESS,
-    required this.bookingDATE,
-    required this.deliveryTYPE,
-    required this.deliveryTypeID,
-    required this.distance,
-    required this.parcelLengtH,
-    required this.parcelWidth,
-    required this.parcelHeight,
-    required this.parcelKg,
-    required this.parcelQty,
-    required this.parcelITEMS,
-    required this.unitIdBlockID,
-    required this.pickTimeFROM,
-    required this.pickTimeTO,
-    required this.pickTimeListFROM,
-    required this.pickTimeListTO,
-    required this.senderNAME,
-    required this.phoneNUMBER,
-    required this.arpinCODE,
-    required this.doorNAME,
-    required this.receiverNAME,
-    required this.receiverPHONE,
-    required this.receiverUnitIdBlockID,
-    required this.deliveyDate,
-    required this.deliveryTimeFROM,
-    required this.deliveryTimeTO,
-    required this.imagePath,
-    required this.notes,
-    required this.selectedParcelservice,
-    required this.totalWeights,
-  });
+  BookingDetailsScreen(
+      {super.key,
+      required this.additionalservicetotalAmount,
+      required this.pickupADDRESS,
+      required this.pickpLATITUDE,
+      required this.pickupLOGITUDE,
+      required this.droppingLATITUDE,
+      required this.droppingLOGITUDE,
+      required this.droppingADDRESS,
+      required this.bookingDATE,
+      required this.deliveryTYPE,
+      required this.deliveryTypeID,
+      required this.distance,
+      required this.parcelLengtH,
+      required this.parcelWidth,
+      required this.parcelHeight,
+      required this.parcelKg,
+      required this.parcelQty,
+      required this.parcelITEMS,
+      required this.unitIdBlockID,
+      required this.pickTimeFROM,
+      required this.pickTimeTO,
+      required this.pickTimeListFROM,
+      required this.pickTimeListTO,
+      required this.senderNAME,
+      required this.phoneNUMBER,
+      required this.arpinCODE,
+      required this.doorNAME,
+      required this.receiverNAME,
+      required this.receiverPHONE,
+      required this.receiverUnitIdBlockID,
+      required this.deliveyDate,
+      required this.deliveryTimeFROM,
+      required this.deliveryTimeTO,
+      required this.imagePath,
+      required this.notes,
+      required this.selectedParcelservice,
+      required this.totalWeights,
+      required this.selectedDeliveryTypes});
 
   @override
   State<BookingDetailsScreen> createState() => _BookingDetailsScreenState();
@@ -103,7 +106,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    setState(() {});
+    calculateAmount();
   }
 
   var couponController = TextEditingController();
@@ -127,6 +130,109 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
     // "Fragil Item",
     //"GST"
   ];
+  double amount = 0.0;
+  double additionalServiceAmount = 0.0;
+  double totalParcelAmount = 0.0;
+  double totalDistance = 0.0;
+  String jsonString = "";
+  List<BookingAddress> bookingAddress = [];
+  void calculateAmount() {
+    totalDistance = double.tryParse(widget.distance) ?? 0.0;
+    additionalServiceAmount =
+        double.tryParse(widget.additionalservicetotalAmount) ?? 0.0;
+    for (var deliveryType in widget.selectedDeliveryTypes) {
+      double basePerKm = double.tryParse(deliveryType.basePerkm) ?? 0.0;
+      double distanceCost = totalDistance * basePerKm;
+
+      if (deliveryType.name == '4 Hours Delivery' ||
+          deliveryType.name == 'Express Delivery' ||
+          deliveryType.name == 'Same day delivery' ||
+          deliveryType.name == 'Next day delivery' ||
+          deliveryType.name == 'Specific Time') {
+        for (int i = 0; i < widget.parcelKg.length; i++) {
+          double kg = double.tryParse(widget.parcelKg[i]) ?? 0.0;
+          int qty = int.tryParse(widget.parcelQty[i]) ?? 0;
+
+          double price = 0.0;
+          if (kg <= 5) {
+            price = double.tryParse(deliveryType.price05Kg) ?? 0.0;
+          } else if (kg <= 10) {
+            price = double.tryParse(deliveryType.price510Kg) ?? 0.0;
+          } else if (kg <= 15) {
+            price = double.tryParse(deliveryType.price1015Kg) ?? 0.0;
+          } else if (kg <= 20) {
+            price = double.tryParse(deliveryType.price1520Kg) ?? 0.0;
+          } else if (kg <= 25) {
+            price = double.tryParse(deliveryType.price2025Kg) ?? 0.0;
+          } else {
+            price = double.tryParse(deliveryType.priceAbove25Kg) ?? 0.0;
+          }
+
+          double discountedPrice = price;
+          if (qty >= 2) {
+            discountedPrice *= 0.6; // Apply 40% discount
+          }
+
+          // amount += (discountedPrice * qty) + distanceCost;
+          double parcelAmount = discountedPrice * qty;
+          totalParcelAmount += parcelAmount;
+          amount += parcelAmount + distanceCost;
+        }
+      }
+    }
+    amount += additionalServiceAmount;
+    // Create a Map to encode as JSON
+    Map<String, dynamic> data = {
+      'totalDistance': totalDistance.toStringAsFixed(2),
+      'totalparcelAmounts': totalParcelAmount.toStringAsFixed(2),
+      'additionalServiceAmount': additionalServiceAmount,
+      'totalamount': amount.toStringAsFixed(2)
+    };
+
+    jsonString = jsonEncode(data);
+    print("JSON Data: $jsonString");
+    setState(() {});
+    print("amount =${amount.toStringAsFixed(2)}");
+  }
+
+  // void calculateAmount() {
+  //   double totalDistance = double.tryParse(widget.distance) ?? 0.0;
+  //   for (var deliveryType in widget.selectedDeliveryTypes) {
+  //     double basePerKm = double.tryParse(deliveryType.basePerkm) ?? 0.0;
+  //     double distanceCost = totalDistance * basePerKm;
+  //     if (deliveryType.name == '4 Hours Delivery' ||
+  //         deliveryType.name == 'Express Delivery' ||
+  //         deliveryType.name == 'Same day delivery' ||
+  //         deliveryType.name == 'Next day delivery' ||
+  //         deliveryType.name == 'Specific Time') {
+  //       for (var kgStr in widget.parcelKg) {
+  //         double kg = double.tryParse(kgStr) ?? 0.0;
+  //         if (kg <= 5) {
+  //           amount +=
+  //               (double.tryParse(deliveryType.price05Kg) ?? 0.0) + distanceCost;
+  //         } else if (kg <= 10) {
+  //           amount += (double.tryParse(deliveryType.price510Kg) ?? 0.0) +
+  //               distanceCost;
+  //         } else if (kg <= 15) {
+  //           amount += (double.tryParse(deliveryType.price1015Kg) ?? 0.0) +
+  //               distanceCost;
+  //         } else if (kg <= 20) {
+  //           amount += (double.tryParse(deliveryType.price1520Kg) ?? 0.0) +
+  //               distanceCost;
+  //         } else if (kg <= 25) {
+  //           amount += (double.tryParse(deliveryType.price2025Kg) ?? 0.0) +
+  //               distanceCost;
+  //         } else {
+  //           (amount += double.tryParse(deliveryType.priceAbove25Kg) ?? 0.0) +
+  //               distanceCost;
+  //         }
+  //       }
+  //     }
+  //   }
+  //   setState(() {});
+  //   print(amount.toStringAsFixed(2));
+  //   // print("total disance price $")
+  // }
 
   final formKey = GlobalKey<FormState>();
 
@@ -137,43 +243,95 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
   }
 
   // Define a function that returns farePrice and perKm as a tuple
-  Map<String, double> deliveryCost(String deliveryType) {
-    double farePrice = 0.00;
-    double perKm = 0.00;
+  Map<String, double> deliveryCost(List<DeliveryTypeData> deliveryType,
+      List<String> parcelQty, List<String> parcelKg, String distanse) {
+    double farePrice = 0.0;
+    double perKm = 0.0;
+    double distance = double.parse(distanse);
 
-    if (deliveryType == "4 Hours Delivery") {
+    // Determine farePrice and perKm based on deliveryType
+    if (deliveryType.first.name == "4 Hours Delivery") {
       farePrice = 9.00;
       perKm = 0.40;
-    } else if (deliveryType == "Express Delivery") {
+    } else if (deliveryType.first.name == "Express Delivery") {
       farePrice = 12.00;
       perKm = 0.50;
-    } else if (deliveryType == "Same day delivery") {
+    } else if (deliveryType.first.name == "Same day delivery") {
       farePrice = 8.00;
       perKm = 0.30;
-    } else if (deliveryType == "Specific Time") {
+    } else if (deliveryType.first.name == "Specific Time") {
       farePrice = 11.00;
       perKm = 0.40;
     }
 
-    return {'farePrice': farePrice, 'perKm': perKm};
+    // Calculate the distance price
+    double distancePrice = perKm * distance;
+
+    // Calculate the total parcelKg price with possible discounts
+    double totalParcelKgPrice = 0.0;
+    for (int i = 0; i < parcelKg.length; i++) {
+      double kg = double.parse(parcelKg[i]);
+      double pricePerKg = 2.0; // Default price per kg
+
+      // Apply discount if parcelKg is greater than the threshold
+      if (kg > 10.0) {
+        pricePerKg *= 0.60; // Apply 40% discount
+      }
+
+      totalParcelKgPrice += pricePerKg * kg;
+    }
+
+    // Calculate the total cost
+    double totalCost = distancePrice + totalParcelKgPrice;
+
+    return {
+      'farePrice': farePrice,
+      'perKm': perKm,
+      'distancePrice': distancePrice,
+      'totalParcelKgPrice': totalParcelKgPrice,
+      'totalCost': totalCost,
+    };
   }
+
+  // Map<String, double> deliveryCost(List<DeliveryTypeData> deliveryType,
+  //     List<String> parcelQty, List<String> parcelKg, String distanse) {
+  //   double farePrice = deliveryType.first.basePerkm;
+  //   double perKm = deliveryType.first.basePerkm;
+
+  //   if (deliveryType.first.name == "4 Hours Delivery") {
+  //     farePrice = 9.00;
+  //     perKm = 0.40;
+  //   } else if (deliveryType.first.name == "Express Delivery") {
+  //     farePrice = 12.00;
+  //     perKm = 0.50;
+  //   } else if (deliveryType.first.name == "Same day delivery") {
+  //     farePrice = 8.00;
+  //     perKm = 0.30;
+  //   } else if (deliveryType.first.name == "Specific Time") {
+  //     farePrice = 11.00;
+  //     perKm = 0.40;
+  //   }
+
+  //   return {'farePrice': farePrice, 'perKm': perKm};
+  // }
 
   @override
   Widget build(BuildContext context) {
-    final double distance = double.tryParse(widget.distance) ?? 0.0;
-    final double serviceAmount =
-        double.tryParse(widget.additionalservicetotalAmount) ?? 0.0;
-    final cost = deliveryCost(widget.deliveryTYPE);
-    final farePrice = cost['farePrice']!;
-    final perKm = cost['perKm']!;
-    final amountValue = farePrice + (perKm * distance);
-    final allTotalAmount = serviceAmount + farePrice + (perKm * distance);
-    print("------3456---------");
-    print(serviceAmount);
-    print(distance);
-    print(farePrice + (perKm * distance));
-    print(amountValue.toStringAsFixed(2));
-    print(allTotalAmount.toStringAsFixed(2));
+    // final double distance = double.tryParse(widget.distance) ?? 0.0;
+    // final double serviceAmount =
+    //     double.tryParse(widget.additionalservicetotalAmount) ?? 0.0;
+    // final cost = deliveryCost(widget.selectedDeliveryTypes, widget.parcelQty,
+    //     widget.parcelKg, widget.distance);
+    // final farePrice = cost['farePrice']!;
+    // final perKm = cost['perKm']!;
+    // final amountValue = farePrice + (perKm * distance);
+    // final allTotalAmount = serviceAmount + farePrice + (perKm * distance);
+    // print("------3456---------");
+    // print(serviceAmount);
+    // print(distance);
+    // print(farePrice + (perKm * distance));
+    // print(amountValue.toStringAsFixed(2));
+    // print(allTotalAmount.toStringAsFixed(2));
     final size = MediaQuery.of(context).size;
     List<int> additionalServiceParcelIds =
         widget.selectedParcelservice.map((service) => service.id).toList();
@@ -548,27 +706,76 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                         padding: const EdgeInsets.only(top: 4),
                                         child: Container(
                                           width: size.width,
-                                          child: RichText(
-                                            text: TextSpan(
-                                              text: 'Address: ',
-                                              style: primaryfont.copyWith(
-                                                  color: Colors.black,
-                                                  fontSize: 16.sp,
-                                                  fontWeight: FontWeight.bold),
-                                              children: <TextSpan>[
-                                                TextSpan(
-                                                  text: widget.droppingADDRESS
-                                                      .join(", \n"),
-                                                  //   '${widget.bookingdatalist.bookingDeliveryAddresses.first.address}',
-                                                  style: primaryfont.copyWith(
-                                                      color: Colors.black,
-                                                      fontSize: 15.sp,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
+                                          child: ListView.builder(
+                                              shrinkWrap: true,
+                                              itemCount:
+                                                  widget.droppingADDRESS.length,
+                                              itemBuilder: (context, index) {
+                                                return Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(5),
+                                                  child: RichText(
+                                                    text: TextSpan(
+                                                      text:
+                                                          'Address (${index + 1}): ',
+                                                      style:
+                                                          primaryfont.copyWith(
+                                                              color:
+                                                                  Colors.black,
+                                                              fontSize: 16.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                      children: <TextSpan>[
+                                                        TextSpan(
+                                                          text: widget
+                                                                  .droppingADDRESS[
+                                                              index],
+                                                          //   '${widget.bookingdatalist.bookingDeliveryAddresses.first.address}',
+                                                          style: primaryfont
+                                                              .copyWith(
+                                                                  color: Colors
+                                                                      .black,
+                                                                  fontSize:
+                                                                      15.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500),
+                                                        ),
+                                                      ],
+                                                    ),
+
+                                                    // Text(
+                                                    // "Address $index: ${}",
+                                                    // style: primaryfont.copyWith(
+                                                    //     color: Colors.black,
+                                                    //     fontSize: 15.sp,
+                                                    //     fontWeight:
+                                                    //         FontWeight.w500),
+                                                  ),
+                                                );
+                                              }),
+                                          // child: RichText(
+                                          //   text: TextSpan(
+                                          //     text: 'Address: ',
+                                          //     style: primaryfont.copyWith(
+                                          //         color: Colors.black,
+                                          //         fontSize: 16.sp,
+                                          //         fontWeight: FontWeight.bold),
+                                          //     children: <TextSpan>[
+                                          //       TextSpan(
+                                          //         text: widget.droppingADDRESS
+                                          //             .join(", \n"),
+                                          //         //   '${widget.bookingdatalist.bookingDeliveryAddresses.first.address}',
+                                          //         style: primaryfont.copyWith(
+                                          //             color: Colors.black,
+                                          //             fontSize: 15.sp,
+                                          //             fontWeight:
+                                          //                 FontWeight.w500),
+                                          //       ),
+                                          //     ],
+                                          //   ),
+                                          // ),
                                         ),
                                       ),
                                       ksizedbox5,
@@ -985,7 +1192,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                             // additionalparcelServiceData1
                                             //     .amount,
 
-                                            '+\$${amountValue.toStringAsFixed(2)}',
+                                            '+\$${totalDistance.toStringAsFixed(2)}',
 
                                             style: primaryfont.copyWith(
                                                 fontSize: 15,
@@ -1009,7 +1216,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                             return Row(
                                               children: [
                                                 Container(
-                                                  width: 293,
+                                                  width: 280.w,
                                                   child: Text(
                                                     additionalparcelServiceData1
                                                         .name,
@@ -1056,7 +1263,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                             ),
                                           ),
                                           Text(
-                                            "\$${allTotalAmount.toStringAsFixed(2)}",
+                                            "\$${amount.toStringAsFixed(2)}",
                                             // totalAmount.toStringAsFixed(2),
                                             //  '\$${widget.totalAmount}',\
 
@@ -1064,7 +1271,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                               fontSize: 16.sp,
                                               fontWeight: FontWeight.w700,
                                             ),
-                                          )
+                                          ),
                                         ],
                                       ),
                                     ],
@@ -1076,6 +1283,8 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                           ksizedbox40,
 
                           Obx(() {
+                            List<String> droppingAddresses =
+                                widget.droppingADDRESS;
                             return parcelController.addBookingLoading.isTrue
                                 ? Container(
                                     height: 50.h,
@@ -1091,60 +1300,163 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                   )
                                 : InkWell(
                                     onTap: () {
-                                      List<Product> products = [
-                                        Product(
-                                            parcelItems: widget.parcelITEMS,
-                                            length: widget.parcelLengtH,
-                                            width: widget.parcelHeight,
-                                            height: widget.parcelHeight,
-                                            qty: widget.parcelQty,
-                                            kg: widget.parcelKg,
-                                            pickupTimeFrom:
-                                                widget.pickTimeFROM!,
-                                            pickupTimeTo: widget.pickTimeTO!,
-                                            deliveryDate: widget.deliveyDate,
-                                            deliveryTimeFrom:
-                                                widget.deliveryTimeFROM,
-                                            deliveryTimeTo:
-                                                widget.deliveryTimeTO)
-                                      ];
+                                      List<Product> products = [];
 
-                                      List<BookingAddress> bookingAddress = [
-                                        BookingAddress(
-                                            customerName: widget.senderNAME,
-                                            customerMobile: widget.phoneNUMBER,
-                                            unitNoBlockNo: widget.unitIdBlockID,
-                                            address: widget.droppingADDRESS,
-                                            postalCode: widget.arpinCODE,
-                                            latitude: widget.droppingLATITUDE,
-                                            longitude: widget.droppingLOGITUDE,
-                                            deliveryStatus: "0",
-                                            deliveryTimeFrom:
-                                                widget.deliveryTimeFROM,
-                                            deliveryTimeTo:
-                                                widget.deliveryTimeTO,
-                                            reciverName: widget.receiverNAME,
-                                            reciverMobile: widget.receiverPHONE,
-                                            reciverUnitIdBlockId:
-                                                widget.receiverUnitIdBlockID),
-                                      ];
+                                      debugLists();
+                                      for (int index = 0;
+                                          index < widget.parcelLengtH.length;
+                                          index++) {
+                                        products.add(Product(
+                                          parcelItems: widget.parcelITEMS,
+                                          length: widget.parcelLengtH[index],
+                                          width: widget.parcelWidth[index],
+                                          height: widget.parcelHeight[index],
+                                          qty: widget.parcelQty[index],
+                                          kg: widget.parcelKg[index],
+                                          pickupTimeFrom: widget.pickTimeFROM!,
+                                          pickupTimeTo: widget.pickTimeTO!,
+                                          deliveryDate: widget.deliveyDate,
+                                          deliveryTimeFrom:
+                                              widget.deliveryTimeFROM,
+                                          deliveryTimeTo: widget.deliveryTimeTO,
+                                        ));
+                                      }
+                                      print(products);
+                                      // List<Product> products = List.generate(
+                                      //     widget.parcelLengtH.length, (index) {
+                                      //   return Product(
+                                      //     parcelItems: widget.parcelITEMS,
+                                      //     length: widget.parcelLengtH[index],
+                                      //     width: widget.parcelWidth[index],
+                                      //     height: widget.parcelHeight[index],
+                                      //     qty: widget.parcelQty[index],
+                                      //     kg: widget.parcelKg[index],
+                                      //     pickupTimeFrom: widget.pickTimeFROM!,
+                                      //     pickupTimeTo: widget.pickTimeTO!,
+                                      //     deliveryDate: widget.deliveyDate,
+                                      //     deliveryTimeFrom:
+                                      //         widget.deliveryTimeFROM,
+                                      //     deliveryTimeTo: widget.deliveryTimeTO,
+                                      //   );
+                                      // });
+                                      // List<Product> products = [
+                                      //   Product(
+                                      //       parcelItems: widget.parcelITEMS,
+                                      //       length: widget.parcelLengtH,
+                                      //       width: widget.parcelHeight,
+                                      //       height: widget.parcelHeight,
+                                      //       qty: widget.parcelQty,
+                                      //       kg: widget.parcelKg,
+                                      //       pickupTimeFrom:
+                                      //           widget.pickTimeFROM!,
+                                      //       pickupTimeTo: widget.pickTimeTO!,
+                                      //       deliveryDate: widget.deliveyDate,
+                                      //       deliveryTimeFrom:
+                                      //           widget.deliveryTimeFROM,
+                                      //       deliveryTimeTo:
+                                      //           widget.deliveryTimeTO)
+                                      // ];
+
+                                      String diliverystatus = "0";
+                                      List<BookingAddress> bookingAddress = [];
+
+                                      for (int index = 0;
+                                          index < widget.droppingADDRESS.length;
+                                          index++) {
+                                        bookingAddress.add(BookingAddress(
+                                          customerName: widget.senderNAME,
+                                          customerMobile: widget.phoneNUMBER,
+                                          unitNoBlockNo: widget.unitIdBlockID,
+                                          address:
+                                              widget.droppingADDRESS[index],
+                                          postalCode: widget.arpinCODE[index],
+                                          latitude:
+                                              widget.droppingLATITUDE[index],
+                                          longitude:
+                                              widget.droppingLOGITUDE[index],
+                                          deliveryStatus: diliverystatus,
+                                          deliveryTimeFrom:
+                                              widget.deliveryTimeFROM,
+                                          deliveryTimeTo: widget.deliveryTimeTO,
+                                          reciverName:
+                                              widget.receiverNAME[index],
+                                          reciverMobile:
+                                              widget.receiverPHONE[index],
+                                          reciverUnitIdBlockId: widget
+                                              .receiverUnitIdBlockID[index],
+                                        ));
+                                      }
+                                      print(bookingAddress);
+                                      // String diliverystatus = "0";
+                                      // List<BookingAddress> bookingAddress =
+                                      //     List.generate(
+                                      //   widget.droppingADDRESS.length,
+                                      //   (index) => BookingAddress(
+                                      //     customerName:
+                                      //         widget.senderNAME[index],
+                                      //     customerMobile:
+                                      //         widget.phoneNUMBER[index],
+                                      //     unitNoBlockNo:
+                                      //         widget.unitIdBlockID[index],
+                                      //     address:
+                                      //         widget.droppingADDRESS[index],
+                                      //     postalCode: widget.arpinCODE[index],
+                                      //     latitude:
+                                      //         widget.droppingLATITUDE[index],
+                                      //     longitude:
+                                      //         widget.droppingLOGITUDE[index],
+                                      //     deliveryStatus: diliverystatus[index],
+                                      //     deliveryTimeFrom:
+                                      //         widget.deliveryTimeFROM[index],
+                                      //     deliveryTimeTo:
+                                      //         widget.deliveryTimeTO[index],
+                                      //     reciverName:
+                                      //         widget.receiverNAME[index],
+                                      //     reciverMobile:
+                                      //         widget.receiverPHONE[index],
+                                      //     reciverUnitIdBlockId: widget
+                                      //         .receiverUnitIdBlockID[index],
+                                      //   ),
+                                      // );
+
+                                      // List<BookingAddress> bookingAddress = [
+                                      //   BookingAddress(
+                                      //       customerName: widget.senderNAME,
+                                      //       customerMobile: widget.phoneNUMBER,
+                                      //       unitNoBlockNo: widget.unitIdBlockID,
+                                      //       address: widget.droppingADDRESS,
+                                      //       postalCode: widget.arpinCODE,
+                                      //       latitude: widget.droppingLATITUDE,
+                                      //       longitude: widget.droppingLOGITUDE,
+                                      //       deliveryStatus: "0",
+                                      //       deliveryTimeFrom:
+                                      //           widget.deliveryTimeFROM,
+                                      //       deliveryTimeTo:
+                                      //           widget.deliveryTimeTO,
+                                      //       reciverName: widget.receiverNAME,
+                                      //       reciverMobile: widget.receiverPHONE,
+                                      //       reciverUnitIdBlockId:
+                                      //           widget.receiverUnitIdBlockID),
+                                      // ];
                                       AddBookingParcelModel
                                           addBookingParcelModel =
                                           AddBookingParcelModel(
-                                              totalAmountCost: allTotalAmount
-                                                  .toStringAsFixed(2),
+                                              totalAmountCost:
+                                                  amount.toStringAsFixed(2),
                                               pickupAddress:
                                                   widget.pickupADDRESS,
                                               deliveryTypeid: widget
                                                   .deliveryTypeID
                                                   .toString(),
-                                              paymentMode: "500",
-                                              bookingAmount: "500",
-                                              gst: "500",
-                                              additionalTotal: serviceAmount
-                                                  .toStringAsFixed(2),
-                                              totalAmount: allTotalAmount
-                                                  .toStringAsFixed(2),
+                                              paymentMode: "cash",
+                                              bookingAmount:
+                                                  amount.toStringAsFixed(2),
+                                              gst: "0",
+                                              additionalTotal:
+                                                  additionalServiceAmount
+                                                      .toStringAsFixed(2),
+                                              totalAmount:
+                                                  amount.toStringAsFixed(2),
                                               isRoundTrip: '1',
                                               bookingDate: widget.bookingDATE,
                                               pickupTimeFrom:
@@ -1164,12 +1476,10 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                               notes: widget.notes,
                                               products: products,
                                               bookingAddress: bookingAddress,
-                                              parcelPhoto: widget.imagePath);
+                                              parcelPhoto: widget.imagePath,
+                                              paymentdetails: jsonString);
                                       parcelController.addBookingParcel(
                                           addBookingParcelModel);
-                                      // if (formatDateTime.isNotEmpty) {
-
-                                      // }
                                     },
                                     child: CommonContainer(
                                       name: "Confirm Payment",
@@ -1187,5 +1497,21 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
         ),
       ),
     );
+  }
+
+  void debugLists() {
+    print('droppingADDRESS length: ${widget.droppingADDRESS.length}');
+    print('senderNAME length: ${widget.senderNAME.length}');
+    print('phoneNUMBER length: ${widget.phoneNUMBER.length}');
+    print('unitIdBlockID length: ${widget.unitIdBlockID.length}');
+    print('arpinCODE length: ${widget.arpinCODE.length}');
+    print('droppingLATITUDE length: ${widget.droppingLATITUDE.length}');
+    print('droppingLOGITUDE length: ${widget.droppingLOGITUDE.length}');
+    print('deliveryTimeFROM length: ${widget.deliveryTimeFROM.length}');
+    print('deliveryTimeTO length: ${widget.deliveryTimeTO.length}');
+    print('receiverNAME length: ${widget.receiverNAME.length}');
+    print('receiverPHONE length: ${widget.receiverPHONE.length}');
+    print(
+        'receiverUnitIdBlockID length: ${widget.receiverUnitIdBlockID.length}');
   }
 }

@@ -406,9 +406,9 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                                       _senderNameController.text,
                                       _phoneNumberController.text,
                                       _blockUnitController.text);
-                                      
+
                                   Get.offAll(PackageSendScreen(
-                                    unitIdBlockID: [_blockUnitController.text],
+                                    unitIdBlockID: _blockUnitController.text,
                                     pickupAdress: searchController.text,
                                     lat: _markers.first.position.latitude
                                         .toString(),
@@ -760,7 +760,7 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                                       _phoneNumberController.text,
                                       _blockUnitController.text);
                                   Get.to(PackageSendScreen(
-                                    unitIdBlockID: [_blockUnitController.text],
+                                    unitIdBlockID: _blockUnitController.text,
                                     pickupAdress: searchController.text,
                                     lat: _markers.first.position.latitude
                                         .toString(),
