@@ -31,7 +31,7 @@ import 'package:v_export/customer/views/bottom_navi_bar/payment_screen.dart/make
 
 class ParcelController extends GetxController {
   OngongOrderApiServices ongongOrderApiServices = OngongOrderApiServices();
-  List<OngoingOrderData> ongoingOrdersData = [];
+  List ongoingOrdersData = <OngoingOrderData>[].obs;
 
   //ParcelOngoingOrderData? parcelOngoingOrderData;
   RxBool ongoingorderLoading = false.obs;
@@ -43,7 +43,7 @@ class ParcelController extends GetxController {
         await ongongOrderApiServices.getOngoingOder();
     ongoingorderLoading(false);
     //   parcelongoingorderLoading(false);
-
+    update();
     if (response.data["status"] == true) {
       OngoingOrdersModel ongoingOrdersModel =
           OngoingOrdersModel.fromJson(response.data);
@@ -167,9 +167,11 @@ class ParcelController extends GetxController {
       AddBookingParcelsApiService();
   // String driverbookingid = "";
   RxBool addBookingLoading = false.obs;
+  RxBool addBookingLoading1 = false.obs;
   BookingData? data;
   addBookingParcel(AddBookingParcelModel addBookingParcelModel) async {
     addBookingLoading(true);
+    addBookingLoading1(false);
     update();
     dio.Response<dynamic> response = await addBookingParcelsApiService
         .addBookingParcel(addBookingParcelModel);
@@ -193,6 +195,7 @@ class ParcelController extends GetxController {
       // Get.to(BookingDetailsScreen(
 
       // ));
+      addBookingLoading1(true);
       addBookingLoading(false);
       update();
     } else {

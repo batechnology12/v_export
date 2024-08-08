@@ -24,7 +24,7 @@ class _MakePaymentState extends State<MakePayment> {
 
   List paymentlist = [
     {"image": "assets/images/Vector.svg", "name": "Wallet"},
-    {"image": "assets/images/Group 43.svg", "name": "Credit & Debit Card"},
+    //  {"image": "assets/images/Group 43.svg", "name": "Credit & Debit Card"},
     //  {"image": "assets/images/Group.svg", "name": "QR Code"},
     {"image": "assets/images/fi_13729040.svg", "name": "Corporate Account"},
     {"image": "assets/images/Group (1).svg", "name": "Cash on Delivery"},
@@ -103,10 +103,8 @@ class _MakePaymentState extends State<MakePayment> {
                                       for (int i = 0; i < isCheck.length; i++) {
                                         isCheck[i] = i == index;
                                       }
-                                      if (index == 3) {
+                                      if (index == 2) {
                                         showListViewDialog(context);
-
-                                        //  Get.to(BottomNavigationScreen());
                                       } else {
                                         easebuzzController
                                             .tablepayUseingEaseBuzzSubs();
@@ -251,9 +249,10 @@ class _MakePaymentState extends State<MakePayment> {
                                     width: 120,
                                     decoration: BoxDecoration(
                                         border: Border.all(
-                                            color: isSelected == 0
-                                                ? AppColors.kblue
-                                                : Colors.transparent),
+                                          color: isSelected == 0
+                                              ? AppColors.kblue
+                                              : Colors.grey.withOpacity(.30),
+                                        ),
                                         borderRadius:
                                             BorderRadius.circular(10)),
                                     child: Image.asset(
@@ -273,9 +272,10 @@ class _MakePaymentState extends State<MakePayment> {
                                     width: 120,
                                     decoration: BoxDecoration(
                                         border: Border.all(
-                                            color: isSelected == 1
-                                                ? AppColors.kblue
-                                                : Colors.transparent),
+                                          color: isSelected == 1
+                                              ? AppColors.kblue
+                                              : Colors.grey.withOpacity(.30),
+                                        ),
                                         borderRadius:
                                             BorderRadius.circular(10)),
                                     child: Image.asset(
@@ -286,32 +286,6 @@ class _MakePaymentState extends State<MakePayment> {
                               ],
                             ),
                             ksizedbox10,
-                            // GestureDetector(
-                            //     onTap: () {
-                            //       isCheckselected(0);
-                            //     },
-                            //     child:
-                            //         // Container(
-                            //         //     width: 20.0,
-                            //         //     height: 20.0,
-                            //         //     decoration: BoxDecoration(
-                            //         //       color: isSelected == 0
-                            //         //           ? AppColors.kblue
-                            //         //           : Colors.white,
-                            //         //       borderRadius: BorderRadius.circular(15.0),
-                            //         //       border: Border.all(
-                            //         //         color: isSelected == 0
-                            //         //             ? Colors.blue
-                            //         //             : Colors.grey,
-                            //         //         width: 2.0,
-                            //         //       ),
-                            //         //     ),
-                            //         // child:
-                            //         IconButton(
-                            //             onPressed: () {
-                            //               isCheckselected(0);
-                            //             },
-                            //             icon: Icon(Icons.check_circle))),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
@@ -322,30 +296,35 @@ class _MakePaymentState extends State<MakePayment> {
                                     });
                                   },
                                   child: Container(
-                                    margin: EdgeInsets.only(right: 20),
-                                    width: 25.0,
-                                    height: 25.0,
-                                    alignment: Alignment.center,
-                                    decoration: BoxDecoration(
-                                      color: isSelected == 0
-                                          ? AppColors.kblue
-                                          : Colors.transparent,
-                                      borderRadius: BorderRadius.circular(15.0),
-                                      border: Border.all(
+                                      margin: EdgeInsets.only(right: 20),
+                                      width: 25.0,
+                                      height: 25.0,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
                                         color: isSelected == 0
                                             ? AppColors.kblue
-                                            : Colors.transparent,
-                                        width: 2.0,
+                                            : Colors.grey.withOpacity(.30),
+                                        borderRadius:
+                                            BorderRadius.circular(15.0),
+                                        border: Border.all(
+                                          color: isSelected == 0
+                                              ? AppColors.kblue
+                                              : Colors.grey.withOpacity(.30),
+                                          width: 2.0,
+                                        ),
                                       ),
-                                    ),
-                                    child: isSelected == 0
-                                        ? Icon(
-                                            Icons.check,
-                                            color: Colors.white,
-                                            size: 15.0,
-                                          )
-                                        : null,
-                                  ),
+                                      child:
+                                          // isSelected == 0
+                                          //     ?
+                                          Icon(
+                                        Icons.check,
+                                        color: isSelected == 0
+                                            ? Colors.white
+                                            : Colors.white,
+                                        size: 15.0,
+                                      )
+                                      //  : null,
+                                      ),
                                 ),
                                 GestureDetector(
                                   onTap: () {
@@ -354,29 +333,34 @@ class _MakePaymentState extends State<MakePayment> {
                                     });
                                   },
                                   child: Container(
-                                    width: 25.0,
-                                    height: 25.0,
-                                    alignment: Alignment.center,
-                                    decoration: BoxDecoration(
-                                      color: isSelected == 1
-                                          ? AppColors.kblue
-                                          : Colors.transparent,
-                                      borderRadius: BorderRadius.circular(15.0),
-                                      border: Border.all(
+                                      width: 25.0,
+                                      height: 25.0,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
                                         color: isSelected == 1
                                             ? AppColors.kblue
-                                            : Colors.transparent,
-                                        width: 2.0,
+                                            : Colors.grey.withOpacity(.30),
+                                        borderRadius:
+                                            BorderRadius.circular(15.0),
+                                        border: Border.all(
+                                          color: isSelected == 1
+                                              ? AppColors.kblue
+                                              : Colors.grey.withOpacity(.30),
+                                          width: 2.0,
+                                        ),
                                       ),
-                                    ),
-                                    child: isSelected == 1
-                                        ? Icon(
-                                            Icons.check,
-                                            color: Colors.white,
-                                            size: 15.0,
-                                          )
-                                        : null,
-                                  ),
+                                      child:
+                                          //  isSelected == 1
+                                          //     ?
+                                          Icon(
+                                        Icons.check,
+                                        color: isSelected == 1
+                                            ? Colors.white
+                                            : Colors.white,
+                                        size: 15.0,
+                                      )
+                                      // : null,
+                                      ),
                                 ),
                               ],
                             ),

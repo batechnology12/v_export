@@ -6,18 +6,6 @@ import 'package:geocode/geocode.dart';
 // import 'package:location/location.dart' as loc;
 
 class HomeController extends GetxController {
-//   getAddress() async {
-//     late loc.Location location = Location();
-//     var currentLoc = await location.getLocation();
-
-//     GeoCode geoCode = GeoCode();
-//     Address address = await geoCode.reverseGeocoding(
-//         latitude: currentLoc.latitude!, longitude: currentLoc.longitude!);
-// //  return "${address.streetAddress}, ${}, ${address.countryName}, ${address.postal}";
-
-//     locationvalue('${address.streetAddress},${address.city}');
-//   }
-
 //// pickup location
 
   var pickupLocation = ''.obs;
@@ -56,163 +44,6 @@ class HomeController extends GetxController {
   var receiverBlockIdUnitIDs = <String>[].obs;
   var secondContainers = <int>[0].obs; // Initialize with one item
 
-  // //////
-
-  // List<String> getLengths() {
-  //   List<String> lengths = [];
-  //   for (var location in locationData) {
-  //     for (var item in location.values.first) {
-  //       lengths.add(item['length']?.text ?? '');
-  //     }
-  //   }
-  //   return lengths;
-  // }
-
-  // List<String> getWidths() {
-  //   List<String> widths = [];
-  //   for (var location in locationData) {
-  //     for (var item in location.values.first) {
-  //       widths.add(item['width']?.text ?? '');
-  //     }
-  //   }
-  //   return widths;
-  // }
-
-  // List<String> getHeights() {
-  //   List<String> heights = [];
-  //   for (var location in locationData) {
-  //     for (var item in location.values.first) {
-  //       heights.add(item['height']?.text ?? '');
-  //     }
-  //   }
-  //   return heights;
-  // }
-
-  // List<String> getQuantities() {
-  //   List<String> quantities = [];
-  //   for (var location in locationData) {
-  //     for (var item in location.values.first) {
-  //       quantities.add(item['qty']?.text ?? '');
-  //     }
-  //   }
-  //   return quantities;
-  // }
-
-  // List<String> getWeights() {
-  //   List<String> weights = [];
-  //   for (var location in locationData) {
-  //     for (var item in location.values.first) {
-  //       weights.add(item['kg']?.text ?? '');
-  //     }
-  //   }
-  //   return weights;
-  // }
-/////////
-
-  // var locationData =
-  //     <Map<String, List<Map<String, TextEditingController>>>>[].obs;
-  // @override
-  // void onInit() {
-  //   super.onInit();
-  //   // Initialize with one location
-  //   addLocation();
-  // }
-
-  // void addLocation() {
-  //   locationData.add({
-  //     'Location': [
-  //       {
-  //         'length': TextEditingController(),
-  //         'width': TextEditingController(),
-  //         'height': TextEditingController(),
-  //         'kg': TextEditingController(),
-  //         'qty': TextEditingController(),
-  //       }
-  //     ]
-  //   });
-  // }
-
-  // void printDimensions(int locationIndex, int itemIndex) {
-  //   if (locationIndex < locationData.length) {
-  //     var location = locationData[locationIndex];
-  //     if (location.isNotEmpty && itemIndex < location.values.first.length) {
-  //       var item = location.values.first[itemIndex];
-
-  //       print('Length: ${item['length']?.text}');
-  //       print('Width: ${item['width']?.text}');
-  //       print('Height: ${item['height']?.text}');
-  //     } else {
-  //       print('Item index out of range.');
-  //     }
-  //   } else {
-  //     print('Location index out of range.');
-  //   }
-  // }
-
-  // void addItem(int locationIndex) {
-  //   if (locationIndex < locationData.length) {
-  //     locationData[locationIndex].values.first.add({
-  //       'length': TextEditingController(),
-  //       'width': TextEditingController(),
-  //       'height': TextEditingController(),
-  //       'kg': TextEditingController(),
-  //       'qty': TextEditingController(),
-  //     });
-  //     update(); // Notify listeners
-  //   }
-  // }
-
-  // void deleteItem(int locationIndex, int itemIndex) {
-  //   if (locationIndex < locationData.length) {
-  //     var items = locationData[locationIndex].values.first;
-  //     if (itemIndex < items.length) {
-  //       // Prevent deletion if item is at index 0
-  //       if (itemIndex == 0) {
-  //         print('Cannot delete item at index 0');
-  //         return;
-  //       }
-
-  //       // Dispose of TextEditingControllers before removing the item
-  //       items[itemIndex]['length']?.dispose();
-  //       items[itemIndex]['width']?.dispose();
-  //       items[itemIndex]['height']?.dispose();
-  //       items[itemIndex]['kg']?.dispose();
-  //       items[itemIndex]['qty']?.dispose();
-
-  //       // Remove the item at itemIndex
-  //       items.removeAt(itemIndex);
-
-  //       // If the list is empty, delete the location
-  //       if (items.isEmpty) {
-  //         deleteLocation(locationIndex);
-  //       } else {
-  //         update(); // Notify listeners
-  //       }
-  //     } else {
-  //       // Handle case where itemIndex is out of bounds
-  //       print('Item index out of bounds');
-  //     }
-  //   } else {
-  //     // Handle case where locationIndex is out of bounds
-  //     print('Location index out of bounds');
-  //   }
-  // }
-
-  // void deleteLocation(int locationIndex) {
-  //   if (locationIndex < locationData.length) {
-  //     var items = locationData[locationIndex].values.first;
-  //     items.forEach((item) {
-  //       item['length']?.dispose();
-  //       item['width']?.dispose();
-  //       item['height']?.dispose();
-  //       item['kg']?.dispose();
-  //       item['qty']?.dispose();
-  //     });
-  //     locationData.removeAt(locationIndex);
-  //     update(); // Notify listeners
-  //   }
-  // }
-
   void updateDroppingLocation(
       String location,
       String lat,
@@ -245,6 +76,29 @@ class HomeController extends GetxController {
   }
 
 ////////////////////////////////////
+
+  var pickupVehicleLocation = ''.obs;
+  var pickupVehiclelatitude = ''.obs;
+  var pickupVehiclelongitude = ''.obs;
+  var pickupVehicleSenderName = ''.obs;
+  var pickupVehicleSenderNumber = ''.obs;
+  var pickupVehicleblockUnitId = ''.obs;
+
+  updatevehiclePickupLocation(
+      String pickuplocationvehicle,
+      String pickuplatvehicle,
+      String pickuplongvehicle,
+      String senderNamevehicle,
+      String senderNumbervehicle,
+      String pickupunitIdvehicle) {
+    pickupVehicleLocation.value = pickuplocationvehicle;
+    pickupVehiclelatitude.value = pickuplatvehicle;
+    pickupVehiclelongitude.value = pickuplongvehicle;
+    pickupVehicleSenderName.value = senderNamevehicle;
+    pickupVehicleSenderNumber.value = senderNumbervehicle;
+    pickupVehicleblockUnitId.value = pickupunitIdvehicle;
+  }
+
   var vehicledroppingLocations = <String>[].obs;
   var vehicledroppingLats = <String>[].obs;
   var vehicledropLongs = <String>[].obs;
@@ -255,7 +109,7 @@ class HomeController extends GetxController {
   var vehicleisCheck = false.obs;
   var vehiclereceiverNameList = <String>[].obs;
   var vehiclereceiverNumberList = <String>[].obs;
-  var vehiclereceiverBlockIdUnitIDs = '';
+  var vehiclereceiverBlockIdUnitIDs = <String>[].obs;
 
   void vehicleDroppingLocation(
       String locationVehicle,
@@ -275,7 +129,7 @@ class HomeController extends GetxController {
       vehicledoornames[indexVehicle] = bookingpincodeVehicle;
       vehiclereceiverNameList[indexVehicle] = reciverNameVehicle;
       vehiclereceiverNumberList[indexVehicle] = reciverNumberVehicle;
-      vehiclereceiverBlockIdUnitIDs = reciverBlockIdUnitIDVehicle;
+      vehiclereceiverBlockIdUnitIDs[indexVehicle] = reciverBlockIdUnitIDVehicle;
     } else {
       vehiclereceiverNumberList.clear();
       vehiclereceiverNumberList.clear();
@@ -286,7 +140,7 @@ class HomeController extends GetxController {
       vehicledoornames.add(bookingpincodeVehicle);
       vehiclereceiverNameList.add(reciverNameVehicle);
       vehiclereceiverNumberList.add(reciverNumberVehicle);
-      vehiclereceiverBlockIdUnitIDs = reciverBlockIdUnitIDVehicle;
+      vehiclereceiverBlockIdUnitIDs.add(reciverBlockIdUnitIDVehicle);
     }
   }
 
@@ -335,8 +189,13 @@ class HomeController extends GetxController {
     }
   }
 
+  RxString roundTrip = "0".obs;
+
   void toggleCheck(bool value) {
     isCheck.value = value;
+    roundTrip.value = value ? "1" : "0";
+    print("toggle check-----------------");
+    print(isCheck.value);
   }
 
   var hideDeleteIcon = true.obs;
@@ -353,6 +212,42 @@ class HomeController extends GetxController {
   var parcelHeightControllers = <TextEditingController>[].obs;
   var parcelKgControllers = <TextEditingController>[].obs;
   var quantityControllers = <TextEditingController>[].obs;
+
+  int calculateQty() {
+    int sum1 = 0;
+    for (var controllers in quantityControllers) {
+      if (controllers.text.isNotEmpty) {
+        sum1 += int.tryParse(controllers.text) ?? 0;
+      }
+    }
+    return sum1;
+  }
+
+  // @override
+  // void onClose() {
+  //   for (var controllers in quantityControllers) {
+  //     controllers.dispose();
+  //   }
+  //   super.onClose();
+  // }
+
+  int calculateSum() {
+    int sum = 0;
+    for (var controller in parcelKgControllers) {
+      if (controller.text.isNotEmpty) {
+        sum += int.tryParse(controller.text) ?? 0;
+      }
+    }
+    return sum;
+  }
+
+  @override
+  void onClose() {
+    for (var controller in parcelKgControllers) {
+      controller.dispose();
+    }
+    super.onClose();
+  }
 
   void addController() {
     var controller = TextEditingController();

@@ -29,9 +29,9 @@ class AddBookingParcelsApiService extends BaseApiServices {
         "additional_total": "600",
         "payment_details": addBookingParcelModel.paymentdetails,
         "total_amount": addBookingParcelModel.totalAmountCost,
-        "is_round_trip": '0',
-        "sender_unitno_blockno": "sender_block_id",
-        "vehicle_type": "Two Wheeler",
+        "is_round_trip": addBookingParcelModel.isRoundTrip,
+        "sender_unitno_blockno": addBookingParcelModel.senderUnitId,
+        "vehicle_type": "Bike",
         "booking_date": addBookingParcelModel.bookingDate,
         "pickuptime_from": addBookingParcelModel.pickupTimeFrom,
         "pickuptime_to": addBookingParcelModel.pickupTimeTo,
@@ -78,8 +78,9 @@ class AddBookingParcelsApiService extends BaseApiServices {
                   "sender_unitno_blockno": address.reciverUnitIdBlockId,
                 })
             .toList(),
-        "parcel_photo":
-            await MultipartFile.fromFile(addBookingParcelModel.parcelPhoto),
+        "parcel_photo": addBookingParcelModel.parcelPhoto.trim().isEmpty
+            ? null
+            : await MultipartFile.fromFile(addBookingParcelModel.parcelPhoto),
       });
 
       var response = await dio.post(

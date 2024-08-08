@@ -12,6 +12,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:v_export/constant/common_container.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:v_export/customer/controller/account_controller.dart';
+import 'package:v_export/customer/controller/home_controller.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/book_vehicle/book_vehicle_screen.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/package_send_screen.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
@@ -25,6 +26,7 @@ class PickupVehicleAddressDetails extends StatefulWidget {
 class _PickupVehicleAddressDetailsState
     extends State<PickupVehicleAddressDetails> {
   AccountController accountController = Get.find<AccountController>();
+  HomeController homeController = Get.find<HomeController>();
 
   GoogleMapController? _controller;
   final Set<Marker> _markers = {};
@@ -290,7 +292,7 @@ class _PickupVehicleAddressDetailsState
                               child: Text(
                                 "+65",
                                 style: primaryfont.copyWith(
-                                  fontSize: 14,
+                                  fontSize: 15,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -363,6 +365,16 @@ class _PickupVehicleAddressDetailsState
                               if (formKey.currentState!.validate()) {
                                 if (_senderNameController.text.isNotEmpty &&
                                     _phoneNumberController.text.isNotEmpty) {
+                                  homeController.updatepickupLocation(
+                                      searchController.text,
+                                      _markers.first.position.latitude
+                                          .toString(),
+                                      _markers.first.position.longitude
+                                          .toString(),
+                                      _senderNameController.text,
+                                      _phoneNumberController.text,
+                                      _blockUnitController.text);
+
                                   Get.offAll(BookVehicleScreen(
                                       vehiclepickupAdress:
                                           searchController.text,
@@ -378,14 +390,7 @@ class _PickupVehicleAddressDetailsState
                                           _senderNameController.text,
                                       vehicleSenderMobilenumber:
                                           _phoneNumberController.text,
-                                      vehicleDropAddress: [],
-                                      vehicledroplat: [],
-                                      vehicledroplong: [],
-                                      vehicleDropunitIdBlockId: [],
-                                      vehicleDropreceivername: [],
-                                      vehiclearpincode: [],
-                                      vehicledoorname: [],
-                                      vehicleDropreceiverphone: []));
+                                     ));
                                 } else {
                                   Get.snackbar(
                                       "Fill all Fields", "Please try again!",
@@ -775,6 +780,17 @@ class _PickupVehicleAddressDetailsState
                                 if (formKey.currentState!.validate()) {
                                   if (_senderNameController.text.isNotEmpty &&
                                       _phoneNumberController.text.isNotEmpty) {
+                                    homeController.updatevehiclePickupLocation(
+                                      searchController.text,
+                                      _markers.first.position.latitude
+                                          .toString(),
+                                      _markers.first.position.longitude
+                                          .toString(),
+                                      _senderNameController.text,
+                                      _phoneNumberController.text,
+                                      _blockUnitController.text,
+                                    );
+
                                     Get.offAll(BookVehicleScreen(
                                         vehiclepickupAdress:
                                             searchController.text,
@@ -790,14 +806,7 @@ class _PickupVehicleAddressDetailsState
                                             _senderNameController.text,
                                         vehicleSenderMobilenumber:
                                             _phoneNumberController.text,
-                                        vehicleDropAddress: [],
-                                        vehicledroplat: [],
-                                        vehicledroplong: [],
-                                        vehicleDropunitIdBlockId: [],
-                                        vehicleDropreceivername: [],
-                                        vehiclearpincode: [],
-                                        vehicledoorname: [],
-                                        vehicleDropreceiverphone: []));
+                                    ));
                                   } else {
                                     Get.snackbar(
                                         "Fill all Fields", "Please try again!",

@@ -45,36 +45,6 @@ class _LoginScreenState extends State<LoginScreen> {
   int selectedIndex = 0;
   String selectedValues = "+65";
 
-  // void _onLoginPressed() {
-  //   if (formkey.currentState!.validate()) {
-  //     _btnController.start();
-  //     if (authController.loginData!.roles == "client" || authController.loginData!.roles == "business" ) {
-  //         authController
-  //         .loginApi(
-  //       emailOrmobileNmuber: emailOrmobileController.text,
-  //       password: passwordController.text,
-  //     );
-  //     } else {
-
-  //     }
-
-  //         .then((success) {
-  //       if (success) {
-  //         _btnController.success();
-  //       } else {
-  //         _btnController.error();
-  //       }
-  //     }).catchError((error) {
-  //       _btnController.error();
-  //     }).whenComplete(() {
-  //       // Reset the button controller after some delay
-  //       Future.delayed(Duration(seconds: 2), () {
-  //         _btnController.reset();
-  //       });
-  //     });
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -95,10 +65,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Center(
                   child: Padding(
                     padding: const EdgeInsets.only(top: 60),
-                    child: SvgPicture.asset(
-                      'assets/icons/VEELGO.svg',
-                      height: 70.h,
-                      width: 70.w,
+                    child: Container(
+                      height: 170,
+                      width: 170,
+                      child: SvgPicture.asset(
+                        'assets/images/VEELGO (1).svg',
+                        height: 70.h,
+                        width: 70.w,
+                      ),
                     ),
                   ),
                 ),

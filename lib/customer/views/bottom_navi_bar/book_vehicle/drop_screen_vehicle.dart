@@ -127,13 +127,14 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                             googleAPIKey:
                                 "AIzaSyAyygarjlqp_t2SPo7vS1oXDq1Yxs-LLNg",
                             inputDecoration: InputDecoration(
+                                contentPadding: EdgeInsets.only(left: 10),
                                 isDense: true,
-                                prefixIcon: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Image.asset(
-                                    "assets/icons/google-maps.png",
-                                  ),
-                                ),
+                                // prefixIcon: Padding(
+                                //   padding: const EdgeInsets.all(8.0),
+                                //   child: Image.asset(
+                                //     "assets/icons/google-maps.png",
+                                //   ),
+                                // ),
                                 // suffixIcon: Padding(
                                 //   padding: const EdgeInsets.all(5.0),
                                 //   child: Image.asset(
@@ -212,9 +213,9 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                             width: double.infinity,
                             decoration: BoxDecoration(
                                 color: AppColors.kwhite,
-                                border: Border.all(
-                                  color: Color(0xff444444),
-                                ),
+                                // border: Border.all(
+                                //   color: Color(0xff444444),
+                                // ),
                                 borderRadius: BorderRadius.circular(10)),
                             child: TextFormField(
                                 controller: receiverBlockIdUnitIdController,
@@ -251,9 +252,9 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                           width: double.infinity,
                           decoration: BoxDecoration(
                               color: AppColors.kwhite,
-                              border: Border.all(
-                                color: Color(0xff444444),
-                              ),
+                              // border: Border.all(
+                              //   color: Color(0xff444444),
+                              // ),
                               borderRadius: BorderRadius.circular(10)),
                           child: TextFormField(
                             textCapitalization: TextCapitalization.sentences,
@@ -306,7 +307,7 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                               child: Text(
                                 "+65",
                                 style: primaryfont.copyWith(
-                                  fontSize: 14,
+                                  fontSize: 15,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -357,22 +358,29 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                                   receiverNumberController.text,
                                   receiverBlockIdUnitIdController.text,
                                 );
-                                // Get.to(BookVehicleScreen(
-                                //     vehiclepickupAdress: "",
-                                //     vehiclepickuplat: "",
-                                //     vehiclepickuplong: "",
-                                //     vehiclepickupunitIdBlockID: "",
-                                //     vehiclepickupsendername: "",
-                                //     vehicleSenderMobilenumber: "",
-                                //     vehicleDropAddress: [],
-                                //     vehicledroplat: [],
-                                //     vehiclearpincode: [],
-                                //     vehicledoorname: [],
-                                //     vehicledroplong: [],
-                                //     vehicleDropunitIdBlockId: [],
-                                //     vehicleDropreceivername: [],
-                                //     vehicleDropreceiverphone: []));
-                                Get.back();
+                                Get.offAll(BookVehicleScreen(
+                                    vehiclepickupAdress: homeController
+                                        .pickupVehicleLocation.value,
+                                    vehiclepickuplat: homeController
+                                        .pickupVehiclelatitude.value,
+                                    vehiclepickuplong: homeController
+                                        .pickupVehiclelongitude.value,
+                                    vehiclepickupunitIdBlockID: homeController
+                                        .pickupVehicleblockUnitId.value,
+                                    vehiclepickupsendername: homeController
+                                        .pickupVehicleSenderName.value,
+                                    vehicleSenderMobilenumber: homeController
+                                        .pickupVehicleSenderNumber.value,
+                                    // vehicleDropAddress: [],
+                                    // vehicledroplat: [],
+                                    // vehiclearpincode: [],
+                                    // vehicledoorname: [],
+                                    // vehicledroplong: [],
+                                    // vehicleDropunitIdBlockId: [],
+                                    // vehicleDropreceivername: [],
+                                    // vehicleDropreceiverphone: []
+                                    ));
+                                //  Get.back();
                               } else {
                                 Get.snackbar(
                                     "Fill all Fields", "Please try again!",
@@ -499,14 +507,15 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                                 googleAPIKey:
                                     "AIzaSyAyygarjlqp_t2SPo7vS1oXDq1Yxs-LLNg",
                                 inputDecoration: InputDecoration(
+                                    contentPadding: EdgeInsets.only(left: 10),
                                     enabled: false,
                                     isDense: true,
-                                    prefixIcon: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Image.asset(
-                                        "assets/icons/google-maps.png",
-                                      ),
-                                    ),
+                                    // prefixIcon: Padding(
+                                    //   padding: const EdgeInsets.all(8.0),
+                                    //   child: Image.asset(
+                                    //     "assets/icons/google-maps.png",
+                                    //   ),
+                                    // ),
                                     // suffixIcon: Padding(
                                     //   padding: const EdgeInsets.all(5.0),
                                     //   child: Image.asset(
@@ -692,7 +701,7 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                                   child: Text(
                                     "+65",
                                     style: primaryfont.copyWith(
-                                      fontSize: 14,
+                                      fontSize: 15,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
@@ -743,22 +752,28 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                                   receiverNumberController.text,
                                   receiverBlockIdUnitIdController.text,
                                 );
-                                Get.back();
-                                // Get.to(BookVehicleScreen(
-                                //     vehiclepickupAdress: "",
-                                //     vehiclepickuplat: "",
-                                //     vehiclepickuplong: "",
-                                //     vehiclepickupunitIdBlockID: "",
-                                //     vehiclepickupsendername: "",
-                                //     vehicleSenderMobilenumber: "",
-                                //     vehicleDropAddress: [],
-                                //     vehicledroplat: [],
-                                //     vehiclearpincode: [],
-                                //     vehicledoorname: [],
-                                //     vehicledroplong: [],
-                                //     vehicleDropunitIdBlockId: [],
-                                //     vehicleDropreceivername: [],
-                                //     vehicleDropreceiverphone: []));
+                                Get.to(BookVehicleScreen(
+                                    vehiclepickupAdress: homeController
+                                        .pickupVehicleLocation.value,
+                                    vehiclepickuplat: homeController
+                                        .pickupVehiclelatitude.value,
+                                    vehiclepickuplong: homeController
+                                        .pickupVehiclelongitude.value,
+                                    vehiclepickupunitIdBlockID: homeController
+                                        .pickupVehicleblockUnitId.value,
+                                    vehiclepickupsendername: homeController
+                                        .pickupVehicleSenderName.value,
+                                    vehicleSenderMobilenumber: homeController
+                                        .pickupVehicleSenderNumber.value,
+                                    // vehicleDropAddress: [],
+                                    // vehicledroplat: [],
+                                    // vehiclearpincode: [],
+                                    // vehicledoorname: [],
+                                    // vehicledroplong: [],
+                                    // vehicleDropunitIdBlockId: [],
+                                    // vehicleDropreceivername: [],
+                                    // vehicleDropreceiverphone: []
+                                    ));
                               } else {
                                 Get.snackbar(
                                     "Fill all Fields", "Please try again!",

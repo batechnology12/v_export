@@ -433,8 +433,12 @@ class DeliveryType {
         price2025Km: json["price_20_25km"] ?? "",
         priceAbove25Km: json["price_above_25km"] ?? "",
         status: json["status"] ?? "",
-        createdAt: json["created_at"]== null ? DateTime.now() : DateTime.parse(json["created_at"]),
-        updatedAt: json["updated_at"]== null ? DateTime.now() : DateTime.parse(json["updated_at"]),
+        createdAt: json["created_at"] == null
+            ? DateTime.now()
+            : DateTime.parse(json["created_at"]),
+        updatedAt: json["updated_at"] == null
+            ? DateTime.now()
+            : DateTime.parse(json["updated_at"]),
       );
 
   Map<String, dynamic> toJson() => {

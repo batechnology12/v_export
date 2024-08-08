@@ -34,7 +34,7 @@ class ScheduleDeliveryScreen extends StatefulWidget {
   List<String> kg;
   List<String> qty;
   String parcelItems;
-  String unitIdBlockId;
+  String senderunitIdBlockId;
   String? pickTimeFrom;
   String? pickTimeTo;
   List<String> pickTimeListFrom;
@@ -48,8 +48,16 @@ class ScheduleDeliveryScreen extends StatefulWidget {
   String receiverUnitIdBlockId;
   String totalWeight;
   List<DeliveryTypeData> selectedDeliveryTypes = [];
+//  TimeofDay pickupTimeFrom;
+  // String pickupTimeTo;
+  TimeOfDay deliveryTimeTos;
+  TimeOfDay deliveryTimeFroms;
+  String roundTrip;
   ScheduleDeliveryScreen(
       {super.key,
+      required this.roundTrip,
+      required this.deliveryTimeFroms,
+      required this.deliveryTimeTos,
       required this.pickupAddress,
       required this.pickuplatitude,
       required this.pickuplogitude,
@@ -69,7 +77,7 @@ class ScheduleDeliveryScreen extends StatefulWidget {
       required this.pickTimeTo,
       required this.pickTimeListFrom,
       required this.pickTimeListTo,
-      required this.unitIdBlockId,
+      required this.senderunitIdBlockId,
       required this.sendername,
       required this.phonenumber,
       required this.droppingaddress,
@@ -95,13 +103,16 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
   }
 
   double totalAmount = 0.0;
+  TimeOfDay spselectedTime = TimeOfDay.now();
+  TimeOfDay spselectedT0Time = TimeOfDay.now();
 
   void getData() async {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       parcelController.getAdditionalServices("booking_parcel");
       initializeIsCheckList();
       parcelController.update();
-      setState(() {});
+      // selectDate(context);
+      // setState(() {});
     });
   }
 
@@ -321,91 +332,30 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
   bool fragilcheck = false;
   bool noadditinalservicecheck = false;
 
-  DateTime selectedDate = DateTime.now();
+  TimeOfDay deliveryFromTime = TimeOfDay.now();
+  TimeOfDay deliveryToTime = TimeOfDay.now();
 
-  // TimeOfDay pickTimes = TimeOfDay.now();
-  // TimeOfDay dropTimes = TimeOfDay.now();
-  // String pickingTimes = "";
-  // String dropingTimes = "";
-
-  // Future displayTimePicker(BuildContext context) async {
-  //   var time = await showTimePicker(
-  //     context: context,
-  //     initialTime: pickTimes,
-  //     initialEntryMode: TimePickerEntryMode.input,
-  //   );
-
-  //   if (time != null) {
-  //     setState(() {
-  //       pickTimes = time;
-  //     });
-
-  //     print(pickTimes);
-  //   }
-  // }
-
-  // Future dropTimePicker(BuildContext context) async {
-  //   var times = await showTimePicker(
-  //     context: context,
-  //     initialTime: pickTimes,
-  //     initialEntryMode: TimePickerEntryMode.input,
-  //   );
-
-  //   if (times != null) {
-  //     setState(() {
-  //       dropTimes = times;
-  //     });
-
-  //     print(dropTimes);
-  //   }
-  // }
-
-  TimeOfDay? deliveryFromTime = TimeOfDay.now();
-  TimeOfDay? deliveryToTime = TimeOfDay.now();
-
-  Future<void> _selectTime(BuildContext context) async {
+  Future<void> _selectFromTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: deliveryToTime ?? TimeOfDay.now(),
+      initialTime: widget.deliveryTimeFroms,
     );
-    if (picked != null && picked != deliveryToTime) {
+    if (picked != null) {
       setState(() {
-        deliveryToTime = picked;
+        widget.deliveryTimeFroms = picked;
       });
     }
   }
-  // void _selectFromTime(BuildContext context) async {
-  //   final TimeOfDay? picked = await showTimePicker(
-  //     context: context,
-  //     initialTime: deliveryFromTime,
-  //   );
-  //   if (picked != null && picked != deliveryFromTime) {
-  //     setState(() {
-  //       deliveryFromTime = picked;
-  //     });
-  //   }
-  // }
-
-  // void _selectToTime(BuildContext context) async {
-  //   final TimeOfDay? picked = await showTimePicker(
-  //     context: context,
-  //     initialTime: deliveryToTime ?? TimeOfDay.now(),
-  //   );
-  //   if (picked != null && picked != deliveryToTime) {
-  //     setState(() {
-  //       deliveryToTime = picked;
-  //     });
-  //   }
-  // }
 
   void _selectToTime(BuildContext context) async {
-    final TimeOfDay? picked =
-        await showTimePicker(context: context, initialTime: deliveryToTime!);
-    if (picked != null && picked != deliveryToTime) {
+    final TimeOfDay? picked = await showTimePicker(
+        context: context, initialTime: widget.deliveryTimeTos);
+    if (picked != null) {
       setState(() {
-        deliveryToTime = picked;
+        widget.deliveryTimeTos = picked;
       });
-      print(deliveryToTime);
+      print("-------------------");
+      print(widget.deliveryTimeTos);
     }
   }
 
@@ -431,6 +381,7 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
     return formattedTime;
   }
 
+  String times = "";
   var deliverydateController = TextEditingController();
   var delivarytypeController = TextEditingController();
   var parcelsizeController = TextEditingController();
@@ -441,25 +392,33 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
   var fromtimeController = TextEditingController();
   var totimeController = TextEditingController();
 
+  DateTime selectedDate = DateTime.now();
   String formatDateTime = "";
 
-  Future<Null> selectDate(BuildContext context) async {
+  Future<void> selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        firstDate: DateTime.now(),
-        lastDate: DateTime(2100));
-    if (picked != null && picked != selectedDate)
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
-        formatDateTime = formatDate(selectedDate, [dd, '-', mm, '-', yyyy]);
+        if (widget.deliverytype == "Next day delivery") {
+          formatDateTime = formatDate(
+              selectedDate.add(Duration(days: 1)), [dd, '-', mm, '-', yyyy]);
+        } else {
+          formatDateTime = formatDate(selectedDate, [dd, '-', mm, '-', yyyy]);
+        }
       });
+    }
   }
 
   File? image;
-  bool ImageHide = false;
+  bool imageHide = false;
   final ImagePicker _picker = ImagePicker();
-  String? imagePath;
+  String imagePath = "";
 
   Future<void> pickImage(ImageSource source) async {
     try {
@@ -470,7 +429,7 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
         setState(() {
           image = File(pickedFile.path);
           imagePath = pickedFile.path;
-          ImageHide = true;
+          imageHide = true;
         });
       }
     } catch (e) {
@@ -484,7 +443,92 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
 
   bool isChecked = false;
 
-  // List<int> serviceList = [];
+  String _getFromTimeDisplayText() {
+    print("sakdksaduasd--------------------weiutwiwgted");
+    print(widget.deliveryTimeFroms);
+    if (widget.deliverytype == "4 Hours Delivery" ||
+        widget.deliverytype == "Express Delivery") {
+      return _formatTime(_addMinutesToTimeOfDay(widget.deliveryTimeFroms, 60));
+    } else if (widget.deliverytype == "Same day delivery" ||
+        widget.deliverytype == "Next day delivery") {
+      return _formatTime(const TimeOfDay(hour: 8, minute: 0));
+    } else {
+      return widget.deliveryTimeFroms == TimeOfDay.now()
+          ? "Select time"
+          : _formatTime(widget.deliveryTimeFroms);
+    }
+  }
+
+  String _getToTimeDisplayText() {
+    print(_formatTime(TimeOfDay.now()));
+    if (widget.deliverytype == "4 Hours Delivery" ||
+        widget.deliverytype == "Express Delivery") {
+      return _formatTime(_addMinutesToTimeOfDay(widget.deliveryTimeTos, 60));
+    } else if (widget.deliverytype == "Same day delivery") {
+      return _formatTime(const TimeOfDay(hour: 20, minute: 0));
+    } else if (widget.deliverytype == "Next day delivery") {
+      return _formatTime(const TimeOfDay(hour: 21, minute: 0));
+    } else {
+      return "Select time";
+    }
+  }
+
+  Future<void> _selectTimeforspcipc(BuildContext context) async {
+    final TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: spselectedTime,
+    );
+
+    if (pickedTime != null && pickedTime != spselectedTime) {
+      setState(() {
+        spselectedTime = pickedTime;
+      });
+    }
+  }
+
+  Future<void> _selectTimeforspT0(BuildContext context) async {
+    final TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: spselectedT0Time,
+    );
+
+    if (pickedTime != null && pickedTime != spselectedT0Time) {
+      setState(() {
+        spselectedT0Time = pickedTime;
+      });
+    }
+  }
+
+  // Text(
+  //                                             widget.deliverytype ==
+  //                                                     "4 Hours Delivery"
+  //                                                 ?  "${_formatTime(_addMinutesToTimeOfDay(widget.deliveryTimeFroms, 60))}"
+  //                                                 : widget.deliverytype ==
+  //                                                         "Express Delivery"
+  //                                                     ? "${_formatTime(_addMinutesToTimeOfDay(widget.deliveryTimeFroms, 60))}"
+  //                                                     :
+  //widget.deliverytype ==
+  //                                                             "Same day delivery"
+  //                                                         ? "${_formatTime(widget.deliveryTimeFroms = TimeOfDay(hour: 8, minute: 0))}"
+  //                                                         // '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime!, 180))}'
+  //                                                         : widget.deliverytype ==
+  //                                                                 "Next day delivery"
+  //                                                             ? _formatTime(widget
+  //                                                                     .deliveryTimeFroms =
+  //                                                                 TimeOfDay(
+  //                                                                     hour: 8,
+  //                                                                     minute:
+  //                                                                         0))
+  //                                                             : widget.deliveryTimeFroms ==
+  //                               `                                      TimeOfDay
+  //                                                                         .now()
+  //                                                                 ? "Select time"
+  //                                                                 : '${_formatTime(widget.deliveryTimeFroms)}',
+  //                                             style: primaryfont.copyWith(
+  //                                                 fontSize: 13.sp,
+  //                                                 fontWeight: FontWeight.w700,
+  //                                                 color: Colors.black),
+  //                                           ),
 
   @override
   Widget build(BuildContext context) {
@@ -608,7 +652,19 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                   ksizedbox10,
                                   GestureDetector(
                                     onTap: () {
-                                      selectDate(context);
+                                      if (widget.deliverytype ==
+                                          "Next day delivery") {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            backgroundColor: Colors.red,
+                                            content: Text(
+                                                "Date cannot be changed for Next day delivery"),
+                                          ),
+                                        );
+                                      } else {
+                                        selectDate(context);
+                                      }
                                     },
                                     child: Container(
                                         padding: EdgeInsets.symmetric(
@@ -631,16 +687,52 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                           children: [
                                             Text(
                                               formatDateTime.isEmpty
-                                                  ? "Select Date"
+                                                  ? (widget.deliverytype ==
+                                                          "Next day delivery"
+                                                      ? formatDate(
+                                                          DateTime.now().add(
+                                                              Duration(
+                                                                  days: 1)),
+                                                          [
+                                                              dd,
+                                                              '-',
+                                                              mm,
+                                                              '-',
+                                                              yyyy
+                                                            ])
+                                                      : formatDate(
+                                                          DateTime.now(), [
+                                                          dd,
+                                                          '-',
+                                                          mm,
+                                                          '-',
+                                                          yyyy
+                                                        ]))
                                                   : formatDateTime,
                                               style: primaryfont.copyWith(
-                                                  color: Color(0xff455A64),
-                                                  fontSize: 14.sp,
-                                                  fontWeight: FontWeight.bold),
+                                                color: Color(0xff455A64),
+                                                fontSize: 14.sp,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
                                             GestureDetector(
                                                 onTap: () {
-                                                  selectDate(context);
+                                                  if (widget.deliverytype ==
+                                                      "Next day delivery") {
+                                                    // Show Snackbar if the delivery type is "Next day delivery"
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      SnackBar(
+                                                        backgroundColor:
+                                                            Colors.red,
+                                                        content: Text(
+                                                            "Date cannot be changed for Next day delivery"),
+                                                      ),
+                                                    );
+                                                  } else {
+                                                    selectDate(context);
+                                                  }
                                                 },
                                                 child: Image.asset(
                                                     "assets/icons/date.png")),
@@ -651,8 +743,8 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                   Text(
                                     'Delivery Timing',
                                     style: primaryfont.copyWith(
-                                        fontSize: 15.sp,
-                                        fontWeight: FontWeight.w500,
+                                        fontSize: 16.sp,
+                                        fontWeight: FontWeight.w600,
                                         color: Color(0xff455A64)),
                                   ),
                                   ksizedbox10,
@@ -660,54 +752,102 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      GestureDetector(
-                                        onTap: () {
-                                          _selectToTime(context);
-                                        },
-                                        child: Container(
-                                          padding: EdgeInsets.only(left: 15),
-                                          height: 50.h,
-                                          width: 130.w,
-                                          decoration: BoxDecoration(
-                                              color: AppColors.kwhite,
-                                              border: Border.all(
-                                                  width: 1,
-                                                  color: Colors.grey
-                                                      .withOpacity(.32)),
-                                              borderRadius:
-                                                  BorderRadius.circular(10)),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(
-                                                widget.deliverytype ==
-                                                        "4 Hours Delivery"
-                                                    ? '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime!, 60))}'
-                                                    : widget.deliverytype ==
-                                                            "Express Delivery"
-                                                        ? '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime!, 60))}'
-                                                        : widget.deliverytype ==
-                                                                "Same day delivery"
-                                                            ? '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime!, 180))}'
-                                                            : widget.deliverytype ==
-                                                                    "Next day delivery"
-                                                                ? '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime!, 0))}'
-                                                                : '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime!, 180))}',
-                                                //  deliveryFromTime !=
-                                                //         null
-                                                //     ? _formatTime(
-                                                //         deliveryFromTime!)
-                                                //     : "Select Time",
-                                                style: primaryfont.copyWith(
-                                                    fontSize: 13.sp,
-                                                    fontWeight: FontWeight.w700,
-                                                    color: Colors.black),
+                                      widget.deliverytype == "Specific Time"
+                                          ? GestureDetector(
+                                              onTap: () {
+                                                _selectTimeforspcipc(context);
+                                                //   _selectFromTime(context);
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    EdgeInsets.only(left: 15),
+                                                height: 50.h,
+                                                width: 130.w,
+                                                decoration: BoxDecoration(
+                                                    color: AppColors.kwhite,
+                                                    border: Border.all(
+                                                        width: 1,
+                                                        color: Colors.grey
+                                                            .withOpacity(.32)),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10)),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Text(
+                                                      spselectedTime ==
+                                                              TimeOfDay.now()
+                                                          ? "Select Time"
+                                                          : _formatTime(
+                                                              spselectedTime),
+                                                      style:
+                                                          primaryfont.copyWith(
+                                                              fontSize: 13.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w700,
+                                                              color:
+                                                                  Colors.black),
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
+                                            )
+                                          : GestureDetector(
+                                              onTap: () {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  const SnackBar(
+                                                    backgroundColor: Colors.red,
+                                                    content: Text(
+                                                        "Date cannot be changed for Delivery timings"),
+                                                  ),
+                                                );
+                                                // if ((widget.deliverytype !=
+                                                //         "Same day delivery" &&
+                                                //     widget.deliverytype !=
+                                                //         "Next day delivery")) {
+                                                //   _selectFromTime(context);
+                                                // }
+                                                //   _selectFromTime(context);
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    EdgeInsets.only(left: 15),
+                                                height: 50.h,
+                                                width: 130.w,
+                                                decoration: BoxDecoration(
+                                                    color: AppColors.kwhite,
+                                                    border: Border.all(
+                                                        width: 1,
+                                                        color: Colors.grey
+                                                            .withOpacity(.32)),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10)),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Text(
+                                                      _getFromTimeDisplayText(),
+                                                      style:
+                                                          primaryfont.copyWith(
+                                                              fontSize: 13.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w700,
+                                                              color:
+                                                                  Colors.black),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
                                       Text(
                                         'To',
                                         style: primaryfont.copyWith(
@@ -715,74 +855,121 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                             fontWeight: FontWeight.w600,
                                             color: Color(0xff000000)),
                                       ),
-                                      GestureDetector(
-                                        onTap: () {
-                                          _selectToTime(context);
-                                        },
-                                        child: Container(
-                                          padding: EdgeInsets.only(left: 15),
-                                          height: 50.h,
-                                          width: 130.w,
-                                          decoration: BoxDecoration(
-                                              color: AppColors.kwhite,
-                                              border: Border.all(
-                                                  width: 1,
-                                                  color: Colors.grey
-                                                      .withOpacity(.32)),
-                                              borderRadius:
-                                                  BorderRadius.circular(10)),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(
-                                                //    '${_formatTime(_addMinutesToTimeOfDay(deliveryToTime, 120))}',
-
-                                                deliveryToTime != null
-                                                    ? widget.deliverytype ==
-                                                            "4 Hours Delivery"
-                                                        ? '${_formatTime(_addMinutesToTimeOfDay(deliveryToTime!, 240))}'
-                                                        : widget.deliverytype ==
-                                                                "Express Delivery"
-                                                            ? '${_formatTime(_addMinutesToTimeOfDay(deliveryToTime!, 120))}'
-                                                            : widget.deliverytype ==
-                                                                    "Same day delivery"
-                                                                ? '${_formatTime(_addMinutesToTimeOfDay(deliveryToTime!, 360))}'
-                                                                : _formatTime(
-                                                                    _addMinutesToTimeOfDay(
-                                                                        deliveryToTime!,
-                                                                        240)) //) //
-                                                    : "Select Time",
-                                                // widget.deliverytype ==
-                                                //         "4 Hours Delivery"
-                                                //     ? '${_formatTime(_addMinutesToTimeOfDay(deliveryToTime, 240))}'
-                                                //     : widget.deliverytype ==
-                                                //             "Express Delivery"
-                                                //         ? '${_formatTime(_addMinutesToTimeOfDay(deliveryToTime, 120))}'
-                                                //         : widget.deliverytype ==
-                                                //                 "Same day delivery"
-                                                //             ? '${_formatTime(_addMinutesToTimeOfDay(deliveryToTime, 360))}'
-                                                //             : "Select Time",
-                                                //deliveryToTime != null
-                                                //     ? '${_formatTime(_addMinutesToTimeOfDay(deliveryToTime!, 60))}'
-                                                //     : "Select Time",
-                                                style: primaryfont.copyWith(
-                                                    fontSize: 13.sp,
-                                                    fontWeight: FontWeight.w700,
-                                                    color: Color(0xff000000)),
+                                      widget.deliverytype == "Specific Time"
+                                          ? GestureDetector(
+                                              onTap: () {
+                                                _selectTimeforspT0(context);
+                                                //   _selectFromTime(context);
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    EdgeInsets.only(left: 15),
+                                                height: 50.h,
+                                                width: 130.w,
+                                                decoration: BoxDecoration(
+                                                    color: AppColors.kwhite,
+                                                    border: Border.all(
+                                                        width: 1,
+                                                        color: Colors.grey
+                                                            .withOpacity(.32)),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10)),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Text(
+                                                      spselectedT0Time ==
+                                                              TimeOfDay.now()
+                                                          ? "Select Time"
+                                                          : _formatTime(
+                                                              spselectedT0Time),
+                                                      style:
+                                                          primaryfont.copyWith(
+                                                              fontSize: 13.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w700,
+                                                              color:
+                                                                  Colors.black),
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
-                                              // IconButton(
-                                              //     onPressed: () {
-                                              //       _selectToTime(context);
-                                              //     },
-                                              //     icon: Image.asset(
-                                              //       "assets/icons/mylisticon.png",
-                                              //       color: Colors.grey,
-                                              //     ))
-                                            ],
-                                          ),
-                                        ),
-                                      ),
+                                            )
+                                          : GestureDetector(
+                                              onTap: () {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  const SnackBar(
+                                                    backgroundColor: Colors.red,
+                                                    content: Text(
+                                                        "Date cannot be changed for Delivery timings"),
+                                                  ),
+                                                );
+                                                // if ((widget.deliverytype !=
+                                                //         "Same day delivery" &&
+                                                //     widget.deliverytype !=
+                                                //         "Next day delivery")) {
+                                                //   _selectToTime(context);
+                                                // }
+                                                //   _selectToTime(context);
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    EdgeInsets.only(left: 15),
+                                                height: 50.h,
+                                                width: 130.w,
+                                                decoration: BoxDecoration(
+                                                    color: AppColors.kwhite,
+                                                    border: Border.all(
+                                                        width: 1,
+                                                        color: Colors.grey
+                                                            .withOpacity(.32)),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10)),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Text(
+                                                      _getToTimeDisplayText(),
+                                                      // widget.deliverytype ==
+                                                      //         "4 Hours Delivery"
+                                                      //     ? "${_formatTime(_addMinutesToTimeOfDay(widget.deliveryTimeTos, 60))}"
+                                                      //     : widget.deliverytype ==
+                                                      //             "Express Delivery"
+                                                      //         ? "${_formatTime(_addMinutesToTimeOfDay(widget.deliveryTimeTos, 60))}"
+                                                      //         : widget.deliverytype ==
+                                                      //                 "Same day delivery"
+                                                      //             ? "${_formatTime(widget.deliveryTimeTos = TimeOfDay(hour: 20, minute: 0))}"
+                                                      //             // '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime!, 180))}'
+                                                      //             : widget.deliverytype ==
+                                                      //                     "Next day delivery"
+                                                      //                 ? "${_formatTime(widget.deliveryTimeTos = TimeOfDay(hour: 21, minute: 0))}"
+                                                      //                 : widget.deliveryTimeTos ==
+                                                      //                         TimeOfDay
+                                                      //                             .now()
+                                                      //                     ? "Select time"
+                                                      //                     : '${_formatTime(widget.deliveryTimeTos)}',
+
+                                                      style:
+                                                          primaryfont.copyWith(
+                                                              fontSize: 13.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w700,
+                                                              color: Color(
+                                                                  0xff000000)),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
                                     ],
                                   ),
                                   ksizedbox10,
@@ -807,10 +994,10 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                                 fontWeight: FontWeight.w600,
                                                 color: Color(0xff455A64)),
                                           ),
-                                          Icon(
-                                            Icons.help_outline,
-                                            size: 20,
-                                          )
+                                          // Icon(
+                                          //   Icons.help_outline,
+                                          //   size: 20,
+                                          // )
                                         ],
                                       ),
                                     ],
@@ -833,7 +1020,7 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                           decoration: BoxDecoration(
                                               color: AppColors.kwhite),
                                           child: Center(
-                                            child: ImageHide
+                                            child: imageHide
                                                 ? Row(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment
@@ -986,7 +1173,27 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                           //   return
                           GestureDetector(
                             onTap: () async {
-                              if (formatDateTime.isNotEmpty) {
+                              print("checkTime");
+                              print(
+                                _getFromTimeDisplayText(),
+                              );
+                              print(_getToTimeDisplayText());
+                              print("checckfdate");
+                              print(
+                                formatDateTime.isEmpty
+                                    ? (widget.deliverytype ==
+                                            "Next day delivery"
+                                        ? formatDate(
+                                            DateTime.now()
+                                                .add(Duration(days: 1)),
+                                            [dd, '-', mm, '-', yyyy])
+                                        : formatDate(DateTime.now(),
+                                            [dd, '-', mm, '-', yyyy]))
+                                    : formatDateTime,
+                              );
+                              if (notesController.text.isNotEmpty &&
+                                  _getFromTimeDisplayText().isNotEmpty &&
+                                  _getToTimeDisplayText().isNotEmpty) {
                                 await parcelController.getKiloMeterApi(
                                   lat1: double.parse(widget.pickuplatitude),
                                   lon1: double.parse(widget.pickuplogitude),
@@ -998,7 +1205,9 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                 );
 
                                 // Wait for the state to update before navigating
+
                                 Get.to(() => BookingDetailsScreen(
+                                      roundtrip: widget.roundTrip,
                                       totalWeights: widget.totalWeight,
                                       additionalservicetotalAmount:
                                           totalAmount.toString(),
@@ -1021,7 +1230,9 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                       parcelKg: widget.kg,
                                       parcelQty: widget.qty,
                                       parcelITEMS: widget.parcelItems,
-                                      unitIdBlockID: widget.unitIdBlockId,
+
+                                      senderunitIdBlockID:
+                                          widget.senderunitIdBlockId,
                                       pickTimeFROM: widget.pickTimeFrom!,
                                       pickTimeTO: widget.pickTimeTo!,
                                       pickTimeListFROM: widget.pickTimeListFrom,
@@ -1037,14 +1248,38 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                       receiverUnitIdBlockID:
                                           homeController.receiverBlockIdUnitIDs,
                                       deliveyDate: formatDateTime.isEmpty
-                                          ? "Select Date"
+                                          ? (widget.deliverytype ==
+                                                  "Next day delivery"
+                                              ? formatDate(
+                                                  DateTime.now()
+                                                      .add(Duration(days: 1)),
+                                                  [dd, '-', mm, '-', yyyy])
+                                              : formatDate(DateTime.now(),
+                                                  [dd, '-', mm, '-', yyyy]))
                                           : formatDateTime,
+
+                                      // deliveyDate: formatDateTime.isEmpty
+                                      //     ? "Select Date"
+                                      //     : formatDateTime,
                                       deliveryTimeFROM:
-                                          '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime!, 60))}',
-                                      deliveryTimeTO: _formatTime(
-                                          _addMinutesToTimeOfDay(
-                                              deliveryToTime!, 120)),
-                                      imagePath: imagePath!,
+                                          widget.deliverytype == "Specific Time"
+                                              ? _formatTime(spselectedTime)
+                                              : _getFromTimeDisplayText(),
+
+                                      //    '${_formatTime(_addMinutesToTimeOfDay(widget.pickupTimeTos, 60))}',
+
+                                      deliveryTimeTO:
+                                          widget.deliverytype == "Specific Time"
+                                              ? _formatTime(spselectedT0Time)
+                                              : _getToTimeDisplayText(),
+                                      //  "${_formatTime(widget.deliveryTimeTos)}",
+
+                                      //  _formatTime(
+                                      //     _addMinutesToTimeOfDay(
+                                      //         widget.pickupTimeTos, 120)),
+
+                                      imagePath:
+                                          imagePath == "" ? " " : imagePath,
                                       notes: notesController.text,
                                       selectedDeliveryTypes:
                                           widget.selectedDeliveryTypes,

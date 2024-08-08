@@ -275,7 +275,7 @@ class _DropLocationState extends State<DropLocation> {
                               child: Text(
                                 "+65",
                                 style: primaryfont.copyWith(
-                                  fontSize: 14,
+                                  fontSize: 15,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -644,7 +644,7 @@ class _DropLocationState extends State<DropLocation> {
                                   child: Text(
                                     "+65",
                                     style: primaryfont.copyWith(
-                                      fontSize: 14,
+                                      fontSize: 15,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),

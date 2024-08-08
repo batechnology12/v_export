@@ -323,7 +323,7 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                               child: Text(
                                 "+65",
                                 style: primaryfont.copyWith(
-                                  fontSize: 14,
+                                  fontSize: 15,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -677,7 +677,7 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                                   child: Text(
                                     "+65",
                                     style: primaryfont.copyWith(
-                                      fontSize: 14,
+                                      fontSize: 15,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),

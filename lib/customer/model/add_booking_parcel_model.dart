@@ -1,6 +1,7 @@
 import 'dart:io';
 
 class AddBookingParcelModel {
+  String senderUnitId;
   String pickupAddress;
   String deliveryTypeid;
   String paymentMode;
@@ -27,7 +28,10 @@ class AddBookingParcelModel {
   String parcelPhoto;
   String totalAmountCost;
 
+
   AddBookingParcelModel({
+
+    required this.senderUnitId,
     required this.totalAmountCost,
     required this.pickupAddress,
     required this.deliveryTypeid,

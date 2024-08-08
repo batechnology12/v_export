@@ -8,10 +8,8 @@ import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
 
 class EaseBuzzTokenApiService {
-  // test
- // test
   String key = "2PBP7IABZ2";
-  String salt = "DAH88E3UWQ"; 
+  String salt = "DAH88E3UWQ";
 
   // String key = "G9Y2FJFQAD";
   // String salt = "MRFPTD851G";
@@ -47,7 +45,8 @@ class EaseBuzzTokenApiService {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
           });
-      print("......................easebuzz api....response${response.statusCode}");
+      print(
+          "......................easebuzz api....response${response.statusCode}");
       print("......................$amount");
       print("......................$email");
       print("......................$phone");
@@ -69,7 +68,6 @@ class EaseBuzzTokenApiService {
       case 400:
       // throw BadRequestException(response.body.toString());
       case 401:
-      
       case 403:
       // throw UnauthorisedException(response.body.toString());
       case 404:

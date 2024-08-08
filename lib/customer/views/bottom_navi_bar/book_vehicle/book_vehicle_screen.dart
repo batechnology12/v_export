@@ -8,6 +8,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:svg_flutter/svg_flutter.dart';
 import 'package:v_export/constant/common_container.dart';
 import 'package:v_export/customer/controller/home_controller.dart';
 import 'package:v_export/customer/controller/parcel_controller.dart';
@@ -34,31 +35,32 @@ class BookVehicleScreen extends StatefulWidget {
   String vehiclepickupsendername;
   String vehicleSenderMobilenumber;
 
-  List<String> vehicleDropAddress;
-  List<String> vehicledroplat;
-  List<String> vehicledroplong;
-  List<String> vehiclearpincode;
-  List<String> vehicledoorname;
-  List<String> vehicleDropunitIdBlockId;
-  List<String> vehicleDropreceivername;
-  List<String> vehicleDropreceiverphone;
+  // List<String> vehicleDropAddress;
+  // List<String> vehicledroplat;
+  // List<String> vehicledroplong;
+  // List<String> vehiclearpincode;
+  // List<String> vehicledoorname;
+  // List<String> vehicleDropunitIdBlockId;
+  // List<String> vehicleDropreceivername;
+  // List<String> vehicleDropreceiverphone;
 
-  BookVehicleScreen(
-      {super.key,
-      required this.vehiclepickupAdress,
-      required this.vehiclepickuplat,
-      required this.vehiclepickuplong,
-      required this.vehiclepickupunitIdBlockID,
-      required this.vehiclepickupsendername,
-      required this.vehicleSenderMobilenumber,
-      required this.vehicleDropAddress,
-      required this.vehicledroplat,
-      required this.vehiclearpincode,
-      required this.vehicledoorname,
-      required this.vehicledroplong,
-      required this.vehicleDropunitIdBlockId,
-      required this.vehicleDropreceivername,
-      required this.vehicleDropreceiverphone});
+  BookVehicleScreen({
+    super.key,
+    required this.vehiclepickupAdress,
+    required this.vehiclepickuplat,
+    required this.vehiclepickuplong,
+    required this.vehiclepickupunitIdBlockID,
+    required this.vehiclepickupsendername,
+    required this.vehicleSenderMobilenumber,
+    // required this.vehicleDropAddress,
+    // required this.vehicledroplat,
+    // required this.vehiclearpincode,
+    // required this.vehicledoorname,
+    // required this.vehicledroplong,
+    // required this.vehicleDropunitIdBlockId,
+    // required this.vehicleDropreceivername,
+    // required this.vehicleDropreceiverphone
+  });
 
   @override
   State<BookVehicleScreen> createState() => _BookVehicleScreenState();
@@ -81,6 +83,16 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
       setState(() {});
     });
   }
+
+  List<String> vehicleList = [
+    "assets/icons/delivery-bike.svg",
+    "assets/icons/car.svg",
+    "assets/icons/van (1).svg",
+    "assets/icons/van (1).svg",
+    "assets/icons/lorry.svg",
+    "assets/icons/lorry.svg",
+    "assets/icons/lorry.svg"
+  ];
 
   bool ischeck = false;
 
@@ -922,13 +934,30 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                             return DropdownMenuItem<
                                                 GetVehicleTypeData>(
                                               value: type,
-                                              child: Text(
-                                                type.name,
-                                                style: TextStyle(
-                                                  color: Color(0xff455A64),
-                                                  fontSize: 14.sp,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
+                                              child: Row(
+                                                children: [
+                                                  Container(
+                                                    width: 35,
+                                                    child: SvgPicture.asset(
+                                                      vehicleList[
+                                                          parcelController
+                                                              .vehicleTypesData
+                                                              .indexOf(type)],
+                                                      height: 30,
+                                                      width: 30,
+                                                    ),
+                                                  ),
+                                                  Ksizedboxw10,
+                                                  Text(
+                                                    type.name,
+                                                    style: TextStyle(
+                                                      color: Color(0xff455A64),
+                                                      fontSize: 14.sp,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             );
                                           }).toList(),
@@ -1257,7 +1286,8 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                           vehicledroplong:
                                               homeController.vehicledropLongs,
                                           vehicleDropunitIdBlockId:
-                                              widget.vehicleDropunitIdBlockId,
+                                              homeController
+                                                  .vehiclereceiverBlockIdUnitIDs,
                                           vehicleDropreceivername:
                                               homeController
                                                   .vehiclereceiverNameList,
