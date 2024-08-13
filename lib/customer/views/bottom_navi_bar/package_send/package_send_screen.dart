@@ -50,7 +50,7 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
   getData() async {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await parcelController.getDeliveryTypes();
-      await parcelController.getAdditionalServices("booking_parcel");
+    await  parcelController.getAdditionalServices("booking_parcel");
       parcelController.update();
       setState(() {});
     });
@@ -808,7 +808,7 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                         fontWeight: FontWeight.w500,
                                       ),
                                       underline: Container(),
-                                      value: deliveryItems,
+                                      value: parcelController.deliveryTypesData.isEmpty ? null : deliveryItems,
                                       items: parcelController.deliveryTypesData
                                           .map((DeliveryTypeData type) {
                                         return DropdownMenuItem<
@@ -1390,6 +1390,12 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                     homeController.pincodes.isNotEmpty &&
                                     homeController.doornames.isNotEmpty) {
                                   Get.to(ScheduleDeliveryScreen(
+                                    parcelKg: homeController
+                                        .calculateSum()
+                                        .toStringAsFixed(2),
+                                    parcelQty: homeController
+                                        .calculateQty()
+                                        .toStringAsFixed(2),
                                     roundTrip: homeController.roundTrip.value,
                                     deliveryTimeTos: dropTime!,
                                     deliveryTimeFroms: pickTime!,

@@ -47,7 +47,7 @@ class _GetCancelledScreenDataState extends State<GetCancelledScreenData> {
           //         height: 200.h,
           //         width: size.width,
           //         decoration: BoxDecoration(
-          //           color: Colors.grey.withOpacity(.09),
+          //           color: Colors.grey.withOpacity(.09),`
           //           borderRadius: BorderRadius.circular(10),
           //         ),
           //         child: Image.asset(
@@ -55,17 +55,21 @@ class _GetCancelledScreenDataState extends State<GetCancelledScreenData> {
 
           GetBuilder<MyListController>(builder: (context) {
             if (myListController.getCancelledOrdersLoading.isTrue) {
-              return Center(child: CircularProgressIndicator());
+              return Center(child: Padding(
+                padding: const EdgeInsets.only(top:230),
+                child: CircularProgressIndicator(),
+              ));
             }
 
             if (myListController.getCancelledOrdersModelData.isEmpty) {
               return Center(
                   child: Container(
+                      margin: EdgeInsets.only(top: 200),
                       alignment: Alignment.center,
                       height: 200.h,
                       width: size.width,
                       decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(.09),
+                        // color: Colors.grey.withOpacity(.09),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Image.asset("assets/images/Group 42002.png")));

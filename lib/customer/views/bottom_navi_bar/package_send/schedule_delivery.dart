@@ -53,9 +53,13 @@ class ScheduleDeliveryScreen extends StatefulWidget {
   TimeOfDay deliveryTimeTos;
   TimeOfDay deliveryTimeFroms;
   String roundTrip;
+  String parcelKg;
+  String parcelQty;
   ScheduleDeliveryScreen(
       {super.key,
       required this.roundTrip,
+      required this.parcelKg,
+      required this.parcelQty,
       required this.deliveryTimeFroms,
       required this.deliveryTimeTos,
       required this.pickupAddress,
@@ -499,36 +503,7 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
     }
   }
 
-  // Text(
-  //                                             widget.deliverytype ==
-  //                                                     "4 Hours Delivery"
-  //                                                 ?  "${_formatTime(_addMinutesToTimeOfDay(widget.deliveryTimeFroms, 60))}"
-  //                                                 : widget.deliverytype ==
-  //                                                         "Express Delivery"
-  //                                                     ? "${_formatTime(_addMinutesToTimeOfDay(widget.deliveryTimeFroms, 60))}"
-  //                                                     :
-  //widget.deliverytype ==
-  //                                                             "Same day delivery"
-  //                                                         ? "${_formatTime(widget.deliveryTimeFroms = TimeOfDay(hour: 8, minute: 0))}"
-  //                                                         // '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime!, 180))}'
-  //                                                         : widget.deliverytype ==
-  //                                                                 "Next day delivery"
-  //                                                             ? _formatTime(widget
-  //                                                                     .deliveryTimeFroms =
-  //                                                                 TimeOfDay(
-  //                                                                     hour: 8,
-  //                                                                     minute:
-  //                                                                         0))
-  //                                                             : widget.deliveryTimeFroms ==
-  //                               `                                      TimeOfDay
-  //                                                                         .now()
-  //                                                                 ? "Select time"
-  //                                                                 : '${_formatTime(widget.deliveryTimeFroms)}',
-  //                                             style: primaryfont.copyWith(
-  //                                                 fontSize: 13.sp,
-  //                                                 fontWeight: FontWeight.w700,
-  //                                                 color: Colors.black),
-  //                                           ),
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -994,10 +969,10 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                                 fontWeight: FontWeight.w600,
                                                 color: Color(0xff455A64)),
                                           ),
-                                          // Icon(
-                                          //   Icons.help_outline,
-                                          //   size: 20,
-                                          // )
+                                          Icon(
+                                            Icons.help_outline,
+                                            size: 20,
+                                          )
                                         ],
                                       ),
                                     ],
@@ -1207,6 +1182,8 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                 // Wait for the state to update before navigating
 
                                 Get.to(() => BookingDetailsScreen(
+                                      parcelofKg: widget.parcelKg,
+                                      parcelofQty: widget.parcelQty,
                                       roundtrip: widget.roundTrip,
                                       totalWeights: widget.totalWeight,
                                       additionalservicetotalAmount:

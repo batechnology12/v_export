@@ -74,13 +74,13 @@ class MyListController extends GetxController {
       getCompletedOrdersLoading(false);
       update();
     } else {
-      Get.rawSnackbar(
-        backgroundColor: Colors.red,
-        messageText: Text(
-          response.data['message'],
-          style: TextStyle(color: Colors.white, fontSize: 15.sp),
-        ),
-      );
+      // Get.rawSnackbar(
+      //   backgroundColor: Colors.red,
+      //   messageText: Text(
+      //     response.data['message'],
+      //     style: TextStyle(color: Colors.white, fontSize: 15.sp),
+      //   ),
+      // );
     }
   }
 
@@ -111,13 +111,13 @@ class MyListController extends GetxController {
     } else {
       getCancelledOrdersLoading(false);
       update();
-      Get.rawSnackbar(
-        backgroundColor: Colors.red,
-        messageText: Text(
-          response.data['message'],
-          style: TextStyle(color: Colors.white, fontSize: 15.sp),
-        ),
-      );
+      // Get.rawSnackbar(
+      //   backgroundColor: Colors.red,
+      //   messageText: Text(
+      //     response.data['message'],
+      //     style: TextStyle(color: Colors.white, fontSize: 15.sp),
+      //   ),
+      // );
     }
   }
 }

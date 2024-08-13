@@ -274,7 +274,7 @@ class _PickupVehicleAddressDetailsState
                         TextFormField(
                           controller: _phoneNumberController,
                           validator: (value) {
-                            if (value!.length < 8 || value.length > 8) {
+                            if (value!.length != 8) {
                               return "Enter 8 digits phone number";
                             }
                             return null;
@@ -287,42 +287,48 @@ class _PickupVehicleAddressDetailsState
                           ],
                           decoration: InputDecoration(
                             prefixIcon: Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 10, right: 5, top: 12),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 13,
+                                  horizontal: 6), // Reduced padding
                               child: Text(
                                 "+65",
                                 style: primaryfont.copyWith(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14, // Reduced font size
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
                             fillColor: AppColors.kwhite,
                             filled: true,
-                            contentPadding:
-                                const EdgeInsets.fromLTRB(10, 4, 4, 4),
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 6), // Reduced padding
                             hintText: "Enter Sender Number",
                             hintStyle: primaryfont.copyWith(
-                                color: Colors.grey,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w100),
+                              color: Colors.grey,
+                              fontSize: 14, // Reduced font size
+                              fontWeight: FontWeight.w100,
+                            ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
                             focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Color(0xff444444),
-                                ),
-                                borderRadius: BorderRadius.circular(10)),
+                              borderSide: BorderSide(
+                                color: Color(0xff444444),
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                             focusedErrorBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Color(0xff444444),
-                                ),
-                                borderRadius: BorderRadius.circular(10)),
+                              borderSide: BorderSide(
+                                color: Color(0xff444444),
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                             errorBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: Color(0xff444444)),
-                                borderRadius: BorderRadius.circular(10)),
+                              borderSide: BorderSide(
+                                color: Color(0xff444444),
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
                         ),
                         ksizedbox20,
@@ -361,11 +367,11 @@ class _PickupVehicleAddressDetailsState
                         ),
                         ksizedbox20,
                         InkWell(
-                            onTap: () {
+                            onTap: () async{
                               if (formKey.currentState!.validate()) {
                                 if (_senderNameController.text.isNotEmpty &&
                                     _phoneNumberController.text.isNotEmpty) {
-                                  homeController.updatepickupLocation(
+                                 await homeController.updatevehiclePickupLocation(
                                       searchController.text,
                                       _markers.first.position.latitude
                                           .toString(),

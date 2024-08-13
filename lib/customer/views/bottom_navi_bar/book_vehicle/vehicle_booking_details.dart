@@ -39,10 +39,12 @@ class DriverBookingDetails extends StatefulWidget {
   List<String> additionServiceId;
   String notes;
   String imagePath;
-
+  String roundTrip;
+  String additionalTotal;
   DriverBookingDetails(
       {super.key,
-      //  required this.getVehicleBookingDetailsDataList,
+      required this.additionalTotal,
+      required this.roundTrip,
       required this.vehiclepickupAdress,
       required this.additionServiceId,
       required this.imagePath,
@@ -102,7 +104,7 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
 
   List<int> selectedId = [];
 
-  // double totalAmountVehicle = 0.0;
+  double additionalServiceAmount = 0.0;
 
   @override
   Widget build(BuildContext context) {
@@ -228,93 +230,29 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
                                               MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(
-                                              'Pickup details:',
+                                              'Pickup Details:',
                                               style: primaryfont.copyWith(
                                                   color: Color(0xff000000),
                                                   fontSize: 16.sp,
                                                   fontWeight: FontWeight.w700),
                                             ),
+                                            Text(
+                                              widget.pickupDate,
+                                              style: primaryfont.copyWith(
+                                                  color: Colors.black,
+                                                  fontSize: 13.sp,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
+                                            Text(
+                                              widget.pickupTime,
+                                              style: primaryfont.copyWith(
+                                                  color: Colors.black,
+                                                  fontSize: 13.sp,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
                                           ],
                                         ),
                                       ),
-                                      ksizedbox5,
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            widget.pickupDate,
-                                            style: primaryfont.copyWith(
-                                                color: Colors.black,
-                                                fontSize: 15.sp,
-                                                fontWeight: FontWeight.w500),
-                                          ),
-                                          Text(
-                                            widget.pickupTime,
-                                            style: primaryfont.copyWith(
-                                                color: Colors.black,
-                                                fontSize: 15.sp,
-                                                fontWeight: FontWeight.w500),
-                                          ),
-                                        ],
-                                      ),
-                                      // Row(
-                                      //   mainAxisAlignment:
-                                      //       MainAxisAlignment.spaceBetween,
-                                      //   children: [
-                                      //     RichText(
-                                      //       text: TextSpan(
-                                      //         text: 'Date: ',
-                                      //         style: primaryfont.copyWith(
-                                      //             color: Colors.black,
-                                      //             fontSize: 16.sp,
-                                      //             fontWeight: FontWeight.bold),
-                                      //         children: <TextSpan>[
-                                      //           TextSpan(
-                                      //             text: widget.pickupDate,
-                                      //             //"sjdjd",
-                                      //             // '${formatDate(DateTime.parse(widget.getVehicleBookingDetailsDataList!.bookingDate.toString()), [
-                                      //             //   dd,
-                                      //             //   '-',
-                                      //             //   mm,
-                                      //             //   '-',
-                                      //             //   yyyy
-                                      //             // ])}',
-                                      //             style: primaryfont.copyWith(
-                                      //                 color: Colors.black,
-                                      //                 fontSize: 15.sp,
-                                      //                 fontWeight:
-                                      //                     FontWeight.w500),
-                                      //           ),
-                                      //         ],
-                                      //       ),
-                                      //     ),
-                                      //     RichText(
-                                      //       text: TextSpan(
-                                      //         text: 'Time: ',
-                                      //         style: primaryfont.copyWith(
-                                      //             color: Colors.black,
-                                      //             fontSize: 16.sp,
-                                      //             fontWeight: FontWeight.bold),
-                                      //         children: <TextSpan>[
-                                      //           TextSpan(
-                                      //             text: widget.pickupTime,
-                                      //             // widget
-                                      //             //     .getVehicleBookingDetailsDataList!
-                                      //             //     .bookingTimeFromVehicle,
-                                      //             //   '${widget.getVehicleBookingDetailsDataList!.bookingProducts.first.pickuptimeFrom}',
-                                      //             // to ${widget.getVehicleBookingDetailsDataList!.bookingProducts.first.pickuptimeTo}',
-                                      //             style: primaryfont.copyWith(
-                                      //                 color: Colors.black,
-                                      //                 fontSize: 15.sp,
-                                      //                 fontWeight:
-                                      //                     FontWeight.w500),
-                                      //           ),
-                                      //         ],
-                                      //       ),
-                                      //     ),
-                                      //   ],
-                                      // ),
                                       ksizedbox5,
                                       Padding(
                                         padding: const EdgeInsets.only(top: 4),
@@ -322,7 +260,8 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
                                           width: size.width,
                                           child: RichText(
                                             text: TextSpan(
-                                              text: 'Address: ',
+                                              text:
+                                                  'Address                 : ',
                                               style: primaryfont.copyWith(
                                                   color: Colors.black,
                                                   fontSize: 16.sp,
@@ -346,7 +285,7 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
                                       ksizedbox5,
                                       RichText(
                                         text: TextSpan(
-                                          text: 'Name : ',
+                                          text: 'Name                     : ',
                                           style: primaryfont.copyWith(
                                               color: Colors.black,
                                               fontSize: 16.sp,
@@ -368,7 +307,7 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
                                       ksizedbox5,
                                       RichText(
                                         text: TextSpan(
-                                          text: 'Phone: ',
+                                          text: 'Phone                    : ',
                                           style: primaryfont.copyWith(
                                               color: Colors.black,
                                               fontSize: 16.sp,
@@ -397,10 +336,10 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
                                               MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(
-                                              'Delivery details:',
+                                              'Delivery Details:',
                                               style: primaryfont.copyWith(
                                                   color: Color(0xff000000),
-                                                  fontSize: 16.sp,
+                                                  fontSize: 15.sp,
                                                   fontWeight: FontWeight.w700),
                                             ),
                                           ],
@@ -411,34 +350,55 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
                                         padding: const EdgeInsets.only(top: 4),
                                         child: Container(
                                           width: size.width,
-                                          child: RichText(
-                                            text: TextSpan(
-                                              text: 'Address: ',
-                                              style: primaryfont.copyWith(
-                                                  color: Colors.black,
-                                                  fontSize: 16.sp,
-                                                  fontWeight: FontWeight.bold),
-                                              children: <TextSpan>[
-                                                TextSpan(
-                                                  text: widget
-                                                      .vehicleDropAddress
-                                                      .join(", "),
-                                                  //  '${widget.getVehicleBookingDetailsDataList!.bookingDeliveryAddresses.first.address}',
-                                                  style: primaryfont.copyWith(
-                                                      color: Colors.black,
-                                                      fontSize: 15.sp,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
+                                          child: ListView.builder(
+                                              physics:
+                                                  NeverScrollableScrollPhysics(),
+                                              shrinkWrap: true,
+                                              itemCount: widget
+                                                  .vehicleDropAddress.length,
+                                              itemBuilder: (context, index) {
+                                                return Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(5),
+                                                  child: RichText(
+                                                    text: TextSpan(
+                                                      text:
+                                                          'Address:- ${index + 1}        : ',
+                                                      style:
+                                                          primaryfont.copyWith(
+                                                              color:
+                                                                  Colors.black,
+                                                              fontSize: 16.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                      children: <TextSpan>[
+                                                        TextSpan(
+                                                          text: widget
+                                                                  .vehicleDropAddress[
+                                                              index],
+                                                          //   '${widget.bookingdatalist.bookingDeliveryAddresses.first.address}',
+                                                          style: primaryfont
+                                                              .copyWith(
+                                                                  color: Colors
+                                                                      .black,
+                                                                  fontSize:
+                                                                      15.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
+                                              }),
                                         ),
                                       ),
                                       ksizedbox5,
                                       RichText(
                                         text: TextSpan(
-                                          text: 'Name: ',
+                                          text: 'Name                   : ',
                                           style: primaryfont.copyWith(
                                               color: Colors.black,
                                               fontSize: 16.sp,
@@ -460,7 +420,7 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
                                       ksizedbox5,
                                       RichText(
                                         text: TextSpan(
-                                          text: 'Phone: ',
+                                          text: 'Phone                  : ',
                                           style: primaryfont.copyWith(
                                               color: Colors.black,
                                               fontSize: 16.sp,
@@ -481,43 +441,110 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
                                         ),
                                       ),
                                       ksizedbox10,
+                                      Divider(),
                                       ksizedbox5,
                                       Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text(
-                                            'Vechicle Mode :',
-                                            style: primaryfont.copyWith(
-                                                fontSize: 15.sp,
-                                                fontWeight: FontWeight.w700),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Vehicle Mode',
+                                                style: primaryfont.copyWith(
+                                                    fontSize: 15.sp,
+                                                    fontWeight:
+                                                        FontWeight.w700),
+                                              ),
+                                              ksizedbox5,
+                                              Text(
+                                                'Round Trip',
+                                                style: primaryfont.copyWith(
+                                                    fontSize: 15.sp,
+                                                    fontWeight:
+                                                        FontWeight.w700),
+                                              ),
+                                            ],
                                           ),
-                                          Text(
-                                            widget.vehicleItemsname,
-                                            // widget
-                                            //     .getVehicleBookingDetailsDataList!
-                                            //     .vehicleType,
-                                            style: primaryfont.copyWith(
-                                                fontSize: 15.sp,
-                                                fontWeight: FontWeight.w500,
-                                                color: Color(0xff455A64)),
-                                          )
+                                          Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  ":",
+                                                  style: primaryfont.copyWith(
+                                                      fontSize: 15.sp,
+                                                      fontWeight:
+                                                          FontWeight.w700),
+                                                ),
+                                                ksizedbox5,
+                                                Text(
+                                                  ":",
+                                                  style: primaryfont.copyWith(
+                                                      fontSize: 15.sp,
+                                                      fontWeight:
+                                                          FontWeight.w700),
+                                                ),
+                                              ]),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Container(
+                                                width: 130,
+                                                child: Text(
+                                                  widget.vehicleItemsname,
+                                                  style: primaryfont.copyWith(
+                                                      fontSize: 15.sp,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color: Color(0xff455A64)),
+                                                ),
+                                              ),
+                                              ksizedbox5,
+                                              Container(
+                                                width: 130,
+                                                child: Text(
+                                                  widget.roundTrip == "1"
+                                                      ? "Yes"
+                                                      : "No",
+                                                  style: primaryfont.copyWith(
+                                                      fontSize: 15.sp,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color: Color(0xff455A64)),
+                                                ),
+                                              )
+                                            ],
+                                          ),
                                         ],
                                       ),
-                                      ksizedbox15,
+                                      ksizedbox10,
                                       Divider(),
                                       Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text(
-                                            'Additional Services :',
-                                            style: primaryfont.copyWith(
-                                                fontSize: 15.sp,
-                                                fontWeight: FontWeight.w700),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Additional Services :',
+                                                style: primaryfont.copyWith(
+                                                    fontSize: 15.sp,
+                                                    fontWeight:
+                                                        FontWeight.w700),
+                                              ),
+                                            ],
                                           ),
-                                          Expanded(
+                                          Container(
+                                            width: 130,
                                             child: ListView.builder(
+                                                physics:
+                                                    NeverScrollableScrollPhysics(),
                                                 shrinkWrap: true,
                                                 itemCount: widget
                                                     .selectedvehicleservice
@@ -545,7 +572,7 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
                                                       : Container(
                                                           width: 200,
                                                           alignment: Alignment
-                                                              .centerRight,
+                                                              .centerLeft,
                                                           child: Text(
                                                             additionalServiceData
                                                                 .name,
@@ -768,7 +795,7 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
                                             ),
                                           ),
                                           Text(
-                                            '+65.0',
+                                            "${widget.additionalTotal}",
                                             style: primaryfont.copyWith(
                                               fontSize: 16.sp,
                                               fontWeight: FontWeight.w700,
@@ -839,9 +866,10 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
                                                 paymentMode: "500",
                                                 bookingAmount: "500",
                                                 gst: "500",
-                                                additionalTotal: "500",
+                                                additionalTotal:
+                                                    widget.additionalTotal,
                                                 totalAmount: "500",
-                                                isRoundTrip: "1",
+                                                isRoundTrip: widget.roundTrip,
                                                 pickupDate: widget.pickupDate,
                                                 pickupTimeFrom:
                                                     widget.pickupTime,

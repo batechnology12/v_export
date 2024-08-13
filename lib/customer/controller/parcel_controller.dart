@@ -24,35 +24,42 @@ import 'package:v_export/customer/services/network/booking_api_service/ongoing_o
 import 'package:dio/dio.dart' as dio;
 import 'package:v_export/customer/services/network/booking_api_service/sender_receiver_api_service.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/booking_details.dart';
-import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/vehicle_booking_details.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/driver_details_screen.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/pickup_address_details.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/payment_screen.dart/make_payment_screen.dart';
 
 class ParcelController extends GetxController {
   OngongOrderApiServices ongongOrderApiServices = OngongOrderApiServices();
-  List ongoingOrdersData = <OngoingOrderData>[].obs;
-
-  //ParcelOngoingOrderData? parcelOngoingOrderData;
+  List<OngoingOrderData> ongoingOrdersData = [];
   RxBool ongoingorderLoading = false.obs;
-  // RxBool parcelongoingorderLoading = false.obs;
-  getonGoingOrders() async {
+
+  Future<void> getonGoingOrders() async {
+    print('getonGoingOrders');
     ongoingorderLoading(true);
-    //  parcelongoingorderLoading(true);
     dio.Response<dynamic> response =
         await ongongOrderApiServices.getOngoingOder();
     ongoingorderLoading(false);
-    //   parcelongoingorderLoading(false);
+
     update();
     if (response.data["status"] == true) {
       OngoingOrdersModel ongoingOrdersModel =
           OngoingOrdersModel.fromJson(response.data);
+      // bool iscontains = false;
+
+      // for (var orderData in ongoingOrdersData) {
+      //   if (ongoingOrdersModel.data.bookingDeliveryAddresses ==
+      //       orderData.bookingDeliveryAddresses) {
+      //     iscontains = true;
+      //   }
+      // }
+
+      // if (!iscontains) {
+      //   ongoingOrdersData.add(ongoingOrdersModel.data);
+      // }
+      // ongoingOrdersData.clear();
+
       ongoingOrdersData.add(ongoingOrdersModel.data);
 
-      //
-      // ParcelOngoingOrdersModel parcelOngoingOrdersModel =
-      //     ParcelOngoingOrdersModel.fromJson(response.data);
-      // parcelOngoingOrderData = parcelOngoingOrdersModel.data;
       update();
     } else {
       Get.rawSnackbar(

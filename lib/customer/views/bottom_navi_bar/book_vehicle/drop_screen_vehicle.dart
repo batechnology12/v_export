@@ -53,7 +53,7 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
     super.initState();
   }
 
-  Future<void> _fetchAddress() async {
+  Future<void> _fetchAddressVehicle() async {
     if (_currentPosition != null) {
       try {
         List<Placemark> placemarks = await placemarkFromCoordinates(
@@ -289,7 +289,7 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                         TextFormField(
                           controller: receiverNumberController,
                           validator: (value) {
-                            if (value!.length < 8 || value.length > 8) {
+                            if (value!.length != 8) {
                               return "Enter 8 digits phone number";
                             }
                             return null;
@@ -302,42 +302,48 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                           ],
                           decoration: InputDecoration(
                             prefixIcon: Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 10, right: 5, top: 12),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 13,
+                                  horizontal: 6), // Reduced padding
                               child: Text(
                                 "+65",
                                 style: primaryfont.copyWith(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14, // Reduced font size
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
                             fillColor: AppColors.kwhite,
                             filled: true,
-                            contentPadding:
-                                const EdgeInsets.fromLTRB(10, 4, 4, 4),
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 6), // Reduced padding
                             hintText: "Enter Sender Number",
                             hintStyle: primaryfont.copyWith(
-                                color: Colors.grey,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w100),
+                              color: Colors.grey,
+                              fontSize: 14, // Reduced font size
+                              fontWeight: FontWeight.w100,
+                            ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
                             focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Color(0xff444444),
-                                ),
-                                borderRadius: BorderRadius.circular(10)),
+                              borderSide: BorderSide(
+                                color: Color(0xff444444),
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                             focusedErrorBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Color(0xff444444),
-                                ),
-                                borderRadius: BorderRadius.circular(10)),
+                              borderSide: BorderSide(
+                                color: Color(0xff444444),
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                             errorBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: Color(0xff444444)),
-                                borderRadius: BorderRadius.circular(10)),
+                              borderSide: BorderSide(
+                                color: Color(0xff444444),
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
                         ),
                         ksizedbox20,
@@ -346,7 +352,7 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                             if (formKey.currentState!.validate()) {
                               if (receiverNameController.text.isNotEmpty &&
                                   receiverNumberController.text.isNotEmpty) {
-                                _fetchAddress();
+                                _fetchAddressVehicle();
                                 homeController.vehicleDroppingLocation(
                                   searchedController.text,
                                   _markers.first.position.latitude.toString(),
@@ -358,29 +364,35 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                                   receiverNumberController.text,
                                   receiverBlockIdUnitIdController.text,
                                 );
+                                print(
+                                    "----------------------------------------------....");
+                                print(
+                                    "Pickup Location: ${homeController.pickupVehicleLocation.value}");
+                                print(
+                                    "Pickup Latitude: ${homeController.pickupVehiclelatitude.value}");
+                                print(
+                                    "Pickup Longitude: ${homeController.pickupVehiclelongitude.value}");
+                                print(
+                                    "Sender Name: ${homeController.pickupVehicleSenderName.value}");
+                                print(
+                                    "Sender Number: ${homeController.pickupVehicleSenderNumber.value}");
+                                print(
+                                    "Block Unit ID: ${homeController.pickupVehicleblockUnitId.value}");
                                 Get.offAll(BookVehicleScreen(
-                                    vehiclepickupAdress: homeController
-                                        .pickupVehicleLocation.value,
-                                    vehiclepickuplat: homeController
-                                        .pickupVehiclelatitude.value,
-                                    vehiclepickuplong: homeController
-                                        .pickupVehiclelongitude.value,
-                                    vehiclepickupunitIdBlockID: homeController
-                                        .pickupVehicleblockUnitId.value,
-                                    vehiclepickupsendername: homeController
-                                        .pickupVehicleSenderName.value,
-                                    vehicleSenderMobilenumber: homeController
-                                        .pickupVehicleSenderNumber.value,
-                                    // vehicleDropAddress: [],
-                                    // vehicledroplat: [],
-                                    // vehiclearpincode: [],
-                                    // vehicledoorname: [],
-                                    // vehicledroplong: [],
-                                    // vehicleDropunitIdBlockId: [],
-                                    // vehicleDropreceivername: [],
-                                    // vehicleDropreceiverphone: []
-                                    ));
-                                //  Get.back();
+                                  vehiclepickupAdress: homeController
+                                      .pickupVehicleLocation.value,
+                                  vehiclepickuplat: homeController
+                                      .pickupVehiclelatitude.value,
+                                  vehiclepickuplong: homeController
+                                      .pickupVehiclelongitude.value,
+                                  vehiclepickupunitIdBlockID: homeController
+                                      .pickupVehicleblockUnitId.value,
+                                  vehiclepickupsendername: homeController
+                                      .pickupVehicleSenderName.value,
+                                  vehicleSenderMobilenumber: homeController
+                                      .pickupVehicleSenderNumber.value,
+                                ));
+                                // Get.back();
                               } else {
                                 Get.snackbar(
                                     "Fill all Fields", "Please try again!",
@@ -740,7 +752,7 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                             onTap: () {
                               if (receiverNameController.text.isNotEmpty &&
                                   receiverNumberController.text.isNotEmpty) {
-                                _fetchAddress();
+                                _fetchAddressVehicle();
                                 homeController.vehicleDroppingLocation(
                                   searchedController.text,
                                   _markers.first.position.latitude.toString(),
@@ -752,28 +764,21 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                                   receiverNumberController.text,
                                   receiverBlockIdUnitIdController.text,
                                 );
-                                Get.to(BookVehicleScreen(
-                                    vehiclepickupAdress: homeController
-                                        .pickupVehicleLocation.value,
-                                    vehiclepickuplat: homeController
-                                        .pickupVehiclelatitude.value,
-                                    vehiclepickuplong: homeController
-                                        .pickupVehiclelongitude.value,
-                                    vehiclepickupunitIdBlockID: homeController
-                                        .pickupVehicleblockUnitId.value,
-                                    vehiclepickupsendername: homeController
-                                        .pickupVehicleSenderName.value,
-                                    vehicleSenderMobilenumber: homeController
-                                        .pickupVehicleSenderNumber.value,
-                                    // vehicleDropAddress: [],
-                                    // vehicledroplat: [],
-                                    // vehiclearpincode: [],
-                                    // vehicledoorname: [],
-                                    // vehicledroplong: [],
-                                    // vehicleDropunitIdBlockId: [],
-                                    // vehicleDropreceivername: [],
-                                    // vehicleDropreceiverphone: []
-                                    ));
+                                // Get.back();
+                                Get.offAll(BookVehicleScreen(
+                                  vehiclepickupAdress: homeController
+                                      .pickupVehicleLocation.value,
+                                  vehiclepickuplat: homeController
+                                      .pickupVehiclelatitude.value,
+                                  vehiclepickuplong: homeController
+                                      .pickupVehiclelongitude.value,
+                                  vehiclepickupunitIdBlockID: homeController
+                                      .pickupVehicleblockUnitId.value,
+                                  vehiclepickupsendername: homeController
+                                      .pickupVehicleSenderName.value,
+                                  vehicleSenderMobilenumber: homeController
+                                      .pickupVehicleSenderNumber.value,
+                                ));
                               } else {
                                 Get.snackbar(
                                     "Fill all Fields", "Please try again!",

@@ -117,8 +117,6 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             color: Colors.white,
-                            // border:
-                            //     Border.all(width: 1, color: Color(0xff444444))
                           ),
                           child: GooglePlaceAutoCompleteTextField(
                             textEditingController: searchController,
@@ -127,12 +125,7 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                             inputDecoration: InputDecoration(
                               contentPadding: EdgeInsets.only(left: 10),
                               isDense: true,
-                              // prefixIcon: Padding(
-                              //   padding: const EdgeInsets.all(8.0),
-                              //   child: Image.asset(
-                              //     "assets/icons/google-maps.png",
-                              //   ),
-                              // ),
+                           
                               hintText: 'Enter Your Address....',
                               hintStyle: primaryfont.copyWith(
                                   fontSize: 14, fontWeight: FontWeight.w500),
@@ -243,69 +236,11 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                               fontWeight: FontWeight.w600),
                         ),
                         ksizedbox5,
-                        // Container(
-                        //   height: 45,
-                        //   width: double.infinity,
-                        //   decoration: BoxDecoration(
-                        //     color: AppColors.kwhite,
-                        //   ),
-                        //   child: TextFormField(
-                        //     controller: _phoneNumberController,
-                        //     keyboardType: TextInputType.number,
-                        //     inputFormatters: [
-                        //       FilteringTextInputFormatter.digitsOnly,
-                        //       LengthLimitingTextInputFormatter(8),
-                        //     ],
-                        //     validator: (value) {
-                        //       if (value!.length < 8) {
-                        //         return "Enter 8 digit phone number";
-                        //       }
-                        //       return null;
-                        //     },
-                        //     decoration: InputDecoration(
-                        //       prefixIcon: Padding(
-                        //         padding: const EdgeInsets.only(
-                        //             left: 10, right: 5, top: 12),
-                        //         child: Text(
-                        //           "+65",
-                        //           style: primaryfont.copyWith(
-                        //             fontSize: 14,
-                        //             fontWeight: FontWeight.w500,
-                        //           ),
-                        //         ),
-                        //       ),
-                        //       hintText: 'Enter Phone Number',
-                        //       hintStyle: primaryfont.copyWith(
-                        //           fontSize: 14, fontWeight: FontWeight.w500),
-                        //       border: OutlineInputBorder(
-                        //         borderRadius: BorderRadius.circular(10),
-                        //         borderSide: BorderSide(
-                        //           width: 1,
-                        //           color: Color(0xff444444),
-                        //         ),
-                        //       ),
-                        //       focusedErrorBorder: OutlineInputBorder(
-                        //         borderRadius: BorderRadius.circular(10),
-                        //         borderSide: BorderSide(
-                        //           width: 1,
-                        //           color: Color(0xff444444),
-                        //         ),
-                        //       ),
-                        //       focusedBorder: OutlineInputBorder(
-                        //         borderRadius: BorderRadius.circular(10),
-                        //         borderSide: BorderSide(
-                        //           width: 1,
-                        //           color: Color(0xff444444),
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
-
+                     
                         TextFormField(
                           controller: _phoneNumberController,
                           validator: (value) {
-                            if (value!.length < 8 || value.length > 8) {
+                            if (value!.length != 8) {
                               return "Enter 8 digits phone number";
                             }
                             return null;
@@ -318,42 +253,48 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                           ],
                           decoration: InputDecoration(
                             prefixIcon: Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 10, right: 5, top: 12),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 13,
+                                  horizontal: 6), // Reduced padding
                               child: Text(
                                 "+65",
                                 style: primaryfont.copyWith(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14, // Reduced font size
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
                             fillColor: AppColors.kwhite,
                             filled: true,
-                            contentPadding:
-                                const EdgeInsets.fromLTRB(10, 4, 4, 4),
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 6), // Reduced padding
                             hintText: "Enter Sender Number",
                             hintStyle: primaryfont.copyWith(
-                                color: Colors.grey,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w100),
+                              color: Colors.grey,
+                              fontSize: 14, // Reduced font size
+                              fontWeight: FontWeight.w100,
+                            ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
                             focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Color(0xff444444),
-                                ),
-                                borderRadius: BorderRadius.circular(10)),
+                              borderSide: BorderSide(
+                                color: Color(0xff444444),
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                             focusedErrorBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Color(0xff444444),
-                                ),
-                                borderRadius: BorderRadius.circular(10)),
+                              borderSide: BorderSide(
+                                color: Color(0xff444444),
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                             errorBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: Color(0xff444444)),
-                                borderRadius: BorderRadius.circular(10)),
+                              borderSide: BorderSide(
+                                color: Color(0xff444444),
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
                         ),
 

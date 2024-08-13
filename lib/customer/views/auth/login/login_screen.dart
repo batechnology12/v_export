@@ -120,6 +120,109 @@ class _LoginScreenState extends State<LoginScreen> {
                                 color: Color(0xff7C86A2), fontSize: 15.sp),
                           ),
                           ksizedbox5,
+                          // TextFormField(
+                          //   keyboardType: TextInputType.phone,
+                          //   inputFormatters: [
+                          //     selectedValues == "+65"
+                          //         ? LengthLimitingTextInputFormatter(8)
+                          //         : LengthLimitingTextInputFormatter(10),
+                          //     FilteringTextInputFormatter.digitsOnly,
+                          //   ],
+                          //   validator: selectedValues == "+65"
+                          //       ? (value) {
+                          //           if (value!.length < 8 || value.length > 8) {
+                          //             return 'Mobile number should be in 8 digits';
+                          //           } else {
+                          //             return null;
+                          //           }
+                          //         }
+                          //       : (value) {
+                          //           if (value!.length < 10 ||
+                          //               value.length > 10) {
+                          //             return 'Mobile number should be in 10 digits';
+                          //           } else {
+                          //             return null;
+                          //           }
+                          //         },
+                          //   controller: emailOrmobileController,
+                          //   decoration: InputDecoration(
+                          //     prefixIcon: Padding(
+                          //         padding:
+                          //             const EdgeInsets.only(left: 5, top: 13),
+                          //         child: PopupMenuButton(
+                          //           child: Container(
+                          //               height: 30,
+                          //               width: 50,
+                          //               child: Text(
+                          //                 selectedValues,
+                          //                 style: primaryfont.copyWith(
+                          //                   fontSize: 14, // Reduced font size
+                          //                   fontWeight: FontWeight.bold,
+                          //                 ),
+                          //               )),
+                          //           onSelected: (value) {
+                          //             setState(() {
+                          //               selectedIndex = value;
+                          //               selectedValues =
+                          //                   value == 0 ? "+65" : "+91";
+                          //             });
+                          //           },
+                          //           itemBuilder: (context) => [
+                          //             PopupMenuItem<int>(
+                          //               value: 0,
+                          //               child: Container(
+                          //                 height: 30,
+                          //                 width: 50,
+                          //                 child: Text(
+                          //                   "+65",
+                          //                   style: primaryfont.copyWith(
+                          //                     fontSize: 14, // Reduced font size
+                          //                     fontWeight: FontWeight.bold,
+                          //                   ),
+                          //                 ),
+                          //               ),
+                          //             ),
+                          //             PopupMenuItem<int>(
+                          //               value: 1,
+                          //               child: Container(
+                          //                 height: 30,
+                          //                 width: 50,
+                          //                 child: Text(
+                          //                   "+91",
+                          //                   style: primaryfont.copyWith(
+                          //                     fontSize: 14, // Reduced font size
+                          //                     fontWeight: FontWeight.bold,
+                          //                   ),
+                          //                 ),
+                          //               ),
+                          //             ),
+                          //           ],
+                          //         )),
+                          //     contentPadding: EdgeInsets.only(left: 5, top: 13),
+                          //     fillColor: Color(0xffF8F8F8),
+                          //     filled: true,
+                          //     border: OutlineInputBorder(
+                          //       borderSide: BorderSide.none,
+                          //       borderRadius: BorderRadius.circular(25.0),
+                          //     ),
+                          //     enabledBorder: OutlineInputBorder(
+                          //       borderSide: BorderSide.none,
+                          //       borderRadius: BorderRadius.circular(25.0),
+                          //     ),
+                          //     errorBorder: OutlineInputBorder(
+                          //       borderSide: BorderSide.none,
+                          //       borderRadius: BorderRadius.circular(25),
+                          //     ),
+                          //     focusedBorder: OutlineInputBorder(
+                          //       borderSide: BorderSide.none,
+                          //       borderRadius: BorderRadius.circular(25.0),
+                          //     ),
+                          //     focusedErrorBorder: OutlineInputBorder(
+                          //       borderSide: BorderSide.none,
+                          //       borderRadius: BorderRadius.circular(25.0),
+                          //     ),
+                          //   ),
+                          // ),
                           TextFormField(
                             keyboardType: TextInputType.phone,
                             inputFormatters: [
@@ -146,14 +249,23 @@ class _LoginScreenState extends State<LoginScreen> {
                                   },
                             controller: emailOrmobileController,
                             decoration: InputDecoration(
-                              prefixIcon: Padding(
-                                  padding:
-                                      const EdgeInsets.only(left: 10, top: 13),
-                                  child: PopupMenuButton(
+                              prefixIcon: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  PopupMenuButton<int>(
+                                    padding: EdgeInsets.zero,
                                     child: Container(
-                                        height: 30,
-                                        width: 50,
-                                        child: Text(selectedValues)),
+                                      height: 30,
+                                      width: 50,
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        selectedValues,
+                                        style: primaryfont.copyWith(
+                                          fontSize: 14, // Adjust font size
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
                                     onSelected: (value) {
                                       setState(() {
                                         selectedIndex = value;
@@ -167,7 +279,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                         child: Container(
                                           height: 30,
                                           width: 50,
-                                          child: Text("+65"),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            "+65",
+                                            style: primaryfont.copyWith(
+                                              fontSize: 14, // Adjust font size
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
                                         ),
                                       ),
                                       PopupMenuItem<int>(
@@ -175,13 +294,22 @@ class _LoginScreenState extends State<LoginScreen> {
                                         child: Container(
                                           height: 30,
                                           width: 50,
-                                          child: Text("+91"),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            "+91",
+                                            style: primaryfont.copyWith(
+                                              fontSize: 14, // Adjust font size
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ],
-                                  )),
-                              contentPadding:
-                                  EdgeInsets.only(bottom: 5, left: 20),
+                                  ),
+                                  SizedBox(width: 5),
+                                ],
+                              ),
+                              contentPadding: EdgeInsets.only(left: 5, top: 13),
                               fillColor: Color(0xffF8F8F8),
                               filled: true,
                               border: OutlineInputBorder(
@@ -206,6 +334,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
+
                           ksizedbox20,
                           Text(
                             'Password',

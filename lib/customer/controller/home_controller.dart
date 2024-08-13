@@ -30,6 +30,7 @@ class HomeController extends GetxController {
     pickupblockUnitId.value = pickupunitId;
   }
 
+
   //// dropping location
   var droppingLocations = <String>[].obs;
   var droppingLats = <String>[].obs;
@@ -84,13 +85,14 @@ class HomeController extends GetxController {
   var pickupVehicleSenderNumber = ''.obs;
   var pickupVehicleblockUnitId = ''.obs;
 
-  updatevehiclePickupLocation(
+ Future<void> updatevehiclePickupLocation(
       String pickuplocationvehicle,
       String pickuplatvehicle,
       String pickuplongvehicle,
       String senderNamevehicle,
       String senderNumbervehicle,
-      String pickupunitIdvehicle) {
+      String pickupunitIdvehicle) async{
+        await Future.delayed(Duration(milliseconds: 100)); 
     pickupVehicleLocation.value = pickuplocationvehicle;
     pickupVehiclelatitude.value = pickuplatvehicle;
     pickupVehiclelongitude.value = pickuplongvehicle;
@@ -131,8 +133,6 @@ class HomeController extends GetxController {
       vehiclereceiverNumberList[indexVehicle] = reciverNumberVehicle;
       vehiclereceiverBlockIdUnitIDs[indexVehicle] = reciverBlockIdUnitIDVehicle;
     } else {
-      vehiclereceiverNumberList.clear();
-      vehiclereceiverNumberList.clear();
       vehicledroppingLocations.add(locationVehicle);
       vehicledroppingLats.add(latVehicle);
       vehicledropLongs.add(longVehicle);
@@ -145,6 +145,7 @@ class HomeController extends GetxController {
   }
 
   ////////////////////////
+
   var isRoundTripVisible = true.obs;
 
   void addEntry() {
@@ -303,8 +304,11 @@ class HomeController extends GetxController {
   var vehicalEntries = <int>[0].obs;
   var vehicalCheck = false.obs;
 
+ RxString roundChecked = "0".obs;
+
   roundCheck(bool value) {
     vehicalCheck.value = value;
+    roundChecked.value = value ? "1" : "0";
   }
 
   addVehicalEntry() {

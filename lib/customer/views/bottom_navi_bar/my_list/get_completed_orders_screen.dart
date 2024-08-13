@@ -45,17 +45,22 @@ class _GetCompletedScreenDataState extends State<GetCompletedScreenData> {
         children: [
           GetBuilder<MyListController>(builder: (context) {
             if (myListController.getCompletedOrdersLoading.isTrue) {
-              return Center(child: CircularProgressIndicator());
+              return Center(
+                  child: Padding(
+                padding: const EdgeInsets.only(top: 230),
+                child: CircularProgressIndicator(),
+              ));
             }
 
             if (myListController.getCompletedOrdersModelData.isEmpty) {
               return Center(
                 child: Container(
+                  margin: EdgeInsets.only(top: 200),
                   alignment: Alignment.center,
                   height: 200.h,
                   width: size.width,
                   decoration: BoxDecoration(
-                    color: Colors.grey.withOpacity(.09),
+                    //  color: Colors.grey.withOpacity(.09),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Image.asset("assets/images/Group 42002.png"),
@@ -68,12 +73,15 @@ class _GetCompletedScreenDataState extends State<GetCompletedScreenData> {
               itemCount: myListController.getCompletedOrdersModelData.length,
               physics: BouncingScrollPhysics(),
               itemBuilder: (context, index) {
-                GetCompletedOrdersModelData order = myListController.getCompletedOrdersModelData[index];
+                GetCompletedOrdersModelData order =
+                    myListController.getCompletedOrdersModelData[index];
                 return Padding(
                   padding: const EdgeInsets.only(left: 10, right: 10),
                   child: GestureDetector(
                     onTap: () {
-                      Get.to(CompleteDetails(getCompletedlist: order,));
+                      Get.to(CompleteDetails(
+                        getCompletedlist: order,
+                      ));
                     },
                     child: Container(
                       padding: EdgeInsets.all(5),
@@ -95,7 +103,9 @@ class _GetCompletedScreenDataState extends State<GetCompletedScreenData> {
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  Get.to(CompleteDetails(getCompletedlist: order,));
+                                  Get.to(CompleteDetails(
+                                    getCompletedlist: order,
+                                  ));
                                 },
                                 child: Container(
                                   height: 35,

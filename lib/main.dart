@@ -25,13 +25,16 @@ import 'customer/controller/easebuzz_controller.dart';
 import 'package:device_preview/device_preview.dart';
 
 void main() {
-  runApp(const MyApp());
-  // runApp(
-  //   DevicePreview(
-  //     enabled: !kReleaseMode,
-  //     builder: (context) => MyApp(),
-  //   ),
-  // );
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+    //  runApp(const MyApp());
+  runApp(
+    DevicePreview(
+      enabled: !kReleaseMode,
+      builder: (context) => MyApp(),
+    ),
+  );
 
   Get.put(AuthController());
   Get.put(HomeController());
@@ -41,6 +44,8 @@ void main() {
   Get.put(ParcelController());
   Get.put(MyListController());
   Get.put(CarouselController());
+
+  
 }
 
 class MyApp extends StatelessWidget {

@@ -35,6 +35,7 @@ class BookingDetailsScreen extends StatefulWidget {
   List<String> parcelHeight;
   List<String> parcelKg;
   List<String> parcelQty;
+
   String parcelITEMS;
   String senderunitIdBlockID;
   String? pickTimeFROM;
@@ -57,9 +58,12 @@ class BookingDetailsScreen extends StatefulWidget {
   String totalWeights;
   List<DeliveryTypeData> selectedDeliveryTypes = [];
   String roundtrip;
-
+  String parcelofKg;
+  String parcelofQty;
   BookingDetailsScreen(
       {super.key,
+      required this.parcelofKg,
+      required this.parcelofQty,
       required this.roundtrip,
       required this.additionalservicetotalAmount,
       required this.pickupADDRESS,
@@ -175,7 +179,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
           // totalParcelAmount = totalParcelAmount
           totalParcelAmount += parcelAmount;
           // double feesamounts = parcelAmount + distanceCost;
-          amount += parcelAmount + distanceCost;
+          amount += totalParcelAmount + distanceCost;
         }
       }
     }
@@ -194,6 +198,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
     setState(() {});
     print("amount =${amount.toStringAsFixed(2)}");
     print("feesamount---");
+    print("----------kg");
   }
 
   final formKey = GlobalKey<FormState>();
@@ -420,80 +425,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                           ),
                                         ],
                                       ),
-                                      // ksizedbox5,
-                                      // Row(
-                                      //   mainAxisAlignment:
-                                      //       MainAxisAlignment.spaceBetween,
-                                      //   children: [
-                                      //     Text(
-                                      //       widget.bookingDATE,
-                                      //       style: primaryfont.copyWith(
-                                      //           color: Colors.black,
-                                      //           fontSize: 15.sp,
-                                      //           fontWeight: FontWeight.w500),
-                                      //     ),
-                                      //     Text(
-                                      //       "${widget.pickTimeFROM} to ${widget.pickTimeTO}",
-                                      //       style: primaryfont.copyWith(
-                                      //           color: Colors.black,
-                                      //           fontSize: 15.sp,
-                                      //           fontWeight: FontWeight.w500),
-                                      //     ),
-                                      //   ],
-                                      // ),
-                                      // Row(
-                                      //   mainAxisAlignment:
-                                      //       MainAxisAlignment.spaceBetween,
-                                      //   children: [
-                                      //     RichText(
-                                      //       text: TextSpan(
-                                      //         text: 'Date: ',
-                                      //         style: primaryfont.copyWith(
-                                      //             color: Colors.black,
-                                      //             fontSize: 16.sp,
-                                      //             fontWeight: FontWeight.bold),
-                                      //         children: <TextSpan>[
-                                      //           TextSpan(
-                                      //             text: widget.bookingDATE,
-                                      //             // '${formatDate(DateTime.parse(widget.bookingdatalist.bookingDate.toString()), [
-                                      //             //   dd,
-                                      //             //   '-',
-                                      //             //   mm,
-                                      //             //   '-',
-                                      //             //   yyyy
-                                      //             // ])}',
-                                      //             style: primaryfont.copyWith(
-                                      //                 color: Colors.black,
-                                      //                 fontSize: 15.sp,
-                                      //                 fontWeight:
-                                      //                     FontWeight.w500),
-                                      //           ),
-                                      //         ],
-                                      //       ),
-                                      //     ),
-                                      //     RichText(
-                                      //       text: TextSpan(
-                                      //         text: 'Time: ',
-                                      //         style: primaryfont.copyWith(
-                                      //             color: Colors.black,
-                                      //             fontSize: 16.sp,
-                                      //             fontWeight: FontWeight.bold),
-                                      //         children: <TextSpan>[
-                                      //           TextSpan(
-                                      //             text:
-                                      //                 "${widget.pickTimeFROM} to ${widget.pickTimeTO}",
-                                      //             // '${widget.bookingdatalist.bookingProducts.first.pickuptimeFrom} to ${widget.bookingdatalist.bookingProducts.first.pickuptimeTo}',
-                                      //             style: primaryfont.copyWith(
-                                      //                 color: Colors.black,
-                                      //                 fontSize: 15.sp,
-                                      //                 fontWeight:
-                                      //                     FontWeight.w500),
-                                      //           ),
-                                      //         ],
-                                      //       ),
-                                      //     ),
-                                      //   ],
-                                      // ),
+
                                       ksizedbox5,
                                       Padding(
                                         padding: const EdgeInsets.only(top: 4),
@@ -589,81 +521,10 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                                 fontSize: 12.sp,
                                                 fontWeight: FontWeight.w500),
                                           ),
-                                        ],
+                                        ], 
                                       ),
-                                      ksizedbox5,
-                                      // Row(
-                                      //   mainAxisAlignment:
-                                      //       MainAxisAlignment.spaceBetween,
-                                      //   children: [
-                                      //     RichText(
-                                      //       text: TextSpan(
-                                      //         text: 'Date: ',
-                                      //         style: primaryfont.copyWith(
-                                      //             color: Colors.black,
-                                      //             fontSize: 16.sp,
-                                      //             fontWeight: FontWeight.bold),
-                                      //         children: <TextSpan>[
-                                      //           TextSpan(
-                                      //             text: widget.deliveyDate,
-                                      //             // widget
-                                      //             //     .bookingdatalist
-                                      //             //     .bookingProducts
-                                      //             //     .first
-                                      //             //     .deliveryDate
-                                      //             //     .toString(),
-                                      //             style: primaryfont.copyWith(
-                                      //                 color: Colors.black,
-                                      //                 fontSize: 15.sp,
-                                      //                 fontWeight:
-                                      //                     FontWeight.w500),
-                                      //           ),
-                                      //         ],
-                                      //       ),
-                                      //     ),
-                                      //     RichText(
-                                      //       text: TextSpan(
-                                      //         text: 'Time: ',
-                                      //         style: primaryfont.copyWith(
-                                      //             color: Colors.black,
-                                      //             fontSize: 16.sp,
-                                      //             fontWeight: FontWeight.bold),
-                                      //         children: <TextSpan>[
-                                      //           TextSpan(
-                                      //             text:
-                                      //                 "${widget.deliveryTimeFROM} to ${widget.deliveryTimeTO}",
-                                      //             //   "${widget.bookingdatalist.bookingProducts.first.deliverytimeFrom} to ${widget.bookingdatalist.bookingProducts.first.deliverytimeTo}",
-                                      //             style: primaryfont.copyWith(
-                                      //                 color: Colors.black,
-                                      //                 fontSize: 15.sp,
-                                      //                 fontWeight:
-                                      //                     FontWeight.w500),
-                                      //           ),
-                                      //         ],
-                                      //       ),
-                                      //     ),
-                                      //   ],
-                                      // ),
-                                      // Row(
-                                      //   mainAxisAlignment:
-                                      //       MainAxisAlignment.spaceBetween,
-                                      //   children: [
-                                      //     Text(
-                                      //       widget.deliveyDate,
-                                      //       style: primaryfont.copyWith(
-                                      //           color: Colors.black,
-                                      //           fontSize: 15.sp,
-                                      //           fontWeight: FontWeight.w500),
-                                      //     ),
-                                      //     Text(
-                                      //       "${widget.deliveryTimeFROM} to ${widget.deliveryTimeTO}",
-                                      //       style: primaryfont.copyWith(
-                                      //           color: Colors.black,
-                                      //           fontSize: 15.sp,
-                                      //           fontWeight: FontWeight.w500),
-                                      //     ),
-                                      //   ],
-                                      // ),
+                           
+                                      
                                       ksizedbox5,
                                       Padding(
                                         padding: const EdgeInsets.only(top: 4),
@@ -903,10 +764,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                               ),
                                               ksizedbox5,
                                               Text(
-                                                "${widget.parcelKg} kg",
-                                                //   textAlign: TextAlign.left,
-                                                //  "${widget.parcelKg.map((e) => e.replaceAll(RegExp(r'\[|\]'), '').trim()).join(' ')} kg",
-                                                // "${widget.bookingdatalist.bookingProducts.first.kg} Kg",
+                                                "${widget.parcelofKg} kg",
                                                 style: primaryfont.copyWith(
                                                     fontSize: 15.sp,
                                                     fontWeight: FontWeight.w500,
@@ -914,7 +772,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                               ),
                                               ksizedbox5,
                                               Text(
-                                                "${widget.parcelQty.first} Qty",
+                                                "${widget.parcelofQty} Qty",
                                                 textAlign: TextAlign.left,
                                                 style: primaryfont.copyWith(
                                                     fontSize: 15.sp,
@@ -1127,6 +985,56 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                       ksizedbox5,
                                       Divider(),
                                       ksizedbox10,
+                                      // Row(
+                                      //   mainAxisAlignment:
+                                      //       MainAxisAlignment.spaceBetween,
+                                      //   children: [
+                                      //     Text(
+                                      //       "Delivery Fees",
+                                      //       style: primaryfont.copyWith(
+                                      //           fontSize: 15.sp,
+                                      //           fontWeight: FontWeight.w600,
+                                      //           color: Color(0xff455A64)),
+                                      //     ),
+                                      //     Text(
+                                      //       '\$${distanceCost.toStringAsFixed(2)}',
+                                      //       style: primaryfont.copyWith(
+                                      //           fontSize: 14,
+                                      //           fontWeight: FontWeight.w600,
+                                      //           color: Color(0xff455A64)),
+                                      //     )
+                                      //   ],
+                                      // ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            "Total Parcel Amount",
+                                            // widget
+                                            //     .bookingdatalist
+                                            //     .additionalServices[index]
+                                            //     .name,
+                                            style: primaryfont.copyWith(
+                                                fontSize: 14.sp,
+                                                fontWeight: FontWeight.w600,
+                                                color: Color(0xff455A64)),
+                                          ),
+                                          //    Text("\$"),
+                                          Text(
+                                            // additionalparcelServiceData1
+                                            //     .amount,
+
+                                            '\$${totalParcelAmount.toStringAsFixed(2)}',
+
+                                            style: primaryfont.copyWith(
+                                                fontSize: 14.sp,
+                                                fontWeight: FontWeight.w600,
+                                                color: Color(0xff455A64)),
+                                          )
+                                        ],
+                                      ),
+                                      ksizedbox5,
                                       Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
@@ -1142,36 +1050,6 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                             '\$${distanceCost.toStringAsFixed(2)}',
                                             style: primaryfont.copyWith(
                                                 fontSize: 14,
-                                                fontWeight: FontWeight.w600,
-                                                color: Color(0xff455A64)),
-                                          )
-                                        ],
-                                      ),
-                                      ksizedbox5,
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            "Base Fair",
-                                            // widget
-                                            //     .bookingdatalist
-                                            //     .additionalServices[index]
-                                            //     .name,
-                                            style: primaryfont.copyWith(
-                                                fontSize: 14.sp,
-                                                fontWeight: FontWeight.w600,
-                                                color: Color(0xff455A64)),
-                                          ),
-                                          //    Text("\$"),
-                                          Text(
-                                            // additionalparcelServiceData1
-                                            //     .amount,
-
-                                            '\$90763.67',
-
-                                            style: primaryfont.copyWith(
-                                                fontSize: 14.sp,
                                                 fontWeight: FontWeight.w600,
                                                 color: Color(0xff455A64)),
                                           )

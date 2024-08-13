@@ -43,7 +43,7 @@ class _DropLocationState extends State<DropLocation> {
       TextEditingController();
   final TextEditingController receiverBlockIdUnitIdController =
       TextEditingController();
-  final TextEditingController searchedController = TextEditingController();
+  final TextEditingController _searchedController = TextEditingController();
 
   bool _isManualSelection = false;
 
@@ -59,12 +59,12 @@ class _DropLocationState extends State<DropLocation> {
             _currentPosition!.latitude!, _currentPosition!.longitude!);
         Placemark place = placemarks[0];
         setState(() {
-          searchedController.text =
+          _searchedController.text =
               "${place.name},${place.subLocality},${place.locality},${place.postalCode}" ??
                   '';
           //    _blockUnitController.text = place.name ?? place.name!;
           print("=============address");
-          print(searchedController.text =
+          print(_searchedController.text =
               "${place.name},${place.subLocality},${place.locality},${place.postalCode}" ??
                   '');
         });
@@ -122,7 +122,7 @@ class _DropLocationState extends State<DropLocation> {
                             color: Colors.white,
                           ),
                           child: GooglePlaceAutoCompleteTextField(
-                            textEditingController: searchedController,
+                            textEditingController: _searchedController,
                             googleAPIKey:
                                 "AIzaSyAyygarjlqp_t2SPo7vS1oXDq1Yxs-LLNg",
                             inputDecoration: InputDecoration(
@@ -167,9 +167,9 @@ class _DropLocationState extends State<DropLocation> {
                             },
                             itemClick: (Prediction prediction) {
                               setState(() {
-                                searchedController.text =
+                                _searchedController.text =
                                     prediction.description!;
-                                searchedController.selection =
+                                _searchedController.selection =
                                     TextSelection.fromPosition(TextPosition(
                                         offset:
                                             prediction.description!.length));
@@ -257,7 +257,7 @@ class _DropLocationState extends State<DropLocation> {
                         TextFormField(
                           controller: receiverNumberController,
                           validator: (value) {
-                            if (value!.length < 8 || value.length > 8) {
+                            if (value!.length != 8) {
                               return "Enter 8 digits phone number";
                             }
                             return null;
@@ -270,42 +270,48 @@ class _DropLocationState extends State<DropLocation> {
                           ],
                           decoration: InputDecoration(
                             prefixIcon: Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 10, right: 5, top: 12),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 13,
+                                  horizontal: 6), // Reduced padding
                               child: Text(
                                 "+65",
                                 style: primaryfont.copyWith(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14, // Reduced font size
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
                             fillColor: AppColors.kwhite,
                             filled: true,
-                            contentPadding:
-                                const EdgeInsets.fromLTRB(10, 4, 4, 4),
-                            hintText: "Enter Receiver Number",
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 6), // Reduced padding
+                            hintText: "Enter Sender Number",
                             hintStyle: primaryfont.copyWith(
-                                color: Colors.grey,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w100),
+                              color: Colors.grey,
+                              fontSize: 14, // Reduced font size
+                              fontWeight: FontWeight.w100,
+                            ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
                             focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Color(0xff444444),
-                                ),
-                                borderRadius: BorderRadius.circular(10)),
+                              borderSide: BorderSide(
+                                color: Color(0xff444444),
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                             focusedErrorBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Color(0xff444444),
-                                ),
-                                borderRadius: BorderRadius.circular(10)),
+                              borderSide: BorderSide(
+                                color: Color(0xff444444),
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                             errorBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: Color(0xff444444)),
-                                borderRadius: BorderRadius.circular(10)),
+                              borderSide: BorderSide(
+                                color: Color(0xff444444),
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
                         ),
                         ksizedbox20,
@@ -316,7 +322,7 @@ class _DropLocationState extends State<DropLocation> {
                                   receiverNumberController.text.isNotEmpty) {
                                 _fetchAddress();
                                 homeController.updateDroppingLocation(
-                                  searchedController.text,
+                                  _searchedController.text,
                                   _markers.first.position.latitude.toString(),
                                   _markers.first.position.longitude.toString(),
                                   areapincode,
@@ -326,7 +332,7 @@ class _DropLocationState extends State<DropLocation> {
                                   receiverNumberController.text,
                                   receiverBlockIdUnitIdController.text,
                                 );
-                                //  Get.back();
+                                // Get.back();
                                 Get.offAll(PackageSendScreen(
                                     pickupAdress:
                                         homeController.pickupLocation.value,
@@ -459,7 +465,7 @@ class _DropLocationState extends State<DropLocation> {
                                 color: Colors.white,
                               ),
                               child: GooglePlaceAutoCompleteTextField(
-                                textEditingController: searchedController,
+                                textEditingController: _searchedController,
                                 googleAPIKey:
                                     "AIzaSyAyygarjlqp_t2SPo7vS1oXDq1Yxs-LLNg",
                                 inputDecoration: InputDecoration(
@@ -515,9 +521,9 @@ class _DropLocationState extends State<DropLocation> {
                                 },
                                 itemClick: (Prediction prediction) {
                                   setState(() {
-                                    searchedController.text =
+                                    _searchedController.text =
                                         prediction.description!;
-                                    searchedController.selection =
+                                    _searchedController.selection =
                                         TextSelection.fromPosition(TextPosition(
                                             offset: prediction
                                                 .description!.length));
@@ -686,7 +692,7 @@ class _DropLocationState extends State<DropLocation> {
                                   receiverNumberController.text.isNotEmpty) {
                                 _fetchAddress();
                                 homeController.updateDroppingLocation(
-                                  searchedController.text,
+                                  _searchedController.text,
                                   _markers.first.position.latitude.toString(),
                                   _markers.first.position.longitude.toString(),
                                   areapincode,
@@ -696,7 +702,7 @@ class _DropLocationState extends State<DropLocation> {
                                   receiverNumberController.text,
                                   receiverBlockIdUnitIdController.text,
                                 );
-                                //  Get.back();
+                                // Get.back();
                                 Get.offAll(PackageSendScreen(
                                     pickupAdress:
                                         homeController.pickupLocation.value,

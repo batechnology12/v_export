@@ -44,7 +44,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   var emailController = TextEditingController();
 
   bool ischecked = false;
-  
+
   bool ishiding = true;
   bool confirmhide = true;
 
@@ -708,7 +708,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         color: Color(0xff7C86A2)),
                                   ),
                                   ksizedbox5,
-                                    TextFormField(
+                                  TextFormField(
                                     keyboardType: TextInputType.phone,
                                     inputFormatters: [
                                       selectedValuess == "+65"

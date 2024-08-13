@@ -38,6 +38,7 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
   late GoogleMapController _controller;
   final Set<Marker> _markers = {};
   late LocationData _currentPosition;
+  
   Location location = Location();
 
   static const CameraPosition _initialPosition = CameraPosition(

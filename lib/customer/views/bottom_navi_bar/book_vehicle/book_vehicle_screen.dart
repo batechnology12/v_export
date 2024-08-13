@@ -18,31 +18,21 @@ import 'package:v_export/customer/model/vehicle_type_model.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/book_vehicle/drop_screen_vehicle.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/book_vehicle/drop_screen_vehicle.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/book_vehicle/pickup_screen_vehicle.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/book_vehicle/vehicle_booking_details.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/bottomn_navi_bar.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/pickup_address_details.dart';
-import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/vehicle_booking_details.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../constant/app_colors.dart';
 import '../../../../constant/app_font.dart';
-import 'vehicle_booking_container.dart';
 
 class BookVehicleScreen extends StatefulWidget {
-  String vehiclepickupAdress;
-  String vehiclepickuplat;
-  String vehiclepickuplong;
-  String vehiclepickupunitIdBlockID;
-  String vehiclepickupsendername;
-  String vehicleSenderMobilenumber;
-
-  // List<String> vehicleDropAddress;
-  // List<String> vehicledroplat;
-  // List<String> vehicledroplong;
-  // List<String> vehiclearpincode;
-  // List<String> vehicledoorname;
-  // List<String> vehicleDropunitIdBlockId;
-  // List<String> vehicleDropreceivername;
-  // List<String> vehicleDropreceiverphone;
+  final String vehiclepickupAdress;
+  final String vehiclepickuplat;
+  final String vehiclepickuplong;
+  final String vehiclepickupunitIdBlockID;
+  final String vehiclepickupsendername;
+  final String vehicleSenderMobilenumber;
 
   BookVehicleScreen({
     super.key,
@@ -52,14 +42,6 @@ class BookVehicleScreen extends StatefulWidget {
     required this.vehiclepickupunitIdBlockID,
     required this.vehiclepickupsendername,
     required this.vehicleSenderMobilenumber,
-    // required this.vehicleDropAddress,
-    // required this.vehicledroplat,
-    // required this.vehiclearpincode,
-    // required this.vehicledoorname,
-    // required this.vehicledroplong,
-    // required this.vehicleDropunitIdBlockId,
-    // required this.vehicleDropreceivername,
-    // required this.vehicleDropreceiverphone
   });
 
   @override
@@ -77,8 +59,6 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await parcelController.getVehicleTypes();
       await parcelController.getAdditionalServices("booking_van");
-
-      //  initializeIsCheckList();
       parcelController.update();
       setState(() {});
     });
@@ -157,7 +137,7 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
   File? images;
   bool imageHiding = false;
   final ImagePicker _picker = ImagePicker();
-  String? _imagePath;
+  String _imagePath = "";
   Future<void> pickImage(ImageSource source) async {
     try {
       final XFile? pickedFile = await _picker.pickImage(source: source);
@@ -195,7 +175,7 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
   List<bool> isCheck = [];
 
   double totalAmountVehicle = 0.0;
-
+  double totalAmount = 0.0;
   void updateVehicleTotalAmount() {
     totalAmountVehicle = selectedvehicleservice.fold(0.0, (sum, item) {
       double itemAmount = double.tryParse(item.amount) ?? 0.0;
@@ -205,7 +185,7 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
 
   void showListViewDialog(BuildContext context) {
     initializeIsCheckList();
-
+    double totalAmount = 0.0; // Initialize total amount
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -277,10 +257,7 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                           borderRadius:
                                               BorderRadius.circular(10),
                                         ),
-                                        child: Text("No data")
-                                        // Image.asset(
-                                        //     "assets/images/No Data Found.jpeg")
-                                        ));
+                                        child: Text("No data")));
                               }
                               return ListView.builder(
                                   itemCount:
@@ -291,24 +268,23 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                         controller.additionalServiceData[index];
                                     return GestureDetector(
                                       onTap: () {
-                                        setState(
-                                          () {
-                                            isCheck[index] = !isCheck[index];
-                                            if (isCheck[index] == true) {
-                                              selectedvehicleservice
-                                                  .add(serviceData);
-
-                                              print(selectedvehicleservice);
-                                              //  selectedvehicleId
-                                              // .add(serviceData.id);
-                                            } else {
-                                              // selectedvehicleId
-                                              //     .remove(serviceData.id);
-                                              selectedvehicleservice
-                                                  .remove(serviceData);
-                                            }
-                                          },
-                                        );
+                                        setState(() {
+                                          isCheck[index] = !isCheck[index];
+                                          double amount = double.tryParse(
+                                                  serviceData.amount) ??
+                                              0.0; // Convert amount to double
+                                          if (isCheck[index] == true) {
+                                            selectedvehicleservice
+                                                .add(serviceData);
+                                            totalAmount +=
+                                                amount; // Add amount to total
+                                          } else {
+                                            selectedvehicleservice
+                                                .remove(serviceData);
+                                            totalAmount -=
+                                                amount; // Subtract amount from total
+                                          }
+                                        });
                                       },
                                       child: Padding(
                                         padding: const EdgeInsets.all(5.0),
@@ -321,29 +297,28 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                                 children: [
                                                   GestureDetector(
                                                     onTap: () {
-                                                      // setState(
-                                                      //   () {
-                                                      //     isCheck[index] =
-                                                      //         !isCheck[index];
-                                                      //     if (isCheck[index] ==
-                                                      //         true) {
-                                                      //       // selectedvehicleId
-                                                      //       //     .add(serviceData
-                                                      //       //         .id);
-                                                      //       selectedvehicleservice
-                                                      //           .add(
-                                                      //               serviceData);
-                                                      //     } else {
-                                                      //       // selectedvehicleId
-                                                      //       //     .remove(
-                                                      //       //         serviceData
-                                                      //       //             .id);
-                                                      //       selectedvehicleservice
-                                                      //           .remove(
-                                                      //               serviceData);
-                                                      //     }
-                                                      //   },
-                                                      // );
+                                                      setState(() {
+                                                        isCheck[index] =
+                                                            !isCheck[index];
+                                                        double amount = double
+                                                                .tryParse(
+                                                                    serviceData
+                                                                        .amount) ??
+                                                            0.0; // Convert amount to double
+                                                        if (isCheck[index] ==
+                                                            true) {
+                                                          selectedvehicleservice
+                                                              .add(serviceData);
+                                                          totalAmount +=
+                                                              amount; // Add amount to total
+                                                        } else {
+                                                          selectedvehicleservice
+                                                              .remove(
+                                                                  serviceData);
+                                                          totalAmount -=
+                                                              amount; // Subtract amount from total
+                                                        }
+                                                      });
                                                     },
                                                     child: Container(
                                                       height: 20.h,
@@ -398,6 +373,17 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                           ],
                         ),
                       ),
+                      // Padding(
+                      //   padding: const EdgeInsets.only(top: 10),
+                      //   child: Text(
+                      //     "Total: \$${totalAmount.toStringAsFixed(2)}",
+                      //     style: primaryfont.copyWith(
+                      //       fontSize: 16.sp,
+                      //       fontWeight: FontWeight.w600,
+                      //       color: AppColors.kblue,
+                      //     ),
+                      //   ),
+                      // ),
                       TextButton(
                           onPressed: () {
                             setState(() {
@@ -405,7 +391,6 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                   List.from(selectedvehicleservice);
                             });
                             Navigator.of(context).pop(savedSelectItem);
-                            // selectedvehicleservice.clear();
                           },
                           child: CommonContainer(
                             name: 'Confirm',
@@ -788,7 +773,7 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                                                   });
                                                                 },
                                                                 child: Text(
-                                                                  'Add Stop',
+                                                                  'Add Location',
                                                                   style: primaryfont
                                                                       .copyWith(
                                                                     fontSize:
@@ -1254,13 +1239,19 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                                 .vehicledroppingLocations
                                                 .toList();
                                         Get.to(DriverBookingDetails(
+                                          additionalTotal:
+                                              totalAmount.toStringAsFixed(2),
+                                          roundTrip:
+                                              homeController.roundChecked.value,
                                           selectedvehicleservice:
                                               selectedvehicleservice,
                                           // getVehicleBookingDetailsDataList: getVehicleBookingDetailsDataList,
                                           vehiclepickupAdress:
                                               widget.vehiclepickupAdress,
                                           additionServiceId: [],
-                                          imagePath: _imagePath!,
+                                          imagePath: _imagePath == ""
+                                              ? " "
+                                              : _imagePath,
                                           notes: deliveryNotesController.text,
                                           pickupDate: formatDateTime,
                                           pickupTime: _formatTime(pickTime!),
