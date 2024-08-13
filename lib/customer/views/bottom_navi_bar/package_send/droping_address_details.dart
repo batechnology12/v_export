@@ -43,6 +43,9 @@ class _DropLocationState extends State<DropLocation> {
       TextEditingController();
   final TextEditingController receiverBlockIdUnitIdController =
       TextEditingController();
+
+  final TextEditingController unitIdController = TextEditingController();
+
   final TextEditingController _searchedController = TextEditingController();
 
   bool _isManualSelection = false;
@@ -178,37 +181,96 @@ class _DropLocationState extends State<DropLocation> {
                           ),
                         ),
                         ksizedbox20,
-                        Text(
-                          "Enter Block no / Unit no",
-                          style: primaryfont.copyWith(
-                              fontSize: 17,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w600),
-                        ),
-                        ksizedbox5,
-                        GestureDetector(
-                          child: Container(
-                            height: 47,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: AppColors.kwhite,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Enter Block no",
+                                  style: primaryfont.copyWith(
+                                      fontSize: 17,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                ksizedbox5,
+                                GestureDetector(
+                                  child: Container(
+                                    height: 47,
+                                    width: 150.w,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.kwhite,
+                                    ),
+                                    child: TextFormField(
+                                        controller:
+                                            receiverBlockIdUnitIdController,
+                                             inputFormatters: [
+                                        LengthLimitingTextInputFormatter(4),
+                                        //  FilteringTextInputFormatter.digitsOnly,
+                                      ],
+                                        decoration: InputDecoration(
+                                            hintText: 'Enter Block no',
+                                            hintStyle: primaryfont.copyWith(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w500),
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              borderSide: BorderSide(
+                                                width: 1,
+                                                color: Color(0xff444444),
+                                              ),
+                                            ))),
+                                  ),
+                                ),
+                              ],
                             ),
-                            child: TextFormField(
-                                controller: receiverBlockIdUnitIdController,
-                                decoration: InputDecoration(
-                                    hintText: 'Enter Block no / Unit no',
-                                    hintStyle: primaryfont.copyWith(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        width: 1,
-                                        color: Color(0xff444444),
-                                      ),
-                                    ))),
-                          ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Enter Unit no",
+                                  style: primaryfont.copyWith(
+                                      fontSize: 17,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                ksizedbox5,
+                                GestureDetector(
+                                  child: Container(
+                                    height: 47,
+                                    width: 150.w,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.kwhite,
+                                    ),
+                                    child: TextFormField(
+                                        controller: unitIdController,
+                                        
+                                         inputFormatters: [
+                                        LengthLimitingTextInputFormatter(4),
+                                        //  FilteringTextInputFormatter.digitsOnly,
+                                      ],
+                                        decoration: InputDecoration(
+                                            hintText: 'Enter Unit no',
+                                            hintStyle: primaryfont.copyWith(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w500),
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              borderSide: BorderSide(
+                                                width: 1,
+                                                color: Color(0xff444444),
+                                              ),
+                                            ))),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
+                       
                         ksizedbox20,
                         Text(
                           "Receiver Name",

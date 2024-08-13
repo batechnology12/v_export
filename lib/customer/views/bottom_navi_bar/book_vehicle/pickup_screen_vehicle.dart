@@ -1,3 +1,4 @@
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -38,8 +39,9 @@ class _PickupVehicleAddressDetailsState
     zoom: 12,
   );
 
-  // final TextEditingController _postalCodeController = TextEditingController();
+  final TextEditingController _unitIdController = TextEditingController();
   final TextEditingController _blockUnitController = TextEditingController();
+
   final TextEditingController _senderNameController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController searchController = TextEditingController();
@@ -202,34 +204,87 @@ class _PickupVehicleAddressDetailsState
                           ),
                         ),
                         ksizedbox20,
-                        Text(
-                          "Enter Block no / Unit no",
-                          style: primaryfont.copyWith(
-                              fontSize: 17,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w600),
-                        ),
-                        ksizedbox5,
-                        Container(
-                          height: 47,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: AppColors.kwhite,
-                          ),
-                          child: TextFormField(
-                              controller: _blockUnitController,
-                              decoration: InputDecoration(
-                                  hintText: 'Enter Block no / Unit no',
-                                  hintStyle: primaryfont.copyWith(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide(
-                                      width: 1,
-                                      color: Color(0xff444444),
-                                    ),
-                                  ))),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Enter Block no",
+                                  style: primaryfont.copyWith(
+                                      fontSize: 17,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                ksizedbox5,
+                                Container(
+                                  height: 47,
+                                  width: 150.w,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.kwhite,
+                                  ),
+                                  child: TextFormField(
+                                      controller: _blockUnitController,
+                                      inputFormatters: [
+                                        LengthLimitingTextInputFormatter(4),
+                                        //  FilteringTextInputFormatter.digitsOnly,
+                                      ],
+                                      decoration: InputDecoration(
+                                          hintText: 'Enter Block no',
+                                          hintStyle: primaryfont.copyWith(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500),
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            borderSide: BorderSide(
+                                              width: 1,
+                                              color: Color(0xff444444),
+                                            ),
+                                          ))),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                Text(
+                                  "Enter Unit no",
+                                  style: primaryfont.copyWith(
+                                      fontSize: 17,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                ksizedbox5,
+                                Container(
+                                  height: 47,
+                                  width: 150.w,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.kwhite,
+                                  ),
+                                  child: TextFormField(
+                                      controller: _unitIdController,
+                                      inputFormatters: [
+                                        LengthLimitingTextInputFormatter(4),
+                                        //  FilteringTextInputFormatter.digitsOnly,
+                                      ],
+                                      decoration: InputDecoration(
+                                          hintText: 'Enter Unit no',
+                                          hintStyle: primaryfont.copyWith(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500),
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            borderSide: BorderSide(
+                                              width: 1,
+                                              color: Color(0xff444444),
+                                            ),
+                                          ))),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                         ksizedbox20,
                         Text(
@@ -332,71 +387,37 @@ class _PickupVehicleAddressDetailsState
                           ),
                         ),
                         ksizedbox20,
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                setState(
-                                  () {
-                                    ischecked = !ischecked;
-                                  },
-                                );
-                              },
-                              child: Container(
-                                height: 20.h,
-                                width: 20.w,
-                                decoration: BoxDecoration(
-                                    border: Border.all(
-                                        width: 1, color: AppColors.kblue),
-                                    borderRadius: BorderRadius.circular(5)),
-                                child: ischecked == true
-                                    ? Image.asset("assets/icons/7-Check.png")
-                                    : Text(""),
-                              ),
-                            ),
-                            Ksizedboxw10,
-                            Text(
-                              "Save Address",
-                              style: primaryfont.copyWith(
-                                  fontSize: 14.sp,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                          ],
-                        ),
-                        ksizedbox20,
                         InkWell(
-                            onTap: () async{
+                            onTap: () async {
                               if (formKey.currentState!.validate()) {
                                 if (_senderNameController.text.isNotEmpty &&
                                     _phoneNumberController.text.isNotEmpty) {
-                                 await homeController.updatevehiclePickupLocation(
-                                      searchController.text,
-                                      _markers.first.position.latitude
-                                          .toString(),
-                                      _markers.first.position.longitude
-                                          .toString(),
-                                      _senderNameController.text,
-                                      _phoneNumberController.text,
-                                      _blockUnitController.text);
+                                  await homeController
+                                      .updatevehiclePickupLocation(
+                                          searchController.text,
+                                          _markers.first.position.latitude
+                                              .toString(),
+                                          _markers.first.position.longitude
+                                              .toString(),
+                                          _senderNameController.text,
+                                          _phoneNumberController.text,
+                                          _blockUnitController.text);
 
                                   Get.offAll(BookVehicleScreen(
-                                      vehiclepickupAdress:
-                                          searchController.text,
-                                      vehiclepickuplat: _markers
-                                          .first.position.latitude
-                                          .toString(),
-                                      vehiclepickuplong: _markers
-                                          .first.position.longitude
-                                          .toString(),
-                                      vehiclepickupunitIdBlockID:
-                                          _blockUnitController.text,
-                                      vehiclepickupsendername:
-                                          _senderNameController.text,
-                                      vehicleSenderMobilenumber:
-                                          _phoneNumberController.text,
-                                     ));
+                                    vehiclepickupAdress: searchController.text,
+                                    vehiclepickuplat: _markers
+                                        .first.position.latitude
+                                        .toString(),
+                                    vehiclepickuplong: _markers
+                                        .first.position.longitude
+                                        .toString(),
+                                    vehiclepickupunitIdBlockID:
+                                        _blockUnitController.text,
+                                    vehiclepickupsendername:
+                                        _senderNameController.text,
+                                    vehicleSenderMobilenumber:
+                                        _phoneNumberController.text,
+                                  ));
                                 } else {
                                   Get.snackbar(
                                       "Fill all Fields", "Please try again!",
@@ -747,40 +768,6 @@ class _PickupVehicleAddressDetailsState
                             ),
                           ),
                           ksizedbox20,
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  setState(
-                                    () {
-                                      ischecked = !ischecked;
-                                    },
-                                  );
-                                },
-                                child: Container(
-                                  height: 20.h,
-                                  width: 20.w,
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          width: 1, color: AppColors.kblue),
-                                      borderRadius: BorderRadius.circular(5)),
-                                  child: ischecked == true
-                                      ? Image.asset("assets/icons/7-Check.png")
-                                      : Text(""),
-                                ),
-                              ),
-                              Ksizedboxw10,
-                              Text(
-                                "Save Address",
-                                style: primaryfont.copyWith(
-                                    fontSize: 14.sp,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                            ],
-                          ),
-                          ksizedbox20,
                           InkWell(
                               onTap: () {
                                 if (formKey.currentState!.validate()) {
@@ -796,22 +783,21 @@ class _PickupVehicleAddressDetailsState
                                       _phoneNumberController.text,
                                       _blockUnitController.text,
                                     );
-
                                     Get.offAll(BookVehicleScreen(
-                                        vehiclepickupAdress:
-                                            searchController.text,
-                                        vehiclepickuplat: _markers
-                                            .first.position.latitude
-                                            .toString(),
-                                        vehiclepickuplong: _markers
-                                            .first.position.longitude
-                                            .toString(),
-                                        vehiclepickupunitIdBlockID:
-                                            _blockUnitController.text,
-                                        vehiclepickupsendername:
-                                            _senderNameController.text,
-                                        vehicleSenderMobilenumber:
-                                            _phoneNumberController.text,
+                                      vehiclepickupAdress:
+                                          searchController.text,
+                                      vehiclepickuplat: _markers
+                                          .first.position.latitude
+                                          .toString(),
+                                      vehiclepickuplong: _markers
+                                          .first.position.longitude
+                                          .toString(),
+                                      vehiclepickupunitIdBlockID:
+                                          _blockUnitController.text,
+                                      vehiclepickupsendername:
+                                          _senderNameController.text,
+                                      vehicleSenderMobilenumber:
+                                          _phoneNumberController.text,
                                     ));
                                   } else {
                                     Get.snackbar(

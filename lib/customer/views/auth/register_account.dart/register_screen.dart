@@ -217,14 +217,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                           },
                                     controller: mobileController,
                                     decoration: InputDecoration(
-                                      prefixIcon: Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 10, top: 13),
-                                          child: PopupMenuButton(
+                                      prefixIcon: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          PopupMenuButton<int>(
+                                            padding: EdgeInsets.zero,
                                             child: Container(
-                                                height: 30,
-                                                width: 50,
-                                                child: Text(selectedValues)),
+                                              height: 30,
+                                              width: 50,
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                selectedValues,
+                                                style: primaryfont.copyWith(
+                                                  fontSize:
+                                                      14, // Adjust font size
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
                                             onSelected: (value) {
                                               setState(() {
                                                 selectedIndex = value;
@@ -238,7 +248,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                 child: Container(
                                                   height: 30,
                                                   width: 50,
-                                                  child: Text("+65"),
+                                                  alignment: Alignment.center,
+                                                  child: Text(
+                                                    "+65",
+                                                    style: primaryfont.copyWith(
+                                                      fontSize:
+                                                          14, // Adjust font size
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
                                               PopupMenuItem<int>(
@@ -246,13 +265,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                 child: Container(
                                                   height: 30,
                                                   width: 50,
-                                                  child: Text("+91"),
+                                                  alignment: Alignment.center,
+                                                  child: Text(
+                                                    "+91",
+                                                    style: primaryfont.copyWith(
+                                                      fontSize:
+                                                          14, // Adjust font size
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
                                             ],
-                                          )),
+                                          ),
+                                          SizedBox(width: 5),
+                                        ],
+                                      ),
                                       contentPadding:
-                                          EdgeInsets.only(bottom: 5, left: 20),
+                                          EdgeInsets.only(left: 5, top: 13),
                                       fillColor: Color(0xffF8F8F8),
                                       filled: true,
                                       border: OutlineInputBorder(
@@ -711,13 +742,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   TextFormField(
                                     keyboardType: TextInputType.phone,
                                     inputFormatters: [
-                                      selectedValuess == "+65"
+                                      selectedValues == "+65"
                                           ? LengthLimitingTextInputFormatter(8)
                                           : LengthLimitingTextInputFormatter(
                                               10),
                                       FilteringTextInputFormatter.digitsOnly,
                                     ],
-                                    validator: selectedValuess == "+65"
+                                    validator: selectedValues == "+65"
                                         ? (value) {
                                             if (value!.length < 8 ||
                                                 value.length > 8) {
@@ -736,18 +767,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                           },
                                     controller: businessphoneController,
                                     decoration: InputDecoration(
-                                      prefixIcon: Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 10, top: 13),
-                                          child: PopupMenuButton(
+                                      prefixIcon: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          PopupMenuButton<int>(
+                                            padding: EdgeInsets.zero,
                                             child: Container(
-                                                height: 30,
-                                                width: 50,
-                                                child: Text(selectedValuess)),
+                                              height: 30,
+                                              width: 50,
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                selectedValues,
+                                                style: primaryfont.copyWith(
+                                                  fontSize:
+                                                      14, // Adjust font size
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
                                             onSelected: (value) {
                                               setState(() {
-                                                selectedIndexes = value;
-                                                selectedValuess =
+                                                selectedIndex = value;
+                                                selectedValues =
                                                     value == 0 ? "+65" : "+91";
                                               });
                                             },
@@ -757,7 +798,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                 child: Container(
                                                   height: 30,
                                                   width: 50,
-                                                  child: Text("+65"),
+                                                  alignment: Alignment.center,
+                                                  child: Text(
+                                                    "+65",
+                                                    style: primaryfont.copyWith(
+                                                      fontSize:
+                                                          14, // Adjust font size
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
                                               PopupMenuItem<int>(
@@ -765,13 +815,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                 child: Container(
                                                   height: 30,
                                                   width: 50,
-                                                  child: Text("+91"),
+                                                  alignment: Alignment.center,
+                                                  child: Text(
+                                                    "+91",
+                                                    style: primaryfont.copyWith(
+                                                      fontSize:
+                                                          14, // Adjust font size
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
                                             ],
-                                          )),
+                                          ),
+                                          SizedBox(width: 5),
+                                        ],
+                                      ),
                                       contentPadding:
-                                          EdgeInsets.only(bottom: 5, left: 20),
+                                          EdgeInsets.only(left: 5, top: 13),
                                       fillColor: Color(0xffF8F8F8),
                                       filled: true,
                                       border: OutlineInputBorder(

@@ -23,7 +23,7 @@ class AddBookingVehicleApiService extends BaseApiServices {
         "deliverytime_to": "2:30pm",
         "vehicle_type": addBookingVehicleModel.vehicleType,
         "pickup_addreess": addBookingVehicleModel.pickupAddress,
-        "payment_mode": "500",
+        "payment_mode": "COD",
         "booking_amount": "500",
         "gst": "500",
         "additional_total": "600",

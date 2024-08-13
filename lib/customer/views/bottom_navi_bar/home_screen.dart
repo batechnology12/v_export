@@ -180,8 +180,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                       child: Padding(
                         padding: const EdgeInsets.only(right: 10),
-                        child:
-                            Image.asset('assets/icons/notification_icon.png'),
+                        child: Image.asset(
+                          'assets/icons/Group 57.png',
+                          height: 20,
+                          width: 20,
+                        ),
                       ))
                 ],
               ),

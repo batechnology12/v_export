@@ -7,6 +7,7 @@ import 'package:v_export/customer/model/notification_model.dart';
 import 'package:v_export/customer/services/network/Account_api_service/update_password_api_service.dart';
 import 'package:v_export/customer/services/network/home_screen_api_services/get_slider_api_service.dart';
 import 'package:v_export/customer/services/network/home_screen_api_services/notification_api_service.dart';
+import 'package:v_export/customer/services/network/home_screen_api_services/notification_read_all_api_services.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/account/settings.dart';
 
 class HomeScreenController extends GetxController {
@@ -90,5 +91,10 @@ class HomeScreenController extends GetxController {
         ),
       );
     }
+  }
+  
+  NotificationReadAllApiServices notificationReadAllApiServices = NotificationReadAllApiServices();
+  notificationReadAll () async{
+   dio.Response<dynamic> response = await notificationReadAllApiServices.notificationReadAllApi();
   }
 }

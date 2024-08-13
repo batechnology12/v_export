@@ -65,7 +65,6 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
   }
 
   List<String> vehicleList = [
-    "assets/icons/delivery-bike.svg",
     "assets/icons/car.svg",
     "assets/icons/van (1).svg",
     "assets/icons/van (1).svg",
@@ -880,8 +879,8 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                       ),
                                       ksizedbox10,
                                       Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 15),
+                                        padding:
+                                            EdgeInsets.symmetric(horizontal: 5),
                                         height: 50,
                                         width: size.width,
                                         decoration: BoxDecoration(
@@ -922,24 +921,42 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                               child: Row(
                                                 children: [
                                                   Container(
-                                                    width: 35,
+                                                    width: 30,
                                                     child: SvgPicture.asset(
                                                       vehicleList[
                                                           parcelController
                                                               .vehicleTypesData
                                                               .indexOf(type)],
-                                                      height: 30,
-                                                      width: 30,
+                                                      height: 25,
+                                                      width: 25,
                                                     ),
                                                   ),
-                                                  Ksizedboxw10,
+                                                  Ksizedboxw5,
                                                   Text(
                                                     type.name,
                                                     style: TextStyle(
                                                       color: Color(0xff455A64),
-                                                      fontSize: 14.sp,
+                                                      fontSize: 13.sp,
                                                       fontWeight:
                                                           FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                  ksizedbox5,
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 10),
+                                                    child: Text(
+                                                      type.description,
+                                                      style: TextStyle(
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        color:
+                                                            Color(0xff455A64),
+                                                        fontSize: 11.sp,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
                                                     ),
                                                   ),
                                                 ],

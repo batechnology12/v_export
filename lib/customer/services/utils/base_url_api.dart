@@ -13,6 +13,7 @@ abstract class BaseApiServices {
   String get getSliderList => "${baseUrl}get_slider";
   String get updatePasswordUrl => "${baseUrl}updatePassword";
   String get notificationUrl => "${baseUrl}notifications";
+  String get notificationReadAllUrl => "${baseUrl}notifications/read-all"; 
   String get ongoingOrderUrl => "${baseUrl}ongoing_booking";
   String get getDeliveryTypeUrl => "${baseUrl}delivery_types";
   String get getAdditionlServicesUrl => "${baseUrl}additional_servicess";

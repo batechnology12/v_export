@@ -425,7 +425,6 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                           ),
                                         ],
                                       ),
-
                                       ksizedbox5,
                                       Padding(
                                         padding: const EdgeInsets.only(top: 4),
@@ -521,10 +520,8 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                                 fontSize: 12.sp,
                                                 fontWeight: FontWeight.w500),
                                           ),
-                                        ], 
+                                        ],
                                       ),
-                           
-                                      
                                       ksizedbox5,
                                       Padding(
                                         padding: const EdgeInsets.only(top: 4),
@@ -641,7 +638,6 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                       ksizedbox10,
                                       Divider(),
                                       ksizedbox10,
-
                                       Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
@@ -794,10 +790,8 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                           )
                                         ],
                                       ),
-
                                       ksizedbox15,
                                       Divider(),
-
                                       Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
@@ -844,7 +838,6 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                           ),
                                         ],
                                       ),
-
                                       ksizedbox5,
                                       Divider(),
                                       ksizedbox10,
@@ -1301,7 +1294,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                               deliveryTypeid: widget
                                                   .deliveryTypeID
                                                   .toString(),
-                                              paymentMode: "cash",
+                                              paymentMode: "COD",
                                               bookingAmount:
                                                   amount.toStringAsFixed(2),
                                               gst: "0",

@@ -36,6 +36,8 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
   );
 
   final TextEditingController _blockUnitController = TextEditingController();
+  final TextEditingController _UnitController = TextEditingController();
+
   final TextEditingController _senderNameController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController searchController = TextEditingController();
@@ -125,7 +127,6 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                             inputDecoration: InputDecoration(
                               contentPadding: EdgeInsets.only(left: 10),
                               isDense: true,
-                           
                               hintText: 'Enter Your Address....',
                               hintStyle: primaryfont.copyWith(
                                   fontSize: 14, fontWeight: FontWeight.w500),
@@ -167,34 +168,88 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                           ),
                         ),
                         ksizedbox20,
-                        Text(
-                          "Enter Block no / Unit no",
-                          style: primaryfont.copyWith(
-                              fontSize: 17,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w600),
-                        ),
-                        ksizedbox5,
-                        Container(
-                          height: 47,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: AppColors.kwhite,
-                          ),
-                          child: TextFormField(
-                              controller: _blockUnitController,
-                              decoration: InputDecoration(
-                                  hintText: 'Enter Block no / Unit no',
-                                  hintStyle: primaryfont.copyWith(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide(
-                                      width: 1,
-                                      color: Color(0xff444444),
-                                    ),
-                                  ))),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Enter Block no",
+                                  style: primaryfont.copyWith(
+                                      fontSize: 17,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                ksizedbox5,
+                                Container(
+                                  height: 47,
+                                  width: 150.w,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.kwhite,
+                                  ),
+                                  child: TextFormField(
+                                      controller: _blockUnitController,
+                                      inputFormatters: [
+                                        LengthLimitingTextInputFormatter(4),
+                                        //  FilteringTextInputFormatter.digitsOnly,
+                                      ],
+                                      decoration: InputDecoration(
+                                          hintText: 'Enter Block no',
+                                          hintStyle: primaryfont.copyWith(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500),
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            borderSide: BorderSide(
+                                              width: 1,
+                                              color: Color(0xff444444),
+                                            ),
+                                          ))),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Enter Unit no",
+                                  style: primaryfont.copyWith(
+                                      fontSize: 17,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                ksizedbox5,
+                                Container(
+                                  height: 47,
+                                  width: 150.w,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.kwhite,
+                                  ),
+                                  child: TextFormField(
+                                      controller: _UnitController,
+                                      inputFormatters: [
+                                        LengthLimitingTextInputFormatter(4),
+                                        //  FilteringTextInputFormatter.digitsOnly,
+                                      ],
+                                      decoration: InputDecoration(
+                                          hintText: 'Enter Unit no',
+                                          hintStyle: primaryfont.copyWith(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500),
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            borderSide: BorderSide(
+                                              width: 1,
+                                              color: Color(0xff444444),
+                                            ),
+                                          ))),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                         ksizedbox20,
                         Text(
@@ -213,6 +268,10 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                           ),
                           child: TextFormField(
                               textCapitalization: TextCapitalization.sentences,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp('[a-zA-Z ]')),
+                              ],
                               controller: _senderNameController,
                               decoration: InputDecoration(
                                   hintText: 'Enter Sender Name',
@@ -236,7 +295,6 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                               fontWeight: FontWeight.w600),
                         ),
                         ksizedbox5,
-                     
                         TextFormField(
                           controller: _phoneNumberController,
                           validator: (value) {
@@ -253,13 +311,13 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                           ],
                           decoration: InputDecoration(
                             prefixIcon: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 13,
-                                  horizontal: 6), // Reduced padding
+                              padding: const EdgeInsets.only(left: 8, top: 15),
                               child: Text(
                                 "+65",
+                                textAlign: TextAlign.center,
                                 style: primaryfont.copyWith(
-                                  fontSize: 14, // Reduced font size
+                                  fontSize:
+                                      15.sp, // Font size for the prefix icon
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -267,11 +325,14 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                             fillColor: AppColors.kwhite,
                             filled: true,
                             contentPadding: const EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 6), // Reduced padding
+                                vertical:
+                                    12, // Adjusted vertical padding for better alignment
+                                horizontal:
+                                    10), // Adjusted horizontal padding for better alignment
                             hintText: "Enter Sender Number",
                             hintStyle: primaryfont.copyWith(
                               color: Colors.grey,
-                              fontSize: 14, // Reduced font size
+                              fontSize: 14, // Font size for hint text
                               fontWeight: FontWeight.w100,
                             ),
                             border: OutlineInputBorder(
@@ -297,41 +358,177 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                             ),
                           ),
                         ),
-
-                        ksizedbox20,
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                setState(
-                                  () {
-                                    ischecked = !ischecked;
-                                  },
-                                );
-                              },
-                              child: Container(
-                                height: 20.h,
-                                width: 20.w,
-                                decoration: BoxDecoration(
-                                    border: Border.all(
-                                        width: 1, color: AppColors.kblue),
-                                    borderRadius: BorderRadius.circular(5)),
-                                child: ischecked == true
-                                    ? Image.asset("assets/icons/7-Check.png")
-                                    : Text(""),
-                              ),
-                            ),
-                            Ksizedboxw10,
-                            Text(
-                              "Save Address",
-                              style: primaryfont.copyWith(
-                                  fontSize: 14.sp,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                          ],
-                        ),
+                        //  TextFormField(
+                        //       keyboardType: TextInputType.phone,
+                        //       inputFormatters: [
+                        //         selectedValues == "+65"
+                        //             ? LengthLimitingTextInputFormatter(8)
+                        //             : LengthLimitingTextInputFormatter(10),
+                        //         FilteringTextInputFormatter.digitsOnly,
+                        //       ],
+                        //       validator: selectedValues == "+65"
+                        //           ? (value) {
+                        //               if (value!.length < 8 || value.length > 8) {
+                        //                 return 'Mobile number should be in 8 digits';
+                        //               } else {
+                        //                 return null;
+                        //               }
+                        //             }
+                        //           : (value) {
+                        //               if (value!.length < 10 ||
+                        //                   value.length > 10) {
+                        //                 return 'Mobile number should be in 10 digits';
+                        //               } else {
+                        //                 return null;
+                        //               }
+                        //             },
+                        //       controller: emailOrmobileController,
+                        //       decoration: InputDecoration(
+                        //         prefixIcon: Row(
+                        //           mainAxisSize: MainAxisSize.min,
+                        //           children: [
+                        //             PopupMenuButton<int>(
+                        //               padding: EdgeInsets.zero,
+                        //               child: Container(
+                        //                 height: 30,
+                        //                 width: 50,
+                        //                 alignment: Alignment.center,
+                        //                 child: Text(
+                        //                   selectedValues,
+                        //                   style: primaryfont.copyWith(
+                        //                     fontSize: 14, // Adjust font size
+                        //                     fontWeight: FontWeight.bold,
+                        //                   ),
+                        //                 ),
+                        //               ),
+                        //               onSelected: (value) {
+                        //                 setState(() {
+                        //                   selectedIndex = value;
+                        //                   selectedValues =
+                        //                       value == 0 ? "+65" : "+91";
+                        //                 });
+                        //               },
+                        //               itemBuilder: (context) => [
+                        //                 PopupMenuItem<int>(
+                        //                   value: 0,
+                        //                   child: Container(
+                        //                     height: 30,
+                        //                     width: 50,
+                        //                     alignment: Alignment.center,
+                        //                     child: Text(
+                        //                       "+65",
+                        //                       style: primaryfont.copyWith(
+                        //                         fontSize: 14, // Adjust font size
+                        //                         fontWeight: FontWeight.bold,
+                        //                       ),
+                        //                     ),
+                        //                   ),
+                        //                 ),
+                        //                 PopupMenuItem<int>(
+                        //                   value: 1,
+                        //                   child: Container(
+                        //                     height: 30,
+                        //                     width: 50,
+                        //                     alignment: Alignment.center,
+                        //                     child: Text(
+                        //                       "+91",
+                        //                       style: primaryfont.copyWith(
+                        //                         fontSize: 14, // Adjust font size
+                        //                         fontWeight: FontWeight.bold,
+                        //                       ),
+                        //                     ),
+                        //                   ),
+                        //                 ),
+                        //               ],
+                        //             ),
+                        //             SizedBox(width: 5),
+                        //           ],
+                        //         ),
+                        //         contentPadding: EdgeInsets.only(left: 5, top: 13),
+                        //         fillColor: Color(0xffF8F8F8),
+                        //         filled: true,
+                        //         border: OutlineInputBorder(
+                        //           borderSide: BorderSide.none,
+                        //           borderRadius: BorderRadius.circular(25.0),
+                        //         ),
+                        //         enabledBorder: OutlineInputBorder(
+                        //           borderSide: BorderSide.none,
+                        //           borderRadius: BorderRadius.circular(25.0),
+                        //         ),
+                        //         errorBorder: OutlineInputBorder(
+                        //           borderSide: BorderSide.none,
+                        //           borderRadius: BorderRadius.circular(25),
+                        //         ),
+                        //         focusedBorder: OutlineInputBorder(
+                        //           borderSide: BorderSide.none,
+                        //           borderRadius: BorderRadius.circular(25.0),
+                        //         ),
+                        //         focusedErrorBorder: OutlineInputBorder(
+                        //           borderSide: BorderSide.none,
+                        //           borderRadius: BorderRadius.circular(25.0),
+                        //         ),
+                        //       ),
+                        //     ),
+                        // TextFormField(
+                        //   controller: _phoneNumberController,
+                        //   validator: (value) {
+                        //     if (value!.length != 8) {
+                        //       return "Enter 8 digits phone number";
+                        //     }
+                        //     return null;
+                        //   },
+                        //   keyboardType: TextInputType.phone,
+                        //   inputFormatters: [
+                        //     LengthLimitingTextInputFormatter(8),
+                        //     FilteringTextInputFormatter.digitsOnly,
+                        //     FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                        //   ],
+                        //   decoration: InputDecoration(
+                        //     prefixIcon: Padding(
+                        //       padding: const EdgeInsets.symmetric(
+                        //           vertical: 13,
+                        //           horizontal: 6), // Reduced padding
+                        //       child: Text(
+                        //         "+65",
+                        //         style: primaryfont.copyWith(
+                        //           fontSize: 15.sp, // Reduced font size
+                        //           fontWeight: FontWeight.bold,
+                        //         ),
+                        //       ),
+                        //     ),
+                        //     fillColor: AppColors.kwhite,
+                        //     filled: true,
+                        //     contentPadding: const EdgeInsets.symmetric(
+                        //         vertical: 8, horizontal: 6), // Reduced padding
+                        //     hintText: "Enter Sender Number",
+                        //     hintStyle: primaryfont.copyWith(
+                        //       color: Colors.grey,
+                        //       fontSize: 14, // Reduced font size
+                        //       fontWeight: FontWeight.w100,
+                        //     ),
+                        //     border: OutlineInputBorder(
+                        //       borderRadius: BorderRadius.circular(10),
+                        //     ),
+                        //     focusedBorder: OutlineInputBorder(
+                        //       borderSide: BorderSide(
+                        //         color: Color(0xff444444),
+                        //       ),
+                        //       borderRadius: BorderRadius.circular(10),
+                        //     ),
+                        //     focusedErrorBorder: OutlineInputBorder(
+                        //       borderSide: BorderSide(
+                        //         color: Color(0xff444444),
+                        //       ),
+                        //       borderRadius: BorderRadius.circular(10),
+                        //     ),
+                        //     errorBorder: OutlineInputBorder(
+                        //       borderSide: BorderSide(
+                        //         color: Color(0xff444444),
+                        //       ),
+                        //       borderRadius: BorderRadius.circular(10),
+                        //     ),
+                        //   ),
+                        // ),
                         ksizedbox20,
                         InkWell(
                             onTap: () {
@@ -651,40 +848,6 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                                     borderRadius: BorderRadius.circular(10)),
                               ),
                             ),
-                          ),
-                          ksizedbox20,
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  setState(
-                                    () {
-                                      ischecked = !ischecked;
-                                    },
-                                  );
-                                },
-                                child: Container(
-                                  height: 20.h,
-                                  width: 20.w,
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          width: 1, color: AppColors.kblue),
-                                      borderRadius: BorderRadius.circular(5)),
-                                  child: ischecked == true
-                                      ? Image.asset("assets/icons/7-Check.png")
-                                      : Text(""),
-                                ),
-                              ),
-                              Ksizedboxw10,
-                              Text(
-                                "Save Address",
-                                style: primaryfont.copyWith(
-                                    fontSize: 14.sp,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                            ],
                           ),
                           ksizedbox20,
                           InkWell(

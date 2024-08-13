@@ -23,7 +23,7 @@ class AddBookingParcelsApiService extends BaseApiServices {
       FormData formData = FormData.fromMap({
         "delivery_type_id": addBookingParcelModel.deliveryTypeid,
         "pickup_addreess": addBookingParcelModel.pickupAddress,
-        "payment_mode": "cash on delivery",
+        "payment_mode": "COD",
         "booking_amount": addBookingParcelModel.totalAmount,
         "gst": "500",
         "additional_total": "600",

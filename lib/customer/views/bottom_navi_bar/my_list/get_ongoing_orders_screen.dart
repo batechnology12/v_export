@@ -258,9 +258,10 @@ class _GetOngoingScreenDataState extends State<GetOngoingScreenData> {
                                   children: [
                                     Text(
                                       getongoingdatas.bookingType == "parcel"
-                                          ? '${getongoingdatas.bookingProducts.first.pickuptimeFrom ?? "N/a" } \nto \n${getongoingdatas.bookingProducts.first.pickuptimeTo  ?? "N/a"}'
+                                          ? '${getongoingdatas.bookingProducts.first.pickuptimeFrom ?? "N/a"} \nto \n${getongoingdatas.bookingProducts.first.pickuptimeTo ?? "N/a"}'
                                           : getongoingdatas
-                                              .bookingTimeFromVehicle  ?? "N/a",
+                                                  .bookingTimeFromVehicle ??
+                                              "N/a",
                                       style: primaryfont.copyWith(
                                           fontSize: 12.sp,
                                           fontWeight: FontWeight.w600,
@@ -424,11 +425,12 @@ class _GetOngoingScreenDataState extends State<GetOngoingScreenData> {
                                               children: [
                                                 Text(
                                                   getOngoingOrdersModelDataList
-                                                              .bookingType == 
+                                                              .bookingType ==
                                                           "parcel"
-                                                      ? "${bookingProductList.deliverytimeFrom  ?? "N/a"} \nto \n${bookingProductList.deliverytimeTo ?? "N/a"}"
+                                                      ? "${bookingProductList.deliverytimeFrom ?? "N/a"} \nto \n${bookingProductList.deliverytimeTo ?? "N/a"}"
                                                       : getOngoingOrdersModelDataList
-                                                          .bookingTimeFromVehicle ?? "N/a"   ,
+                                                              .bookingTimeFromVehicle ??
+                                                          "N/a",
                                                   textAlign: TextAlign.center,
                                                   style: primaryfont.copyWith(
                                                       fontSize: 12.sp,
@@ -562,7 +564,7 @@ class _GetOngoingScreenDataState extends State<GetOngoingScreenData> {
                                         height: 2.h,
                                       ),
                                       Text(
-                                        'Assigned',
+                                        'PickedUp',
                                         style: primaryfont.copyWith(
                                             fontWeight: FontWeight.w600,
                                             color: AppColors.kblue),
