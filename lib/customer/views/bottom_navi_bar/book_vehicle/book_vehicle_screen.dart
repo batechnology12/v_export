@@ -30,16 +30,18 @@ class BookVehicleScreen extends StatefulWidget {
   final String vehiclepickupAdress;
   final String vehiclepickuplat;
   final String vehiclepickuplong;
-  final String vehiclepickupunitIdBlockID;
+  final String vehiclepickupunitIdBlockIDs;
   final String vehiclepickupsendername;
   final String vehicleSenderMobilenumber;
+  final String vehiclepickupunitId;
 
   BookVehicleScreen({
     super.key,
+    required this.vehiclepickupunitId,
     required this.vehiclepickupAdress,
     required this.vehiclepickuplat,
     required this.vehiclepickuplong,
-    required this.vehiclepickupunitIdBlockID,
+    required this.vehiclepickupunitIdBlockIDs,
     required this.vehiclepickupsendername,
     required this.vehicleSenderMobilenumber,
   });
@@ -49,6 +51,7 @@ class BookVehicleScreen extends StatefulWidget {
 }
 
 class _BookVehicleScreenState extends State<BookVehicleScreen> {
+
   @override
   void initState() {
     super.initState();
@@ -59,8 +62,9 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await parcelController.getVehicleTypes();
       await parcelController.getAdditionalServices("booking_van");
+            initializeIsCheckList();
       parcelController.update();
-      setState(() {});
+       setState(() {});
     });
   }
 
@@ -162,10 +166,12 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
         List<bool>.filled(parcelController.additionalServiceData.length, false);
     for (int i = 0; i < parcelController.additionalServiceData.length; i++) {
       if (savedSelectItem
-          .contains(parcelController.additionalServiceData[i].id)) {
+          .contains(parcelController.additionalServiceData[i])) {
         isCheck[i] = true;
       }
     }
+   // setState(() {     
+  //  });
     updateVehicleTotalAmount();
   }
 
@@ -175,6 +181,7 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
 
   double totalAmountVehicle = 0.0;
   double totalAmount = 0.0;
+
   void updateVehicleTotalAmount() {
     totalAmountVehicle = selectedvehicleservice.fold(0.0, (sum, item) {
       double itemAmount = double.tryParse(item.amount) ?? 0.0;
@@ -182,9 +189,56 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
     });
   }
 
-  void showListViewDialog(BuildContext context) {
+ void showListViewDialog(BuildContext context) {
     initializeIsCheckList();
-    double totalAmount = 0.0; // Initialize total amount
+
+        int updateValue = 1;
+    int maxValue = 3;
+
+
+  void addValue(StateSetter setState) {
+    setState(() {
+      if (updateValue < maxValue) {
+        updateValue++;
+      }
+    });
+  }
+
+  void decrementValue(StateSetter setState) {
+    setState(() {
+      if (updateValue > 1) {
+        updateValue--;
+      }
+    });
+  }
+
+   double calculateManPower (int updateValue, double serviceAmount  ) {
+    return updateValue * serviceAmount;
+   }
+
+   double calculateStairCase (int count, double serviceAmount  ){
+    return count * serviceAmount;
+   }
+
+   int count = 1;
+    int maxCount = 12;
+
+    addCount(StateSetter setState) {
+      setState(() {
+        if (count < maxCount) {
+          count++;
+        }
+      });
+    }
+
+    decrementCount(StateSetter setState) {
+      setState(() {
+        if (count > 1) {
+          count--;
+        }
+      });
+    }
+  
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -192,7 +246,7 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
           builder: (BuildContext context, StateSetter setState) {
             return Center(
               child: Dialog(
-                insetPadding: EdgeInsets.symmetric(horizontal: 25),
+                insetPadding: EdgeInsets.symmetric(horizontal: 10),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20.0),
                 ),
@@ -213,12 +267,12 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                     color: AppColors.kblue,
                                     fontWeight: FontWeight.w600),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 2),
-                                child: Image.asset(
-                                  'assets/icons/support_icon.png',
-                                ),
-                              )
+                              // Padding(
+                              //   padding: const EdgeInsets.only(left: 2),
+                              //   child: Image.asset(
+                              //     'assets/icons/support_icon.png',
+                              //   ),
+                              // )
                             ],
                           ),
                           GestureDetector(
@@ -239,156 +293,275 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             GetBuilder<ParcelController>(builder: (controller) {
-                              if (parcelController
-                                  .additionalServiceLoading.isTrue) {
-                                return Center(
-                                    child: CircularProgressIndicator());
-                              }
-                              if (parcelController
-                                  .additionalServiceData.isEmpty) {
-                                return Center(
-                                    child: Container(
-                                        alignment: Alignment.center,
-                                        height: 200.h,
-                                        width: 200.w,
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey.withOpacity(.09),
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                        child: Text("No data")));
-                              }
                               return ListView.builder(
-                                  itemCount:
-                                      controller.additionalServiceData.length,
-                                  shrinkWrap: true,
-                                  itemBuilder: ((context, index) {
-                                    AdditionalServiceData serviceData =
-                                        controller.additionalServiceData[index];
-                                    return GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          isCheck[index] = !isCheck[index];
-                                          double amount = double.tryParse(
-                                                  serviceData.amount) ??
-                                              0.0; // Convert amount to double
-                                          if (isCheck[index] == true) {
-                                            selectedvehicleservice
-                                                .add(serviceData);
-                                            totalAmount +=
-                                                amount; // Add amount to total
-                                          } else {
-                                            selectedvehicleservice
-                                                .remove(serviceData);
-                                            totalAmount -=
-                                                amount; // Subtract amount from total
-                                          }
-                                        });
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(5.0),
-                                        child: Container(
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  GestureDetector(
-                                                    onTap: () {
-                                                      setState(() {
-                                                        isCheck[index] =
-                                                            !isCheck[index];
-                                                        double amount = double
-                                                                .tryParse(
-                                                                    serviceData
-                                                                        .amount) ??
-                                                            0.0; // Convert amount to double
-                                                        if (isCheck[index] ==
-                                                            true) {
-                                                          selectedvehicleservice
-                                                              .add(serviceData);
-                                                          totalAmount +=
-                                                              amount; // Add amount to total
-                                                        } else {
-                                                          selectedvehicleservice
-                                                              .remove(
-                                                                  serviceData);
-                                                          totalAmount -=
-                                                              amount; // Subtract amount from total
-                                                        }
-                                                      });
-                                                    },
-                                                    child: Container(
-                                                      height: 20.h,
-                                                      width: 20.w,
-                                                      decoration: BoxDecoration(
-                                                          border: Border.all(
-                                                              width: 1,
-                                                              color: AppColors
-                                                                  .kblue),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(5)),
-                                                      child: isCheck[index]
-                                                          ? Image.asset(
-                                                              "assets/icons/7-Check.png")
-                                                          : Text(""),
-                                                    ),
+                                itemCount:
+                                   controller.additionalServiceData.length,
+                                shrinkWrap: true,
+                                itemBuilder: ((context, index) {
+                                 AdditionalServiceData serviceData =
+                                         controller.additionalServiceData[index];
+                                         double totalManPower = calculateManPower(updateValue, double.parse(serviceData.amount));
+                                         double totalStairCase = calculateStairCase(count, double.parse(serviceData.amount));
+                                   // If it's the first index, add increment and decrement buttons
+                                if (index == 0) {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  isCheck[index] = !isCheck[index];
+                                                  if (isCheck[index]) {
+                                                    selectedvehicleservice.add(serviceData);
+                                                  } else {
+                                                    selectedvehicleservice.remove(serviceData);
+                                                  }
+                                                });
+                                              },
+                                              child: Container(
+                                                height: 18.h,
+                                                width: 18.w,
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                    width: 1,
+                                                    color: AppColors.kblue,
                                                   ),
-                                                  SizedBox(width: 10),
-                                                  Text(
-                                                    controller
-                                                        .additionalServiceData[
-                                                            index]
-                                                        .name,
+                                                  borderRadius: BorderRadius.circular(5),
+                                                ),
+                                                child: isCheck[index]
+                                                    ? Image.asset("assets/icons/7-Check.png")
+                                                    : Text(""),
+                                              ),
+                                            ),
+                                            SizedBox(width: 8),
+                                            Text(
+                                              serviceData.name,
+                                              style: primaryfont.copyWith(
+                                                fontSize: 13.sp,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                            Ksizedboxw10,
+  Row(
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () => decrementValue(setState),
+                                              child: Icon(Icons.remove, color: Colors.black),
+                                            ),
+                                            SizedBox(width: 8),
+                                            Text(
+                                              "$updateValue",
+                                              style: primaryfont.copyWith(
+                                                fontSize: 13.sp,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                            SizedBox(width: 8),
+                                            GestureDetector(
+                                              onTap: () => addValue(setState),
+                                              child: Icon(Icons.add, color: Colors.black),
+                                            ),
+                                          ],
+                                        ),
+                                          ],
+                                        ),
+                                        Row(
+                                              children: [
+                                                Text(
+                                                     "+\$${totalManPower}",
+                                                    // "+\$${controller.additionalServiceData[index].amount}",
                                                     style: primaryfont.copyWith(
-                                                      fontSize: 15.sp,
+                                                      fontSize: 13.sp,
                                                       fontWeight:
                                                           FontWeight.w600,
-                                                    ),
+                                                    ))
+                                              ],
+                                            ),
+                                      ],
+                                    ),
+                                  );
+                                } else if (index == 3){
+                                  return Padding(          
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  isCheck[index] = !isCheck[index];
+                                                  if (isCheck[index]) {
+                                                    selectedvehicleservice.add(serviceData);
+                                                  } else {
+                                                    selectedvehicleservice.remove(serviceData);
+                                                  }
+                                                });
+                                              },
+                                              child: Container(
+                                                height: 18.h,
+                                                width: 18.w,
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                    width: 1,
+                                                    color: AppColors.kblue,
                                                   ),
-                                                ],
+                                                  borderRadius: BorderRadius.circular(5),
+                                                ),
+                                                child: isCheck[index]
+                                                    ? Image.asset("assets/icons/7-Check.png")
+                                                    :  Text(""),
                                               ),
-                                              Row(
-                                                children: [
-                                                  Text(
-                                                      "+\$${controller.additionalServiceData[index].amount}",
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                        fontSize: 15.sp,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                      ))
-                                                ],
+                                            ),
+                                            SizedBox(width: 8),
+                                            Text(
+                                              serviceData.name,
+                                              style: primaryfont.copyWith(
+                                                fontSize: 13.sp,
+                                                fontWeight: FontWeight.w600,
                                               ),
-                                            ],
-                                          ),
+                                            ),
+                                            Ksizedboxw10,
+  Row(
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () => decrementCount(setState),
+                                              child: Icon(Icons.remove, color: Colors.black),
+                                            ),
+                                            SizedBox(width: 8),
+                                            Text(
+                                              "$count",
+                                              style: primaryfont.copyWith(
+                                                fontSize: 13.sp,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                            SizedBox(width: 8),
+                                            GestureDetector(
+                                              onTap: () => addCount(setState),
+                                              child: Icon(Icons.add, color: Colors.black),
+                                            ),
+                                          ],
+                                        ),
+                                          ],
+                                        ),
+                                        Row(
+                                              children: [
+                                                Text(
+                                                    "+\$${ totalStairCase}",
+                                                    style: primaryfont.copyWith(
+                                                      fontSize: 13.sp,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ))
+                                              ],
+                                            ),
+                                      ],
+                                    ),
+                                  );
+                                }
+                                  return Padding(
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        setState(
+                                          () {
+                                            isCheck[index] = !isCheck[index];
+                                            if (isCheck[index] == true) {
+                                              selectedvehicleservice
+                                                  .add(serviceData);
+                                            } else {
+                                              selectedvehicleservice
+                                                  .remove(serviceData);
+                                            }
+                                          },
+                                        );
+                                      },
+                                      child: Container(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    setState(
+                                                      () {
+                                                       isCheck[index] = !isCheck[index];
+                                            if (isCheck[index] == true) {
+                                              selectedvehicleservice
+                                                  .add(serviceData);
+                                            } else {
+                                              selectedvehicleservice
+                                                  .remove(serviceData);
+                                            }
+                                            },
+                                                    );
+                                                  },
+                                                  child: Container(
+                                                    height: 18.h,
+                                                    width: 18.w,
+                                                    decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                            width: 1,
+                                                            color: AppColors
+                                                                .kblue),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(5)),
+                                                    child: isCheck[index]
+                                                        ? Image.asset(
+                                                            "assets/icons/7-Check.png")
+                                                        : Text(""),
+                                                  ),
+                                                ),
+                                                SizedBox(width: 8),
+                                                Text(
+                                              serviceData
+                                                      .name,
+                                                  style: primaryfont.copyWith(
+                                                    fontSize: 13.sp,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                    "+\$${serviceData.amount}",
+                                                    style: primaryfont.copyWith(
+                                                      fontSize: 13.sp,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    )),
+                                              ],
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                    );
-                                  }));
+                                    ),
+                                  );
+                                }),
+                              );
                             }),
                           ],
                         ),
                       ),
-                      // Padding(
-                      //   padding: const EdgeInsets.only(top: 10),
-                      //   child: Text(
-                      //     "Total: \$${totalAmount.toStringAsFixed(2)}",
-                      //     style: primaryfont.copyWith(
-                      //       fontSize: 16.sp,
-                      //       fontWeight: FontWeight.w600,
-                      //       color: AppColors.kblue,
-                      //     ),
-                      //   ),
-                      // ),
                       TextButton(
                           onPressed: () {
                             setState(() {
-                              savedSelectItem =
-                                  List.from(selectedvehicleservice);
+
+                              savedSelectItem = List.from(selectedvehicleservice);
+
                             });
+
                             Navigator.of(context).pop(savedSelectItem);
                           },
                           child: CommonContainer(
@@ -720,17 +893,14 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                                         children: [
                                                           if (index != 0)
                                                             Row(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .end,
+                                                              mainAxisAlignment: MainAxisAlignment.end,
                                                               children: [
                                                                 IconButton(
                                                                     onPressed:
                                                                         () {
                                                                       setState(
                                                                           () {
-                                                                        homeController
-                                                                            .removeVehicalEntry(index);
+                                                                        homeController.removeVehicalEntry(index);
                                                                         // homeController
                                                                         //     .removeParcelList(index);
                                                                       });
@@ -751,8 +921,7 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                                                   setState(() {
                                                                     homeController
                                                                       ..addVehicalEntry();
-                                                                    // homeController
-                                                                    //     .addParcelList();
+                                                            
                                                                   });
                                                                 },
                                                                 child: Icon(
@@ -931,7 +1100,7 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                                       width: 25,
                                                     ),
                                                   ),
-                                                  Ksizedboxw5,
+                                                  // Ksizedboxw5,
                                                   Text(
                                                     type.name,
                                                     style: TextStyle(
@@ -945,7 +1114,7 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                                   Padding(
                                                     padding:
                                                         const EdgeInsets.only(
-                                                            left: 10),
+                                                            left: 5),
                                                     child: Text(
                                                       type.description,
                                                       style: TextStyle(
@@ -1255,8 +1424,12 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                             homeController
                                                 .vehicledroppingLocations
                                                 .toList();
-                                        Get.to(DriverBookingDetails(
+                                                if (widget.vehiclepickupAdress.isNotEmpty && _formatTime(pickTime!).isNotEmpty && formatDateTime.isNotEmpty &&  deliveryNotesController.text.isNotEmpty) {
+                                           Get.to(DriverBookingDetails(
+                                          unitId: widget.vehiclepickupunitId,
+                                          vehicleUnitId: homeController.vehiclereceiverUnitIDs,
                                           additionalTotal:
+                                          
                                               totalAmount.toStringAsFixed(2),
                                           roundTrip:
                                               homeController.roundChecked.value,
@@ -1279,7 +1452,7 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                           vehiclepickuplong:
                                               widget.vehiclepickuplong,
                                           vehiclepickupunitIdBlockID:
-                                              widget.vehiclepickupunitIdBlockID,
+                                              widget.vehiclepickupunitIdBlockIDs,
                                           vehiclepickupsendername:
                                               widget.vehiclepickupsendername,
                                           vehicleSenderMobilenumber:
@@ -1304,6 +1477,8 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                                   .vehiclereceiverNumberList,
                                         ));
                                       }
+                                                }
+                                       
                                     },
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
@@ -1327,525 +1502,4 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
       ),
     );
   }
-
-  // void showPickerDialog(BuildContext context) {
-  //   showModalBottomSheet(
-  //       context: context,
-  //       builder: (BuildContext bc) {
-  //         return SafeArea(
-  //           child: Wrap(
-  //             children: <Widget>[
-  //               ListTile(
-  //                 leading: Icon(Icons.photo_library),
-  //                 title: Text('Photo Library'),
-  //                 onTap: () {
-  //                   pickImage(ImageSource.gallery);
-  //                   Navigator.of(context).pop();
-  //                 },
-  //               ),
-  //               ListTile(
-  //                 leading: Icon(Icons.photo_camera),
-  //                 title: Text('Camera'),
-  //                 onTap: () {
-  //                   pickImage(ImageSource.camera);
-  //                   Navigator.of(context).pop();
-  //                 },
-  //               ),
-  //             ],
-  //           ),
-  //         );
-  //       });
-  // }
-
-  // void showListViewDialog(BuildContext context) {
-  //   // List<String> list = [
-  //   //   "Manpower Service",
-  //   //   "Post Invoice (Ex, Stamp)",
-  //   //   "Staircase",
-  //   //   "OTP Verification",
-  //   //   "Fragile Item",
-  //   //   "Access restricted area"
-  //   // ];
-
-  //   // List<bool> isCheck = List<bool>.filled(list.length, false);
-
-  //   bool isCheck1 = false;
-  //   bool isCheck2 = false;
-  //   bool isCheck3 = false;
-  //   bool isCheck4 = false;
-  //   bool isCheck5 = false;
-  //   bool isCheck6 = false;
-
-  //   int updateValue = 0;
-  //   int maxValue = 3;
-
-  //   addValue() {
-  //     setState(() {
-  //       if (updateValue < maxValue) {
-  //         updateValue++;
-  //       }
-  //     });
-  //   }
-
-  //   decrementValue() {
-  //     setState(() {
-  //       if (updateValue > 0) {
-  //         updateValue--;
-  //       }
-  //     });
-  //   }
-
-  //   int count = 0;
-  //   int maxCount = 12;
-
-  //   addCount() {
-  //     setState(() {
-  //       if (count < maxCount) {
-  //         count++;
-  //       }
-  //     });
-  //   }
-
-  //   decrementCount() {
-  //     setState(() {
-  //       if (count > 0) {
-  //         count--;
-  //       }
-  //     });
-  //   }
-
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return StatefulBuilder(
-  //           builder: (BuildContext context, StateSetter setState) {
-  //         return AlertDialog(
-  //           insetPadding: EdgeInsets.all(10),
-  //           scrollable: false,
-  //           title: Row(
-  //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //             children: [
-  //               Row(
-  //                 children: [
-  //                   Text(
-  //                     'Additional Services',
-  //                     style: primaryfont.copyWith(
-  //                         fontSize: 16.sp,
-  //                         color: AppColors.kblue,
-  //                         fontWeight: FontWeight.w600),
-  //                   ),
-  //                   Ksizedboxw10,
-  //                   Padding(
-  //                     padding: const EdgeInsets.only(left: 2),
-  //                     child: Image.asset(
-  //                       'assets/icons/support_icon.png',
-  //                     ),
-  //                   )
-  //                 ],
-  //               ),
-  //               GestureDetector(
-  //                 onTap: () {
-  //                   Get.back();
-  //                 },
-  //                 child: const Icon(
-  //                   Icons.cancel_outlined,
-  //                   size: 25,
-  //                   color: Colors.red,
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //           content: Padding(
-  //             padding: const EdgeInsets.only(bottom: 10),
-  //             child: Column(
-  //               mainAxisSize: MainAxisSize.min,
-  //               children: [
-  //                 Row(
-  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                   children: [
-  //                     Row(
-  //                       children: [
-  //                         GestureDetector(
-  //                           onTap: () {
-  //                             setState(
-  //                               () {
-  //                                 isCheck1 = !isCheck1;
-  //                               },
-  //                             );
-  //                           },
-  //                           child: Container(
-  //                             height: 20.h,
-  //                             width: 20.w,
-  //                             decoration: BoxDecoration(
-  //                                 border: Border.all(
-  //                                     width: 1, color: AppColors.kblue),
-  //                                 borderRadius: BorderRadius.circular(5)),
-  //                             child: isCheck1 == true
-  //                                 ? Image.asset("assets/icons/7-Check.png")
-  //                                 : Text(""),
-  //                           ),
-  //                         ),
-  //                         Ksizedboxw10,
-  //                         Text(
-  //                           "Manpower Service",
-  //                           style: primaryfont.copyWith(
-  //                             fontSize: 15.sp,
-  //                             fontWeight: FontWeight.w600,
-  //                           ),
-  //                         ),
-  //                         IconButton(
-  //                           onPressed: () {
-  //                             setState(
-  //                               () {
-  //                                 decrementValue();
-  //                               },
-  //                             );
-  //                           },
-  //                           icon: Container(
-  //                             height: 20.h,
-  //                             width: 20.h,
-  //                             decoration: BoxDecoration(
-  //                                 border: Border.all(
-  //                                     color: AppColors.kblue, width: 1),
-  //                                 shape: BoxShape.circle),
-  //                             child: Icon(
-  //                               Icons.remove_outlined,
-  //                               color: AppColors.kblue,
-  //                               size: 12.sp,
-  //                             ),
-  //                           ),
-  //                         ),
-  //                         Text(updateValue.toString()),
-  //                         IconButton(
-  //                           onPressed: () {
-  //                             setState(
-  //                               () {
-  //                                 addValue();
-  //                               },
-  //                             );
-  //                           },
-  //                           icon: Container(
-  //                             height: 20.h,
-  //                             width: 20.h,
-  //                             decoration: BoxDecoration(
-  //                                 border: Border.all(
-  //                                     color: AppColors.kblue, width: 1),
-  //                                 shape: BoxShape.circle),
-  //                             child: Icon(
-  //                               Icons.add_outlined,
-  //                               color: AppColors.kblue,
-  //                               size: 12.sp,
-  //                             ),
-  //                           ),
-  //                         ),
-  //                       ],
-  //                     ),
-  //                     Row(
-  //                       children: [
-  //                         Text("+\$30",
-  //                             style: primaryfont.copyWith(
-  //                               fontSize: 15.sp,
-  //                               fontWeight: FontWeight.w600,
-  //                             ))
-  //                       ],
-  //                     )
-  //                   ],
-  //                 ),
-  //                 Row(
-  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                   children: [
-  //                     Row(
-  //                       children: [
-  //                         GestureDetector(
-  //                           onTap: () {
-  //                             setState(
-  //                               () {
-  //                                 isCheck2 = !isCheck2;
-  //                               },
-  //                             );
-  //                           },
-  //                           child: Container(
-  //                             height: 20.h,
-  //                             width: 20.w,
-  //                             decoration: BoxDecoration(
-  //                                 border: Border.all(
-  //                                     width: 1, color: AppColors.kblue),
-  //                                 borderRadius: BorderRadius.circular(5)),
-  //                             child: isCheck2 == true
-  //                                 ? Image.asset("assets/icons/7-Check.png")
-  //                                 : Text(""),
-  //                           ),
-  //                         ),
-  //                         Ksizedboxw10,
-  //                         Text(
-  //                           "Post Invoice (Ex, Stamp)",
-  //                           style: primaryfont.copyWith(
-  //                             fontSize: 15.sp,
-  //                             fontWeight: FontWeight.w600,
-  //                           ),
-  //                         ),
-  //                       ],
-  //                     ),
-  //                     Row(
-  //                       children: [
-  //                         Text("+\$30",
-  //                             style: primaryfont.copyWith(
-  //                               fontSize: 15.sp,
-  //                               fontWeight: FontWeight.w600,
-  //                             ))
-  //                       ],
-  //                     )
-  //                   ],
-  //                 ),
-  //                 Row(
-  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                   children: [
-  //                     Row(
-  //                       children: [
-  //                         GestureDetector(
-  //                           onTap: () {
-  //                             setState(
-  //                               () {
-  //                                 isCheck3 = !isCheck3;
-  //                               },
-  //                             );
-  //                           },
-  //                           child: Container(
-  //                             height: 20.h,
-  //                             width: 20.w,
-  //                             decoration: BoxDecoration(
-  //                                 border: Border.all(
-  //                                     width: 1, color: AppColors.kblue),
-  //                                 borderRadius: BorderRadius.circular(5)),
-  //                             child: isCheck3 == true
-  //                                 ? Image.asset("assets/icons/7-Check.png")
-  //                                 : Text(""),
-  //                           ),
-  //                         ),
-  //                         Ksizedboxw10,
-  //                         Container(
-  //                           width: 70.h,
-  //                           child: Text(
-  //                             "Staircase",
-  //                             style: primaryfont.copyWith(
-  //                               fontSize: 15.sp,
-  //                               fontWeight: FontWeight.w600,
-  //                             ),
-  //                           ),
-  //                         ),
-  //                         IconButton(
-  //                           onPressed: () {
-  //                             setState(
-  //                               () {
-  //                                 decrementCount();
-  //                               },
-  //                             );
-  //                           },
-  //                           icon: Container(
-  //                             height: 20.h,
-  //                             width: 20.h,
-  //                             decoration: BoxDecoration(
-  //                                 border: Border.all(
-  //                                     color: AppColors.kblue, width: 1),
-  //                                 shape: BoxShape.circle),
-  //                             child: Icon(
-  //                               Icons.remove_outlined,
-  //                               color: AppColors.kblue,
-  //                               size: 15.sp,
-  //                             ),
-  //                           ),
-  //                         ),
-  //                         Text(count.toString()),
-  //                         IconButton(
-  //                           onPressed: () {
-  //                             setState(
-  //                               () {
-  //                                 addCount();
-  //                               },
-  //                             );
-  //                           },
-  //                           icon: Container(
-  //                             height: 20.h,
-  //                             width: 20.h,
-  //                             decoration: BoxDecoration(
-  //                                 border: Border.all(
-  //                                     color: AppColors.kblue, width: 1),
-  //                                 shape: BoxShape.circle),
-  //                             child: Icon(
-  //                               Icons.add_outlined,
-  //                               color: AppColors.kblue,
-  //                               size: 15.sp,
-  //                             ),
-  //                           ),
-  //                         ),
-  //                       ],
-  //                     ),
-  //                     Row(
-  //                       children: [
-  //                         Text("+\$30",
-  //                             style: primaryfont.copyWith(
-  //                               fontSize: 15.sp,
-  //                               fontWeight: FontWeight.w600,
-  //                             ))
-  //                       ],
-  //                     )
-  //                   ],
-  //                 ),
-  //                 Row(
-  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                   children: [
-  //                     Row(
-  //                       children: [
-  //                         GestureDetector(
-  //                           onTap: () {
-  //                             setState(
-  //                               () {
-  //                                 isCheck4 = !isCheck4;
-  //                               },
-  //                             );
-  //                           },
-  //                           child: Container(
-  //                             height: 20.h,
-  //                             width: 20.w,
-  //                             decoration: BoxDecoration(
-  //                                 border: Border.all(
-  //                                     width: 1, color: AppColors.kblue),
-  //                                 borderRadius: BorderRadius.circular(5)),
-  //                             child: isCheck4 == true
-  //                                 ? Image.asset("assets/icons/7-Check.png")
-  //                                 : Text(""),
-  //                           ),
-  //                         ),
-  //                         Ksizedboxw10,
-  //                         Text(
-  //                           "OTP Verification",
-  //                           style: primaryfont.copyWith(
-  //                             fontSize: 15.sp,
-  //                             fontWeight: FontWeight.w600,
-  //                           ),
-  //                         ),
-  //                       ],
-  //                     ),
-  //                     Row(
-  //                       children: [
-  //                         Text("+\$30",
-  //                             style: primaryfont.copyWith(
-  //                               fontSize: 15.sp,
-  //                               fontWeight: FontWeight.w600,
-  //                             ))
-  //                       ],
-  //                     )
-  //                   ],
-  //                 ),
-  //                 ksizedbox15,
-  //                 Row(
-  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                   children: [
-  //                     Row(
-  //                       children: [
-  //                         GestureDetector(
-  //                           onTap: () {
-  //                             setState(
-  //                               () {
-  //                                 isCheck5 = !isCheck5;
-  //                               },
-  //                             );
-  //                           },
-  //                           child: Container(
-  //                             height: 20.h,
-  //                             width: 20.w,
-  //                             decoration: BoxDecoration(
-  //                                 border: Border.all(
-  //                                     width: 1, color: AppColors.kblue),
-  //                                 borderRadius: BorderRadius.circular(5)),
-  //                             child: isCheck5 == true
-  //                                 ? Image.asset("assets/icons/7-Check.png")
-  //                                 : Text(""),
-  //                           ),
-  //                         ),
-  //                         Ksizedboxw10,
-  //                         Text(
-  //                           "Fragile Item",
-  //                           style: primaryfont.copyWith(
-  //                             fontSize: 15.sp,
-  //                             fontWeight: FontWeight.w600,
-  //                           ),
-  //                         ),
-  //                       ],
-  //                     ),
-  //                     Row(
-  //                       children: [
-  //                         Text("+\$30",
-  //                             style: primaryfont.copyWith(
-  //                               fontSize: 15.sp,
-  //                               fontWeight: FontWeight.w600,
-  //                             ))
-  //                       ],
-  //                     )
-  //                   ],
-  //                 ),
-  //                 ksizedbox15,
-  //                 Row(
-  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                   children: [
-  //                     Row(
-  //                       children: [
-  //                         GestureDetector(
-  //                           onTap: () {
-  //                             setState(
-  //                               () {
-  //                                 isCheck6 = !isCheck6;
-  //                               },
-  //                             );
-  //                           },
-  //                           child: Container(
-  //                             height: 20.h,
-  //                             width: 20.w,
-  //                             decoration: BoxDecoration(
-  //                                 border: Border.all(
-  //                                     width: 1, color: AppColors.kblue),
-  //                                 borderRadius: BorderRadius.circular(5)),
-  //                             child: isCheck6 == true
-  //                                 ? Image.asset("assets/icons/7-Check.png")
-  //                                 : Text(""),
-  //                           ),
-  //                         ),
-  //                         Ksizedboxw10,
-  //                         Text(
-  //                           "Access restricted area",
-  //                           style: primaryfont.copyWith(
-  //                             fontSize: 15.sp,
-  //                             fontWeight: FontWeight.w600,
-  //                           ),
-  //                         ),
-  //                       ],
-  //                     ),
-  //                     Row(
-  //                       children: [
-  //                         Text("+\$30",
-  //                             style: primaryfont.copyWith(
-  //                               fontSize: 15.sp,
-  //                               fontWeight: FontWeight.w600,
-  //                             ))
-  //                       ],
-  //                     )
-  //                   ],
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //           actions: [
-  //             TextButton(
-  //                 onPressed: () {
-  //                   Navigator.of(context).pop();
-  //                 },
-  //                 child: CommonContainer(
-  //                   name: 'Confirm',
-  //                 )),
-  //           ],
-  //         );
-  //       });
-  //     },
-  //   );
-  // }
 }

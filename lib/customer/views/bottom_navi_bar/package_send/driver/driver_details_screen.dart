@@ -22,6 +22,7 @@ import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/driv
 import 'package:intl/intl.dart';
 
 class DriverDetailsScreen extends StatefulWidget {
+  
   GetAcceptBookingdata? getAcceptBookingdata;
 
   DriverDetailsScreen({

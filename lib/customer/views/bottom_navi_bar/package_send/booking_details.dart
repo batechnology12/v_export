@@ -30,6 +30,7 @@ class BookingDetailsScreen extends StatefulWidget {
   String bookingDATE;
   String deliveryTYPE;
   int deliveryTypeID;
+  String unitId;
   List<String> parcelLengtH;
   List<String> parcelWidth;
   List<String> parcelHeight;
@@ -60,8 +61,12 @@ class BookingDetailsScreen extends StatefulWidget {
   String roundtrip;
   String parcelofKg;
   String parcelofQty;
+  List<String> receiverunitId;
+
   BookingDetailsScreen(
       {super.key,
+      required this.unitId,
+      required this.receiverunitId,
       required this.parcelofKg,
       required this.parcelofQty,
       required this.roundtrip,
@@ -171,7 +176,9 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
 
           double discountedPrice = price;
           if (qty >= 2) {
-            discountedPrice *= 0.6; // Apply 40% discount
+            discountedPrice *= 0.40; // Apply 40% discount
+          }else if (qty >= 6){
+            discountedPrice *= 0.60; // 60% discount
           }
 
           // amount += (discountedPrice * qty) + distanceCost;
@@ -540,6 +547,8 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                                   child: RichText(
                                                     text: TextSpan(
                                                       text:
+                                                       index == 0 ?
+                                                          'Address:-               : ' :
                                                           'Address:- ${index + 1}        : ',
                                                       style:
                                                           primaryfont.copyWith(
@@ -1048,6 +1057,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                           )
                                         ],
                                       ),
+                                      ksizedbox5,
                                       ListView.builder(
                                           shrinkWrap: true,
                                           // itemCount: 2,
@@ -1106,9 +1116,9 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                             ),
                                           ),
                                           Text(
+                                        //    "",
                                             "\$${amount.toStringAsFixed(2)}",
-                                            // totalAmount.toStringAsFixed(2),
-                                            //  '\$${widget.totalAmount}',\
+                                     
 
                                             style: primaryfont.copyWith(
                                               fontSize: 14.sp,
@@ -1165,41 +1175,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                         ));
                                       }
                                       print(products);
-                                      // List<Product> products = List.generate(
-                                      //     widget.parcelLengtH.length, (index) {
-                                      //   return Product(
-                                      //     parcelItems: widget.parcelITEMS,
-                                      //     length: widget.parcelLengtH[index],
-                                      //     width: widget.parcelWidth[index],
-                                      //     height: widget.parcelHeight[index],
-                                      //     qty: widget.parcelQty[index],
-                                      //     kg: widget.parcelKg[index],
-                                      //     pickupTimeFrom: widget.pickTimeFROM!,
-                                      //     pickupTimeTo: widget.pickTimeTO!,
-                                      //     deliveryDate: widget.deliveyDate,
-                                      //     deliveryTimeFrom:
-                                      //         widget.deliveryTimeFROM,
-                                      //     deliveryTimeTo: widget.deliveryTimeTO,
-                                      //   );
-                                      // });
-                                      // List<Product> products = [
-                                      //   Product(
-                                      //       parcelItems: widget.parcelITEMS,
-                                      //       length: widget.parcelLengtH,
-                                      //       width: widget.parcelHeight,
-                                      //       height: widget.parcelHeight,
-                                      //       qty: widget.parcelQty,
-                                      //       kg: widget.parcelKg,
-                                      //       pickupTimeFrom:
-                                      //           widget.pickTimeFROM!,
-                                      //       pickupTimeTo: widget.pickTimeTO!,
-                                      //       deliveryDate: widget.deliveyDate,
-                                      //       deliveryTimeFrom:
-                                      //           widget.deliveryTimeFROM,
-                                      //       deliveryTimeTo:
-                                      //           widget.deliveryTimeTO)
-                                      // ];
-
+                                    
                                       String diliverystatus = "0";
                                       List<BookingAddress> bookingAddress = [];
 
@@ -1207,6 +1183,8 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                           index < widget.droppingADDRESS.length;
                                           index++) {
                                         bookingAddress.add(BookingAddress(
+                                          uintIdList: widget.receiverunitId,
+
                                           customerName: widget.senderNAME,
                                           customerMobile: widget.phoneNUMBER,
                                           unitNoBlockNo:
@@ -1285,6 +1263,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                       AddBookingParcelModel
                                           addBookingParcelModel =
                                           AddBookingParcelModel(
+                                            unitId: widget.unitId,
                                               senderUnitId:
                                                   widget.senderunitIdBlockID,
                                               totalAmountCost:
@@ -1294,15 +1273,15 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                               deliveryTypeid: widget
                                                   .deliveryTypeID
                                                   .toString(),
-                                              paymentMode: "COD",
+                                              paymentMode: "",
                                               bookingAmount:
                                                   amount.toStringAsFixed(2),
                                               gst: "0",
                                               additionalTotal:
                                                   additionalServiceAmount
                                                       .toStringAsFixed(2),
-                                              totalAmount:
-                                                  amount.toStringAsFixed(2),
+                                              totalAmount: 
+                                                amount.toStringAsFixed(2),
                                               isRoundTrip: widget.roundtrip,
                                               bookingDate: widget.bookingDATE,
                                               pickupTimeFrom:

@@ -201,9 +201,9 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                           ),
                         ),
                         ksizedbox20,
-                        Row(
+                        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Column(
+                            Column(crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   "Enter Block no",
@@ -239,7 +239,7 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                                                     top: 10,
                                                     bottom: 16),
                                             hintText:
-                                                'Enter Block no / Unit no',
+                                                'Enter Block no',
                                             hintStyle: primaryfont.copyWith(
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.w500),
@@ -255,7 +255,7 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                                 ),
                               ],
                             ),
-                            Column(
+                            Column(crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   "Enter Unit no",
@@ -280,7 +280,6 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                                         controller: receiverUnitIdController,
                                         inputFormatters: [
                                           LengthLimitingTextInputFormatter(4),
-                                          //  FilteringTextInputFormatter.digitsOnly,
                                         ],
                                         decoration: InputDecoration(
                                             contentPadding:
@@ -290,7 +289,7 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                                                     top: 10,
                                                     bottom: 16),
                                             hintText:
-                                                'Enter Block no / Unit no',
+                                                'Enter Unit no',
                                             hintStyle: primaryfont.copyWith(
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.w500),
@@ -371,28 +370,33 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                             FilteringTextInputFormatter.deny(RegExp(r'\s')),
                           ],
                           decoration: InputDecoration(
-                            prefixIcon: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 13,
-                                  horizontal: 6), // Reduced padding
-                              child: Text(
-                                "+65",
-                                style: primaryfont.copyWith(
-                                  fontSize: 14, // Reduced font size
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                  contentPadding: EdgeInsets.only( top: 13),
+                             prefixIcon: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                     
+                                    height: 30,
+                                    width: 50,
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                     "+65",
+                                      style: primaryfont.copyWith(
+                                        fontSize: 14, // Adjust font size
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 5),
+                                ],
                               ),
-                            ),
                             fillColor: AppColors.kwhite,
                             filled: true,
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 6), // Reduced padding
-                            hintText: "Enter Sender Number",
-                            hintStyle: primaryfont.copyWith(
-                              color: Colors.grey,
-                              fontSize: 14, // Reduced font size
-                              fontWeight: FontWeight.w100,
-                            ),
+              
+                            hintText: 'Enter Phone Name',
+                                  hintStyle: primaryfont.copyWith(
+                                      fontSize: 14,
+                                                                         fontWeight: FontWeight.w500),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -414,6 +418,7 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                               ),
                               borderRadius: BorderRadius.circular(10),
                             ),
+                            
                           ),
                         ),
                         ksizedbox20,
@@ -433,29 +438,17 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                                   receiverNameController.text,
                                   receiverNumberController.text,
                                   receiverBlockIdUnitIdController.text,
+receiverUnitIdController.text
                                 );
-                                print(
-                                    "----------------------------------------------....");
-                                print(
-                                    "Pickup Location: ${homeController.pickupVehicleLocation.value}");
-                                print(
-                                    "Pickup Latitude: ${homeController.pickupVehiclelatitude.value}");
-                                print(
-                                    "Pickup Longitude: ${homeController.pickupVehiclelongitude.value}");
-                                print(
-                                    "Sender Name: ${homeController.pickupVehicleSenderName.value}");
-                                print(
-                                    "Sender Number: ${homeController.pickupVehicleSenderNumber.value}");
-                                print(
-                                    "Block Unit ID: ${homeController.pickupVehicleblockUnitId.value}");
                                 Get.offAll(BookVehicleScreen(
+                                  vehiclepickupunitId: receiverUnitIdController.text,
                                   vehiclepickupAdress: homeController
                                       .pickupVehicleLocation.value,
                                   vehiclepickuplat: homeController
                                       .pickupVehiclelatitude.value,
                                   vehiclepickuplong: homeController
                                       .pickupVehiclelongitude.value,
-                                  vehiclepickupunitIdBlockID: homeController
+                                  vehiclepickupunitIdBlockIDs: homeController
                                       .pickupVehicleblockUnitId.value,
                                   vehiclepickupsendername: homeController
                                       .pickupVehicleSenderName.value,
@@ -833,16 +826,18 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                                   receiverNameController.text,
                                   receiverNumberController.text,
                                   receiverBlockIdUnitIdController.text,
+                                receiverUnitIdController.text,
                                 );
                                 // Get.back();
                                 Get.offAll(BookVehicleScreen(
+                                   vehiclepickupunitId: receiverUnitIdController.text,
                                   vehiclepickupAdress: homeController
                                       .pickupVehicleLocation.value,
                                   vehiclepickuplat: homeController
                                       .pickupVehiclelatitude.value,
                                   vehiclepickuplong: homeController
                                       .pickupVehiclelongitude.value,
-                                  vehiclepickupunitIdBlockID: homeController
+                                  vehiclepickupunitIdBlockIDs: homeController
                                       .pickupVehicleblockUnitId.value,
                                   vehiclepickupsendername: homeController
                                       .pickupVehicleSenderName.value,

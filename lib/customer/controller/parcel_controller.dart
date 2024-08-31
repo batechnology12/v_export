@@ -23,6 +23,7 @@ import 'package:v_export/customer/services/network/booking_api_service/get_vehic
 import 'package:v_export/customer/services/network/booking_api_service/ongoing_orders_api_service.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:v_export/customer/services/network/booking_api_service/sender_receiver_api_service.dart';
+import 'package:v_export/customer/services/network/booking_api_service/update_boioking_status_api_service.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/booking_details.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/driver_details_screen.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/pickup_address_details.dart';
@@ -57,7 +58,7 @@ class ParcelController extends GetxController {
       //   ongoingOrdersData.add(ongoingOrdersModel.data);
       // }
       // ongoingOrdersData.clear();
-
+    //ongoingOrdersData.clear();
       ongoingOrdersData.add(ongoingOrdersModel.data);
 
       update();
@@ -176,6 +177,7 @@ class ParcelController extends GetxController {
   RxBool addBookingLoading = false.obs;
   RxBool addBookingLoading1 = false.obs;
   BookingData? data;
+  int? parcelBookingId;
   addBookingParcel(AddBookingParcelModel addBookingParcelModel) async {
     addBookingLoading(true);
     addBookingLoading1(false);
@@ -186,10 +188,8 @@ class ParcelController extends GetxController {
     print("---------response");
     print(response.data);
     if (response.data["status"] == true) {
-      // GetBookingdetailsModeldata getBookingdetailsModeldata =
-      //     GetBookingdetailsModeldata.fromJson(response.data);
-      // data = getBookingdetailsModeldata.data;
-      //  driverbookingid = data!.id.toString();
+   parcelBookingId = response.data["data"]["id"];
+   
       Get.to(MakePayment());
       // Get.rawSnackbar(
       //   backgroundColor: Colors.green,
@@ -382,6 +382,32 @@ class ParcelController extends GetxController {
   senderReceiverApi(String bookingID, String payable) async {
     dio.Response<dynamic> response =
         await senderReceiverApiServices.senderReceiver(bookingID, payable);
+    if (response.data["status"] == true) {
+      Get.rawSnackbar(
+        backgroundColor: Colors.green,
+        messageText: Text(
+          response.data['message'],
+          style: TextStyle(color: Colors.white, fontSize: 15.sp),
+        ),
+      );
+      update();
+    } else {
+      Get.rawSnackbar(
+        backgroundColor: Colors.red,
+        messageText: Text(
+          response.data['message'],
+          style: TextStyle(color: Colors.white, fontSize: 15.sp),
+        ),
+      );
+    }
+  }
+
+  UpdateBookinStatusApiServices updateBookinStatusApiServices = UpdateBookinStatusApiServices();
+ RxBool  updateBookingStatusLoading = false.obs;
+  updateBookingSatusApi (String iD, String paymentMode) async {
+    updateBookingStatusLoading(true);
+   dio.Response<dynamic> response =await updateBookinStatusApiServices.updateBookingApi(iD: iD, paymentMode: paymentMode);
+   updateBookingStatusLoading(false);
     if (response.data["status"] == true) {
       Get.rawSnackbar(
         backgroundColor: Colors.green,

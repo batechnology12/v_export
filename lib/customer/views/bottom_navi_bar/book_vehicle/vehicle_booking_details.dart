@@ -16,14 +16,14 @@ import 'package:v_export/customer/views/notification/notification_view.dart';
 import 'package:intl/intl.dart';
 
 class DriverBookingDetails extends StatefulWidget {
-  // GetVehicleBookingDetailsData? getVehicleBookingDetailsDataList;
+ 
   String vehiclepickupAdress;
   String vehiclepickuplat;
   String vehiclepickuplong;
   String vehiclepickupunitIdBlockID;
   String vehiclepickupsendername;
   String vehicleSenderMobilenumber;
-
+ 
   List<AdditionalServiceData> selectedvehicleservice;
   List<String> vehicleDropAddress;
   List<String> vehicledroplat;
@@ -41,8 +41,12 @@ class DriverBookingDetails extends StatefulWidget {
   String imagePath;
   String roundTrip;
   String additionalTotal;
+  String unitId;
+  List<String> vehicleUnitId; 
   DriverBookingDetails(
       {super.key,
+      required this.unitId,
+      required this.vehicleUnitId,
       required this.additionalTotal,
       required this.roundTrip,
       required this.vehiclepickupAdress,
@@ -83,14 +87,7 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
   final HomeController homeController = Get.find<HomeController>();
   final easebuzzController = Get.find<EasebuszzController>();
   final ParcelController parcelController = Get.find<ParcelController>();
-  List paymentDetails = [
-    "Delivery Fees",
-    "Additional Surcharge",
-    "Additional Surcharge",
-    "Post Invoice",
-    "Fragil Item",
-    "GST"
-  ];
+
 
   final formKey = GlobalKey<FormState>();
 
@@ -105,6 +102,8 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
   List<int> selectedId = [];
 
   double additionalServiceAmount = 0.0;
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -294,7 +293,7 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
                                             TextSpan(
                                               text: widget
                                                   .vehiclepickupsendername,
-                                              // "sjdjd",
+                                            
                                               //  '${widget.getVehicleBookingDetailsDataList!.bookingDeliveryAddresses.first.customerName}',
                                               style: primaryfont.copyWith(
                                                   color: Colors.black,
@@ -363,6 +362,8 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
                                                   child: RichText(
                                                     text: TextSpan(
                                                       text:
+                                                         index == 0 ?
+                                                          'Address:-               : ' :
                                                           'Address:- ${index + 1}        : ',
                                                       style:
                                                           primaryfont.copyWith(
@@ -554,22 +555,24 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
                                                       additionalServiceData =
                                                       widget.selectedvehicleservice[
                                                           index];
-                                                  return widget
-                                                          .selectedvehicleservice
-                                                          .isEmpty
-                                                      ? Text(
-                                                          "No",
-                                                          style: primaryfont
-                                                              .copyWith(
-                                                                  fontSize:
-                                                                      15.sp,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500,
-                                                                  color: Color(
-                                                                      0xff455A64)),
-                                                        )
-                                                      : Container(
+                                                   return 
+                                                  // widget
+                                                  //         .selectedvehicleservice
+                                                  //         .isEmpty
+                                                  //     ? Text(
+                                                  //         "No",
+                                                  //         style: primaryfont
+                                                  //             .copyWith(
+                                                  //                 fontSize:
+                                                  //                     15.sp,
+                                                  //                 fontWeight:
+                                                  //                     FontWeight
+                                                  //                         .w500,
+                                                  //                 color: Color(
+                                                  //                     0xff455A64)),
+                                                  //       )
+                                                  //     : 
+                                                      Container(
                                                           width: 200,
                                                           alignment: Alignment
                                                               .centerLeft,
@@ -600,12 +603,7 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
                                 width: size.width,
                                 decoration: BoxDecoration(
                                     color: AppColors.kwhite,
-                                    // boxShadow: const <BoxShadow>[
-                                    //   BoxShadow(
-                                    //       offset: Offset(0.0, 0.75),
-                                    //       blurRadius: 2,
-                                    //       color: AppColors.kgrey)
-                                    // ],
+                                  
                                     borderRadius: BorderRadius.circular(10)),
                                 child: Padding(
                                   padding: const EdgeInsets.only(
@@ -674,29 +672,25 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
                                         child: TextField(
                                           controller: couponController,
                                           decoration: InputDecoration(
-                                              suffix: Padding(
-                                                padding: const EdgeInsets.only(
-                                                    bottom: 9),
-                                                child: Container(
-                                                  height: 40.h,
-                                                  width: 90.w,
-                                                  decoration: BoxDecoration(
-                                                      color: AppColors.kblue,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              12)),
-                                                  child: Center(
-                                                    child: Text(
-                                                      'Apply',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                              color: AppColors
-                                                                  .kwhite,
-                                                              fontSize: 14.sp,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600),
-                                                    ),
+                                              suffix: Container(
+                                                height: 40.h,
+                                                width: 90.w,
+                                                decoration: BoxDecoration(
+                                                    color: AppColors.kblue,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12)),
+                                                child: Center(
+                                                  child: Text(
+                                                    'Apply',
+                                                    style:
+                                                        primaryfont.copyWith(
+                                                            color: AppColors
+                                                                .kwhite,
+                                                            fontSize: 14.sp,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w600),
                                                   ),
                                                 ),
                                               ),
@@ -829,10 +823,11 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
                                     )
                                   : InkWell(
                                       onTap: () {
-                                        //
+                          
                                         List<BookingVehicleAddress>
                                             bookingAddress = [
                                           BookingVehicleAddress(
+                                            vehicleUnitId: widget.vehicleUnitId,
                                               senderName: widget
                                                   .vehiclepickupsendername,
                                               senderMobile: widget
@@ -857,13 +852,16 @@ class _BookingDetailsScreenState extends State<DriverBookingDetails> {
                                         AddBookingVehicleModel
                                             addBookingVehicleModel =
                                             AddBookingVehicleModel(
+                                              additionalDetailsQty: [],
+                                              senderUnitId: widget.vehiclepickupunitIdBlockID,
+                                              pickupunitId: widget.unitId,
                                                 bookingTime: widget.pickupTime,
-                                                // _formatTime(pickTime!),
+                                          
                                                 pickupAddress:
                                                     widget.vehiclepickupAdress,
                                                 vehicleType:
                                                     widget.vehicleItemsname,
-                                                paymentMode: "500",
+                                                paymentMode: "COD",
                                                 bookingAmount: "500",
                                                 gst: "500",
                                                 additionalTotal:

@@ -8,14 +8,7 @@ import 'package:v_export/customer/services/utils/base_url_api.dart';
 class AddBookingParcelsApiService extends BaseApiServices {
   Future addBookingParcel(AddBookingParcelModel addBookingParcelModel) async {
     dynamic responseJson;
-    // List<MultipartFile> multipartImageFiles = [];
-    // File? ;
-    // for (File imageFile in addBookingParcelModel.parcelPhoto!) {
-    //   String fileName = imageFile.path.split('/').last;
-    //   MultipartFile multipartFile =
-    //       await MultipartFile.fromFile(imageFile.path, filename: fileName);
-    //   multipartImageFiles.add(multipartFile);
-    // }
+
     try {
       var dio = Dio();
       final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -23,7 +16,7 @@ class AddBookingParcelsApiService extends BaseApiServices {
       FormData formData = FormData.fromMap({
         "delivery_type_id": addBookingParcelModel.deliveryTypeid,
         "pickup_addreess": addBookingParcelModel.pickupAddress,
-        "payment_mode": "COD",
+        "payment_mode": "",
         "booking_amount": addBookingParcelModel.totalAmount,
         "gst": "500",
         "additional_total": "600",
@@ -31,6 +24,7 @@ class AddBookingParcelsApiService extends BaseApiServices {
         "total_amount": addBookingParcelModel.totalAmountCost,
         "is_round_trip": addBookingParcelModel.isRoundTrip,
         "sender_unitno_blockno": addBookingParcelModel.senderUnitId,
+        "unitno" : addBookingParcelModel.unitId,
         "vehicle_type": "Bike",
         "booking_date": addBookingParcelModel.bookingDate,
         "pickuptime_from": addBookingParcelModel.pickupTimeFrom,
@@ -43,8 +37,9 @@ class AddBookingParcelsApiService extends BaseApiServices {
         "distance": addBookingParcelModel.distance,
         "booking_type": "parcel",
         for (int i = 0; i < addBookingParcelModel.additionalDetails.length; i++)
-          "additional_services_id[$i]":
+          "additional_services_id[$i][id]":
               addBookingParcelModel.additionalDetails[i],
+           "additional_services_id[0][qty]" : "",
         "notes": addBookingParcelModel.notes,
         "products": addBookingParcelModel.products
             .map((product) => {
@@ -76,6 +71,7 @@ class AddBookingParcelsApiService extends BaseApiServices {
                   "reciver_name": address.reciverName,
                   "reciver_mobile": address.reciverMobile,
                   "sender_unitno_blockno": address.reciverUnitIdBlockId,
+                  "unitno" : address.uintIdList,
                 })
             .toList(),
         "parcel_photo": addBookingParcelModel.parcelPhoto.trim().isEmpty

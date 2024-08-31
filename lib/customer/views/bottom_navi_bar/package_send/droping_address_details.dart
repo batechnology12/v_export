@@ -316,7 +316,7 @@ class _DropLocationState extends State<DropLocation> {
                               fontWeight: FontWeight.w600),
                         ),
                         ksizedbox5,
-                        TextFormField(
+                         TextFormField(
                           controller: receiverNumberController,
                           validator: (value) {
                             if (value!.length != 8) {
@@ -331,28 +331,33 @@ class _DropLocationState extends State<DropLocation> {
                             FilteringTextInputFormatter.deny(RegExp(r'\s')),
                           ],
                           decoration: InputDecoration(
-                            prefixIcon: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 13,
-                                  horizontal: 6), // Reduced padding
-                              child: Text(
-                                "+65",
-                                style: primaryfont.copyWith(
-                                  fontSize: 14, // Reduced font size
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                  contentPadding: EdgeInsets.only( top: 13),
+                             prefixIcon: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                     
+                                    height: 30,
+                                    width: 50,
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                     "+65",
+                                      style: primaryfont.copyWith(
+                                        fontSize: 14, // Adjust font size
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 5),
+                                ],
                               ),
-                            ),
                             fillColor: AppColors.kwhite,
                             filled: true,
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 6), // Reduced padding
-                            hintText: "Enter Sender Number",
-                            hintStyle: primaryfont.copyWith(
-                              color: Colors.grey,
-                              fontSize: 14, // Reduced font size
-                              fontWeight: FontWeight.w100,
-                            ),
+              
+                            hintText: 'Enter Phone Name',
+                                  hintStyle: primaryfont.copyWith(
+                                      fontSize: 14,
+                                                                         fontWeight: FontWeight.w500),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -374,6 +379,7 @@ class _DropLocationState extends State<DropLocation> {
                               ),
                               borderRadius: BorderRadius.circular(10),
                             ),
+                            
                           ),
                         ),
                         ksizedbox20,
@@ -393,11 +399,12 @@ class _DropLocationState extends State<DropLocation> {
                                   receiverNameController.text,
                                   receiverNumberController.text,
                                   receiverBlockIdUnitIdController.text,
-                                );
+                                  unitIdController.text
+                                  );
                                 // Get.back();
                                 Get.offAll(PackageSendScreen(
-                                    pickupAdress:
-                                        homeController.pickupLocation.value,
+                                  unitId: unitIdController.text,
+                                    pickupAdress: homeController.pickupLocation.value,
                                     lat: homeController.pickuplatitude.value,
                                     long: homeController.pickuplongitude.value,
                                     unitIdBlockID:
@@ -763,9 +770,11 @@ class _DropLocationState extends State<DropLocation> {
                                   receiverNameController.text,
                                   receiverNumberController.text,
                                   receiverBlockIdUnitIdController.text,
+                                  unitIdController.text,
                                 );
                                 // Get.back();
                                 Get.offAll(PackageSendScreen(
+                                  unitId: unitIdController.text,
                                     pickupAdress:
                                         homeController.pickupLocation.value,
                                     lat: homeController.pickuplatitude.value,

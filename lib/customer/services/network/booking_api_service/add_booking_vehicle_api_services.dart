@@ -28,6 +28,7 @@ class AddBookingVehicleApiService extends BaseApiServices {
         "gst": "500",
         "additional_total": "600",
         "total_amount": "500",
+        "unitno" : addBookingVehicleModel.pickupunitId,
         "is_round_trip":addBookingVehicleModel.isRoundTrip,
         "booking_date": addBookingVehicleModel.pickupDate,
         "pickuptime_from": addBookingVehicleModel.pickupTimeFrom,
@@ -36,12 +37,16 @@ class AddBookingVehicleApiService extends BaseApiServices {
         "longitude": addBookingVehicleModel.longitude,
         "distance": addBookingVehicleModel.distance,
         "booking_time_from_vehicle": addBookingVehicleModel.bookingTime,
+       "sender_unitno_blockno":  addBookingVehicleModel.senderUnitId,
         "booking_type": "vehicle",
         for (int i = 0;
             i < addBookingVehicleModel.additionalDetails.length;
             i++)
-          "additional_services_id[$i]":
+          "additional_services_id[$i][id]":
               addBookingVehicleModel.additionalDetails[i],
+
+              for (int j = 0; j < addBookingVehicleModel.additionalDetails.length;j++)
+          "additional_services_id[$j][qty]" : addBookingVehicleModel.additionalDetailsQty[j],
         "notes": addBookingVehicleModel.notes,
         "products": productss
             .map((product) => {
@@ -72,7 +77,8 @@ class AddBookingVehicleApiService extends BaseApiServices {
                   "delivery_status": address.deliveryStatus,
                   "reciver_name": address.reciverName,
                   "reciver_mobile": address.reciverMobile,
-                  "sender_unitno_blockno": address.vehiclereciverUnitIdBlockId,
+             
+                  "unitno" : address.vehicleUnitId 
                 })
             .toList(),
         "parcel_photo": addBookingVehicleModel.parcelPhoto.trim().isEmpty

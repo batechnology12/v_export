@@ -28,10 +28,10 @@ abstract class BaseApiServices {
   String get getVehicleTypeUrl => "${baseUrl}vehicle_types";
   String get getKmUrl => "${baseUrl}km_get";
   String get updatePayable => "${baseUrl}updatePayable";
-
+  String get  updateBookingStatusUrl => "${baseUrl}update_booking_status";
 }
 
-class AppPath {
-  static const String login = "login";
-  static const String register = "register";
-}
+// class AppPath {
+//   static const String login = "login";
+//   static const String register = "register";
+// }

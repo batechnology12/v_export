@@ -23,7 +23,7 @@ class PackageSendScreen extends StatefulWidget {
   String long;
   String unitIdBlockID;
   String sendername;
-  // String receivername;
+   String unitId;
   String mobilenumber;
 
   PackageSendScreen(
@@ -33,7 +33,7 @@ class PackageSendScreen extends StatefulWidget {
       required this.long,
       required this.unitIdBlockID,
       required this.sendername,
-      // required this.receivername,
+     required this.unitId,
       required this.mobilenumber});
 
   @override
@@ -103,19 +103,62 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
   TimeOfDay? pickTime;
   TimeOfDay? dropTime;
 
-  void _selectpickTime(BuildContext context) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: pickTime ?? TimeOfDay.now(),
-    );
+  // void _selectpickTime(BuildContext context) async {
+  //   final TimeOfDay? picked = await showTimePicker(
+  //     context: context,
+  //     initialTime: pickTime ?? TimeOfDay.now(),
+  //   );
 
-    if (picked != null) {
-      setState(() {
-        pickTime = picked;
-        _updateDropTime();
-      });
+  //   if (picked != null) {
+
+  //     setState(() {
+  //       pickTime = picked;
+  //       _updateDropTime();
+  //     });
+  //   }
+  // }
+
+  void _selectpickTime(BuildContext context) async {
+  final TimeOfDay? picked = await showTimePicker(
+    context: context,
+    initialTime: pickTime ?? TimeOfDay.now(),
+  );
+
+  if (picked != null) {
+    final selectedDeliveryType = selectedDeliveryTypes.first.name;
+    if (selectedDeliveryType == "Same day delivery") {
+      // Convert TimeOfDay to DateTime to compare times
+      final now = DateTime.now();
+      final pickedDateTime = DateTime(
+        now.year,
+        now.month,
+        now.day,
+        picked.hour,
+        picked.minute,
+      );
+
+      final morning8am = DateTime(now.year, now.month, now.day, 8, 0);
+      final afternoon4pm = DateTime(now.year, now.month, now.day, 16, 0);
+
+      if (pickedDateTime.isBefore(morning8am) || pickedDateTime.isAfter(afternoon4pm)) {
+        Get.snackbar(
+          "Invalid time selection",
+          "Please select a time between 8:00 AM and 4:00 PM",
+          colorText: AppColors.kwhite,
+          backgroundColor: Colors.red,
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        return;
+      }
     }
+
+    setState(() {
+      pickTime = picked;
+      _updateDropTime();
+    });
   }
+}
+
 
   void _selectdropTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
@@ -152,17 +195,7 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
     }
   }
 
-  // void _selectdropTime(BuildContext context) async {
-  //   final TimeOfDay? picked = await showTimePicker(
-  //     context: context,
-  //     initialTime: dropTime ?? TimeOfDay.now(),
-  //   );
-  //   if (picked != null && picked != dropTime) {
-  //     setState(() {
-  //       dropTime = picked;
-  //     });
-  //   }
-  // }
+
 
   String _formatTime(TimeOfDay time) {
     final now = DateTime.now();
@@ -187,6 +220,8 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
         hour: updatedDateTime.hour, minute: updatedDateTime.minute);
   }
 
+
+
   void _updateDropTime() {
     if (selectedDeliveryTypes.isNotEmpty) {
       final selectedDeliveryType = selectedDeliveryTypes.first.name;
@@ -197,13 +232,11 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
         updatedroptime2 = _addMinutes(pickTime!, 240);
         dropTime = updatedroptime2;
       } else if (selectedDeliveryType == "Same day delivery") {
-        // updatedroptime3 = _addMinutes(pickTime!, 180);
-        // dropTime = updatedroptime3;
-        pickTime = TimeOfDay(hour: 8, minute: 0);
+       // pickTime =  TimeOfDay(hour: 8, minute: 0);
         dropTime = TimeOfDay(hour: 20, minute: 0);
       } else if (selectedDeliveryType == "Specific Time") {
         dropTime =
-            null; // dropTime remains the same or can be set to a specific time
+            null; 
       } else if (selectedDeliveryType == "Next day delivery") {
         pickTime = TimeOfDay(hour: 8, minute: 0);
         dropTime = TimeOfDay(hour: 21, minute: 0);
@@ -1067,70 +1100,7 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                     ],
                                                   ),
                                                 ),
-                                                // ksizedbox5,
-                                                // if (index ==
-                                                //         homeController.entries
-                                                //                 .length -
-                                                //             1 ||
-                                                //     index ==
-                                                //         homeController
-                                                //                 .secondContainers
-                                                //                 .length -
-                                                //             1)
-                                                // Row(
-                                                //   mainAxisAlignment:
-                                                //       MainAxisAlignment.end,
-                                                //   children: [
-                                                //     Column(
-                                                //       children: [
-                                                //         homeController
-                                                //                     .isCheckedParcel ==
-                                                //                 true
-                                                //             //     ||
-                                                //             // hideDeleteButton ==
-                                                //             //     false
-                                                //             ? Container()
-                                                //             : IconButton(
-                                                //                 onPressed:
-                                                //                     () {
-                                                //                   homeController
-                                                //                       .removeSecondContainer(
-                                                //                           index);
-                                                //                 },
-                                                //                 icon: const Icon(
-                                                //                     Icons
-                                                //                         .delete,
-                                                //                     color: Colors
-                                                //                         .red),
-                                                //               ),
-                                                //         if (index ==
-                                                //             homeController
-                                                //                     .secondContainers
-                                                //                     .length -
-                                                //                 1)
-                                                //           GestureDetector(
-                                                //             onTap: () {
-                                                //               homeController
-                                                //                   .addSecondContainer();
-                                                //             },
-                                                //             child: Text(
-                                                //               "+Add Parcel",
-                                                //               style: primaryfont
-                                                //                   .copyWith(
-                                                //                 fontSize:
-                                                //                     15.sp,
-                                                //                 fontWeight:
-                                                //                     FontWeight
-                                                //                         .w500,
-                                                //                 color: const Color(
-                                                //                     0xff0072E8),
-                                                //               ),
-                                                //             ),
-                                                //           ),
-                                                //       ],
-                                                //     ),
-                                                //   ],
-                                                // ),
+                                              
                                               ],
                                             ),
                                           );
@@ -1390,6 +1360,7 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                     homeController.pincodes.isNotEmpty &&
                                     homeController.doornames.isNotEmpty) {
                                   Get.to(ScheduleDeliveryScreen(
+senderUnitId: widget.unitId,
                                     parcelKg: homeController
                                         .calculateSum()
                                         .toStringAsFixed(2),
@@ -1412,38 +1383,34 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                         selectedDeliveryTypes.first.name,
                                     deliVerytypeID:
                                         selectedDeliveryTypes.first.id,
-                                    // length: lengths,
+                               
                                     length: homeController
                                         .parcelLengthControllers
                                         .map((controller) => controller.text)
                                         .toList(),
-                                    //  width: widths,
+                            
                                     width: homeController
                                         .parcelHeightControllers
                                         .map((controller) => controller.text)
                                         .toList(),
-                                    //  height: heights,
+                                
 
                                     height: homeController
                                         .parcelHeightControllers
                                         .map((controller) => controller.text)
                                         .toList(),
-                                    // qty: quantities,
+                              
                                     qty: homeController.quantityControllers
                                         .map((controller) => controller.text)
                                         .toList(),
-                                    //  homeController.quantityControllers
-                                    //     .map((controller) => controller.text)
-                                    //     .toList(),
-                                    //  kg: kg,
+                            
                                     kg: homeController.parcelKgControllers
                                         .map((controller) => controller.text)
                                         .toList(),
-                                    // homeController.parcelKgControllers
-                                    //     .map((controller) => controller.text)
-                                    //     .toList(),
+                               
                                     parcelItems: parcelitemController.text,
                                     senderunitIdBlockId: widget.unitIdBlockID,
+
                                     pickTimeListFrom: [
                                       _formatTime(pickTime!),
                                     ],
@@ -1460,10 +1427,11 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                         homeController.receiverNameList,
                                     receiverphone:
                                         homeController.receiverNumberList,
-                                    receiverUnitIdBlockId: "",
+                                    receiverUnitIdBlockId: homeController.receiverUnitID,
+                                    receiverUnitId: homeController.receiverUnitID,
                                     selectedDeliveryTypes:
                                         selectedDeliveryTypes,
-                                    // homeController.receiverBlockIdUnitIDs,
+                                    
                                   ));
                                 } else {
                                   Get.snackbar(

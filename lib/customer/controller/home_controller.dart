@@ -14,20 +14,23 @@ class HomeController extends GetxController {
   var pickupSenderName = ''.obs;
   var pickupSenderNumber = ''.obs;
   var pickupblockUnitId = ''.obs;
-
+  var pickupunitsId = ''.obs;
   updatepickupLocation(
       String pickuplocation,
       String pickuplat,
       String pickuplong,
       String senderName,
       String senderNumber,
-      String pickupunitId) {
+      String pickupunitId,
+      String pickupunitids
+      ) {
     pickupLocation.value = pickuplocation;
     pickuplatitude.value = pickuplat;
     pickuplongitude.value = pickuplong;
     pickupSenderName.value = senderName;
     pickupSenderNumber.value = senderNumber;
     pickupblockUnitId.value = pickupunitId;
+    pickupunitsId.value = pickupunitids;
   }
 
 
@@ -43,6 +46,7 @@ class HomeController extends GetxController {
   var receiverNameList = <String>[].obs;
   var receiverNumberList = <String>[].obs;
   var receiverBlockIdUnitIDs = <String>[].obs;
+  var receiverUnitID = <String>[].obs;
   var secondContainers = <int>[0].obs; // Initialize with one item
 
   void updateDroppingLocation(
@@ -54,7 +58,9 @@ class HomeController extends GetxController {
       int index,
       String reciverName,
       String reciverNumber,
-      String reciverBlockIdUnitID) {
+      String reciverBlockIdUnitID,
+      String reciverUnitId,
+      ) {
     if (index < droppingLocations.length) {
       droppingLocations[index] = location;
       droppingLats[index] = lat;
@@ -64,6 +70,7 @@ class HomeController extends GetxController {
       receiverNameList[index] = reciverName;
       receiverNumberList[index] = reciverNumber;
       receiverBlockIdUnitIDs[index] = reciverBlockIdUnitID;
+      receiverUnitID[index] = reciverUnitId;
     } else {
       droppingLocations.add(location);
       droppingLats.add(lat);
@@ -73,6 +80,7 @@ class HomeController extends GetxController {
       receiverNameList.add(reciverName);
       receiverNumberList.add(reciverNumber);
       receiverBlockIdUnitIDs.add(reciverBlockIdUnitID);
+      receiverUnitID.add(reciverUnitId);
     }
   }
 
@@ -84,6 +92,7 @@ class HomeController extends GetxController {
   var pickupVehicleSenderName = ''.obs;
   var pickupVehicleSenderNumber = ''.obs;
   var pickupVehicleblockUnitId = ''.obs;
+  var pickupVehicleunitId = "".obs;
 
  Future<void> updatevehiclePickupLocation(
       String pickuplocationvehicle,
@@ -91,7 +100,9 @@ class HomeController extends GetxController {
       String pickuplongvehicle,
       String senderNamevehicle,
       String senderNumbervehicle,
-      String pickupunitIdvehicle) async{
+      String pickupunitIdvehicle,
+      String pickupunitIDsvehicle,
+      ) async{
         await Future.delayed(Duration(milliseconds: 100)); 
     pickupVehicleLocation.value = pickuplocationvehicle;
     pickupVehiclelatitude.value = pickuplatvehicle;
@@ -99,6 +110,7 @@ class HomeController extends GetxController {
     pickupVehicleSenderName.value = senderNamevehicle;
     pickupVehicleSenderNumber.value = senderNumbervehicle;
     pickupVehicleblockUnitId.value = pickupunitIdvehicle;
+    pickupVehicleunitId.value = pickupunitIDsvehicle;
   }
 
   var vehicledroppingLocations = <String>[].obs;
@@ -112,6 +124,7 @@ class HomeController extends GetxController {
   var vehiclereceiverNameList = <String>[].obs;
   var vehiclereceiverNumberList = <String>[].obs;
   var vehiclereceiverBlockIdUnitIDs = <String>[].obs;
+  var vehiclereceiverUnitIDs = <String>[].obs;
 
   void vehicleDroppingLocation(
       String locationVehicle,
@@ -122,7 +135,9 @@ class HomeController extends GetxController {
       int indexVehicle,
       String reciverNameVehicle,
       String reciverNumberVehicle,
-      String reciverBlockIdUnitIDVehicle) {
+      String reciverBlockIdUnitIDVehicle,
+      String reciverUnitIDVehicle
+      ) {
     if (indexVehicle < vehicledroppingLocations.length) {
       vehicledroppingLocations[indexVehicle] = locationVehicle;
       vehicledroppingLats[indexVehicle] = latVehicle;
@@ -132,6 +147,7 @@ class HomeController extends GetxController {
       vehiclereceiverNameList[indexVehicle] = reciverNameVehicle;
       vehiclereceiverNumberList[indexVehicle] = reciverNumberVehicle;
       vehiclereceiverBlockIdUnitIDs[indexVehicle] = reciverBlockIdUnitIDVehicle;
+      vehiclereceiverUnitIDs[indexVehicle] = reciverUnitIDVehicle;
     } else {
       vehicledroppingLocations.add(locationVehicle);
       vehicledroppingLats.add(latVehicle);
@@ -141,6 +157,7 @@ class HomeController extends GetxController {
       vehiclereceiverNameList.add(reciverNameVehicle);
       vehiclereceiverNumberList.add(reciverNumberVehicle);
       vehiclereceiverBlockIdUnitIDs.add(reciverBlockIdUnitIDVehicle);
+      vehiclereceiverUnitIDs.add(reciverUnitIDVehicle);
     }
   }
 

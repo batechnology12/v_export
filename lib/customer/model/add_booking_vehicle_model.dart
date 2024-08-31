@@ -1,6 +1,7 @@
 import 'dart:io';
 
 class AddBookingVehicleModel {
+  String pickupunitId;
   String pickupAddress;
   String vehicleType;
   String paymentMode;
@@ -18,12 +19,15 @@ class AddBookingVehicleModel {
   String bookingType;
   String bookingTime;
   List<int> additionalDetails;
+  List<int> additionalDetailsQty;
   String notes;
   List<BookingVehicleAddress> bookingVehicleAddress;
-  // List<Products> productss;
   String parcelPhoto;
-
+  String senderUnitId;
   AddBookingVehicleModel({
+    required this.additionalDetailsQty,
+    required this.senderUnitId,
+    required this.pickupunitId,
     required this.pickupAddress,
     required this.vehicleType,
     required this.paymentMode,
@@ -45,6 +49,7 @@ class AddBookingVehicleModel {
     required this.bookingVehicleAddress,
     // required this.productss,
     required this.parcelPhoto,
+
   });
 }
 
@@ -53,7 +58,6 @@ class BookingVehicleAddress {
   String senderMobile;
   String unitNoBlockNo;
   List<String> address;
-
   List<String> postalCode;
   List<String> latitude;
   List<String> longitude;
@@ -61,8 +65,10 @@ class BookingVehicleAddress {
   List<String> reciverName;
   List<String> reciverMobile;
   List<String> vehiclereciverUnitIdBlockId;
-
+  List<String> vehicleUnitId;
+  
   BookingVehicleAddress({
+    required this.vehicleUnitId,
     required this.senderName,
     required this.senderMobile,
     required this.unitNoBlockNo,

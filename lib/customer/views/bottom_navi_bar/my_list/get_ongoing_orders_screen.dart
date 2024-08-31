@@ -504,7 +504,7 @@ class _GetOngoingScreenDataState extends State<GetOngoingScreenData> {
                                               'Delivery Date',
                                               style: primaryfont.copyWith(
                                                   fontWeight: FontWeight.w500,
-                                                  fontSize: 14.sp),
+                                                  fontSize: 12.sp),
                                             ),
                                             SizedBox(
                                               height: 2.h,

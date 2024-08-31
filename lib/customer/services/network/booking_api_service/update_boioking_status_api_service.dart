@@ -4,32 +4,31 @@ import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:v_export/customer/services/utils/base_url_api.dart';
 
-class GetKiloMeterApiServices extends BaseApiServices {
-  Future getKiloMeter(
-      {required double lat1,
-      required double lon1,
-      required double lat2,
-      required double lon2,
-      required String unit}) async {
+class UpdateBookinStatusApiServices extends BaseApiServices {
+  Future updateBookingApi(
+      {required String iD,
+      required String paymentMode,
+  }) async {
     dynamic responseJson;
     try {
       var dio = Dio();
-
-      var response = await dio.post(getKmUrl,
+   final prefs = await SharedPreferences.getInstance();
+      String? authtoken = prefs.getString("auth_token");
+      var response = await dio.post(updateBookingStatusUrl,
           options: Options(
-              headers: {'Content-Type': 'application/json'},
+              headers: {
+  'Content-Type': 'application/json',
+  'Authorization': 'Bearer $authtoken'
+},
               followRedirects: false,
               validateStatus: (status) {
                 return status! <= 500;
               }),
           data: {
-            "lat1": lat1,
-            "lon1": lon1,
-            "lat2": lat2,
-            "lon2": lon2,
-            "unit": "K"
-          });
-      print("get kilo meter---------");
+    "booking_id":iD,
+    "payment_mode": paymentMode  
+});
+      print("update booking status---------");
       print(response.data);
       responseJson = response;
     } on SocketException {

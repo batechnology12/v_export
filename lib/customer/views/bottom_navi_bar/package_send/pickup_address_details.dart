@@ -36,7 +36,7 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
   );
 
   final TextEditingController _blockUnitController = TextEditingController();
-  final TextEditingController _UnitController = TextEditingController();
+  final TextEditingController _unitController = TextEditingController();
 
   final TextEditingController _senderNameController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
@@ -228,7 +228,7 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                                     color: AppColors.kwhite,
                                   ),
                                   child: TextFormField(
-                                      controller: _UnitController,
+                                      controller: _unitController,
                                       inputFormatters: [
                                         LengthLimitingTextInputFormatter(4),
                                         //  FilteringTextInputFormatter.digitsOnly,
@@ -267,6 +267,7 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                             color: AppColors.kwhite,
                           ),
                           child: TextFormField(
+                            keyboardType: TextInputType.text,
                               textCapitalization: TextCapitalization.sentences,
                               inputFormatters: [
                                 FilteringTextInputFormatter.allow(
@@ -310,31 +311,33 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                             FilteringTextInputFormatter.deny(RegExp(r'\s')),
                           ],
                           decoration: InputDecoration(
-                            prefixIcon: Padding(
-                              padding: const EdgeInsets.only(left: 8, top: 15),
-                              child: Text(
-                                "+65",
-                                textAlign: TextAlign.center,
-                                style: primaryfont.copyWith(
-                                  fontSize:
-                                      15.sp, // Font size for the prefix icon
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                  contentPadding: EdgeInsets.only( top: 13),
+                             prefixIcon: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                     
+                                    height: 30,
+                                    width: 50,
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                     "+65",
+                                      style: primaryfont.copyWith(
+                                        fontSize: 14, // Adjust font size
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 5),
+                                ],
                               ),
-                            ),
                             fillColor: AppColors.kwhite,
                             filled: true,
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical:
-                                    12, // Adjusted vertical padding for better alignment
-                                horizontal:
-                                    10), // Adjusted horizontal padding for better alignment
-                            hintText: "Enter Sender Number",
-                            hintStyle: primaryfont.copyWith(
-                              color: Colors.grey,
-                              fontSize: 14, // Font size for hint text
-                              fontWeight: FontWeight.w100,
-                            ),
+              
+                              hintText: 'Enter Phone Name',
+                                  hintStyle: primaryfont.copyWith(
+                                      fontSize: 14,
+                                                                         fontWeight: FontWeight.w500),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -356,119 +359,11 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                               ),
                               borderRadius: BorderRadius.circular(10),
                             ),
+                            
                           ),
                         ),
-                        //  TextFormField(
-                        //       keyboardType: TextInputType.phone,
-                        //       inputFormatters: [
-                        //         selectedValues == "+65"
-                        //             ? LengthLimitingTextInputFormatter(8)
-                        //             : LengthLimitingTextInputFormatter(10),
-                        //         FilteringTextInputFormatter.digitsOnly,
-                        //       ],
-                        //       validator: selectedValues == "+65"
-                        //           ? (value) {
-                        //               if (value!.length < 8 || value.length > 8) {
-                        //                 return 'Mobile number should be in 8 digits';
-                        //               } else {
-                        //                 return null;
-                        //               }
-                        //             }
-                        //           : (value) {
-                        //               if (value!.length < 10 ||
-                        //                   value.length > 10) {
-                        //                 return 'Mobile number should be in 10 digits';
-                        //               } else {
-                        //                 return null;
-                        //               }
-                        //             },
-                        //       controller: emailOrmobileController,
-                        //       decoration: InputDecoration(
-                        //         prefixIcon: Row(
-                        //           mainAxisSize: MainAxisSize.min,
-                        //           children: [
-                        //             PopupMenuButton<int>(
-                        //               padding: EdgeInsets.zero,
-                        //               child: Container(
-                        //                 height: 30,
-                        //                 width: 50,
-                        //                 alignment: Alignment.center,
-                        //                 child: Text(
-                        //                   selectedValues,
-                        //                   style: primaryfont.copyWith(
-                        //                     fontSize: 14, // Adjust font size
-                        //                     fontWeight: FontWeight.bold,
-                        //                   ),
-                        //                 ),
-                        //               ),
-                        //               onSelected: (value) {
-                        //                 setState(() {
-                        //                   selectedIndex = value;
-                        //                   selectedValues =
-                        //                       value == 0 ? "+65" : "+91";
-                        //                 });
-                        //               },
-                        //               itemBuilder: (context) => [
-                        //                 PopupMenuItem<int>(
-                        //                   value: 0,
-                        //                   child: Container(
-                        //                     height: 30,
-                        //                     width: 50,
-                        //                     alignment: Alignment.center,
-                        //                     child: Text(
-                        //                       "+65",
-                        //                       style: primaryfont.copyWith(
-                        //                         fontSize: 14, // Adjust font size
-                        //                         fontWeight: FontWeight.bold,
-                        //                       ),
-                        //                     ),
-                        //                   ),
-                        //                 ),
-                        //                 PopupMenuItem<int>(
-                        //                   value: 1,
-                        //                   child: Container(
-                        //                     height: 30,
-                        //                     width: 50,
-                        //                     alignment: Alignment.center,
-                        //                     child: Text(
-                        //                       "+91",
-                        //                       style: primaryfont.copyWith(
-                        //                         fontSize: 14, // Adjust font size
-                        //                         fontWeight: FontWeight.bold,
-                        //                       ),
-                        //                     ),
-                        //                   ),
-                        //                 ),
-                        //               ],
-                        //             ),
-                        //             SizedBox(width: 5),
-                        //           ],
-                        //         ),
-                        //         contentPadding: EdgeInsets.only(left: 5, top: 13),
-                        //         fillColor: Color(0xffF8F8F8),
-                        //         filled: true,
-                        //         border: OutlineInputBorder(
-                        //           borderSide: BorderSide.none,
-                        //           borderRadius: BorderRadius.circular(25.0),
-                        //         ),
-                        //         enabledBorder: OutlineInputBorder(
-                        //           borderSide: BorderSide.none,
-                        //           borderRadius: BorderRadius.circular(25.0),
-                        //         ),
-                        //         errorBorder: OutlineInputBorder(
-                        //           borderSide: BorderSide.none,
-                        //           borderRadius: BorderRadius.circular(25),
-                        //         ),
-                        //         focusedBorder: OutlineInputBorder(
-                        //           borderSide: BorderSide.none,
-                        //           borderRadius: BorderRadius.circular(25.0),
-                        //         ),
-                        //         focusedErrorBorder: OutlineInputBorder(
-                        //           borderSide: BorderSide.none,
-                        //           borderRadius: BorderRadius.circular(25.0),
-                        //         ),
-                        //       ),
-                        //     ),
+                                    
+               
                         // TextFormField(
                         //   controller: _phoneNumberController,
                         //   validator: (value) {
@@ -543,9 +438,12 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                                           .toString(),
                                       _senderNameController.text,
                                       _phoneNumberController.text,
-                                      _blockUnitController.text);
+                                      _blockUnitController.text,
+                                       _unitController.text
+                                      );
 
                                   Get.offAll(PackageSendScreen(
+                                    unitId: _unitController.text,
                                     unitIdBlockID: _blockUnitController.text,
                                     pickupAdress: searchController.text,
                                     lat: _markers.first.position.latitude
@@ -855,6 +753,7 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                                 if (_senderNameController.text.isNotEmpty &&
                                     _phoneNumberController.text.isNotEmpty) {
                                   homeController.updatepickupLocation(
+                                      
                                       searchController.text,
                                       _markers.first.position.latitude
                                           .toString(),
@@ -862,8 +761,11 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                                           .toString(),
                                       _senderNameController.text,
                                       _phoneNumberController.text,
-                                      _blockUnitController.text);
+                                      _blockUnitController.text,
+                                      _unitController.text
+                                      );
                                   Get.to(PackageSendScreen(
+                                    unitId: _unitController.text,
                                     unitIdBlockID: _blockUnitController.text,
                                     pickupAdress: searchController.text,
                                     lat: _markers.first.position.latitude

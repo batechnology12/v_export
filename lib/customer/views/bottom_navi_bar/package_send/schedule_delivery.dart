@@ -45,18 +45,21 @@ class ScheduleDeliveryScreen extends StatefulWidget {
   List<String> doorname;
   List<String> receivername;
   List<String> receiverphone;
-  String receiverUnitIdBlockId;
+  List<String> receiverUnitIdBlockId;
   String totalWeight;
   List<DeliveryTypeData> selectedDeliveryTypes = [];
-//  TimeofDay pickupTimeFrom;
-  // String pickupTimeTo;
   TimeOfDay deliveryTimeTos;
   TimeOfDay deliveryTimeFroms;
   String roundTrip;
   String parcelKg;
   String parcelQty;
+  String senderUnitId;
+  List<String> receiverUnitId;
+
   ScheduleDeliveryScreen(
       {super.key,
+      required this.senderUnitId,
+      required this.receiverUnitId,
       required this.roundTrip,
       required this.parcelKg,
       required this.parcelQty,
@@ -115,6 +118,12 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
       parcelController.getAdditionalServices("booking_parcel");
       initializeIsCheckList();
       parcelController.update();
+      if (widget.deliverytype == "Next day delivery") {
+    selectedDate = DateTime.now().add(Duration(days: 1));
+  } else {
+    selectedDate = DateTime.now();
+  }
+  formatDateTime = formatDate(selectedDate, [dd, '-', mm, '-', yyyy]);
       // selectDate(context);
       // setState(() {});
     });
@@ -174,12 +183,12 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                     color: AppColors.kblue,
                                     fontWeight: FontWeight.w600),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 2),
-                                child: Image.asset(
-                                  'assets/icons/support_icon.png',
-                                ),
-                              )
+                              // Padding(
+                              //   padding: const EdgeInsets.only(left: 2),
+                              //   child: Image.asset(
+                              //     'assets/icons/support_icon.png',
+                              //   ),
+                              // )
                             ],
                           ),
                           GestureDetector(
@@ -214,7 +223,6 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                         setState(
                                           () {
                                             isCheck[index] = !isCheck[index];
-
                                             if (isCheck[index] == true) {
                                               selectedparcelServiceItems
                                                   .add(serviceData);
@@ -328,13 +336,13 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
   }
 
   ParcelController parcelController = Get.find<ParcelController>();
-  bool ischeck = false;
-  bool manpowercheck = false;
-  bool postinvoicecheck = false;
-  bool staircase = false;
-  bool otpverificationcheck = false;
-  bool fragilcheck = false;
-  bool noadditinalservicecheck = false;
+  // bool ischeck = false;
+  // bool manpowercheck = false;
+  // bool postinvoicecheck = false;
+  // bool staircase = false;
+  // bool otpverificationcheck = false;
+  // bool fragilcheck = false;
+  // bool noadditinalservicecheck = false;
 
   TimeOfDay deliveryFromTime = TimeOfDay.now();
   TimeOfDay deliveryToTime = TimeOfDay.now();
@@ -409,12 +417,13 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
-        if (widget.deliverytype == "Next day delivery") {
-          formatDateTime = formatDate(
-              selectedDate.add(Duration(days: 1)), [dd, '-', mm, '-', yyyy]);
-        } else {
           formatDateTime = formatDate(selectedDate, [dd, '-', mm, '-', yyyy]);
-        }
+        // if (widget.deliverytype == "Next day delivery") {
+        //   formatDateTime = formatDate(
+        //       selectedDate.add(Duration(days: 1)), [dd, '-', mm, '-', yyyy]);
+        // } else {
+        //   formatDateTime = formatDate(selectedDate, [dd, '-', mm, '-', yyyy]);
+        // }
       });
     }
   }
@@ -598,13 +607,7 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                         color: Color(0xff000000),
                                         fontWeight: FontWeight.w700),
                                   ),
-                                  // Text(
-                                  //   totalAmount.toString(),
-                                  //   style: primaryfont.copyWith(
-                                  //       fontSize: 17.sp,
-                                  //       color: Color(0xff000000),
-                                  //       fontWeight: FontWeight.w700),
-                                  // ),
+                                
                                   ksizedbox20,
                                   Row(
                                     children: [
@@ -628,17 +631,19 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                   GestureDetector(
                                     onTap: () {
                                       if (widget.deliverytype ==
-                                          "Next day delivery") {
-                                        ScaffoldMessenger.of(context)
+                                          "Next day delivery" || widget.deliverytype ==
+                                          "Specific Time" ) {
+                                        selectDate(context);
+                                      } else {
+                                          ScaffoldMessenger.of(context)
                                             .showSnackBar(
-                                          SnackBar(
+                                        const  SnackBar(
                                             backgroundColor: Colors.red,
                                             content: Text(
-                                                "Date cannot be changed for Next day delivery"),
+                                                "Date cannot be changed for this delivery"),
                                           ),
                                         );
-                                      } else {
-                                        selectDate(context);
+              
                                       }
                                     },
                                     child: Container(
@@ -667,7 +672,7 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                                       ? formatDate(
                                                           DateTime.now().add(
                                                               Duration(
-                                                                  days: 1)),
+                                                                  days: 0)),
                                                           [
                                                               dd,
                                                               '-',
@@ -1182,6 +1187,8 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                 // Wait for the state to update before navigating
 
                                 Get.to(() => BookingDetailsScreen(
+                                  receiverunitId: widget.receiverUnitId,
+                                  unitId: widget.senderUnitId,
                                       parcelofKg: widget.parcelKg,
                                       parcelofQty: widget.parcelQty,
                                       roundtrip: widget.roundTrip,

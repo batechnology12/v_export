@@ -177,7 +177,7 @@ class OngoingOrderData {
             json["booking_products"].map((x) => BookingProduct.fromJson(x))),
         driver: json["driver"] ?? "",
         vehicleDetails:
-            List<dynamic>.from(json["vehicle_details"].map((x) => x)),
+            List<dynamic>.from(json["vehicle_details"].map((x) => x) ?? []),
         additionalService: json["additional_service"] ?? "",
         fromAddress: List<FromAddress>.from(
             json["from_address"].map((x) => FromAddress.fromJson(x))),

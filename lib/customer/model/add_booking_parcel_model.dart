@@ -1,6 +1,7 @@
 import 'dart:io';
 
 class AddBookingParcelModel {
+  String unitId;
   String senderUnitId;
   String pickupAddress;
   String deliveryTypeid;
@@ -27,9 +28,10 @@ class AddBookingParcelModel {
   List<BookingAddress> bookingAddress;
   String parcelPhoto;
   String totalAmountCost;
-
+ 
 
   AddBookingParcelModel({
+    required this.unitId,
 
     required this.senderUnitId,
     required this.totalAmountCost,
@@ -89,6 +91,7 @@ class Product {
 }
 
 class BookingAddress {
+   List<String> uintIdList;
   String customerName;
   String customerMobile;
   String unitNoBlockNo;
@@ -104,6 +107,7 @@ class BookingAddress {
   String reciverUnitIdBlockId;
 
   BookingAddress({
+required this.uintIdList,
     required this.customerName,
     required this.customerMobile,
     required this.unitNoBlockNo,

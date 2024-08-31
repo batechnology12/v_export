@@ -7,6 +7,7 @@ import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
 import 'package:v_export/constant/common_container.dart';
 import 'package:v_export/customer/controller/easebuzz_controller.dart';
+import 'package:v_export/customer/controller/parcel_controller.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/bottomn_navi_bar.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/searching_ride_screen.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/payment_screen.dart/placed_order.dart';
@@ -21,6 +22,7 @@ class MakePayment extends StatefulWidget {
 class _MakePaymentState extends State<MakePayment> {
   final formKey = GlobalKey<FormState>();
   final easebuzzController = Get.find<EasebuszzController>();
+  ParcelController parcelController = Get.find<ParcelController>();
 
   List paymentlist = [
     {"image": "assets/images/Vector.svg", "name": "Wallet"},
@@ -31,6 +33,7 @@ class _MakePaymentState extends State<MakePayment> {
   ];
 
   List<bool> isCheck = List<bool>.filled(5, false);
+  String payment_mode = "";
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -97,8 +100,19 @@ class _MakePaymentState extends State<MakePayment> {
                               shrinkWrap: true,
                               itemCount: paymentlist.length,
                               itemBuilder: (context, index) {
+                                 
+                                 if (index == 1) {
+                               payment_mode =  "WALLET";
+                                 }else if (index == 2){
+                                 payment_mode =     "CORPORATE ACCOUNT";
+                                 }
+                                 else if ( index == 3) {
+                                  payment_mode =     "COD";
+                                 }
                                 return GestureDetector(
                                   onTap: () {
+
+
                                     setState(() {
                                       for (int i = 0; i < isCheck.length; i++) {
                                         isCheck[i] = i == index;
@@ -163,10 +177,64 @@ class _MakePaymentState extends State<MakePayment> {
                   ),
                 ),
               ),
+         
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Container(
+                height: 70.h,
+                child: Column(
+                  children: [
+                    Obx(() {
+                      return Container(
+                        height: 50.h,
+                        width: MediaQuery.of(context).size.width,
+                        child: parcelController.updateBookingStatusLoading.isTrue
+                            ? Container(
+                                height: 50.h,
+                                width: size.width,
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(30)),
+                                child: Center(
+                                    child: CircularProgressIndicator(
+                                  color: AppColors.kblue,
+                                )),
+                              )
+                            : GestureDetector(
+                                onTap: () {
+                                 parcelController.updateBookingSatusApi(parcelController.parcelBookingId.toString(), payment_mode);
+                                 Get.to(PlacedOrder());
+                                //  if (condition) {       
+                                //  }
+                                },
+                                child: Container(
+                                  height: 50.h,
+                                  width: size.width,
+                                  decoration: BoxDecoration(
+                                      color: AppColors.kblue,
+                                      borderRadius: BorderRadius.circular(30)),
+                                  child: Center(
+                                    child: Text(
+                                      'Make Payment',
+                                      style: primaryfont.copyWith(
+                                          fontSize: 18.sp,
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.kwhite),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                      );
+                    }),
+                  ],
+                ),
+              ),
+            ),
             ],
           ),
         ),
       ),
+
     );
   }
 
@@ -400,7 +468,8 @@ class _MakePaymentState extends State<MakePayment> {
                       ksizedbox30,
                       TextButton(
                           onPressed: () {
-                            Get.to(PlacedOrder());
+                            Get.back();
+                     
                           },
                           child: CommonContainer(
                             name: 'Submit',

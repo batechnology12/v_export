@@ -246,7 +246,7 @@ class _PickupVehicleAddressDetailsState
                                 ),
                               ],
                             ),
-                            Column(
+                            Column(crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   "Enter Unit no",
@@ -326,7 +326,7 @@ class _PickupVehicleAddressDetailsState
                               fontWeight: FontWeight.w600),
                         ),
                         ksizedbox5,
-                        TextFormField(
+                         TextFormField(
                           controller: _phoneNumberController,
                           validator: (value) {
                             if (value!.length != 8) {
@@ -341,28 +341,33 @@ class _PickupVehicleAddressDetailsState
                             FilteringTextInputFormatter.deny(RegExp(r'\s')),
                           ],
                           decoration: InputDecoration(
-                            prefixIcon: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 13,
-                                  horizontal: 6), // Reduced padding
-                              child: Text(
-                                "+65",
-                                style: primaryfont.copyWith(
-                                  fontSize: 14, // Reduced font size
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                  contentPadding: EdgeInsets.only( top: 13),
+                             prefixIcon: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                     
+                                    height: 30,
+                                    width: 50,
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                     "+65",
+                                      style: primaryfont.copyWith(
+                                        fontSize: 14, // Adjust font size
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 5),
+                                ],
                               ),
-                            ),
                             fillColor: AppColors.kwhite,
                             filled: true,
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 6), // Reduced padding
-                            hintText: "Enter Sender Number",
-                            hintStyle: primaryfont.copyWith(
-                              color: Colors.grey,
-                              fontSize: 14, // Reduced font size
-                              fontWeight: FontWeight.w100,
-                            ),
+              
+                            hintText: 'Enter Phone Name',
+                                  hintStyle: primaryfont.copyWith(
+                                      fontSize: 14,
+                                                                         fontWeight: FontWeight.w500),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -384,6 +389,7 @@ class _PickupVehicleAddressDetailsState
                               ),
                               borderRadius: BorderRadius.circular(10),
                             ),
+                            
                           ),
                         ),
                         ksizedbox20,
@@ -401,9 +407,11 @@ class _PickupVehicleAddressDetailsState
                                               .toString(),
                                           _senderNameController.text,
                                           _phoneNumberController.text,
-                                          _blockUnitController.text);
+                                          _blockUnitController.text,
+                                          _unitIdController.text);
 
                                   Get.offAll(BookVehicleScreen(
+                                    vehiclepickupunitId: _unitIdController.text,
                                     vehiclepickupAdress: searchController.text,
                                     vehiclepickuplat: _markers
                                         .first.position.latitude
@@ -411,7 +419,7 @@ class _PickupVehicleAddressDetailsState
                                     vehiclepickuplong: _markers
                                         .first.position.longitude
                                         .toString(),
-                                    vehiclepickupunitIdBlockID:
+                                    vehiclepickupunitIdBlockIDs:
                                         _blockUnitController.text,
                                     vehiclepickupsendername:
                                         _senderNameController.text,
@@ -782,8 +790,10 @@ class _PickupVehicleAddressDetailsState
                                       _senderNameController.text,
                                       _phoneNumberController.text,
                                       _blockUnitController.text,
+                                            _unitIdController.text,
                                     );
                                     Get.offAll(BookVehicleScreen(
+                                           vehiclepickupunitId: _unitIdController.text,
                                       vehiclepickupAdress:
                                           searchController.text,
                                       vehiclepickuplat: _markers
@@ -792,7 +802,7 @@ class _PickupVehicleAddressDetailsState
                                       vehiclepickuplong: _markers
                                           .first.position.longitude
                                           .toString(),
-                                      vehiclepickupunitIdBlockID:
+                                      vehiclepickupunitIdBlockIDs:
                                           _blockUnitController.text,
                                       vehiclepickupsendername:
                                           _senderNameController.text,
