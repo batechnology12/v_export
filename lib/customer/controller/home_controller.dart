@@ -100,11 +100,21 @@ class HomeController extends GetxController {
 
   void parceldroplocationclear() {
     droppingLocations.clear();
-    // parcelLengthControllers.clear();
-    // parcelWidthControllers.clear();
-    // parcelHeightControllers.clear();
-    // parcelKgControllers.clear();
-    // quantityControllers.clear();
+    parcelLengthControllers.forEach((element) {
+      element.clear();
+    });
+    parcelWidthControllers.forEach((element) {
+      element.clear();
+    });
+    parcelHeightControllers.forEach((element) {
+      element.clear();
+    });
+    parcelKgControllers.forEach((element) {
+      element.clear();
+    });
+    quantityControllers.forEach((element) {
+      element.clear();
+    });
     update();
   }
 

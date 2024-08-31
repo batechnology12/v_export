@@ -591,36 +591,174 @@ class _CompleteDetailsState extends State<CompleteDetails> {
                                                       );
                                                     },
                                                   ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 5),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
-                                                    'Additional Stop',
-                                                    style: primaryfont.copyWith(
-                                                        fontSize: 14.sp,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        color:
-                                                            Color(0xff455A64)),
+                                            parcelController
+                                                        .paymentdata
+                                                        .first
+                                                        .paymentDetails
+                                                        .additionalStopCount ==
+                                                    "0.00"
+                                                ? Container()
+                                                : Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 5),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Text(
+                                                          'Additional Stop',
+                                                          style: primaryfont.copyWith(
+                                                              fontSize: 14.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              color: const Color(
+                                                                  0xff455A64)),
+                                                        ),
+                                                        Text(
+                                                          "\$${parcelController.paymentdata.first.paymentDetails.additionalStopCount}",
+                                                          style: primaryfont.copyWith(
+                                                              fontSize: 14.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              color: const Color(
+                                                                  0xff455A64)),
+                                                        )
+                                                      ],
+                                                    ),
                                                   ),
-                                                  Text(
-                                                    "\$${parcelController.paymentdata.first.paymentDetails.additionalStopCount}",
-                                                    style: primaryfont.copyWith(
-                                                        fontSize: 14.sp,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        color:
-                                                            Color(0xff455A64)),
-                                                  )
-                                                ],
-                                              ),
-                                            ),
+                                            parcelController
+                                                        .paymentdata
+                                                        .first
+                                                        .paymentDetails
+                                                        .roundtripCost ==
+                                                    "0.00"
+                                                ? Container()
+                                                : Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 5),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Text(
+                                                          'Round Trip cost',
+                                                          style: primaryfont
+                                                              .copyWith(
+                                                                  fontSize:
+                                                                      14.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  color: Color(
+                                                                      0xff455A64)),
+                                                        ),
+                                                        Text(
+                                                          "\$${parcelController.paymentdata.first.paymentDetails.roundtripCost}",
+                                                          style: primaryfont
+                                                              .copyWith(
+                                                                  fontSize:
+                                                                      14.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  color: Color(
+                                                                      0xff455A64)),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
+                                            parcelController
+                                                        .paymentdata
+                                                        .first
+                                                        .paymentDetails
+                                                        .driverHelpCost ==
+                                                    "0.00"
+                                                ? Container()
+                                                : Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 5),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Text(
+                                                          'Driver Help Stop',
+                                                          style: primaryfont
+                                                              .copyWith(
+                                                                  fontSize:
+                                                                      14.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  color: Color(
+                                                                      0xff455A64)),
+                                                        ),
+                                                        Text(
+                                                          "\$${parcelController.paymentdata.first.paymentDetails.driverHelpCost}",
+                                                          style: primaryfont
+                                                              .copyWith(
+                                                                  fontSize:
+                                                                      14.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  color: Color(
+                                                                      0xff455A64)),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
+                                            parcelController
+                                                        .paymentdata
+                                                        .first
+                                                        .paymentDetails
+                                                        .helperCost ==
+                                                    "0.00"
+                                                ? Container()
+                                                : Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 5),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Text(
+                                                          'Helper Cost',
+                                                          style: primaryfont
+                                                              .copyWith(
+                                                                  fontSize:
+                                                                      14.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  color: Color(
+                                                                      0xff455A64)),
+                                                        ),
+                                                        Text(
+                                                          "\$${parcelController.paymentdata.first.paymentDetails.helperCost}",
+                                                          style: primaryfont
+                                                              .copyWith(
+                                                                  fontSize:
+                                                                      14.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  color: Color(
+                                                                      0xff455A64)),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
                                             // Display the final total
                                             Padding(
                                               padding:

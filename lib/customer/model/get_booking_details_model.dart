@@ -4,142 +4,145 @@
 
 import 'dart:convert';
 
-PaymentShowModel paymentShowModelFromJson(String str) => PaymentShowModel.fromJson(json.decode(str));
+PaymentShowModel paymentShowModelFromJson(String str) =>
+    PaymentShowModel.fromJson(json.decode(str));
 
-String paymentShowModelToJson(PaymentShowModel data) => json.encode(data.toJson());
+String paymentShowModelToJson(PaymentShowModel data) =>
+    json.encode(data.toJson());
 
 class PaymentShowModel {
-    bool status;
-    String message;
-    PaymentData data;
+  bool status;
+  String message;
+  PaymentData data;
 
-    PaymentShowModel({
-        required this.status,
-        required this.message,
-        required this.data,
-    });
+  PaymentShowModel({
+    required this.status,
+    required this.message,
+    required this.data,
+  });
 
-    factory PaymentShowModel.fromJson(Map<String, dynamic> json) => PaymentShowModel(
+  factory PaymentShowModel.fromJson(Map<String, dynamic> json) =>
+      PaymentShowModel(
         status: json["status"],
         message: json["message"],
         data: PaymentData.fromJson(json["data"]),
-    );
+      );
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "status": status,
         "message": message,
         "data": data.toJson(),
-    };
+      };
 }
 
 class PaymentData {
-    int id;
-    String bookingId;
-    String userId;
-    String driverId;
-    dynamic vehicleId;
-    DateTime bookingDate;
-    dynamic pickupDate;
-    String pickupOtp;
-    String deliveryOtp;
-    String bookingType;
-    String vehicleType;
-    String deliveryTypeId;
-    String paymentMode;
-    dynamic payable;
-    String bookingAmount;
-    PaymentDetails paymentDetails;
-    String isRoundTrip;
-    dynamic parcelPhoto;
-    String gst;
-    String additionalTotal;
-    String totalAmount;
-    String notes;
-    String isConfirmed;
-    String isReachedLocation;
-    String isPickuped;
-    String bookingStatus;
-    String unitno;
-    String senderUnitnoBlockno;
-    String pickupAddreess;
-    String bookingTimeFromVehicle;
-    String pickuptimeFrom;
-    String pickuptimeTo;
-    dynamic deliverytimeFrom;
-    dynamic additionalServicesId;
-    dynamic deliverytimeTo;
-    String latitude;
-    String longitude;
-    String distance;
-    dynamic pickupedAt;
-    dynamic acceptedAt;
-    dynamic reachedAt;
-    dynamic completedAt;
-    dynamic packagePictures;
-    dynamic pickupPicture;
-    dynamic completedPicture;
-    String status;
-    DateTime createdAt;
-    DateTime updatedAt;
-    List<dynamic> additionalServices;
-    List<PaymentBookingProduct> bookingProducts;
-    List<payementookingDeliveryAddress> bookingDeliveryAddresses;
+  int id;
+  String bookingId;
+  String userId;
+  String driverId;
+  dynamic vehicleId;
+  DateTime bookingDate;
+  dynamic pickupDate;
+  String pickupOtp;
+  String deliveryOtp;
+  String bookingType;
+  String vehicleType;
+  String deliveryTypeId;
+  String paymentMode;
+  dynamic payable;
+  String bookingAmount;
+  PaymentDetails paymentDetails;
+  String isRoundTrip;
+  dynamic parcelPhoto;
+  String gst;
+  String additionalTotal;
+  String totalAmount;
+  String notes;
+  String isConfirmed;
+  String isReachedLocation;
+  String isPickuped;
+  String bookingStatus;
+  String unitno;
+  String senderUnitnoBlockno;
+  String pickupAddreess;
+  String bookingTimeFromVehicle;
+  String pickuptimeFrom;
+  String pickuptimeTo;
+  dynamic deliverytimeFrom;
+  dynamic additionalServicesId;
+  dynamic deliverytimeTo;
+  String latitude;
+  String longitude;
+  String distance;
+  dynamic pickupedAt;
+  dynamic acceptedAt;
+  dynamic reachedAt;
+  dynamic completedAt;
+  dynamic packagePictures;
+  dynamic pickupPicture;
+  dynamic completedPicture;
+  String status;
+  DateTime createdAt;
+  DateTime updatedAt;
+  List<dynamic> additionalServices;
+  List<PaymentBookingProduct> bookingProducts;
+  List<payementookingDeliveryAddress> bookingDeliveryAddresses;
 
-    PaymentData({
-        required this.id,
-        required this.bookingId,
-        required this.userId,
-        required this.driverId,
-        required this.vehicleId,
-        required this.bookingDate,
-        required this.pickupDate,
-        required this.pickupOtp,
-        required this.deliveryOtp,
-        required this.bookingType,
-        required this.vehicleType,
-        required this.deliveryTypeId,
-        required this.paymentMode,
-        required this.payable,
-        required this.bookingAmount,
-        required this.paymentDetails,
-        required this.isRoundTrip,
-        required this.parcelPhoto,
-        required this.gst,
-        required this.additionalTotal,
-        required this.totalAmount,
-        required this.notes,
-        required this.isConfirmed,
-        required this.isReachedLocation,
-        required this.isPickuped,
-        required this.bookingStatus,
-        required this.unitno,
-        required this.senderUnitnoBlockno,
-        required this.pickupAddreess,
-        required this.bookingTimeFromVehicle,
-        required this.pickuptimeFrom,
-        required this.pickuptimeTo,
-        required this.deliverytimeFrom,
-        required this.additionalServicesId,
-        required this.deliverytimeTo,
-        required this.latitude,
-        required this.longitude,
-        required this.distance,
-        required this.pickupedAt,
-        required this.acceptedAt,
-        required this.reachedAt,
-        required this.completedAt,
-        required this.packagePictures,
-        required this.pickupPicture,
-        required this.completedPicture,
-        required this.status,
-        required this.createdAt,
-        required this.updatedAt,
-        required this.additionalServices,
-        required this.bookingProducts,
-        required this.bookingDeliveryAddresses,
-    });
+  PaymentData({
+    required this.id,
+    required this.bookingId,
+    required this.userId,
+    required this.driverId,
+    required this.vehicleId,
+    required this.bookingDate,
+    required this.pickupDate,
+    required this.pickupOtp,
+    required this.deliveryOtp,
+    required this.bookingType,
+    required this.vehicleType,
+    required this.deliveryTypeId,
+    required this.paymentMode,
+    required this.payable,
+    required this.bookingAmount,
+    required this.paymentDetails,
+    required this.isRoundTrip,
+    required this.parcelPhoto,
+    required this.gst,
+    required this.additionalTotal,
+    required this.totalAmount,
+    required this.notes,
+    required this.isConfirmed,
+    required this.isReachedLocation,
+    required this.isPickuped,
+    required this.bookingStatus,
+    required this.unitno,
+    required this.senderUnitnoBlockno,
+    required this.pickupAddreess,
+    required this.bookingTimeFromVehicle,
+    required this.pickuptimeFrom,
+    required this.pickuptimeTo,
+    required this.deliverytimeFrom,
+    required this.additionalServicesId,
+    required this.deliverytimeTo,
+    required this.latitude,
+    required this.longitude,
+    required this.distance,
+    required this.pickupedAt,
+    required this.acceptedAt,
+    required this.reachedAt,
+    required this.completedAt,
+    required this.packagePictures,
+    required this.pickupPicture,
+    required this.completedPicture,
+    required this.status,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.additionalServices,
+    required this.bookingProducts,
+    required this.bookingDeliveryAddresses,
+  });
 
-    factory PaymentData.fromJson(Map<String, dynamic> json) => PaymentData(
+  factory PaymentData.fromJson(Map<String, dynamic> json) => PaymentData(
         id: json["id"],
         bookingId: json["booking_id"],
         userId: json["user_id"],
@@ -188,18 +191,24 @@ class PaymentData {
         status: json["status"],
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
-        additionalServices: List<dynamic>.from(json["additional_services"].map((x) => x)),
-        bookingProducts: List<PaymentBookingProduct>.from(json["booking_products"].map((x) => PaymentBookingProduct.fromJson(x))),
-        bookingDeliveryAddresses: List<payementookingDeliveryAddress>.from(json["booking_delivery_addresses"].map((x) => payementookingDeliveryAddress.fromJson(x))),
-    );
+        additionalServices:
+            List<dynamic>.from(json["additional_services"].map((x) => x)),
+        bookingProducts: List<PaymentBookingProduct>.from(
+            json["booking_products"]
+                .map((x) => PaymentBookingProduct.fromJson(x))),
+        bookingDeliveryAddresses: List<payementookingDeliveryAddress>.from(
+            json["booking_delivery_addresses"]
+                .map((x) => payementookingDeliveryAddress.fromJson(x))),
+      );
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "id": id,
         "booking_id": bookingId,
         "user_id": userId,
         "driver_id": driverId,
         "vehicle_id": vehicleId,
-        "booking_date": "${bookingDate.year.toString().padLeft(4, '0')}-${bookingDate.month.toString().padLeft(2, '0')}-${bookingDate.day.toString().padLeft(2, '0')}",
+        "booking_date":
+            "${bookingDate.year.toString().padLeft(4, '0')}-${bookingDate.month.toString().padLeft(2, '0')}-${bookingDate.day.toString().padLeft(2, '0')}",
         "pickup_date": pickupDate,
         "pickup_otp": pickupOtp,
         "delivery_otp": deliveryOtp,
@@ -242,54 +251,58 @@ class PaymentData {
         "status": status,
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
-        "additional_services": List<dynamic>.from(additionalServices.map((x) => x)),
-        "booking_products": List<dynamic>.from(bookingProducts.map((x) => x.toJson())),
-        "booking_delivery_addresses": List<dynamic>.from(bookingDeliveryAddresses.map((x) => x.toJson())),
-    };
+        "additional_services":
+            List<dynamic>.from(additionalServices.map((x) => x)),
+        "booking_products":
+            List<dynamic>.from(bookingProducts.map((x) => x.toJson())),
+        "booking_delivery_addresses":
+            List<dynamic>.from(bookingDeliveryAddresses.map((x) => x.toJson())),
+      };
 }
 
 class payementookingDeliveryAddress {
-    int id;
-    String bookingId;
-    dynamic bookingProductId;
-    String customerName;
-    String customerMobile;
-    dynamic reciverName;
-    dynamic reciverMobile;
-    dynamic unitno;
-    String unitnoBlockno;
-    String address;
-    String postalcode;
-    String latitude;
-    String longitude;
-    dynamic deliveryImage;
-    String deliveryStatus;
-    dynamic deliveryAt;
-    DateTime createdAt;
-    DateTime updatedAt;
+  int id;
+  String bookingId;
+  dynamic bookingProductId;
+  String customerName;
+  String customerMobile;
+  dynamic reciverName;
+  dynamic reciverMobile;
+  dynamic unitno;
+  String unitnoBlockno;
+  String address;
+  String postalcode;
+  String latitude;
+  String longitude;
+  dynamic deliveryImage;
+  String deliveryStatus;
+  dynamic deliveryAt;
+  DateTime createdAt;
+  DateTime updatedAt;
 
-    payementookingDeliveryAddress({
-        required this.id,
-        required this.bookingId,
-        required this.bookingProductId,
-        required this.customerName,
-        required this.customerMobile,
-        required this.reciverName,
-        required this.reciverMobile,
-        required this.unitno,
-        required this.unitnoBlockno,
-        required this.address,
-        required this.postalcode,
-        required this.latitude,
-        required this.longitude,
-        required this.deliveryImage,
-        required this.deliveryStatus,
-        required this.deliveryAt,
-        required this.createdAt,
-        required this.updatedAt,
-    });
+  payementookingDeliveryAddress({
+    required this.id,
+    required this.bookingId,
+    required this.bookingProductId,
+    required this.customerName,
+    required this.customerMobile,
+    required this.reciverName,
+    required this.reciverMobile,
+    required this.unitno,
+    required this.unitnoBlockno,
+    required this.address,
+    required this.postalcode,
+    required this.latitude,
+    required this.longitude,
+    required this.deliveryImage,
+    required this.deliveryStatus,
+    required this.deliveryAt,
+    required this.createdAt,
+    required this.updatedAt,
+  });
 
-    factory payementookingDeliveryAddress.fromJson(Map<String, dynamic> json) => payementookingDeliveryAddress(
+  factory payementookingDeliveryAddress.fromJson(Map<String, dynamic> json) =>
+      payementookingDeliveryAddress(
         id: json["id"],
         bookingId: json["booking_id"],
         bookingProductId: json["booking_product_id"],
@@ -308,9 +321,9 @@ class payementookingDeliveryAddress {
         deliveryAt: json["delivery_at"],
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
-    );
+      );
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "id": id,
         "booking_id": bookingId,
         "booking_product_id": bookingProductId,
@@ -329,57 +342,58 @@ class payementookingDeliveryAddress {
         "delivery_at": deliveryAt,
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
-    };
+      };
 }
 
 class PaymentBookingProduct {
-    int id;
-    String bookingId;
-    String bookingProductId;
-    String parcelItems;
-    String parcelSize;
-    dynamic productPicture;
-    String length;
-    String bookingProductWith;
-    String height;
-    String qty;
-    String kg;
-    String pickuptimeFrom;
-    String pickuptimeTo;
-    String deliveryDate;
-    String deliverytimeFrom;
-    String deliverytimeTo;
-    String isPickuped;
-    dynamic pickupedAt;
-    dynamic cancelReason;
-    DateTime createdAt;
-    DateTime updatedAt;
+  int id;
+  String bookingId;
+  String bookingProductId;
+  String parcelItems;
+  String parcelSize;
+  dynamic productPicture;
+  String length;
+  String bookingProductWith;
+  String height;
+  String qty;
+  String kg;
+  String pickuptimeFrom;
+  String pickuptimeTo;
+  String deliveryDate;
+  String deliverytimeFrom;
+  String deliverytimeTo;
+  String isPickuped;
+  dynamic pickupedAt;
+  dynamic cancelReason;
+  DateTime createdAt;
+  DateTime updatedAt;
 
-    PaymentBookingProduct({
-        required this.id,
-        required this.bookingId,
-        required this.bookingProductId,
-        required this.parcelItems,
-        required this.parcelSize,
-        required this.productPicture,
-        required this.length,
-        required this.bookingProductWith,
-        required this.height,
-        required this.qty,
-        required this.kg,
-        required this.pickuptimeFrom,
-        required this.pickuptimeTo,
-        required this.deliveryDate,
-        required this.deliverytimeFrom,
-        required this.deliverytimeTo,
-        required this.isPickuped,
-        required this.pickupedAt,
-        required this.cancelReason,
-        required this.createdAt,
-        required this.updatedAt,
-    });
+  PaymentBookingProduct({
+    required this.id,
+    required this.bookingId,
+    required this.bookingProductId,
+    required this.parcelItems,
+    required this.parcelSize,
+    required this.productPicture,
+    required this.length,
+    required this.bookingProductWith,
+    required this.height,
+    required this.qty,
+    required this.kg,
+    required this.pickuptimeFrom,
+    required this.pickuptimeTo,
+    required this.deliveryDate,
+    required this.deliverytimeFrom,
+    required this.deliverytimeTo,
+    required this.isPickuped,
+    required this.pickupedAt,
+    required this.cancelReason,
+    required this.createdAt,
+    required this.updatedAt,
+  });
 
-    factory PaymentBookingProduct.fromJson(Map<String, dynamic> json) => PaymentBookingProduct(
+  factory PaymentBookingProduct.fromJson(Map<String, dynamic> json) =>
+      PaymentBookingProduct(
         id: json["id"],
         bookingId: json["booking_id"],
         bookingProductId: json["booking_product_id"],
@@ -401,9 +415,9 @@ class PaymentBookingProduct {
         cancelReason: json["cancel_reason"],
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
-    );
+      );
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "id": id,
         "booking_id": bookingId,
         "booking_product_id": bookingProductId,
@@ -425,65 +439,69 @@ class PaymentBookingProduct {
         "cancel_reason": cancelReason,
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
-    };
+      };
 }
 
 class PaymentDetails {
-    String deliveryfees;
-    String roundtripCost;
-    String additionalStopCount;
-    String driverHelpCost;
-    String helperCost;
-    List<PaymentDetailsAdditionalService> additionalServices;
-    String total;
+  String deliveryfees;
+  String roundtripCost;
+  String additionalStopCount;
+  String driverHelpCost;
+  String helperCost;
+  List<PaymentDetailsAdditionalService> additionalServices;
+  String total;
 
-    PaymentDetails({
-        required this.deliveryfees,
-        required this.roundtripCost,
-        required this.additionalStopCount,
-        required this.driverHelpCost,
-        required this.helperCost,
-        required this.additionalServices,
-        required this.total,
-    });
+  PaymentDetails({
+    required this.deliveryfees,
+    required this.roundtripCost,
+    required this.additionalStopCount,
+    required this.driverHelpCost,
+    required this.helperCost,
+    required this.additionalServices,
+    required this.total,
+  });
 
-    factory PaymentDetails.fromJson(Map<String, dynamic> json) => PaymentDetails(
+  factory PaymentDetails.fromJson(Map<String, dynamic> json) => PaymentDetails(
         deliveryfees: json["deliveryfees"],
         roundtripCost: json["roundtripCost"],
         additionalStopCount: json["additionalStopCount"],
         driverHelpCost: json["driverHelpCost"],
         helperCost: json["helperCost"],
-        additionalServices: List<PaymentDetailsAdditionalService>.from(json["additional_services"].map((x) => PaymentDetailsAdditionalService.fromJson(x))),
+        additionalServices: List<PaymentDetailsAdditionalService>.from(
+            json["additional_services"]
+                .map((x) => PaymentDetailsAdditionalService.fromJson(x))),
         total: json["total"],
-    );
+      );
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "deliveryfees": deliveryfees,
         "roundtripCost": roundtripCost,
         "additionalStopCount": additionalStopCount,
         "driverHelpCost": driverHelpCost,
         "helperCost": helperCost,
-        "additional_services": List<dynamic>.from(additionalServices.map((x) => x.toJson())),
+        "additional_services":
+            List<dynamic>.from(additionalServices.map((x) => x.toJson())),
         "total": total,
-    };
+      };
 }
 
 class PaymentDetailsAdditionalService {
-    String name;
-    String value;
+  String name;
+  String value;
 
-    PaymentDetailsAdditionalService({
-        required this.name,
-        required this.value,
-    });
+  PaymentDetailsAdditionalService({
+    required this.name,
+    required this.value,
+  });
 
-    factory PaymentDetailsAdditionalService.fromJson(Map<String, dynamic> json) => PaymentDetailsAdditionalService(
+  factory PaymentDetailsAdditionalService.fromJson(Map<String, dynamic> json) =>
+      PaymentDetailsAdditionalService(
         name: json["name"],
         value: json["value"],
-    );
+      );
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "name": name,
         "value": value,
-    };
+      };
 }

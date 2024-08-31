@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:dio/dio.dart' as dio;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:v_export/customer/model/get_cancelled_orders_model.dart';
 import 'package:v_export/customer/model/get_completed_orders_model.dart';
 
@@ -18,7 +19,7 @@ class MyListController extends GetxController {
       <GetOngoingOrdersModelData>[].obs;
 
   RxBool getOngoingOrdersLoading = false.obs;
-
+  RxInt iD = 0.obs;
   getOngoingOrdersUser(String ongoingOrder) async {
     getOngoingOrdersLoading(true);
 
@@ -30,6 +31,13 @@ class MyListController extends GetxController {
           GetOngoingOrdersModel.fromJson(response.data);
       getOngoingOrdersModelData = getOngoingOrdersModel.data.orders;
 
+      iD.value = getOngoingOrdersModel.data.orders.first.id;
+
+      final SharedPreferences typeID = await SharedPreferences.getInstance();
+      await typeID.setString("typeid", iD.value.toString());
+
+      print("rating for id-------------    ${iD.value}");
+
       // Get.rawSnackbar(
       //   backgroundColor: Colors.green,
       //   messageText: Text(
@@ -38,10 +46,9 @@ class MyListController extends GetxController {
       //   ),
       // );
       // update();
-      
+
       getOngoingOrdersLoading(false);
       update();
-
     } else {
       // Get.rawSnackbar(
       //   backgroundColor: Colors.red,

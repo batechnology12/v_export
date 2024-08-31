@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:v_export/customer/model/Payment_detalis_data_model.dart';
 import 'package:v_export/customer/model/add_booking_parcel_model.dart';
 import 'package:v_export/customer/model/add_booking_vehicle_model.dart';
@@ -434,7 +435,6 @@ class ParcelController extends GetxController {
     update();
   }
 
-
   GetBookingCalculationApiServices getBookingCalculationApiServices =
       GetBookingCalculationApiServices();
   List<PaymentDetailsData> paymentdatalist = [];
@@ -535,13 +535,13 @@ class ParcelController extends GetxController {
       CancelBookingApiServices();
 
   RxBool cancelBookingLoading = false.obs;
-  cancelBooking(String bookingId) async {
+  cancelBooking(String bookingId, String reason) async {
     cancelBookingLoading(true);
     dio.Response<dynamic> response =
-        await cancelBookingApiServices.cancelBooking(bookingId);
+        await cancelBookingApiServices.cancelBooking(bookingId, reason);
     cancelBookingLoading(false);
     if (response.data["status"] == true) {
-      Get.to(BottomNavigationScreen(indexes: 0));
+      //  Get.to(BottomNavigationScreen(indexes: 0));
       // Get.rawSnackbar(
       //   backgroundColor: Colors.green,
       //   messageText: Text(
@@ -564,6 +564,7 @@ class ParcelController extends GetxController {
 
   RateDriverApiService rateDriverApiService = RateDriverApiService();
   int? bookingIdDriver;
+
   rateDriverApi(String ratingBookingId, String rating, String review) async {
     dio.Response<dynamic> response = await rateDriverApiService.rateDriverApi(
         ratingBookingId, rating, review);
@@ -571,10 +572,8 @@ class ParcelController extends GetxController {
     print(response.data);
     if (response.data["status"] == true) {
       print("booking id for driver rate");
-      bookingIdDriver = response.data["data"]["booking_id"];
-      // Get.to(DriverRating(
-      //   bookingID: bookingIdDriver.toString(),
-      // ));
+
+      update();
 
       Get.rawSnackbar(
         backgroundColor: Colors.green,

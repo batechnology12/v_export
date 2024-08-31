@@ -11,6 +11,7 @@ import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
 import 'package:v_export/customer/controller/account_controller.dart';
 import 'package:v_export/customer/controller/auth_controller.dart';
+import 'package:v_export/customer/controller/parcel_controller.dart';
 import 'package:v_export/customer/views/auth/login/login_screen.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/account/chat.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/account/corporate_account.dart';
@@ -31,14 +32,34 @@ class Account extends StatefulWidget {
 class _AccountState extends State<Account> {
   AccountController accountController = Get.put(AccountController());
   AuthController authController = Get.put(AuthController());
+  ParcelController parcelController = Get.put(ParcelController());
+  TextEditingController controller = TextEditingController();
 
   String corporateName = "";
+  String bookingID = "";
 
   @override
   void initState() {
     accountController.getProfile();
     super.initState();
+    getID();
     hideCorporateAccount();
+  }
+
+  // getData() async {
+  //   WidgetsBinding.instance.addPostFrameCallback((_) async {
+  //     await getID();
+  //     hideCorporateAccount();
+  //   });
+  // }
+
+  void getID() async {
+    final SharedPreferences prefs1 = await SharedPreferences.getInstance();
+    String? type1 = prefs1.getString('typeid');
+
+    setState(() {
+      bookingID = type1!;
+    });
   }
 
   void hideCorporateAccount() async {
@@ -491,18 +512,32 @@ class _AccountState extends State<Account> {
   }
 
   ratingPopup() {
+    getID();
+    double _ratings = 5.0;
     Get.dialog(
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Rating & Review',
-              style: primaryfont.copyWith(
-                  fontSize: 16.sp, fontWeight: FontWeight.w600),
+            Center(
+              child: Text(
+                'Rate us experience',
+                textAlign: TextAlign.center,
+                style: primaryfont.copyWith(
+                    fontSize: 16.sp, fontWeight: FontWeight.w600),
+              ),
             ),
-            ksizedbox20,
+            Ksizedboxw5,
+            Text(
+              'Please let us know how do you feel about this app',
+              textAlign: TextAlign.center,
+              style: primaryfont.copyWith(
+                  color: Color(0xff949599),
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w400),
+            ),
+            ksizedbox15,
             Center(
               child: RatingBar.builder(
                 itemSize: 35,
@@ -519,40 +554,86 @@ class _AccountState extends State<Account> {
                 ),
                 onRatingUpdate: (rating) {
                   print(rating);
+                  _ratings = rating;
                 },
               ),
             ),
-            ksizedbox20,
-            TextField(
-              maxLines: 2,
-              decoration: InputDecoration(
-                hintText: "Tell us what you think",
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black54, width: 1.0),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black54, width: 1.0),
+            ksizedbox15,
+            Center(
+              child: TextField(
+                controller: controller,
+                maxLines: 2,
+                decoration: const InputDecoration(
+                  hintText: "Tell us what you think",
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey, width: 1.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey, width: 1.0),
+                  ),
                 ),
               ),
             ),
             ksizedbox10,
-            Container(
-              height: 40,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: AppColors.kblue,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Center(
-                child: Text(
-                  'Submit',
-                  style: primaryfont.copyWith(
-                      color: Colors.white,
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.w500),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Get.back();
+                  },
+                  child: Container(
+                    height: 40.h,
+                    width: 110.w,
+                    decoration: BoxDecoration(
+                        color: AppColors.kwhite,
+                        borderRadius: BorderRadius.circular(25),
+                        border: Border.all(width: 1, color: AppColors.kblue)),
+                    child: Center(
+                      child: Text(
+                        'Cancel',
+                        style: primaryfont.copyWith(
+                            color: AppColors.kblue,
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            )
+                GestureDetector(
+                  onTap: () {
+                    parcelController.rateDriverApi(
+                        bookingID, _ratings.toString(), controller.text);
+                    controller.clear();
+                    Get.back();
+                    Get.rawSnackbar(
+                      backgroundColor: Colors.green,
+                      messageText: Text(
+                        "Thanks for giving your valuable Review",
+                        style: TextStyle(color: Colors.white, fontSize: 15.sp),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    height: 40.h,
+                    width: 110.w,
+                    decoration: BoxDecoration(
+                      color: AppColors.kblue,
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Submit',
+                        style: primaryfont.copyWith(
+                            color: Colors.white,
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),

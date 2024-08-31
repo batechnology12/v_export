@@ -5,6 +5,7 @@ import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
 import 'package:v_export/constant/common_container.dart';
 import 'package:v_export/customer/controller/parcel_controller.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/bottomn_navi_bar.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/driver_rating.dart';
 
 class CancelBooking extends StatefulWidget {
@@ -23,12 +24,12 @@ class _CancelBookingState extends State<CancelBooking> {
 
   List<bool> checkboxValues = [false, false, false, false, false];
 
-  List<String> cancelBookingList = [
-    "Parcel Not Ready",
-    "Waiting Long Time",
-    "Unable to contact driver",
-    "Driver cancel Job",
-    "Others"
+  List cancelBookingList = [
+    {"name": "Parcel Not Ready"},
+    {"name": "Waiting Long Time"},
+    {"name": "Unable to contact driver"},
+    {"name": "Driver cancel Job"},
+    {"name": "Others"}
   ];
 
   updateCheckbox(int index, bool? value) {
@@ -138,25 +139,30 @@ class _CancelBookingState extends State<CancelBooking> {
                                         child: GestureDetector(
                                           onTap: () {
                                             setState(() {
+                                              // Reset all checkbox values to false
                                               for (var i = 0;
                                                   i < checkboxValues.length;
                                                   i++) {
                                                 checkboxValues[i] = false;
                                               }
-                                              checkboxValues[index] = true;
-                                              isSelected = true;
 
-                                              if (cancelBookingList[index] ==
-                                                  "Others") {
-                                                others = true;
-                                              } else {
-                                                Get.snackbar("Alert",
-                                                    "Please give reason for cancellation",
-                                                    colorText: AppColors.kwhite,
-                                                    backgroundColor: Colors.red,
-                                                    snackPosition:
-                                                        SnackPosition.BOTTOM);
+                                              if (index < 5) {
+                                                // For the first four reasons, set the selected index to true
+                                                checkboxValues[index] = true;
+                                                reasonController.text =
+                                                    cancelBookingList[index]
+                                                        ["name"];
+                                                isSelected = true;
+                                                //  others = false;
                                               }
+                                              // else if (index == 4 &&
+                                              //     reasonController
+                                              //         .text.isNotEmpty) {
+                                              //   // For "Others", only set it to true if there's a reason provided
+                                              //   checkboxValues[index] = true;
+                                              //   others = true;
+                                              //   isSelected = false;
+                                              // }
                                             });
                                           },
                                           child: Container(
@@ -164,19 +170,20 @@ class _CancelBookingState extends State<CancelBooking> {
                                               children: [
                                                 GestureDetector(
                                                   onTap: () {
-                                                    setState(() {
-                                                      for (var i = 0;
-                                                          i <
-                                                              checkboxValues
-                                                                  .length;
-                                                          i++) {
-                                                        checkboxValues[i] =
-                                                            false;
-                                                      }
-                                                      checkboxValues[index] =
-                                                          true;
-                                                      isSelected = true;
-                                                    });
+                                                    // setState(() {
+                                                    //   for (var i = 0;
+                                                    //       i <
+                                                    //           checkboxValues
+                                                    //               .length;
+                                                    //       i++) {
+                                                    //     checkboxValues[i] =
+                                                    //         false;
+                                                    //   }
+
+                                                    //   checkboxValues[index] =
+                                                    //       true;
+                                                    //   isSelected = true;
+                                                    // });
                                                   },
                                                   child: Container(
                                                     height: 20.h,
@@ -199,7 +206,8 @@ class _CancelBookingState extends State<CancelBooking> {
                                                 ),
                                                 Ksizedboxw10,
                                                 Text(
-                                                  cancelBookingList[index],
+                                                  cancelBookingList[index]
+                                                      ["name"],
                                                   style: primaryfont.copyWith(
                                                       fontSize: 15.sp,
                                                       color: Colors.black,
@@ -253,28 +261,21 @@ class _CancelBookingState extends State<CancelBooking> {
       ),
       bottomNavigationBar: GestureDetector(
         onTap: () {
-          if (isSelected == true ||
-              others == true && reasonController.text.isNotEmpty) {
-            print(" cancelled");
+          if (isSelected == true) {
+            print("List cancelled");
+            parcelController.cancelBooking(
+                widget.bookingCancelId, reasonController.text);
             popUp();
-            //  parcelController.cancelBooking(widget.bookingCancelId);
-            // if (others == true && reasonController.text.isNotEmpty) {
-            //   // parcelController.cancelBooking(widget.bookingCancelId);
-            // } else {
-            //   Get.snackbar("Alert", "Please enter the reason for cancellation",
-            //       colorText: AppColors.kwhite,
-            //       backgroundColor: Colors.red,
-            //       snackPosition: SnackPosition.BOTTOM);
-            //    }
           } else {
-            Get.snackbar("Please try again!",
-                "Please select the above reason for cancellation",
-                colorText: AppColors.kwhite,
-                backgroundColor: Colors.red,
-                snackPosition: SnackPosition.BOTTOM);
+            Get.snackbar(
+              "Please try again!",
+              "Please select the above reason for cancellation",
+              duration: Duration(seconds: 2),
+              colorText: AppColors.kwhite,
+              backgroundColor: Colors.red,
+              snackPosition: SnackPosition.BOTTOM,
+            );
           }
-
-          //  popUp();
         },
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 20),
@@ -353,7 +354,7 @@ class _CancelBookingState extends State<CancelBooking> {
                   ksizedbox20,
                   GestureDetector(
                     onTap: () {
-                      parcelController.cancelBooking(widget.bookingCancelId);
+                      Get.to(BottomNavigationScreen(indexes: 0));
                     },
                     child: CommonContainer(
                       name: "Go It",

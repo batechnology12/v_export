@@ -72,6 +72,10 @@ dependencies:
   flutter_phone_direct_caller: ^2.1.1
   flutter_widget_from_html: ^0.15.1
   flutter_html: ^3.0.0-beta.2
+  firebase_core: ^2.27.0
+  firebase_auth: ^4.17.8
+  firebase_messaging: ^14.7.19
+  awesome_notifications: ^0.8.2
   
 
   

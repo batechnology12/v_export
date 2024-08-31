@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:v_export/customer/services/utils/base_url_api.dart';
 
 class CancelBookingApiServices extends BaseApiServices {
-  Future cancelBooking(String bookingId) async {
+  Future cancelBooking(String bookingId, String reason) async {
     dynamic responseJson;
     try {
       var dio = Dio();
@@ -23,7 +23,10 @@ class CancelBookingApiServices extends BaseApiServices {
               validateStatus: (status) {
                 return status! <= 500;
               }),
-          data: {"booking_id": bookingId});
+          data: {
+            "booking_id": bookingId,
+            "cancel_reason": reason,
+          });
       print("----------Cancel Booking-------");
       print(response.data);
 

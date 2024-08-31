@@ -156,6 +156,7 @@ class AuthController extends GetxController {
   RxBool loginLoading = false.obs;
   LoginData? loginData;
   RxString roleName = "".obs;
+ 
   loginApi(
       {required String emailOrmobileNmuber, required String password}) async {
     loginLoading(true);
@@ -168,11 +169,14 @@ class AuthController extends GetxController {
       LoginModel loginModel = LoginModel.fromJson(response.data);
       loginData = loginModel.user;
       roleName.value = loginModel.user.roles;
+    
 
       print("rolename====");
       print(roleName.value);
       final SharedPreferences typeName = await SharedPreferences.getInstance();
       await typeName.setString("type", roleName.value);
+
+
 
       if (loginData!.roles == "client" || loginData!.roles == "business") {
         print("name--------------");

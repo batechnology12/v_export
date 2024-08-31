@@ -53,7 +53,7 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
       await parcelController.getDeliveryTypes();
       await parcelController.getAdditionalServices("booking_parcel");
       parcelController.update();
-      //  homeController.parceldroplocationclear();
+      // homeController.parceldroplocationclear();
       setState(() {});
     });
   }
@@ -1067,7 +1067,8 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                               InputDecoration(
                                                             suffixText: "Kg",
                                                             contentPadding:
-                                                                EdgeInsets.only(
+                                                                const EdgeInsets
+                                                                    .only(
                                                                     top: 5,
                                                                     left: 5,
                                                                     bottom: 10,
@@ -1121,7 +1122,8 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                               InputDecoration(
                                                             suffixText: "Qty",
                                                             contentPadding:
-                                                                EdgeInsets.only(
+                                                                const EdgeInsets
+                                                                    .only(
                                                                     top: 5,
                                                                     left: 5,
                                                                     bottom: 10,
