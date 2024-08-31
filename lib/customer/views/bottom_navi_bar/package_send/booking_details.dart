@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:ffi';
+import 'dart:io';
 
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
@@ -8,11 +8,14 @@ import 'package:get/get.dart';
 import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/common_container.dart';
 import 'package:v_export/customer/controller/easebuzz_controller.dart';
+import 'package:v_export/customer/controller/home_controller.dart';
 import 'package:v_export/customer/controller/parcel_controller.dart';
+import 'package:v_export/customer/model/Payment_detalis_data_model.dart';
 import 'package:v_export/customer/model/add_booking_parcel_model.dart';
 import 'package:v_export/customer/model/additional_service_model.dart';
 import 'package:v_export/customer/model/booking_review_detalis_model.dart';
 import 'package:v_export/customer/model/delivery_type_model.dart';
+import 'package:v_export/customer/model/get_vehicle_calculation_model.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/payment_screen.dart/make_payment_screen.dart';
 import 'package:v_export/customer/views/notification/notification_view.dart';
 import 'package:intl/intl.dart';
@@ -29,16 +32,16 @@ class BookingDetailsScreen extends StatefulWidget {
   String distance;
   String bookingDATE;
   String deliveryTYPE;
-  int deliveryTypeID;
+  String senderunitIdBlockID;
   String unitId;
+  int deliveryTypeID;
   List<String> parcelLengtH;
   List<String> parcelWidth;
   List<String> parcelHeight;
   List<String> parcelKg;
   List<String> parcelQty;
-
   String parcelITEMS;
-  String senderunitIdBlockID;
+
   String? pickTimeFROM;
   String? pickTimeTO;
   List<String> pickTimeListFROM;
@@ -49,7 +52,9 @@ class BookingDetailsScreen extends StatefulWidget {
   List<String> doorNAME;
   List<String> receiverNAME;
   List<String> receiverPHONE;
+
   List<String> receiverUnitIdBlockID;
+  List<String> receiverunitId;
   String deliveyDate;
   String deliveryTimeFROM;
   String deliveryTimeTO;
@@ -61,10 +66,14 @@ class BookingDetailsScreen extends StatefulWidget {
   String roundtrip;
   String parcelofKg;
   String parcelofQty;
-  List<String> receiverunitId;
+
+  String pickupPOSTALCODE;
+  List<String> dropPOSTALCODE;
 
   BookingDetailsScreen(
       {super.key,
+      required this.pickupPOSTALCODE,
+      required this.dropPOSTALCODE,
       required this.unitId,
       required this.receiverunitId,
       required this.parcelofKg,
@@ -113,18 +122,30 @@ class BookingDetailsScreen extends StatefulWidget {
 }
 
 class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
+  List<String> combinedArray = [];
+  List<String> additinalServiceID = [];
+  List<int> additionalServiceParcelIds = [];
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    calculateAmount();
+  }
+
+  List<String> getID() {
+    additinalServiceID = widget.selectedParcelservice
+        .map((service) => service.id.toString())
+        .toList();
+    print("service id====");
+    print(additinalServiceID);
+    return additinalServiceID;
   }
 
   var couponController = TextEditingController();
 
-  ParcelController parcelController = Get.find<ParcelController>();
+  ParcelController parcelController = Get.put(ParcelController());
+  final HomeController homeController = Get.put(HomeController());
 
-  final easebuzzController = Get.find<EasebuszzController>();
+  final easebuzzController = Get.put(EasebuszzController());
 
   List paymentDetails = [
     {
@@ -134,13 +155,14 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
     {"name": "Additional Surcharge", "value": "100"},
     {"name": "Fragil Item", "value": "100"},
   ];
+
   double amount = 0.0;
   double additionalServiceAmount = 0.0;
   double totalParcelAmount = 0.0;
   double totalDistance = 0.0;
   String jsonString = "";
   double distanceCost = 0.0;
-  // double feesamounts = 0.0;
+  String totalAmount = "";
   List<BookingAddress> bookingAddress = [];
   void calculateAmount() {
     totalDistance = double.tryParse(widget.distance) ?? 0.0;
@@ -149,7 +171,6 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
     for (var deliveryType in widget.selectedDeliveryTypes) {
       double basePerKm = double.tryParse(deliveryType.basePerkm) ?? 0.0;
       distanceCost = totalDistance * basePerKm;
-
       if (deliveryType.name == '4 Hours Delivery' ||
           deliveryType.name == 'Express Delivery' ||
           deliveryType.name == 'Same day delivery' ||
@@ -175,10 +196,11 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
           }
 
           double discountedPrice = price;
+
           if (qty >= 2) {
-            discountedPrice *= 0.40; // Apply 40% discount
-          }else if (qty >= 6){
-            discountedPrice *= 0.60; // 60% discount
+            discountedPrice *= 0.60; // Apply 40% discount
+          } else if (qty >= 6) {
+            discountedPrice *= 0.40; // 60% discount
           }
 
           // amount += (discountedPrice * qty) + distanceCost;
@@ -196,7 +218,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
     Map<String, dynamic> data = {
       'totalDistance': totalDistance.toStringAsFixed(2),
       'totalparcelAmounts': totalParcelAmount.toStringAsFixed(2),
-      'additionalServiceAmount': additionalServiceAmount,
+      'additionalServiceAmount': additionalServiceAmount.toString(),
       'totalamount': amount.toStringAsFixed(2)
     };
 
@@ -204,7 +226,14 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
     print("JSON Data: $jsonString");
     setState(() {});
     print("amount =${amount.toStringAsFixed(2)}");
-    print("feesamount---");
+    print("DISTANCE COST---");
+    print(distanceCost);
+    print("total distance------");
+    print(totalDistance);
+    print("toatalpriceamount-----");
+    print(totalParcelAmount);
+    print("total amount-----");
+    print(amount);
     print("----------kg");
   }
 
@@ -216,81 +245,26 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
     return formattedTime;
   }
 
-  // Define a function that returns farePrice and perKm as a tuple
-  // Map<String, double> deliveryCost(List<DeliveryTypeData> deliveryType,
-  //     List<String> parcelQty, List<String> parcelKg, String distanse) {
-  //   double farePrice = 0.0;
-  //   double perKm = 0.0;
-  //   double distance = double.parse(distanse);
-
-  //   // Determine farePrice and perKm based on deliveryType
-  //   if (deliveryType.first.name == "4 Hours Delivery") {
-  //     farePrice = 9.00;
-  //     perKm = 0.40;
-  //   } else if (deliveryType.first.name == "Express Delivery") {
-  //     farePrice = 12.00;
-  //     perKm = 0.50;
-  //   } else if (deliveryType.first.name == "Same day delivery") {
-  //     farePrice = 8.00;
-  //     perKm = 0.30;
-  //   } else if (deliveryType.first.name == "Specific Time") {
-  //     farePrice = 11.00;
-  //     perKm = 0.40;
-  //   }
-
-  //   // Calculate the distance price
-  //   double distancePrice = perKm * distance;
-
-  //   // Calculate the total parcelKg price with possible discounts
-  //   double totalParcelKgPrice = 0.0;
-  //   for (int i = 0; i < parcelKg.length; i++) {
-  //     double kg = double.parse(parcelKg[i]);
-  //     double pricePerKg = 2.0; // Default price per kg
-
-  //     // Apply discount if parcelKg is greater than the threshold
-  //     if (kg > 10.0) {
-  //       pricePerKg *= 0.60; // Apply 40% discount
-  //     }
-  //     print(kg);
-  //     totalParcelKgPrice += pricePerKg * kg;
-  //     print("----------------kg");
-  //     print(kg);
-  //       print("kg----- $kg");
-  //   }
-
-  // Calculate the total cost
-  //   double totalCost = distancePrice + totalParcelKgPrice;
-
-  //   return {
-  //     'farePrice': farePrice,
-  //     'perKm': perKm,
-  //     'distancePrice': distancePrice,
-  //     'totalParcelKgPrice': totalParcelKgPrice,
-  //     'totalCost': totalCost,
-  //   };
-  // }
-
   @override
   Widget build(BuildContext context) {
-    // final double distance = double.tryParse(widget.distance) ?? 0.0;
-    // final double serviceAmount =
-    //     double.tryParse(widget.additionalservicetotalAmount) ?? 0.0;
-    // final cost = deliveryCost(widget.selectedDeliveryTypes, widget.parcelQty,
-    //     widget.parcelKg, widget.distance);
-    // final farePrice = cost['farePrice']!;
-    // final perKm = cost['perKm']!;
-    // final amountValue = farePrice + (perKm * distance);
-    // final allTotalAmount = serviceAmount + farePrice + (perKm * distance);
-    // print("------3456---------");
-    // print(serviceAmount);
-    // print(distance);
-    // print(farePrice + (perKm * distance));
-    // print(amountValue.toStringAsFixed(2));
-    // print(allTotalAmount.toStringAsFixed(2));
     final size = MediaQuery.of(context).size;
-    List<int> additionalServiceParcelIds =
+    additionalServiceParcelIds =
         widget.selectedParcelservice.map((service) => service.id).toList();
-    //  int deliveryTypeofOrder = int.parse(widget.deliveryTYPE);
+    combinedArray = [widget.pickupPOSTALCODE, ...widget.dropPOSTALCODE];
+    String result = combinedArray.join(',');
+    List<String> additionalServiceParcelIdsString =
+        additionalServiceParcelIds.map((id) => id.toString()).toList();
+
+    parcelController.getBookingCalculationApi(
+        widget.deliveryTypeID.toString(),
+        widget.distance,
+        widget.roundtrip == "1" ? "yes" : "no",
+        widget.parcelKg,
+        widget.parcelQty,
+        additionalServiceParcelIdsString,
+        ["0"],
+        result);
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
@@ -345,211 +319,115 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
               end: Alignment.bottomCenter,
             ),
           ),
-          child: Column(
-            children: [
-              Expanded(
-                child: Container(
-                  height: size.height,
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
-                    ),
-                    color: Color(0xffF4F8FF),
-                  ),
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.only(left: 10, right: 10, top: 10),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          // for (var booking in widget.bookingdatalist)
-                          //   for (var bookingaddress
-                          //       in booking.bookingDeliveryAddresses)
-                          //     for (var bookingproject
-                          //         in booking.bookingProducts)
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              left: 5,
-                              right: 5,
+          child: GetBuilder<ParcelController>(builder: (context) {
+            return parcelController.paymentdatalist.isEmpty
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : Column(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          height: size.height,
+                          decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(20),
+                              topRight: Radius.circular(20),
                             ),
-                            child: Column(children: [
-                              Container(
-                                margin: EdgeInsets.only(top: 15),
-                                width: size.width,
-                                decoration: BoxDecoration(
-                                    color: AppColors.kwhite,
-                                    // boxShadow: const <BoxShadow>[
-                                    //   BoxShadow(
-                                    //       offset: Offset(0.0, 0.75),
-                                    //       blurRadius: 3,
-                                    //       color: AppColors.kgrey)
-                                    // ],
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 10, top: 10, right: 10),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Text(
-                                            'Booking Details',
-                                            style: primaryfont.copyWith(
-                                                fontWeight: FontWeight.w700,
-                                                fontSize: 19.sp),
-                                          ),
-                                        ],
-                                      ),
-                                      Divider(),
-                                      ksizedbox5,
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            'Pickup Details:',
-                                            style: primaryfont.copyWith(
-                                                color: Color(0xff000000),
-                                                fontSize: 15.sp,
-                                                fontWeight: FontWeight.w700),
-                                          ),
-                                          Text(
-                                            widget.bookingDATE,
-                                            style: primaryfont.copyWith(
-                                                color: Colors.black,
-                                                fontSize: 12.sp,
-                                                fontWeight: FontWeight.w500),
-                                          ),
-                                          Text(
-                                            "${widget.pickTimeFROM} - ${widget.pickTimeTO}",
-                                            style: primaryfont.copyWith(
-                                                color: Colors.black,
-                                                fontSize: 12.sp,
-                                                fontWeight: FontWeight.w500),
-                                          ),
-                                        ],
-                                      ),
-                                      ksizedbox5,
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 4),
-                                        child: Container(
-                                          width: size.width,
-                                          child: RichText(
-                                            text: TextSpan(
-                                              text: 'Address           : ',
-                                              style: primaryfont.copyWith(
-                                                  color: Colors.black,
-                                                  fontSize: 16.sp,
-                                                  fontWeight: FontWeight.bold),
-                                              children: <TextSpan>[
-                                                TextSpan(
-                                                  text: widget.pickupADDRESS,
-                                                  //  '${widget.bookingdatalist.pickupAddreess}',
-                                                  style: primaryfont.copyWith(
-                                                      color: Colors.black,
-                                                      fontSize: 15.sp,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      ksizedbox5,
-                                      RichText(
-                                        text: TextSpan(
-                                          text: 'Name               : ',
-                                          style: primaryfont.copyWith(
-                                              color: Colors.black,
-                                              fontSize: 16.sp,
-                                              fontWeight: FontWeight.bold),
-                                          children: <TextSpan>[
-                                            TextSpan(
-                                              text: widget.senderNAME,
-                                              //  '${widget.bookingdatalist.bookingDeliveryAddresses.first.customerName}',
-                                              style: primaryfont.copyWith(
-                                                  color: Colors.black,
-                                                  fontSize: 15.sp,
-                                                  fontWeight: FontWeight.w500),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      ksizedbox5,
-                                      RichText(
-                                        text: TextSpan(
-                                          text: 'Phone              : ',
-                                          style: primaryfont.copyWith(
-                                              color: Colors.black,
-                                              fontSize: 16.sp,
-                                              fontWeight: FontWeight.bold),
-                                          children: <TextSpan>[
-                                            TextSpan(
-                                              text: widget.phoneNUMBER,
-                                              //  '${widget.bookingdatalist.bookingDeliveryAddresses.first.customerMobile}',
-                                              style: primaryfont.copyWith(
-                                                  color: Colors.black,
-                                                  fontSize: 15.sp,
-                                                  fontWeight: FontWeight.w500),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      ksizedbox10,
-                                      Divider(),
-                                      ksizedbox10,
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            'Delivery Details:',
-                                            style: primaryfont.copyWith(
-                                                color: Color(0xff000000),
-                                                fontSize: 15.sp,
-                                                fontWeight: FontWeight.w700),
-                                          ),
-                                          Text(
-                                            widget.deliveyDate,
-                                            style: primaryfont.copyWith(
-                                                color: Colors.black,
-                                                fontSize: 12.sp,
-                                                fontWeight: FontWeight.w500),
-                                          ),
-                                          Text(
-                                            "${widget.deliveryTimeFROM} - ${widget.deliveryTimeTO}",
-                                            style: primaryfont.copyWith(
-                                                color: Colors.black,
-                                                fontSize: 12.sp,
-                                                fontWeight: FontWeight.w500),
-                                          ),
-                                        ],
-                                      ),
-                                      ksizedbox5,
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 4),
-                                        child: Container(
-                                          width: size.width,
-                                          child: ListView.builder(
-                                              physics:
-                                                  NeverScrollableScrollPhysics(),
-                                              shrinkWrap: true,
-                                              itemCount:
-                                                  widget.droppingADDRESS.length,
-                                              itemBuilder: (context, index) {
-                                                return Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(5),
+                            color: Color(0xffF4F8FF),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: 10, right: 10, top: 10),
+                            child: SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  // for (var booking in widget.bookingdatalist)
+                                  //   for (var bookingaddress
+                                  //       in booking.bookingDeliveryAddresses)
+                                  //     for (var bookingproject
+                                  //         in booking.bookingProducts)
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      left: 5,
+                                      right: 5,
+                                    ),
+                                    child: Column(children: [
+                                      Container(
+                                        margin: EdgeInsets.only(top: 15),
+                                        width: size.width,
+                                        decoration: BoxDecoration(
+                                            color: AppColors.kwhite,
+                                            // boxShadow: const <BoxShadow>[
+                                            //   BoxShadow(
+                                            //       offset: Offset(0.0, 0.75),
+                                            //       blurRadius: 3,
+                                            //       color: AppColors.kgrey)
+                                            // ],
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 10, top: 10, right: 10),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    'Booking Details',
+                                                    style: primaryfont.copyWith(
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                        fontSize: 19.sp),
+                                                  ),
+                                                ],
+                                              ),
+                                              Divider(),
+                                              ksizedbox5,
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text(
+                                                    'Pickup Details:',
+                                                    style: primaryfont.copyWith(
+                                                        color:
+                                                            Color(0xff000000),
+                                                        fontSize: 15.sp,
+                                                        fontWeight:
+                                                            FontWeight.w700),
+                                                  ),
+                                                  Text(
+                                                    widget.bookingDATE,
+                                                    style: primaryfont.copyWith(
+                                                        color: Colors.black,
+                                                        fontSize: 12.sp,
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
+                                                  Text(
+                                                    "${widget.pickTimeFROM} - ${widget.pickTimeTO}",
+                                                    style: primaryfont.copyWith(
+                                                        color: Colors.black,
+                                                        fontSize: 12.sp,
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
+                                                ],
+                                              ),
+                                              ksizedbox5,
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 4),
+                                                child: Container(
+                                                  width: size.width,
                                                   child: RichText(
                                                     text: TextSpan(
                                                       text:
-                                                       index == 0 ?
-                                                          'Address:-               : ' :
-                                                          'Address:- ${index + 1}        : ',
+                                                          'Address           : ',
                                                       style:
                                                           primaryfont.copyWith(
                                                               color:
@@ -560,10 +438,9 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                                                       .bold),
                                                       children: <TextSpan>[
                                                         TextSpan(
-                                                          text: widget
-                                                                  .droppingADDRESS[
-                                                              index],
-                                                          //   '${widget.bookingdatalist.bookingDeliveryAddresses.first.address}',
+                                                          text:
+                                                              "${widget.senderunitIdBlockID}, ${widget.pickupADDRESS}, ${widget.unitId}",
+                                                          //  '${widget.bookingdatalist.pickupAddreess}',
                                                           style: primaryfont
                                                               .copyWith(
                                                                   color: Colors
@@ -577,762 +454,1255 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                                       ],
                                                     ),
                                                   ),
-                                                );
-                                              }),
-                                          // child: RichText(
-                                          //   text: TextSpan(
-                                          //     text: 'Address: ',
-                                          //     style: primaryfont.copyWith(
-                                          //         color: Colors.black,
-                                          //         fontSize: 16.sp,
-                                          //         fontWeight: FontWeight.bold),
-                                          //     children: <TextSpan>[
-                                          //       TextSpan(
-                                          //         text: widget.droppingADDRESS
-                                          //             .join(", \n"),
-                                          //         //   '${widget.bookingdatalist.bookingDeliveryAddresses.first.address}',
-                                          //         style: primaryfont.copyWith(
-                                          //             color: Colors.black,
-                                          //             fontSize: 15.sp,
-                                          //             fontWeight:
-                                          //                 FontWeight.w500),
-                                          //       ),
-                                          //     ],
-                                          //   ),
-                                          // ),
-                                        ),
-                                      ),
-                                      ksizedbox5,
-                                      RichText(
-                                        text: TextSpan(
-                                          text: 'Name                   : ',
-                                          style: primaryfont.copyWith(
-                                              color: Colors.black,
-                                              fontSize: 16.sp,
-                                              fontWeight: FontWeight.bold),
-                                          children: <TextSpan>[
-                                            TextSpan(
-                                              text: widget.receiverNAME
-                                                  .join(", "),
-                                              // '${widget.bookingdatalist.bookingDeliveryAddresses.first.reciverName}',
-                                              style: primaryfont.copyWith(
-                                                  color: Colors.black,
-                                                  fontSize: 15.sp,
-                                                  fontWeight: FontWeight.w500),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      ksizedbox5,
-                                      RichText(
-                                        text: TextSpan(
-                                          text: 'Phone                  : ',
-                                          style: primaryfont.copyWith(
-                                              color: Colors.black,
-                                              fontSize: 16.sp,
-                                              fontWeight: FontWeight.bold),
-                                          children: <TextSpan>[
-                                            TextSpan(
-                                              text: widget.receiverPHONE
-                                                  .join(", "),
-                                              // '${widget.bookingdatalist.bookingDeliveryAddresses.first.reciverMobile}',
-                                              style: primaryfont.copyWith(
-                                                  color: Colors.black,
-                                                  fontSize: 15.sp,
-                                                  fontWeight: FontWeight.w500),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      ksizedbox10,
-                                      Divider(),
-                                      ksizedbox10,
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                'Delivery Type',
-                                                style: primaryfont.copyWith(
-                                                    fontSize: 15.sp,
-                                                    fontWeight:
-                                                        FontWeight.w700),
-                                              ),
-                                              ksizedbox5,
-                                              Text(
-                                                'Parcel Item',
-                                                style: primaryfont.copyWith(
-                                                    fontSize: 15.sp,
-                                                    fontWeight:
-                                                        FontWeight.w700),
-                                              ),
-                                              ksizedbox5,
-                                              Text(
-                                                'Parcel Weight',
-                                                style: primaryfont.copyWith(
-                                                    fontSize: 15.sp,
-                                                    fontWeight:
-                                                        FontWeight.w700),
-                                              ),
-                                              ksizedbox5,
-                                              Text(
-                                                'Parcel Quantity',
-                                                style: primaryfont.copyWith(
-                                                    fontSize: 15.sp,
-                                                    fontWeight:
-                                                        FontWeight.w700),
-                                              ),
-                                              ksizedbox5,
-                                              Text(
-                                                'Round Trip',
-                                                style: primaryfont.copyWith(
-                                                    fontSize: 15.sp,
-                                                    fontWeight:
-                                                        FontWeight.w700),
-                                              ),
-                                            ],
-                                          ),
-                                          // SizedBox(
-                                          //   width: 0,
-                                          // ),
-                                          Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  ":",
-                                                  style: primaryfont.copyWith(
-                                                      fontSize: 15.sp,
-                                                      fontWeight:
-                                                          FontWeight.w700),
                                                 ),
-                                                ksizedbox5,
-                                                Text(
-                                                  ":",
-                                                  style: primaryfont.copyWith(
-                                                      fontSize: 15.sp,
-                                                      fontWeight:
-                                                          FontWeight.w700),
-                                                ),
-                                                ksizedbox5,
-                                                Text(
-                                                  ":",
-                                                  style: primaryfont.copyWith(
-                                                      fontSize: 15.sp,
-                                                      fontWeight:
-                                                          FontWeight.w700),
-                                                ),
-                                                ksizedbox5,
-                                                Text(
-                                                  ":",
-                                                  style: primaryfont.copyWith(
-                                                      fontSize: 15.sp,
-                                                      fontWeight:
-                                                          FontWeight.w700),
-                                                ),
-                                                ksizedbox5,
-                                                Text(
-                                                  ":",
-                                                  style: primaryfont.copyWith(
-                                                      fontSize: 15.sp,
-                                                      fontWeight:
-                                                          FontWeight.w700),
-                                                ),
-                                              ]),
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                widget.deliveryTYPE,
-                                                // widget.bookingdatalist
-                                                //     .deliveryTypeName,
-                                                //   textAlign: TextAlign.right,
-                                                style: primaryfont.copyWith(
-                                                    fontSize: 15.sp,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: Color(0xff455A64)),
                                               ),
                                               ksizedbox5,
-                                              Text(
-                                                widget.parcelITEMS,
-                                                //  textAlign: TextAlign.left,
-                                                //   "${widget.bookingdatalist.bookingProducts.first.parcelItems}",
-                                                style: primaryfont.copyWith(
-                                                    fontSize: 15.sp,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: Color(0xff455A64)),
-                                              ),
-                                              ksizedbox5,
-                                              Text(
-                                                "${widget.parcelofKg} kg",
-                                                style: primaryfont.copyWith(
-                                                    fontSize: 15.sp,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: Color(0xff455A64)),
-                                              ),
-                                              ksizedbox5,
-                                              Text(
-                                                "${widget.parcelofQty} Qty",
-                                                textAlign: TextAlign.left,
-                                                style: primaryfont.copyWith(
-                                                    fontSize: 15.sp,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: Color(0xff455A64)),
-                                              ),
-                                              ksizedbox5,
-                                              Text(
-                                                widget.roundtrip == "1"
-                                                    ? "Yes"
-                                                    : "No",
-                                                textAlign: TextAlign.left,
-                                                style: primaryfont.copyWith(
-                                                    fontSize: 15.sp,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: Color(0xff455A64)),
-                                              ),
-                                            ],
-                                          )
-                                        ],
-                                      ),
-                                      ksizedbox15,
-                                      Divider(),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                'Additional Services  :',
-                                                style: primaryfont.copyWith(
-                                                    fontSize: 15.sp,
-                                                    fontWeight:
-                                                        FontWeight.w700),
-                                              ),
-                                            ],
-                                          ),
-                                          Container(
-                                            width: 150,
-                                            child: ListView.builder(
-                                              shrinkWrap: true,
-                                              scrollDirection: Axis.vertical,
-                                              physics:
-                                                  NeverScrollableScrollPhysics(),
-                                              // itemCount: 2,
-                                              itemCount: widget
-                                                  .selectedParcelservice.length,
-                                              itemBuilder: (context, index) {
-                                                AdditionalServiceData
-                                                    additionalparcelServiceData =
-                                                    widget.selectedParcelservice[
-                                                        index];
-                                                return Text(
-                                                  additionalparcelServiceData
-                                                      .name,
+                                              RichText(
+                                                text: TextSpan(
+                                                  text: 'Name               : ',
                                                   style: primaryfont.copyWith(
-                                                      fontSize: 15.sp,
+                                                      color: Colors.black,
+                                                      fontSize: 16.sp,
                                                       fontWeight:
-                                                          FontWeight.w500,
-                                                      color: Color(0xff455A64)),
-                                                );
-                                              },
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      ksizedbox5,
-                                      Divider(),
-                                      ksizedbox10,
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              ksizedbox20,
-                              Container(
-                                width: size.width,
-                                decoration: BoxDecoration(
-                                    color: AppColors.kwhite,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 10, right: 10, left: 10),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Driver Notes',
-                                        style: primaryfont.copyWith(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 16.sp),
-                                      ),
-                                      ksizedbox10,
-                                      Text(
-                                        widget.notes,
-                                        // widget.bookingdatalist.notes,
-                                        style: primaryfont.copyWith(
-                                            fontSize: 15.sp,
-                                            color: Color(0xff1E1E1E),
-                                            fontWeight: FontWeight.w500),
-                                      ),
-                                      ksizedbox10,
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              ksizedbox20,
-                              Container(
-                                height: 120,
-                                width: size.width,
-                                decoration: BoxDecoration(
-                                    color: AppColors.kwhite,
-                                    // boxShadow: const <BoxShadow>[
-                                    //   BoxShadow(
-                                    //       offset: Offset(0.0, 0.75),
-                                    //       blurRadius: 2,
-                                    //       color: AppColors.kgrey)
-                                    // ],
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 10, right: 10, left: 10),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Apply Coupon',
-                                        style: primaryfont.copyWith(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 16.sp),
-                                      ),
-                                      ksizedbox15,
-                                      Container(
-                                        height: 50.h,
-                                        width: size.width,
-                                        decoration: BoxDecoration(
-                                            color: Colors.grey.shade200,
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                        child: TextField(
-                                          controller: couponController,
-                                          decoration: InputDecoration(
-                                              suffix: Padding(
-                                                padding: const EdgeInsets.only(
-                                                    bottom: 9),
-                                                child: Container(
-                                                  height: 38.h,
-                                                  width: 80.w,
-                                                  decoration: BoxDecoration(
-                                                      color: AppColors.kblue,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              12)),
-                                                  child: Center(
-                                                    child: Text(
-                                                      'Apply',
+                                                          FontWeight.bold),
+                                                  children: <TextSpan>[
+                                                    TextSpan(
+                                                      text: widget.senderNAME,
+                                                      //  '${widget.bookingdatalist.bookingDeliveryAddresses.first.customerName}',
                                                       style:
                                                           primaryfont.copyWith(
-                                                              color: AppColors
-                                                                  .kwhite,
-                                                              fontSize: 14.sp,
+                                                              color:
+                                                                  Colors.black,
+                                                              fontSize: 15.sp,
                                                               fontWeight:
                                                                   FontWeight
-                                                                      .w600),
+                                                                      .w500),
                                                     ),
-                                                  ),
+                                                  ],
                                                 ),
                                               ),
-                                              border: OutlineInputBorder(
-                                                  borderSide: BorderSide.none,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          5))),
+                                              ksizedbox5,
+                                              RichText(
+                                                text: TextSpan(
+                                                  text: 'Phone              : ',
+                                                  style: primaryfont.copyWith(
+                                                      color: Colors.black,
+                                                      fontSize: 16.sp,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                  children: <TextSpan>[
+                                                    TextSpan(
+                                                      text: widget.phoneNUMBER,
+                                                      //  '${widget.bookingdatalist.bookingDeliveryAddresses.first.customerMobile}',
+                                                      style:
+                                                          primaryfont.copyWith(
+                                                              color:
+                                                                  Colors.black,
+                                                              fontSize: 15.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              ksizedbox10,
+                                              Divider(),
+                                              ksizedbox10,
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text(
+                                                    'Delivery Details:',
+                                                    style: primaryfont.copyWith(
+                                                        color:
+                                                            Color(0xff000000),
+                                                        fontSize: 15.sp,
+                                                        fontWeight:
+                                                            FontWeight.w700),
+                                                  ),
+                                                  Text(
+                                                    widget.deliveyDate,
+                                                    style: primaryfont.copyWith(
+                                                        color: Colors.black,
+                                                        fontSize: 12.sp,
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
+                                                  Text(
+                                                    "${widget.deliveryTimeFROM} - ${widget.deliveryTimeTO}",
+                                                    style: primaryfont.copyWith(
+                                                        color: Colors.black,
+                                                        fontSize: 12.sp,
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
+                                                ],
+                                              ),
+                                              ksizedbox5,
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 4),
+                                                child: Container(
+                                                  width: size.width,
+                                                  child: ListView.builder(
+                                                      physics:
+                                                          NeverScrollableScrollPhysics(),
+                                                      shrinkWrap: true,
+                                                      itemCount: widget
+                                                          .droppingADDRESS
+                                                          .length,
+                                                      itemBuilder:
+                                                          (context, index) {
+                                                        return Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(5),
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              RichText(
+                                                                text: TextSpan(
+                                                                  text: homeController
+                                                                          .isCheckedparcelLocation
+                                                                      ? 'Address:- ${index + 1}        : '
+                                                                      : 'Address:-           : ',
+                                                                  style: primaryfont.copyWith(
+                                                                      color: Colors
+                                                                          .black,
+                                                                      fontSize:
+                                                                          16.sp,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold),
+                                                                  children: <TextSpan>[
+                                                                    TextSpan(
+                                                                      text:
+                                                                          "${widget.receiverUnitIdBlockID[index].split('[').last.split("]").first}, ${widget.droppingADDRESS[index]}, ${widget.receiverunitId[index].split('[').last.split("]").first}",
+                                                                      //   '${widget.bookingdatalist.bookingDeliveryAddresses.first.address}',
+                                                                      style: primaryfont.copyWith(
+                                                                          color: Colors
+                                                                              .black,
+                                                                          fontSize: 15
+                                                                              .sp,
+                                                                          fontWeight:
+                                                                              FontWeight.w500),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                              ksizedbox5,
+                                                              RichText(
+                                                                text: TextSpan(
+                                                                  text:
+                                                                      'Name                   : ',
+                                                                  style: primaryfont.copyWith(
+                                                                      color: Colors
+                                                                          .black,
+                                                                      fontSize:
+                                                                          16.sp,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold),
+                                                                  children: <TextSpan>[
+                                                                    TextSpan(
+                                                                      text: widget
+                                                                              .receiverNAME[
+                                                                          index],
+                                                                      // '${widget.bookingdatalist.bookingDeliveryAddresses.first.reciverName}',
+                                                                      style: primaryfont.copyWith(
+                                                                          color: Colors
+                                                                              .black,
+                                                                          fontSize: 15
+                                                                              .sp,
+                                                                          fontWeight:
+                                                                              FontWeight.w500),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                              ksizedbox5,
+                                                              RichText(
+                                                                text: TextSpan(
+                                                                  text:
+                                                                      'Phone                  : ',
+                                                                  style: primaryfont.copyWith(
+                                                                      color: Colors
+                                                                          .black,
+                                                                      fontSize:
+                                                                          16.sp,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold),
+                                                                  children: <TextSpan>[
+                                                                    TextSpan(
+                                                                      text: widget
+                                                                              .receiverPHONE[
+                                                                          index],
+                                                                      style: primaryfont.copyWith(
+                                                                          color: Colors
+                                                                              .black,
+                                                                          fontSize: 15
+                                                                              .sp,
+                                                                          fontWeight:
+                                                                              FontWeight.w500),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                              ksizedbox10,
+                                                            ],
+                                                          ),
+                                                        );
+                                                      }),
+                                                ),
+                                              ),
+                                              Divider(),
+                                              ksizedbox10,
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        'Delivery Type',
+                                                        style: primaryfont
+                                                            .copyWith(
+                                                                fontSize: 15.sp,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700),
+                                                      ),
+                                                      ksizedbox5,
+                                                      Text(
+                                                        'Parcel Item',
+                                                        style: primaryfont
+                                                            .copyWith(
+                                                                fontSize: 15.sp,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700),
+                                                      ),
+                                                      ksizedbox5,
+                                                      Text(
+                                                        'Parcel Weight',
+                                                        style: primaryfont
+                                                            .copyWith(
+                                                                fontSize: 15.sp,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700),
+                                                      ),
+                                                      ksizedbox5,
+                                                      Text(
+                                                        'Parcel Quantity',
+                                                        style: primaryfont
+                                                            .copyWith(
+                                                                fontSize: 15.sp,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700),
+                                                      ),
+                                                      ksizedbox5,
+                                                      widget.roundtrip == "1"
+                                                          ? Text(
+                                                              'Round Trip',
+                                                              style: primaryfont
+                                                                  .copyWith(
+                                                                      fontSize:
+                                                                          15.sp,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w700),
+                                                            )
+                                                          : Container(),
+                                                    ],
+                                                  ),
+                                                  // SizedBox(
+                                                  //   width: 0,
+                                                  // ),
+                                                  Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          ":",
+                                                          style: primaryfont
+                                                              .copyWith(
+                                                                  fontSize:
+                                                                      15.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w700),
+                                                        ),
+                                                        ksizedbox5,
+                                                        Text(
+                                                          ":",
+                                                          style: primaryfont
+                                                              .copyWith(
+                                                                  fontSize:
+                                                                      15.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w700),
+                                                        ),
+                                                        ksizedbox5,
+                                                        Text(
+                                                          ":",
+                                                          style: primaryfont
+                                                              .copyWith(
+                                                                  fontSize:
+                                                                      15.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w700),
+                                                        ),
+                                                        ksizedbox5,
+                                                        Text(
+                                                          ":",
+                                                          style: primaryfont
+                                                              .copyWith(
+                                                                  fontSize:
+                                                                      15.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w700),
+                                                        ),
+                                                        ksizedbox5,
+                                                        widget.roundtrip == "1"
+                                                            ? Text(
+                                                                ":",
+                                                                style: primaryfont.copyWith(
+                                                                    fontSize:
+                                                                        15.sp,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w700),
+                                                              )
+                                                            : Container(),
+                                                      ]),
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        widget.deliveryTYPE,
+                                                        // widget.bookingdatalist
+                                                        //     .deliveryTypeName,
+                                                        //   textAlign: TextAlign.right,
+                                                        style: primaryfont
+                                                            .copyWith(
+                                                                fontSize: 15.sp,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                color: Color(
+                                                                    0xff455A64)),
+                                                      ),
+                                                      ksizedbox5,
+                                                      Text(
+                                                        widget.parcelITEMS,
+                                                        //  textAlign: TextAlign.left,
+                                                        //   "${widget.bookingdatalist.bookingProducts.first.parcelItems}",
+                                                        style: primaryfont
+                                                            .copyWith(
+                                                                fontSize: 15.sp,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                color: Color(
+                                                                    0xff455A64)),
+                                                      ),
+                                                      ksizedbox5,
+                                                      Text(
+                                                        "${widget.parcelofKg} kg",
+                                                        style: primaryfont
+                                                            .copyWith(
+                                                                fontSize: 15.sp,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                color: Color(
+                                                                    0xff455A64)),
+                                                      ),
+                                                      ksizedbox5,
+                                                      Text(
+                                                        "${widget.parcelofQty} Qty",
+                                                        textAlign:
+                                                            TextAlign.left,
+                                                        style: primaryfont
+                                                            .copyWith(
+                                                                fontSize: 15.sp,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                color: Color(
+                                                                    0xff455A64)),
+                                                      ),
+                                                      ksizedbox5,
+                                                      widget.roundtrip == "1"
+                                                          ? Text(
+                                                              "Yes",
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .left,
+                                                              style: primaryfont.copyWith(
+                                                                  fontSize:
+                                                                      15.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  color: const Color(
+                                                                      0xff455A64)),
+                                                            )
+                                                          : Container()
+                                                    ],
+                                                  )
+                                                ],
+                                              ),
+                                              ksizedbox15,
+                                              Divider(),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        'Additional Services  :',
+                                                        style: primaryfont
+                                                            .copyWith(
+                                                                fontSize: 15.sp,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  Container(
+                                                    width: 150,
+                                                    child: ListView.builder(
+                                                      shrinkWrap: true,
+                                                      scrollDirection:
+                                                          Axis.vertical,
+                                                      physics:
+                                                          NeverScrollableScrollPhysics(),
+                                                      // itemCount: 2,
+                                                      itemCount: widget
+                                                          .selectedParcelservice
+                                                          .length,
+                                                      itemBuilder:
+                                                          (context, index) {
+                                                        AdditionalServiceData
+                                                            additionalparcelServiceData =
+                                                            widget.selectedParcelservice[
+                                                                index];
+                                                        return Text(
+                                                          additionalparcelServiceData
+                                                              .name,
+                                                          style: primaryfont
+                                                              .copyWith(
+                                                                  fontSize:
+                                                                      15.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  color: Color(
+                                                                      0xff455A64)),
+                                                        );
+                                                      },
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              ksizedbox5,
+                                              Divider(),
+                                              ksizedbox10,
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      ksizedbox20,
+                                      Container(
+                                        width: size.width,
+                                        decoration: BoxDecoration(
+                                            color: AppColors.kwhite,
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 10, right: 10, left: 10),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              widget.imagePath.isEmpty
+                                                  ? Container()
+                                                  : Text(
+                                                      'Parcel Picture',
+                                                      style:
+                                                          primaryfont.copyWith(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              fontSize: 15.sp),
+                                                    ),
+                                              widget.imagePath.isEmpty
+                                                  ? Container()
+                                                  : ksizedbox10,
+                                              widget.imagePath.isEmpty
+                                                  ? Container()
+                                                  : ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                      child: Container(
+                                                        height: 120.h,
+                                                        width: 120.w,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                        ),
+                                                        child: Image.file(
+                                                          File(
+                                                              widget.imagePath),
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
+                                                    ),
+                                              ksizedbox10,
+                                              Text(
+                                                'Driver Notes',
+                                                style: primaryfont.copyWith(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 16.sp),
+                                              ),
+                                              ksizedbox10,
+                                              Text(
+                                                widget.notes,
+                                                style: primaryfont.copyWith(
+                                                    fontSize: 15.sp,
+                                                    color: Color(0xff1E1E1E),
+                                                    fontWeight:
+                                                        FontWeight.w500),
+                                              ),
+                                              ksizedbox10,
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      ksizedbox20,
+                                      Container(
+                                        height: 120,
+                                        width: size.width,
+                                        decoration: BoxDecoration(
+                                            color: AppColors.kwhite,
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 10, right: 10, left: 10),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Apply Coupon',
+                                                style: primaryfont.copyWith(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 16.sp),
+                                              ),
+                                              ksizedbox15,
+                                              Container(
+                                                height: 50.h,
+                                                width: size.width,
+                                                decoration: BoxDecoration(
+                                                    color: Colors.grey.shade200,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10)),
+                                                child: TextField(
+                                                  controller: couponController,
+                                                  decoration: InputDecoration(
+                                                      suffix: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(
+                                                                bottom: 12),
+                                                        child: Container(
+                                                          height: 38.h,
+                                                          width: 80.w,
+                                                          decoration: BoxDecoration(
+                                                              color: AppColors
+                                                                  .kblue,
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          12)),
+                                                          child: Center(
+                                                            child: Text(
+                                                              'Apply',
+                                                              style: primaryfont.copyWith(
+                                                                  color: AppColors
+                                                                      .kwhite,
+                                                                  fontSize:
+                                                                      14.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      border:
+                                                          OutlineInputBorder(
+                                                              borderSide:
+                                                                  BorderSide
+                                                                      .none,
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          5))),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      ksizedbox20,
+                                      Container(
+                                        padding: EdgeInsets.only(bottom: 10),
+                                        width: size.width,
+                                        decoration: BoxDecoration(
+                                            color: AppColors.kwhite,
+                                            borderRadius:
+                                                BorderRadius.circular(17)),
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 10, right: 10, top: 10),
+                                          child: Column(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    'Payment Details',
+                                                    style: primaryfont.copyWith(
+                                                        fontSize: 19.sp,
+                                                        color:
+                                                            Color(0xff1E1E1E),
+                                                        fontWeight:
+                                                            FontWeight.w700),
+                                                  ),
+                                                ],
+                                              ),
+                                              ksizedbox5,
+                                              Divider(),
+                                              ksizedbox5,
+                                              ksizedbox5,
+                                              GetBuilder<ParcelController>(
+                                                  builder: (context) {
+                                                return parcelController
+                                                        .paymentdatalist.isEmpty
+                                                    ? Container()
+                                                    : ListView.builder(
+                                                        shrinkWrap: true,
+                                                        // itemCount: 2,
+                                                        itemCount:
+                                                            parcelController
+                                                                .paymentdatalist
+                                                                .length,
+                                                        physics:
+                                                            NeverScrollableScrollPhysics(),
+                                                        itemBuilder:
+                                                            (context, index) {
+                                                          PaymentDetailsData
+                                                              paymentDetailsDataList =
+                                                              parcelController
+                                                                      .paymentdatalist[
+                                                                  index];
+
+                                                          totalAmount =
+                                                              paymentDetailsDataList
+                                                                  .total.value;
+                                                          List<
+                                                                  Map<String,
+                                                                      dynamic>>
+                                                              additionalServicesList =
+                                                              parcelController
+                                                                  .paymentdatalist
+                                                                  .first
+                                                                  .additionalServices
+                                                                  .map(
+                                                                      (service) {
+                                                            return {
+                                                              'name':
+                                                                  service.name,
+                                                              'value':
+                                                                  service.value,
+                                                            };
+                                                          }).toList();
+                                                          Map<String, dynamic>
+                                                              data = {
+                                                            "deliveryfees":
+                                                                paymentDetailsDataList
+                                                                    .deliveryFees
+                                                                    .value,
+                                                            "roundtripCost":
+                                                                paymentDetailsDataList
+                                                                    .roundTripCost
+                                                                    .value,
+                                                            "addtionalstopCount":
+                                                                "0.00",
+                                                            "driverHelpcost":
+                                                                "0.00",
+                                                            "helperCost":
+                                                                "0.00",
+                                                            'additional_services':
+                                                                additionalServicesList,
+                                                            "total":
+                                                                paymentDetailsDataList
+                                                                    .total
+                                                                    .value,
+                                                          };
+                                                          jsonString =
+                                                              jsonEncode(data);
+                                                          print(
+                                                              "JSON Data: $jsonString");
+                                                          return Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
+                                                            children: [
+                                                              Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Text(
+                                                                    paymentDetailsDataList
+                                                                        .deliveryFees
+                                                                        .name,
+                                                                    textAlign:
+                                                                        TextAlign
+                                                                            .left,
+                                                                    style: primaryfont.copyWith(
+                                                                        fontSize: 14
+                                                                            .sp,
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .w600,
+                                                                        color: Color(
+                                                                            0xff455A64)),
+                                                                  ),
+                                                                  paymentDetailsDataList
+                                                                              .roundTripCost
+                                                                              .value ==
+                                                                          "0.00"
+                                                                      ? Container()
+                                                                      : Text(
+                                                                          paymentDetailsDataList
+                                                                              .roundTripCost
+                                                                              .name,
+                                                                          textAlign:
+                                                                              TextAlign.left,
+                                                                          style: primaryfont.copyWith(
+                                                                              fontSize: 14.sp,
+                                                                              fontWeight: FontWeight.w600,
+                                                                              color: Color(0xff455A64)),
+                                                                        ),
+                                                                  paymentDetailsDataList
+                                                                              .accessRestrictedArea
+                                                                              .value ==
+                                                                          "0.00"
+                                                                      ? Container()
+                                                                      : Text(
+                                                                          paymentDetailsDataList
+                                                                              .accessRestrictedArea
+                                                                              .name,
+                                                                          textAlign:
+                                                                              TextAlign.left,
+                                                                          style: primaryfont.copyWith(
+                                                                              fontSize: 14.sp,
+                                                                              fontWeight: FontWeight.w600,
+                                                                              color: Color(0xff455A64)),
+                                                                        ),
+                                                                  paymentDetailsDataList
+                                                                              .cbdArea
+                                                                              .value ==
+                                                                          "0.00"
+                                                                      ? Container()
+                                                                      : Text(
+                                                                          paymentDetailsDataList
+                                                                              .cbdArea
+                                                                              .name,
+                                                                          textAlign:
+                                                                              TextAlign.left,
+                                                                          style: primaryfont.copyWith(
+                                                                              fontSize: 14.sp,
+                                                                              fontWeight: FontWeight.w600,
+                                                                              color: Color(0xff455A64)),
+                                                                        ),
+                                                                ],
+                                                              ),
+                                                              Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .end,
+                                                                children: [
+                                                                  Text(
+                                                                    '\$${paymentDetailsDataList.deliveryFees.value}',
+                                                                    textAlign:
+                                                                        TextAlign
+                                                                            .left,
+                                                                    style: primaryfont.copyWith(
+                                                                        fontSize:
+                                                                            14,
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .w600,
+                                                                        color: Color(
+                                                                            0xff455A64)),
+                                                                  ),
+                                                                  paymentDetailsDataList
+                                                                              .roundTripCost
+                                                                              .value ==
+                                                                          "0.00"
+                                                                      ? Container()
+                                                                      : Text(
+                                                                          '\$${paymentDetailsDataList.roundTripCost.value}',
+                                                                          textAlign:
+                                                                              TextAlign.left,
+                                                                          style: primaryfont.copyWith(
+                                                                              fontSize: 14,
+                                                                              fontWeight: FontWeight.w600,
+                                                                              color: Color(0xff455A64)),
+                                                                        ),
+                                                                  paymentDetailsDataList
+                                                                              .accessRestrictedArea
+                                                                              .value ==
+                                                                          "0.00"
+                                                                      ? Container()
+                                                                      : Text(
+                                                                          '\$${paymentDetailsDataList.accessRestrictedArea.value}',
+                                                                          textAlign:
+                                                                              TextAlign.left,
+                                                                          style: primaryfont.copyWith(
+                                                                              fontSize: 14,
+                                                                              fontWeight: FontWeight.w600,
+                                                                              color: Color(0xff455A64)),
+                                                                        ),
+                                                                  paymentDetailsDataList
+                                                                              .cbdArea
+                                                                              .value ==
+                                                                          "0.00"
+                                                                      ? Container()
+                                                                      : Text(
+                                                                          '\$${paymentDetailsDataList.cbdArea.value}',
+                                                                          textAlign:
+                                                                              TextAlign.left,
+                                                                          style: primaryfont.copyWith(
+                                                                              fontSize: 14,
+                                                                              fontWeight: FontWeight.w600,
+                                                                              color: Color(0xff455A64)),
+                                                                        ),
+                                                                ],
+                                                              ),
+                                                            ],
+                                                          );
+                                                        });
+                                              }),
+                                              GetBuilder<ParcelController>(
+                                                  builder: (context) {
+                                                return parcelController
+                                                        .paymentdatalist
+                                                        .first
+                                                        .additionalServices
+                                                        .isEmpty
+                                                    ? Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(
+                                                                right: 20),
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                          children: [
+                                                            Text(
+                                                              "Additonal Service",
+                                                              style: primaryfont.copyWith(
+                                                                  fontSize:
+                                                                      14.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  color: Color(
+                                                                      0xff455A64)),
+                                                            ),
+                                                            Text(
+                                                              "-",
+                                                              style: primaryfont.copyWith(
+                                                                  fontSize:
+                                                                      14.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  color: Color(
+                                                                      0xff455A64)),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      )
+                                                    : ListView.builder(
+                                                        shrinkWrap: true,
+                                                        // itemCount: 2,
+                                                        itemCount: parcelController
+                                                            .paymentdatalist
+                                                            .first
+                                                            .additionalServices
+                                                            .length,
+                                                        physics:
+                                                            NeverScrollableScrollPhysics(),
+                                                        itemBuilder:
+                                                            (context, index) {
+                                                          AccessRestrictedArea
+                                                              paymentDetailsDatasList =
+                                                              parcelController
+                                                                  .paymentdatalist
+                                                                  .first
+                                                                  .additionalServices[index];
+
+                                                          return Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
+                                                            children: [
+                                                              Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Text(
+                                                                    paymentDetailsDatasList
+                                                                        .name,
+                                                                    textAlign:
+                                                                        TextAlign
+                                                                            .left,
+                                                                    style: primaryfont.copyWith(
+                                                                        fontSize: 14
+                                                                            .sp,
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .w600,
+                                                                        color: Color(
+                                                                            0xff455A64)),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .end,
+                                                                children: [
+                                                                  Text(
+                                                                    '\$${paymentDetailsDatasList.value}',
+                                                                    textAlign:
+                                                                        TextAlign
+                                                                            .left,
+                                                                    style: primaryfont.copyWith(
+                                                                        fontSize:
+                                                                            14,
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .w600,
+                                                                        color: Color(
+                                                                            0xff455A64)),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ],
+                                                          );
+                                                        });
+                                              }),
+                                              ksizedbox20,
+                                              GetBuilder<ParcelController>(
+                                                  builder: (context) {
+                                                return parcelController
+                                                        .paymentdatalist.isEmpty
+                                                    ? Container()
+                                                    : ListView.builder(
+                                                        shrinkWrap: true,
+                                                        // itemCount: 2,
+                                                        itemCount:
+                                                            parcelController
+                                                                .paymentdatalist
+                                                                .length,
+                                                        physics:
+                                                            NeverScrollableScrollPhysics(),
+                                                        itemBuilder:
+                                                            (context, index) {
+                                                          PaymentDetailsData
+                                                              paymentDetailsDataLists =
+                                                              parcelController
+                                                                      .paymentdatalist[
+                                                                  index];
+
+                                                          return Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
+                                                            children: [
+                                                              Text(
+                                                                paymentDetailsDataLists
+                                                                    .total.name,
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .left,
+                                                                style: primaryfont.copyWith(
+                                                                    fontSize:
+                                                                        14.sp,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600,
+                                                                    color: Color(
+                                                                        0xff000000)),
+                                                              ),
+                                                              Text(
+                                                                '\$${paymentDetailsDataLists.total.value}',
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .left,
+                                                                style: primaryfont.copyWith(
+                                                                    fontSize:
+                                                                        14.sp,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600,
+                                                                    color: Color(
+                                                                        0xff000000)),
+                                                              ),
+                                                            ],
+                                                          );
+                                                        });
+                                              }),
+                                            ],
+                                          ),
                                         ),
                                       )
-                                    ],
+                                    ]),
                                   ),
-                                ),
+                                  ksizedbox40,
+
+                                  Obx(() {
+                                    List<String> droppingAddresses =
+                                        widget.droppingADDRESS;
+
+                                    print(
+                                        "pickup block iD --- ${widget.senderunitIdBlockID}");
+                                    print(
+                                        "pickup unit id --- ${widget.unitId}");
+                                    print(
+                                        "drop block iD --- ${widget.receiverUnitIdBlockID}");
+                                    print(
+                                        "drop unit id --- ${widget.receiverunitId}");
+
+                                    return parcelController
+                                            .addBookingLoading.isTrue
+                                        ? Container(
+                                            height: 50.h,
+                                            width: size.width,
+                                            decoration: BoxDecoration(
+                                                //  color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(30)),
+                                            child: Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                              color: AppColors.kblue,
+                                            )),
+                                          )
+                                        : InkWell(
+                                            onTap: () {
+                                              List<Product> products = [];
+
+                                              debugLists();
+                                              for (int index = 0;
+                                                  index <
+                                                      widget
+                                                          .parcelLengtH.length;
+                                                  index++) {
+                                                products.add(Product(
+                                                  parcelItems:
+                                                      widget.parcelITEMS,
+                                                  length: widget
+                                                      .parcelLengtH[index],
+                                                  width:
+                                                      widget.parcelWidth[index],
+                                                  height: widget
+                                                      .parcelHeight[index],
+                                                  qty: widget.parcelQty[index],
+                                                  kg: widget.parcelKg[index],
+                                                  pickupTimeFrom:
+                                                      widget.pickTimeFROM!,
+                                                  pickupTimeTo:
+                                                      widget.pickTimeTO!,
+                                                  deliveryDate:
+                                                      widget.deliveyDate,
+                                                  deliveryTimeFrom:
+                                                      widget.deliveryTimeFROM,
+                                                  deliveryTimeTo:
+                                                      widget.deliveryTimeTO,
+                                                ));
+                                              }
+                                              print(products);
+                                              String diliverystatus = "0";
+                                              List<BookingAddress>
+                                                  bookingAddress = [];
+                                              for (int index = 0;
+                                                  index <
+                                                      widget.droppingADDRESS
+                                                          .length;
+                                                  index++) {
+                                                bookingAddress
+                                                    .add(BookingAddress(
+                                                  uintIdList:
+                                                      widget.receiverunitId,
+                                                  unitNoBlockNo: widget
+                                                          .receiverUnitIdBlockID[
+                                                      index],
+                                                  reciverUnitIdBlockId: widget
+                                                          .receiverUnitIdBlockID[
+                                                      index],
+                                                  customerName:
+                                                      widget.senderNAME,
+                                                  customerMobile:
+                                                      widget.phoneNUMBER,
+                                                  address: widget
+                                                      .droppingADDRESS[index],
+                                                  postalCode:
+                                                      widget.arpinCODE[index],
+                                                  latitude: widget
+                                                      .droppingLATITUDE[index],
+                                                  longitude: widget
+                                                      .droppingLOGITUDE[index],
+                                                  deliveryStatus:
+                                                      diliverystatus,
+                                                  deliveryTimeFrom:
+                                                      widget.deliveryTimeFROM,
+                                                  deliveryTimeTo:
+                                                      widget.deliveryTimeTO,
+                                                  reciverName: widget
+                                                      .receiverNAME[index],
+                                                  reciverMobile: widget
+                                                      .receiverPHONE[index],
+                                                ));
+                                              }
+                                              print(bookingAddress);
+
+                                              AddBookingParcelModel
+                                                  addBookingParcelModel =
+                                                  AddBookingParcelModel(
+                                                      unitId: widget.unitId,
+                                                      senderUnitId: widget
+                                                          .senderunitIdBlockID,
+                                                      totalAmountCost:
+                                                          totalAmount,
+                                                      pickupAddress:
+                                                          widget.pickupADDRESS,
+                                                      deliveryTypeid: widget
+                                                          .deliveryTypeID
+                                                          .toString(),
+                                                      paymentMode: "",
+                                                      isRoundTrip:
+                                                          widget.roundtrip,
+                                                      bookingAmount: amount
+                                                          .toStringAsFixed(2),
+                                                      gst: "0",
+                                                      additionalTotal:
+                                                          additionalServiceAmount
+                                                              .toStringAsFixed(
+                                                                  2),
+                                                      totalAmount: amount
+                                                          .toStringAsFixed(2),
+                                                      bookingDate:
+                                                          widget.bookingDATE,
+                                                      pickupTimeFrom:
+                                                          widget.pickTimeFROM!,
+                                                      pickupTimeTo:
+                                                          widget.pickTimeTO!,
+                                                      deliveryDate:
+                                                          widget.deliveyDate,
+                                                      deliveryTimeFrom: widget
+                                                          .deliveryTimeFROM,
+                                                      deliveryTimeTo:
+                                                          widget.deliveryTimeTO,
+                                                      latitude:
+                                                          widget.pickpLATITUDE,
+                                                      longitude:
+                                                          widget.pickupLOGITUDE,
+                                                      distance: widget.distance,
+                                                      bookingType: "parcel",
+                                                      additionalDetails:
+                                                          additionalServiceParcelIds,
+                                                      notes: widget.notes,
+                                                      products: products,
+                                                      bookingAddress:
+                                                          bookingAddress,
+                                                      parcelPhoto: widget.imagePath,
+                                                      //    imagePath == null ? "" : imagePath!,
+                                                      paymentdetails: jsonString);
+                                              // parcelController.addBookingParcel(
+                                              //     addBookingParcelModel);
+                                              parcelController
+                                                  .addBookingLoading1
+                                                  .value = true;
+                                              try {
+                                                parcelController
+                                                    .addBookingParcel(
+                                                        addBookingParcelModel);
+                                                // Navigate to the next screen if the booking is successful
+                                              } catch (error) {
+                                                // Handle the error here
+                                                print('Booking failed: $error');
+                                              } finally {
+                                                parcelController
+                                                    .addBookingLoading1
+                                                    .value = false;
+                                              }
+                                            },
+                                            child: CommonContainer(
+                                              name: "Confirm Payment",
+                                            ));
+                                  }),
+                                  ksizedbox20,
+                                ],
                               ),
-                              ksizedbox20,
-                              Container(
-                                padding: EdgeInsets.only(bottom: 10),
-                                width: size.width,
-                                decoration: BoxDecoration(
-                                    color: AppColors.kwhite,
-                                    borderRadius: BorderRadius.circular(17)),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 10, right: 10, top: 10),
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Text(
-                                            'Payment Details',
-                                            style: primaryfont.copyWith(
-                                                fontSize: 19.sp,
-                                                color: Color(0xff1E1E1E),
-                                                fontWeight: FontWeight.w700),
-                                          ),
-                                        ],
-                                      ),
-                                      ksizedbox5,
-                                      Divider(),
-                                      ksizedbox10,
-                                      // Row(
-                                      //   mainAxisAlignment:
-                                      //       MainAxisAlignment.spaceBetween,
-                                      //   children: [
-                                      //     Text(
-                                      //       "Delivery Fees",
-                                      //       style: primaryfont.copyWith(
-                                      //           fontSize: 15.sp,
-                                      //           fontWeight: FontWeight.w600,
-                                      //           color: Color(0xff455A64)),
-                                      //     ),
-                                      //     Text(
-                                      //       '\$${distanceCost.toStringAsFixed(2)}',
-                                      //       style: primaryfont.copyWith(
-                                      //           fontSize: 14,
-                                      //           fontWeight: FontWeight.w600,
-                                      //           color: Color(0xff455A64)),
-                                      //     )
-                                      //   ],
-                                      // ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            "Total Parcel Amount",
-                                            // widget
-                                            //     .bookingdatalist
-                                            //     .additionalServices[index]
-                                            //     .name,
-                                            style: primaryfont.copyWith(
-                                                fontSize: 14.sp,
-                                                fontWeight: FontWeight.w600,
-                                                color: Color(0xff455A64)),
-                                          ),
-                                          //    Text("\$"),
-                                          Text(
-                                            // additionalparcelServiceData1
-                                            //     .amount,
-
-                                            '\$${totalParcelAmount.toStringAsFixed(2)}',
-
-                                            style: primaryfont.copyWith(
-                                                fontSize: 14.sp,
-                                                fontWeight: FontWeight.w600,
-                                                color: Color(0xff455A64)),
-                                          )
-                                        ],
-                                      ),
-                                      ksizedbox5,
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            "Delivery Fees",
-                                            style: primaryfont.copyWith(
-                                                fontSize: 15.sp,
-                                                fontWeight: FontWeight.w600,
-                                                color: Color(0xff455A64)),
-                                          ),
-                                          Text(
-                                            '\$${distanceCost.toStringAsFixed(2)}',
-                                            style: primaryfont.copyWith(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w600,
-                                                color: Color(0xff455A64)),
-                                          )
-                                        ],
-                                      ),
-                                      ksizedbox5,
-                                      ListView.builder(
-                                          shrinkWrap: true,
-                                          // itemCount: 2,
-                                          itemCount: widget
-                                              .selectedParcelservice.length,
-                                          physics:
-                                              NeverScrollableScrollPhysics(),
-                                          itemBuilder: (context, index) {
-                                            AdditionalServiceData
-                                                additionalparcelServiceData1 =
-                                                widget.selectedParcelservice[
-                                                    index];
-                                            return Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Text(
-                                                  additionalparcelServiceData1
-                                                      .name,
-                                                  textAlign: TextAlign.left,
-                                                  // widget
-                                                  //     .bookingdatalist
-                                                  //     .additionalServices[index]
-                                                  //     .name,
-                                                  style: primaryfont.copyWith(
-                                                      fontSize: 14.sp,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      color: Color(0xff455A64)),
-                                                ),
-                                                Text(
-                                                  // additionalparcelServiceData1
-                                                  //     .amount,
-                                                  '\$${additionalparcelServiceData1.amount}',
-                                                  textAlign: TextAlign.left,
-                                                  style: primaryfont.copyWith(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      color: Color(0xff455A64)),
-                                                ),
-                                              ],
-                                            );
-                                          }),
-                                      ksizedbox20,
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            'Total Amount',
-                                            style: primaryfont.copyWith(
-                                              fontSize: 15.sp,
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                          ),
-                                          Text(
-                                        //    "",
-                                            "\$${amount.toStringAsFixed(2)}",
-                                     
-
-                                            style: primaryfont.copyWith(
-                                              fontSize: 14.sp,
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )
-                            ]),
+                            ),
                           ),
-                          ksizedbox40,
-
-                          Obx(() {
-                            List<String> droppingAddresses =
-                                widget.droppingADDRESS;
-                            return parcelController.addBookingLoading.isTrue
-                                ? Container(
-                                    height: 50.h,
-                                    width: size.width,
-                                    decoration: BoxDecoration(
-                                        //  color: Colors.white,
-                                        borderRadius:
-                                            BorderRadius.circular(30)),
-                                    child: Center(
-                                        child: CircularProgressIndicator(
-                                      color: AppColors.kblue,
-                                    )),
-                                  )
-                                : InkWell(
-                                    onTap: () {
-                                      List<Product> products = [];
-
-                                      debugLists();
-                                      for (int index = 0;
-                                          index < widget.parcelLengtH.length;
-                                          index++) {
-                                        products.add(Product(
-                                          parcelItems: widget.parcelITEMS,
-                                          length: widget.parcelLengtH[index],
-                                          width: widget.parcelWidth[index],
-                                          height: widget.parcelHeight[index],
-                                          qty: widget.parcelQty[index],
-                                          kg: widget.parcelKg[index],
-                                          pickupTimeFrom: widget.pickTimeFROM!,
-                                          pickupTimeTo: widget.pickTimeTO!,
-                                          deliveryDate: widget.deliveyDate,
-                                          deliveryTimeFrom:
-                                              widget.deliveryTimeFROM,
-                                          deliveryTimeTo: widget.deliveryTimeTO,
-                                        ));
-                                      }
-                                      print(products);
-                                    
-                                      String diliverystatus = "0";
-                                      List<BookingAddress> bookingAddress = [];
-
-                                      for (int index = 0;
-                                          index < widget.droppingADDRESS.length;
-                                          index++) {
-                                        bookingAddress.add(BookingAddress(
-                                          uintIdList: widget.receiverunitId,
-
-                                          customerName: widget.senderNAME,
-                                          customerMobile: widget.phoneNUMBER,
-                                          unitNoBlockNo:
-                                              widget.senderunitIdBlockID,
-                                          address:
-                                              widget.droppingADDRESS[index],
-                                          postalCode: widget.arpinCODE[index],
-                                          latitude:
-                                              widget.droppingLATITUDE[index],
-                                          longitude:
-                                              widget.droppingLOGITUDE[index],
-                                          deliveryStatus: diliverystatus,
-                                          deliveryTimeFrom:
-                                              widget.deliveryTimeFROM,
-                                          deliveryTimeTo: widget.deliveryTimeTO,
-                                          reciverName:
-                                              widget.receiverNAME[index],
-                                          reciverMobile:
-                                              widget.receiverPHONE[index],
-                                          reciverUnitIdBlockId: widget
-                                              .receiverUnitIdBlockID[index],
-                                        ));
-                                      }
-                                      print(bookingAddress);
-                                      // String diliverystatus = "0";
-                                      // List<BookingAddress> bookingAddress =
-                                      //     List.generate(
-                                      //   widget.droppingADDRESS.length,
-                                      //   (index) => BookingAddress(
-                                      //     customerName:
-                                      //         widget.senderNAME[index],
-                                      //     customerMobile:
-                                      //         widget.phoneNUMBER[index],
-                                      //     unitNoBlockNo:
-                                      //         widget.unitIdBlockID[index],
-                                      //     address:
-                                      //         widget.droppingADDRESS[index],
-                                      //     postalCode: widget.arpinCODE[index],
-                                      //     latitude:
-                                      //         widget.droppingLATITUDE[index],
-                                      //     longitude:
-                                      //         widget.droppingLOGITUDE[index],
-                                      //     deliveryStatus: diliverystatus[index],
-                                      //     deliveryTimeFrom:
-                                      //         widget.deliveryTimeFROM[index],
-                                      //     deliveryTimeTo:
-                                      //         widget.deliveryTimeTO[index],
-                                      //     reciverName:
-                                      //         widget.receiverNAME[index],
-                                      //     reciverMobile:
-                                      //         widget.receiverPHONE[index],
-                                      //     reciverUnitIdBlockId: widget
-                                      //         .receiverUnitIdBlockID[index],
-                                      //   ),
-                                      // );
-
-                                      // List<BookingAddress> bookingAddress = [
-                                      //   BookingAddress(
-                                      //       customerName: widget.senderNAME,
-                                      //       customerMobile: widget.phoneNUMBER,
-                                      //       unitNoBlockNo: widget.unitIdBlockID,
-                                      //       address: widget.droppingADDRESS,
-                                      //       postalCode: widget.arpinCODE,
-                                      //       latitude: widget.droppingLATITUDE,
-                                      //       longitude: widget.droppingLOGITUDE,
-                                      //       deliveryStatus: "0",
-                                      //       deliveryTimeFrom:
-                                      //           widget.deliveryTimeFROM,
-                                      //       deliveryTimeTo:
-                                      //           widget.deliveryTimeTO,
-                                      //       reciverName: widget.receiverNAME,
-                                      //       reciverMobile: widget.receiverPHONE,
-                                      //       reciverUnitIdBlockId:
-                                      //           widget.receiverUnitIdBlockID),
-                                      // ];
-                                      AddBookingParcelModel
-                                          addBookingParcelModel =
-                                          AddBookingParcelModel(
-                                            unitId: widget.unitId,
-                                              senderUnitId:
-                                                  widget.senderunitIdBlockID,
-                                              totalAmountCost:
-                                                  amount.toStringAsFixed(2),
-                                              pickupAddress:
-                                                  widget.pickupADDRESS,
-                                              deliveryTypeid: widget
-                                                  .deliveryTypeID
-                                                  .toString(),
-                                              paymentMode: "",
-                                              bookingAmount:
-                                                  amount.toStringAsFixed(2),
-                                              gst: "0",
-                                              additionalTotal:
-                                                  additionalServiceAmount
-                                                      .toStringAsFixed(2),
-                                              totalAmount: 
-                                                amount.toStringAsFixed(2),
-                                              isRoundTrip: widget.roundtrip,
-                                              bookingDate: widget.bookingDATE,
-                                              pickupTimeFrom:
-                                                  widget.pickTimeFROM!,
-                                              pickupTimeTo: widget.pickTimeTO!,
-                                              deliveryDate: widget.deliveyDate,
-                                              deliveryTimeFrom:
-                                                  widget.deliveryTimeFROM,
-                                              deliveryTimeTo:
-                                                  widget.deliveryTimeTO,
-                                              latitude: widget.pickpLATITUDE,
-                                              longitude: widget.pickupLOGITUDE,
-                                              distance: widget.distance,
-                                              bookingType: "parcel",
-                                              additionalDetails:
-                                                  additionalServiceParcelIds,
-                                              notes: widget.notes,
-                                              products: products,
-                                              bookingAddress: bookingAddress,
-                                              parcelPhoto: widget.imagePath,
-                                              //    imagePath == null ? "" : imagePath!,
-                                              paymentdetails: jsonString);
-                                      // parcelController.addBookingParcel(
-                                      //     addBookingParcelModel);
-                                      parcelController
-                                          .addBookingLoading1.value = true;
-                                      try {
-                                        parcelController.addBookingParcel(
-                                            addBookingParcelModel);
-                                        // Navigate to the next screen if the booking is successful
-                                      } catch (error) {
-                                        // Handle the error here
-                                        print('Booking failed: $error');
-                                      } finally {
-                                        parcelController
-                                            .addBookingLoading1.value = false;
-                                      }
-                                    },
-                                    child: CommonContainer(
-                                      name: "Confirm Payment",
-                                    ));
-                          }),
-                          ksizedbox20,
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+                    ],
+                  );
+          }),
         ),
       ),
     );

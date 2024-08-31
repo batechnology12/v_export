@@ -14,10 +14,14 @@ class MyListController extends GetxController {
   GetOngongOrderApiServices getOngongOrderApiServices =
       GetOngongOrderApiServices();
 
-  List<GetOngoingOrdersModelData> getOngoingOrdersModelData = [];
+  List<GetOngoingOrdersModelData> getOngoingOrdersModelData =
+      <GetOngoingOrdersModelData>[].obs;
+
   RxBool getOngoingOrdersLoading = false.obs;
+
   getOngoingOrdersUser(String ongoingOrder) async {
     getOngoingOrdersLoading(true);
+
     dio.Response response =
         await getOngongOrderApiServices.getOngoingOderUser(ongoingOrder);
 
@@ -25,6 +29,7 @@ class MyListController extends GetxController {
       GetOngoingOrdersModel getOngoingOrdersModel =
           GetOngoingOrdersModel.fromJson(response.data);
       getOngoingOrdersModelData = getOngoingOrdersModel.data.orders;
+
       // Get.rawSnackbar(
       //   backgroundColor: Colors.green,
       //   messageText: Text(
@@ -33,8 +38,10 @@ class MyListController extends GetxController {
       //   ),
       // );
       // update();
+      
       getOngoingOrdersLoading(false);
       update();
+
     } else {
       // Get.rawSnackbar(
       //   backgroundColor: Colors.red,
@@ -51,7 +58,8 @@ class MyListController extends GetxController {
   GetCompletedOrderApiServices getCompletedOrderApiServices =
       GetCompletedOrderApiServices();
 
-  List<GetCompletedOrdersModelData> getCompletedOrdersModelData = [];
+  List<GetCompletedOrdersModelData> getCompletedOrdersModelData =
+      <GetCompletedOrdersModelData>[].obs;
   RxBool getCompletedOrdersLoading = false.obs;
   getCompletedOrdersUser(String completedOrder) async {
     getCompletedOrdersLoading(true);
@@ -64,13 +72,7 @@ class MyListController extends GetxController {
       GetCompletedOrdersModel getCompletedOrdersModel =
           GetCompletedOrdersModel.fromJson(response.data);
       getCompletedOrdersModelData = getCompletedOrdersModel.data.orders;
-      // Get.rawSnackbar(
-      //   backgroundColor: Colors.green,
-      //   messageText: Text(
-      //     response.data['message'],
-      //     style: TextStyle(color: Colors.white, fontSize: 15.sp),
-      //   ),
-      // );
+
       getCompletedOrdersLoading(false);
       update();
     } else {
@@ -87,7 +89,8 @@ class MyListController extends GetxController {
   GetCancelledOrderApiServices getCancelledOrderApiServices =
       GetCancelledOrderApiServices();
 
-  List<GetCancelledOrdersModelData> getCancelledOrdersModelData = [];
+  List<GetCancelledOrdersModelData> getCancelledOrdersModelData =
+      <GetCancelledOrdersModelData>[].obs;
   RxBool getCancelledOrdersLoading = false.obs;
   getCancelledOrderUser(String cancelledOrder) async {
     getCancelledOrdersLoading(true);

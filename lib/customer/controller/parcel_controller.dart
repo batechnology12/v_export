@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:v_export/customer/model/Payment_detalis_data_model.dart';
 import 'package:v_export/customer/model/add_booking_parcel_model.dart';
 import 'package:v_export/customer/model/add_booking_vehicle_model.dart';
 import 'package:v_export/customer/model/additional_service_model.dart';
 import 'package:v_export/customer/model/booking_review_detalis_model.dart';
 import 'package:v_export/customer/model/delivery_type_model.dart';
 import 'package:v_export/customer/model/get_accept_booking_details_model.dart';
+import 'package:v_export/customer/model/get_vehicle_calculation_model.dart';
+import 'package:v_export/customer/model/get_booking_details_model.dart';
 import 'package:v_export/customer/model/get_vehicle_booking_details_model.dart';
 import 'package:v_export/customer/model/parcel_ongoing_order_model.dart';
 import 'package:v_export/customer/model/onGoing_order_model.dart';
@@ -17,17 +20,26 @@ import 'package:v_export/customer/services/network/booking_api_service/additiona
 import 'package:v_export/customer/services/network/booking_api_service/cancel_booking_api_service.dart';
 import 'package:v_export/customer/services/network/booking_api_service/get_accepted_booking_details_api_service.dart';
 import 'package:v_export/customer/services/network/booking_api_service/get_booking_api_service.dart';
+import 'package:v_export/customer/services/network/booking_api_service/get_booking_calculations_api_service.dart';
+import 'package:v_export/customer/services/network/booking_api_service/get_booking_details_api_services.dart';
 import 'package:v_export/customer/services/network/booking_api_service/get_delivery_type_api_services.dart';
 import 'package:v_export/customer/services/network/booking_api_service/get_km_api_service.dart';
+import 'package:v_export/customer/services/network/booking_api_service/get_vehicle_calculations_api_service.dart';
 import 'package:v_export/customer/services/network/booking_api_service/get_vehicle_type_api_service.dart';
 import 'package:v_export/customer/services/network/booking_api_service/ongoing_orders_api_service.dart';
 import 'package:dio/dio.dart' as dio;
+import 'package:v_export/customer/services/network/booking_api_service/rate_driver_api_service.dart';
 import 'package:v_export/customer/services/network/booking_api_service/sender_receiver_api_service.dart';
-import 'package:v_export/customer/services/network/booking_api_service/update_boioking_status_api_service.dart';
+import 'package:v_export/customer/services/network/booking_api_service/update_booking_status_api_service.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/bottomn_navi_bar.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/booking_details.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/package_send/booking_sucessfully_screen.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/driver_details_screen.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/driver_rating.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/pickup_address_details.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/payment_screen.dart/make_payment_screen.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/payment_screen.dart/make_payment_screen2.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/payment_screen.dart/placed_order.dart';
 
 class ParcelController extends GetxController {
   OngongOrderApiServices ongongOrderApiServices = OngongOrderApiServices();
@@ -45,21 +57,9 @@ class ParcelController extends GetxController {
     if (response.data["status"] == true) {
       OngoingOrdersModel ongoingOrdersModel =
           OngoingOrdersModel.fromJson(response.data);
-      // bool iscontains = false;
 
-      // for (var orderData in ongoingOrdersData) {
-      //   if (ongoingOrdersModel.data.bookingDeliveryAddresses ==
-      //       orderData.bookingDeliveryAddresses) {
-      //     iscontains = true;
-      //   }
-      // }
-
-      // if (!iscontains) {
-      //   ongoingOrdersData.add(ongoingOrdersModel.data);
-      // }
-      // ongoingOrdersData.clear();
-    //ongoingOrdersData.clear();
-      ongoingOrdersData.add(ongoingOrdersModel.data);
+      ongoingOrdersData.clear();
+      ongoingOrdersData = ongoingOrdersModel.data;
 
       update();
     } else {
@@ -173,11 +173,12 @@ class ParcelController extends GetxController {
 
   AddBookingParcelsApiService addBookingParcelsApiService =
       AddBookingParcelsApiService();
-  // String driverbookingid = "";
+
   RxBool addBookingLoading = false.obs;
   RxBool addBookingLoading1 = false.obs;
   BookingData? data;
   int? parcelBookingId;
+  String bookingTotalAmount = "";
   addBookingParcel(AddBookingParcelModel addBookingParcelModel) async {
     addBookingLoading(true);
     addBookingLoading1(false);
@@ -188,9 +189,13 @@ class ParcelController extends GetxController {
     print("---------response");
     print(response.data);
     if (response.data["status"] == true) {
-   parcelBookingId = response.data["data"]["id"];
-   
-      Get.to(MakePayment());
+      parcelBookingId = response.data["data"]["id"];
+      bookingTotalAmount = response.data["data"]["total_amount"];
+
+      Get.to(MakePayment(
+        bookingid: parcelBookingId.toString(),
+        totalAmount: bookingTotalAmount,
+      ));
       // Get.rawSnackbar(
       //   backgroundColor: Colors.green,
       //   messageText: Text(
@@ -223,7 +228,8 @@ class ParcelController extends GetxController {
   AddBookingVehicleApiService addBookingVehicleApiService =
       AddBookingVehicleApiService();
   GetVehicleBookingDetailsData? getVehicleBookingDetailsData;
-
+  int? vehicleBookingId;
+  String vehicleTotalAmount = "";
   RxBool addBookingVehicleLoading = false.obs;
   addBookingVehicleApi(AddBookingVehicleModel addBookingVehicleModel) async {
     addBookingVehicleLoading(true);
@@ -233,7 +239,16 @@ class ParcelController extends GetxController {
     print("-------------booking vehicle");
     print(response.data);
     if (response.data["status"] == true) {
-      Get.to(MakePayment());
+      vehicleBookingId = response.data["data"]["id"];
+      vehicleTotalAmount = response.data["data"]["total_amount"];
+      print("vehicle booking id------");
+      print(vehicleBookingId);
+      print("vehicle booking amount------");
+      print(vehicleTotalAmount);
+      Get.to(MakePayment2(
+        vehiclebookingid: vehicleBookingId.toString(),
+        totalAmountVehicle: vehicleTotalAmount,
+      ));
       // GetVehicleBookingDetailsModel getVehicleBookingDetailsModel =
       //     GetVehicleBookingDetailsModel.fromJson(response.data);
       // getVehicleBookingDetailsData = getVehicleBookingDetailsModel.data;
@@ -261,35 +276,6 @@ class ParcelController extends GetxController {
     }
   }
 
-  CancelBookingApiServices cancelBookingApiServices =
-      CancelBookingApiServices();
-
-  RxBool cancelBookingLoading = false.obs;
-  cancelBooking(String bookingId) async {
-    cancelBookingLoading(true);
-    dio.Response<dynamic> response =
-        await cancelBookingApiServices.cancelBooking(bookingId);
-    cancelBookingLoading(false);
-    if (response.data["status"] == true) {
-      // Get.rawSnackbar(
-      //   backgroundColor: Colors.green,
-      //   messageText: Text(
-      //     response.data['message'],
-      //     style: TextStyle(color: Colors.white, fontSize: 15.sp),
-      //   ),
-      // );
-      update();
-    } else {
-      Get.rawSnackbar(
-        backgroundColor: Colors.red,
-        messageText: Text(
-          response.data['message'],
-          style: TextStyle(color: Colors.white, fontSize: 15.sp),
-        ),
-      );
-    }
-  }
-
   GetAcceptBookingDetailsApiServices getAcceptBookingDetailsApiServices =
       GetAcceptBookingDetailsApiServices();
   GetAcceptBookingdata? getAcceptBookingdata;
@@ -304,9 +290,9 @@ class ParcelController extends GetxController {
       GetAcceptBookingModeldata getAcceptBookingModeldata =
           GetAcceptBookingModeldata.fromJson(response.data);
       getAcceptBookingdata = getAcceptBookingModeldata.data;
-      Get.to(DriverDetailsScreen(
-        getAcceptBookingdata: getAcceptBookingdata,
-      ));
+      // Get.to(DriverDetailsScreen(
+      //   //getAcceptBookingdata: getAcceptBookingdata,
+      // ));
       // Get.rawSnackbar(
       //   backgroundColor: Colors.green,
       //   messageText: Text(
@@ -327,25 +313,6 @@ class ParcelController extends GetxController {
       );
     }
   }
-
-  // GetKiloMeterApiServices getKiloMeterApiServices = GetKiloMeterApiServices();
-  // //   RxBool getKiloMeterLoading = false.obs;
-  // double distance = 0;
-  // getKiloMeterApi(
-  //     {required double lat1,
-  //     required double lon1,
-  //     required double lat2,
-  //     required double lon2,
-  //     required String unit}) async {
-  //   dio.Response<dynamic> response = await getKiloMeterApiServices.getKiloMeter(
-  //       lat1: lat1, lon1: lon1, lat2: lat2, lon2: lon2, unit: unit);
-
-  //   distance = response.data["distance"];
-  //   print("------distance");
-  //   print(distance);
-  //   update();
-
-  // }
 
   double distance = 0.0;
 
@@ -383,6 +350,38 @@ class ParcelController extends GetxController {
     dio.Response<dynamic> response =
         await senderReceiverApiServices.senderReceiver(bookingID, payable);
     if (response.data["status"] == true) {
+      // Get.rawSnackbar(
+      //   backgroundColor: Colors.green,
+      //   messageText: Text(
+      //     response.data['message'],
+      //     style: TextStyle(color: Colors.white, fontSize: 15.sp),
+      //   ),
+      // );
+      update();
+    } else {
+      Get.rawSnackbar(
+        backgroundColor: Colors.red,
+        messageText: Text(
+          response.data['message'],
+          style: TextStyle(color: Colors.white, fontSize: 15.sp),
+        ),
+      );
+    }
+  }
+
+  UpdateBookinStatusApiServices updateBookinStatusApiServices =
+      UpdateBookinStatusApiServices();
+  RxBool updateBookingStatusLoading = false.obs;
+  updateBookingSatusApi(String iD, String paymentMode) async {
+    updateBookingStatusLoading(true);
+    dio.Response<dynamic> response = await updateBookinStatusApiServices
+        .updateBookingApi(iD: iD, paymentMode: paymentMode);
+    updateBookingStatusLoading(false);
+    print("response------------------");
+    print(response.data);
+    if (response.data["status"] == true) {
+      Get.to(PlacedOrder());
+
       Get.rawSnackbar(
         backgroundColor: Colors.green,
         messageText: Text(
@@ -402,13 +401,181 @@ class ParcelController extends GetxController {
     }
   }
 
-  UpdateBookinStatusApiServices updateBookinStatusApiServices = UpdateBookinStatusApiServices();
- RxBool  updateBookingStatusLoading = false.obs;
-  updateBookingSatusApi (String iD, String paymentMode) async {
-    updateBookingStatusLoading(true);
-   dio.Response<dynamic> response =await updateBookinStatusApiServices.updateBookingApi(iD: iD, paymentMode: paymentMode);
-   updateBookingStatusLoading(false);
+  final MainMenuServices paymentShowService = MainMenuServices();
+  List<PaymentData> paymentdata = [];
+  var paymentLoad = false.obs;
+
+  Future<void> paymentshow(String bookId) async {
+    print('----------');
+
+    paymentLoad.value = true;
+    try {
+      dio.Response<dynamic> response =
+          await paymentShowService.paymentShowing(bookId);
+      if (response.data['status'] == true) {
+        print('payment show successfully----->>>: ${response.data}');
+        PaymentShowModel paymentData = PaymentShowModel.fromJson(response.data);
+        paymentdata.clear();
+        paymentdata.add(paymentData.data);
+        // for (var i = 0; i < paymentdata.length; i++) {
+        //   paymentdata.add(paymentData.data[i]);
+        // }
+        print("payment data--------[]");
+        print(paymentdata);
+        paymentLoad.value = false;
+        update();
+      } else {
+        print('Not retrived payment data data');
+      }
+    } catch (e) {
+      print(e);
+    }
+    paymentLoad.value = false;
+    update();
+  }
+
+
+  GetBookingCalculationApiServices getBookingCalculationApiServices =
+      GetBookingCalculationApiServices();
+  List<PaymentDetailsData> paymentdatalist = [];
+
+  getBookingCalculationApi(
+      String deliveryType,
+      String distance,
+      String roundTrip,
+      List<String> locationKg,
+      List<String> locationQty,
+      List<String> additionServiceId,
+      List<String> additionalServiceQty,
+      String postalcode) async {
+    dio.Response<dynamic> response =
+        await getBookingCalculationApiServices.getBookingCalculation(
+            deliveryType,
+            distance,
+            roundTrip,
+            locationKg,
+            locationQty,
+            additionServiceId,
+            additionalServiceQty,
+            postalcode);
+    if (response.data["status"] == "success") {
+      PaymentDetalis paymentData = PaymentDetalis.fromJson(response.data);
+      paymentdatalist.clear();
+      paymentdatalist.add(paymentData.paymentDetails);
+
+      // Get.rawSnackbar(
+      //   backgroundColor: Colors.green,
+      //   messageText: Text(
+      //     response.data['message'],
+      //     style: TextStyle(color: Colors.white, fontSize: 15.sp),
+      //   ),
+      // );
+      update();
+    } else {
+      Get.rawSnackbar(
+        backgroundColor: Colors.red,
+        messageText: Text(
+          response.data['message'],
+          style: TextStyle(color: Colors.white, fontSize: 15.sp),
+        ),
+      );
+    }
+  }
+
+  GetVehicleCalculationApiServices getVehicleCalculationApiServices =
+      GetVehicleCalculationApiServices();
+  List<VehiclePaymentDetails> getvehicleCalculationDatas =
+      <VehiclePaymentDetails>[].obs;
+  getVehicleCalculationApi(
+      String vehicleType,
+      String distance,
+      String roundTrip,
+      String additionStopCount,
+      String driverHelp,
+      String helperQty,
+      String weekend,
+      List<String> additionServiceId,
+      List<String> additionalServiceQty,
+      String postalcode) async {
+    try {
+      dio.Response<dynamic> response =
+          await getVehicleCalculationApiServices.getVehicleCalculation(
+              vehicleType,
+              distance,
+              roundTrip,
+              additionStopCount,
+              driverHelp,
+              helperQty,
+              weekend,
+              additionServiceId,
+              additionalServiceQty,
+              postalcode);
+      if (response.data["status"] == "success") {
+        GetVehicleCalculation getVehicleCalculationDataList =
+            GetVehicleCalculation.fromJson(response.data);
+        getvehicleCalculationDatas.clear();
+        getvehicleCalculationDatas
+            .add(getVehicleCalculationDataList.paymentDetails);
+        update();
+      } else {
+        Get.rawSnackbar(
+          backgroundColor: Colors.red,
+          messageText: Text(
+            response.data['message'],
+            style: TextStyle(color: Colors.white, fontSize: 15.sp),
+          ),
+        );
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  CancelBookingApiServices cancelBookingApiServices =
+      CancelBookingApiServices();
+
+  RxBool cancelBookingLoading = false.obs;
+  cancelBooking(String bookingId) async {
+    cancelBookingLoading(true);
+    dio.Response<dynamic> response =
+        await cancelBookingApiServices.cancelBooking(bookingId);
+    cancelBookingLoading(false);
     if (response.data["status"] == true) {
+      Get.to(BottomNavigationScreen(indexes: 0));
+      // Get.rawSnackbar(
+      //   backgroundColor: Colors.green,
+      //   messageText: Text(
+      //     response.data['message'],
+      //     style: TextStyle(color: Colors.white, fontSize: 15.sp),
+      //   ),
+      // );
+
+      update();
+    } else {
+      Get.rawSnackbar(
+        backgroundColor: Colors.red,
+        messageText: Text(
+          response.data['message'],
+          style: TextStyle(color: Colors.white, fontSize: 15.sp),
+        ),
+      );
+    }
+  }
+
+  RateDriverApiService rateDriverApiService = RateDriverApiService();
+  int? bookingIdDriver;
+  rateDriverApi(String ratingBookingId, String rating, String review) async {
+    dio.Response<dynamic> response = await rateDriverApiService.rateDriverApi(
+        ratingBookingId, rating, review);
+    print(" driver rate response=---------");
+    print(response.data);
+    if (response.data["status"] == true) {
+      print("booking id for driver rate");
+      bookingIdDriver = response.data["data"]["booking_id"];
+      // Get.to(DriverRating(
+      //   bookingID: bookingIdDriver.toString(),
+      // ));
+
       Get.rawSnackbar(
         backgroundColor: Colors.green,
         messageText: Text(
@@ -416,7 +583,6 @@ class ParcelController extends GetxController {
           style: TextStyle(color: Colors.white, fontSize: 15.sp),
         ),
       );
-      update();
     } else {
       Get.rawSnackbar(
         backgroundColor: Colors.red,

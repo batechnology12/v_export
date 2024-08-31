@@ -22,14 +22,14 @@ class PickupAddressDetails extends StatefulWidget {
 }
 
 class _PickupAddressDetailsState extends State<PickupAddressDetails> {
-  AccountController accountController = Get.find<AccountController>();
-  HomeController homeController = Get.find<HomeController>();
+  AccountController accountController = Get.put(AccountController());
+  HomeController homeController = Get.put(HomeController());
 
   GoogleMapController? _controller;
   final Set<Marker> _markers = {};
   loc.LocationData? _currentPosition; // Make _currentPosition nullable
   loc.Location location = loc.Location();
-
+  String pincode = "";
   static const CameraPosition _initialPosition = CameraPosition(
     target: LatLng(37.7749, -122.4194), // San Francisco
     zoom: 12,
@@ -41,6 +41,7 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
   final TextEditingController _senderNameController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController searchController = TextEditingController();
+  String pickUppostalCode = "";
 
   bool _isManualSelection = false; // Flag to track manual selection
 
@@ -66,6 +67,9 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
           searchController.text =
               "${place.name},${place.subLocality},${place.locality},${place.postalCode}" ??
                   '';
+          pickUppostalCode = place.postalCode! ?? "";
+          print("pickup postal code-----------------------");
+          print(pickUppostalCode);
         });
       } catch (e) {
         print(e);
@@ -136,6 +140,18 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                             debounceTime: 600,
                             isLatLngRequired: true,
                             getPlaceDetailWithLatLng: (Prediction prediction) {
+                              RegExp regExp = RegExp(
+                                  r'\b\d{6}\b'); // Pattern to match 6-digit pincode
+                              Match? match =
+                                  regExp.firstMatch(prediction.description!);
+
+                              if (match != null) {
+                                pincode = match.group(0)!; // Store the pincode
+                              }
+
+                              print(
+                                  'Extracted Pincode: $pincode'); // Debugging line to check pincode
+
                               if (_controller != null) {
                                 _controller!.animateCamera(
                                     CameraUpdate.newCameraPosition(
@@ -192,8 +208,9 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                                       controller: _blockUnitController,
                                       inputFormatters: [
                                         LengthLimitingTextInputFormatter(4),
-                                        //  FilteringTextInputFormatter.digitsOnly,
+                                        // FilteringTextInputFormatter.digitsOnly,
                                       ],
+                                      keyboardType: TextInputType.text,
                                       decoration: InputDecoration(
                                           hintText: 'Enter Block no',
                                           hintStyle: primaryfont.copyWith(
@@ -231,8 +248,9 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                                       controller: _unitController,
                                       inputFormatters: [
                                         LengthLimitingTextInputFormatter(4),
-                                        //  FilteringTextInputFormatter.digitsOnly,
+                                        // FilteringTextInputFormatter.digitsOnly,
                                       ],
+                                      keyboardType: TextInputType.text,
                                       decoration: InputDecoration(
                                           hintText: 'Enter Unit no',
                                           hintStyle: primaryfont.copyWith(
@@ -267,7 +285,7 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                             color: AppColors.kwhite,
                           ),
                           child: TextFormField(
-                            keyboardType: TextInputType.text,
+                              keyboardType: TextInputType.text,
                               textCapitalization: TextCapitalization.sentences,
                               inputFormatters: [
                                 FilteringTextInputFormatter.allow(
@@ -311,33 +329,31 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                             FilteringTextInputFormatter.deny(RegExp(r'\s')),
                           ],
                           decoration: InputDecoration(
-                                  contentPadding: EdgeInsets.only( top: 13),
-                             prefixIcon: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Container(
-                     
-                                    height: 30,
-                                    width: 50,
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                     "+65",
-                                      style: primaryfont.copyWith(
-                                        fontSize: 14, // Adjust font size
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                            contentPadding: EdgeInsets.all(10),
+                            prefixIcon: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(width: 10),
+                                Container(
+                                  // height: 30,
+                                  // width: 50,
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    "+65",
+                                    style: primaryfont.copyWith(
+                                      fontSize: 14.sp, // Adjust font size
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  SizedBox(width: 5),
-                                ],
-                              ),
+                                ),
+                                SizedBox(width: 5),
+                              ],
+                            ),
                             fillColor: AppColors.kwhite,
                             filled: true,
-              
-                              hintText: 'Enter Phone Name',
-                                  hintStyle: primaryfont.copyWith(
-                                      fontSize: 14,
-                                                                         fontWeight: FontWeight.w500),
+                            hintText: 'Enter Phone Name',
+                            hintStyle: primaryfont.copyWith(
+                                fontSize: 14.sp, fontWeight: FontWeight.w500),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -359,11 +375,8 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                               ),
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            
                           ),
                         ),
-                                    
-               
                         // TextFormField(
                         //   controller: _phoneNumberController,
                         //   validator: (value) {
@@ -379,28 +392,30 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                         //     FilteringTextInputFormatter.deny(RegExp(r'\s')),
                         //   ],
                         //   decoration: InputDecoration(
-                        //     prefixIcon: Padding(
-                        //       padding: const EdgeInsets.symmetric(
-                        //           vertical: 13,
-                        //           horizontal: 6), // Reduced padding
-                        //       child: Text(
-                        //         "+65",
-                        //         style: primaryfont.copyWith(
-                        //           fontSize: 15.sp, // Reduced font size
-                        //           fontWeight: FontWeight.bold,
+                        //     contentPadding: EdgeInsets.only(top: 13),
+                        //     prefixIcon: Row(
+                        //       mainAxisSize: MainAxisSize.min,
+                        //       children: [
+                        //         Container(
+                        //           height: 30,
+                        //           width: 50,
+                        //           alignment: Alignment.center,
+                        //           child: Text(
+                        //             "+65",
+                        //             style: primaryfont.copyWith(
+                        //               fontSize: 14, // Adjust font size
+                        //               fontWeight: FontWeight.bold,
+                        //             ),
+                        //           ),
                         //         ),
-                        //       ),
+                        //         SizedBox(width: 5),
+                        //       ],
                         //     ),
                         //     fillColor: AppColors.kwhite,
                         //     filled: true,
-                        //     contentPadding: const EdgeInsets.symmetric(
-                        //         vertical: 8, horizontal: 6), // Reduced padding
-                        //     hintText: "Enter Sender Number",
+                        //     hintText: 'Enter Phone Name',
                         //     hintStyle: primaryfont.copyWith(
-                        //       color: Colors.grey,
-                        //       fontSize: 14, // Reduced font size
-                        //       fontWeight: FontWeight.w100,
-                        //     ),
+                        //         fontSize: 14, fontWeight: FontWeight.w500),
                         //     border: OutlineInputBorder(
                         //       borderRadius: BorderRadius.circular(10),
                         //     ),
@@ -424,27 +439,28 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                         //     ),
                         //   ),
                         // ),
+
                         ksizedbox20,
                         InkWell(
-                            onTap: () {
+                            onTap: () async {
                               if (formKey.currentState!.validate()) {
                                 if (_senderNameController.text.isNotEmpty &&
                                     _phoneNumberController.text.isNotEmpty) {
                                   homeController.updatepickupLocation(
-                                      searchController.text,
-                                      _markers.first.position.latitude
-                                          .toString(),
-                                      _markers.first.position.longitude
-                                          .toString(),
-                                      _senderNameController.text,
-                                      _phoneNumberController.text,
-                                      _blockUnitController.text,
-                                       _unitController.text
-                                      );
+                                    searchController.text,
+                                    _markers.first.position.latitude.toString(),
+                                    _markers.first.position.longitude
+                                        .toString(),
+                                    _senderNameController.text,
+                                    _phoneNumberController.text,
+                                    _blockUnitController.text,
+                                    _unitController.text,
+                                    pincode,
+                                  );
 
                                   Get.offAll(PackageSendScreen(
-                                    unitId: _unitController.text,
                                     unitIdBlockID: _blockUnitController.text,
+                                    unitId: _unitController.text,
                                     pickupAdress: searchController.text,
                                     lat: _markers.first.position.latitude
                                         .toString(),
@@ -452,6 +468,7 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                                         .toString(),
                                     sendername: _senderNameController.text,
                                     mobilenumber: _phoneNumberController.text,
+                                    pickUpPostalCode: pincode,
                                   ));
                                 } else {
                                   Get.snackbar(
@@ -616,6 +633,11 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                                   ),
                                   borderRadius: BorderRadius.circular(10)),
                               child: TextFormField(
+                                  inputFormatters: [
+                                    LengthLimitingTextInputFormatter(4),
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
+                                  keyboardType: TextInputType.phone,
                                   controller: _blockUnitController,
                                   decoration: InputDecoration(
                                       contentPadding: const EdgeInsets.only(
@@ -707,25 +729,32 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                                 FilteringTextInputFormatter.deny(RegExp(r'\s')),
                               ],
                               decoration: InputDecoration(
-                                prefixIcon: Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 10, right: 5, top: 12),
-                                  child: Text(
-                                    "+65",
-                                    style: primaryfont.copyWith(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w500,
+                                prefixIcon: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    SizedBox(width: 10),
+                                    Container(
+                                      // height: 30,
+                                      // width: 50,
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        "+65",
+                                        style: primaryfont.copyWith(
+                                          fontSize: 14.sp, // Adjust font size
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                                     ),
-                                  ),
+                                    SizedBox(width: 5),
+                                  ],
                                 ),
                                 fillColor: AppColors.kwhite,
                                 filled: true,
-                                contentPadding:
-                                    const EdgeInsets.fromLTRB(10, 4, 4, 4),
+                                contentPadding: const EdgeInsets.all(10),
                                 hintText: "Enter Mobile Number",
                                 hintStyle: primaryfont.copyWith(
                                     color: Colors.grey,
-                                    fontSize: 15,
+                                    fontSize: 14.sp,
                                     fontWeight: FontWeight.w100),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
@@ -747,24 +776,81 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                               ),
                             ),
                           ),
+                          // GestureDetector(
+                          //   onTap: _showFullScreenAddressInput,
+                          //   child: TextFormField(
+                          //     controller: _phoneNumberController,
+                          //     validator: (value) {
+                          //       if (value!.length < 8 || value.length > 8) {
+                          //         return "Enter 8 digits phone number";
+                          //       }
+                          //       return null;
+                          //     },
+                          //     keyboardType: TextInputType.phone,
+                          //     inputFormatters: [
+                          //       LengthLimitingTextInputFormatter(8),
+                          //       FilteringTextInputFormatter.digitsOnly,
+                          //       FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                          //     ],
+                          //     decoration: InputDecoration(
+                          //       prefixIcon: Padding(
+                          //         padding: const EdgeInsets.only(
+                          //             left: 10, right: 5, top: 12),
+                          //         child: Text(
+                          //           "+65",
+                          //           style: primaryfont.copyWith(
+                          //             fontSize: 15,
+                          //             fontWeight: FontWeight.w500,
+                          //           ),
+                          //         ),
+                          //       ),
+                          //       fillColor: AppColors.kwhite,
+                          //       filled: true,
+                          //       contentPadding:
+                          //           const EdgeInsets.fromLTRB(10, 4, 4, 4),
+                          //       hintText: "Enter Mobile Number",
+                          //       hintStyle: primaryfont.copyWith(
+                          //           color: Colors.grey,
+                          //           fontSize: 15,
+                          //           fontWeight: FontWeight.w100),
+                          //       border: OutlineInputBorder(
+                          //         borderRadius: BorderRadius.circular(10),
+                          //       ),
+                          //       focusedBorder: OutlineInputBorder(
+                          //           borderSide: BorderSide(
+                          //             color: Color(0xff444444),
+                          //           ),
+                          //           borderRadius: BorderRadius.circular(10)),
+                          //       focusedErrorBorder: OutlineInputBorder(
+                          //           borderSide: BorderSide(
+                          //             color: Color(0xff444444),
+                          //           ),
+                          //           borderRadius: BorderRadius.circular(10)),
+                          //       errorBorder: OutlineInputBorder(
+                          //           borderSide:
+                          //               BorderSide(color: Color(0xff444444)),
+                          //           borderRadius: BorderRadius.circular(10)),
+                          //     ),
+                          //   ),
+                          // ),
                           ksizedbox20,
                           InkWell(
                               onTap: () {
                                 if (_senderNameController.text.isNotEmpty &&
                                     _phoneNumberController.text.isNotEmpty) {
                                   homeController.updatepickupLocation(
-                                      
-                                      searchController.text,
-                                      _markers.first.position.latitude
-                                          .toString(),
-                                      _markers.first.position.longitude
-                                          .toString(),
-                                      _senderNameController.text,
-                                      _phoneNumberController.text,
-                                      _blockUnitController.text,
-                                      _unitController.text
-                                      );
+                                    searchController.text,
+                                    _markers.first.position.latitude.toString(),
+                                    _markers.first.position.longitude
+                                        .toString(),
+                                    _senderNameController.text,
+                                    _phoneNumberController.text,
+                                    _blockUnitController.text,
+                                    _unitController.text,
+                                    pincode,
+                                  );
                                   Get.to(PackageSendScreen(
+                                    pickUpPostalCode: pincode,
                                     unitId: _unitController.text,
                                     unitIdBlockID: _blockUnitController.text,
                                     pickupAdress: searchController.text,

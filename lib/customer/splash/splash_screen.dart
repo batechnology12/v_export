@@ -39,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if (authtoken == "null" || authtoken == null) {
       Get.offAll(LoginScreen());
     } else {
-      Get.offAll(BottomNavigationScreen());
+      Get.offAll(BottomNavigationScreen(indexes: 0));
     }
   }
 

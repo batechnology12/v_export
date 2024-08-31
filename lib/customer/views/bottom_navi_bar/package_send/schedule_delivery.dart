@@ -55,9 +55,13 @@ class ScheduleDeliveryScreen extends StatefulWidget {
   String parcelQty;
   String senderUnitId;
   List<String> receiverUnitId;
+  String pickupPincode;
+  List<String> dropPincode;
 
   ScheduleDeliveryScreen(
       {super.key,
+      required this.pickupPincode,
+      required this.dropPincode,
       required this.senderUnitId,
       required this.receiverUnitId,
       required this.roundTrip,
@@ -101,7 +105,7 @@ class ScheduleDeliveryScreen extends StatefulWidget {
 }
 
 class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
-  final HomeController homeController = Get.find<HomeController>();
+  final HomeController homeController = Get.put(HomeController());
 
   @override
   void initState() {
@@ -110,8 +114,10 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
   }
 
   double totalAmount = 0.0;
+  double totalDistance = 0.0;
   TimeOfDay spselectedTime = TimeOfDay.now();
   TimeOfDay spselectedT0Time = TimeOfDay.now();
+  double? storedTotalDistance; // Variable to store the calculated distance
 
   void getData() async {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -119,11 +125,11 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
       initializeIsCheckList();
       parcelController.update();
       if (widget.deliverytype == "Next day delivery") {
-    selectedDate = DateTime.now().add(Duration(days: 1));
-  } else {
-    selectedDate = DateTime.now();
-  }
-  formatDateTime = formatDate(selectedDate, [dd, '-', mm, '-', yyyy]);
+        selectedDate = DateTime.now().add(Duration(days: 1));
+      } else {
+        selectedDate = DateTime.now();
+      }
+      formatDateTime = formatDate(selectedDate, [dd, '-', mm, '-', yyyy]);
       // selectDate(context);
       // setState(() {});
     });
@@ -335,14 +341,7 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
     );
   }
 
-  ParcelController parcelController = Get.find<ParcelController>();
-  // bool ischeck = false;
-  // bool manpowercheck = false;
-  // bool postinvoicecheck = false;
-  // bool staircase = false;
-  // bool otpverificationcheck = false;
-  // bool fragilcheck = false;
-  // bool noadditinalservicecheck = false;
+  ParcelController parcelController = Get.put(ParcelController());
 
   TimeOfDay deliveryFromTime = TimeOfDay.now();
   TimeOfDay deliveryToTime = TimeOfDay.now();
@@ -417,7 +416,7 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
-          formatDateTime = formatDate(selectedDate, [dd, '-', mm, '-', yyyy]);
+        formatDateTime = formatDate(selectedDate, [dd, '-', mm, '-', yyyy]);
         // if (widget.deliverytype == "Next day delivery") {
         //   formatDateTime = formatDate(
         //       selectedDate.add(Duration(days: 1)), [dd, '-', mm, '-', yyyy]);
@@ -512,8 +511,6 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
     }
   }
 
- 
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -607,7 +604,7 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                         color: Color(0xff000000),
                                         fontWeight: FontWeight.w700),
                                   ),
-                                
+
                                   ksizedbox20,
                                   Row(
                                     children: [
@@ -631,19 +628,19 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                   GestureDetector(
                                     onTap: () {
                                       if (widget.deliverytype ==
-                                          "Next day delivery" || widget.deliverytype ==
-                                          "Specific Time" ) {
+                                              "Next day delivery" ||
+                                          widget.deliverytype ==
+                                              "Specific Time") {
                                         selectDate(context);
                                       } else {
-                                          ScaffoldMessenger.of(context)
+                                        ScaffoldMessenger.of(context)
                                             .showSnackBar(
-                                        const  SnackBar(
+                                          const SnackBar(
                                             backgroundColor: Colors.red,
                                             content: Text(
                                                 "Date cannot be changed for this delivery"),
                                           ),
                                         );
-              
                                       }
                                     },
                                     child: Container(
@@ -1153,6 +1150,8 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                           //   return
                           GestureDetector(
                             onTap: () async {
+                              print("services data............");
+                              print(selectedparcelServiceItems);
                               print("checkTime");
                               print(
                                 _getFromTimeDisplayText(),
@@ -1174,100 +1173,141 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                               if (notesController.text.isNotEmpty &&
                                   _getFromTimeDisplayText().isNotEmpty &&
                                   _getToTimeDisplayText().isNotEmpty) {
-                                await parcelController.getKiloMeterApi(
-                                  lat1: double.parse(widget.pickuplatitude),
-                                  lon1: double.parse(widget.pickuplogitude),
-                                  lat2: double.parse(
-                                      widget.droppingLatitude.first),
-                                  lon2: double.parse(
-                                      widget.droppingLogitude.first),
-                                  unit: "k",
-                                );
-
-                                // Wait for the state to update before navigating
-
-                                Get.to(() => BookingDetailsScreen(
-                                  receiverunitId: widget.receiverUnitId,
-                                  unitId: widget.senderUnitId,
-                                      parcelofKg: widget.parcelKg,
-                                      parcelofQty: widget.parcelQty,
-                                      roundtrip: widget.roundTrip,
-                                      totalWeights: widget.totalWeight,
-                                      additionalservicetotalAmount:
-                                          totalAmount.toString(),
-                                      distance:
-                                          parcelController.distance.toString(),
-                                      selectedParcelservice:
-                                          selectedparcelServiceItems,
-                                      pickupADDRESS: widget.pickupAddress,
-                                      pickpLATITUDE: widget.pickuplatitude,
-                                      pickupLOGITUDE: widget.pickuplogitude,
-                                      droppingLATITUDE: widget.droppingLatitude,
-                                      droppingLOGITUDE: widget.droppingLogitude,
-                                      droppingADDRESS: widget.droppingaddress,
-                                      bookingDATE: widget.bookingDate,
-                                      deliveryTYPE: widget.deliverytype,
-                                      deliveryTypeID: widget.deliVerytypeID,
-                                      parcelLengtH: widget.length,
-                                      parcelWidth: widget.width,
-                                      parcelHeight: widget.height,
-                                      parcelKg: widget.kg,
-                                      parcelQty: widget.qty,
-                                      parcelITEMS: widget.parcelItems,
-
-                                      senderunitIdBlockID:
-                                          widget.senderunitIdBlockId,
-                                      pickTimeFROM: widget.pickTimeFrom!,
-                                      pickTimeTO: widget.pickTimeTo!,
-                                      pickTimeListFROM: widget.pickTimeListFrom,
-                                      pickTimeListTO: widget.pickTimeListTo,
-                                      senderNAME: widget.sendername,
-                                      phoneNUMBER: widget.phonenumber,
-                                      arpinCODE: widget.arpincode,
-                                      doorNAME: homeController.doornames,
-                                      receiverNAME:
-                                          homeController.receiverNameList,
-                                      receiverPHONE:
-                                          homeController.receiverNumberList,
-                                      receiverUnitIdBlockID:
-                                          homeController.receiverBlockIdUnitIDs,
-                                      deliveyDate: formatDateTime.isEmpty
-                                          ? (widget.deliverytype ==
-                                                  "Next day delivery"
-                                              ? formatDate(
-                                                  DateTime.now()
-                                                      .add(Duration(days: 1)),
-                                                  [dd, '-', mm, '-', yyyy])
-                                              : formatDate(DateTime.now(),
-                                                  [dd, '-', mm, '-', yyyy]))
-                                          : formatDateTime,
-
-                                      // deliveyDate: formatDateTime.isEmpty
-                                      //     ? "Select Date"
-                                      //     : formatDateTime,
-                                      deliveryTimeFROM:
-                                          widget.deliverytype == "Specific Time"
-                                              ? _formatTime(spselectedTime)
-                                              : _getFromTimeDisplayText(),
-
-                                      //    '${_formatTime(_addMinutesToTimeOfDay(widget.pickupTimeTos, 60))}',
-
-                                      deliveryTimeTO:
-                                          widget.deliverytype == "Specific Time"
+                                calculateDistance().then(
+                                  (value) {
+                                    Get.to(() => BookingDetailsScreen(
+                                          pickupPOSTALCODE:
+                                              widget.pickupPincode,
+                                          dropPOSTALCODE: widget.dropPincode,
+                                          receiverunitId: widget.receiverUnitId,
+                                          unitId: widget.senderUnitId,
+                                          parcelofKg: widget.parcelKg,
+                                          parcelofQty: widget.parcelQty,
+                                          roundtrip: widget.roundTrip,
+                                          totalWeights: widget.totalWeight,
+                                          additionalservicetotalAmount:
+                                              totalAmount.toString(),
+                                          distance:
+                                              storedTotalDistance.toString(),
+                                          selectedParcelservice:
+                                              selectedparcelServiceItems,
+                                          pickupADDRESS: widget.pickupAddress,
+                                          pickpLATITUDE: widget.pickuplatitude,
+                                          pickupLOGITUDE: widget.pickuplogitude,
+                                          droppingLATITUDE:
+                                              widget.droppingLatitude,
+                                          droppingLOGITUDE:
+                                              widget.droppingLogitude,
+                                          droppingADDRESS:
+                                              widget.droppingaddress,
+                                          bookingDATE: widget.bookingDate,
+                                          deliveryTYPE: widget.deliverytype,
+                                          deliveryTypeID: widget.deliVerytypeID,
+                                          parcelLengtH: widget.length,
+                                          parcelWidth: widget.width,
+                                          parcelHeight: widget.height,
+                                          parcelKg: widget.kg,
+                                          parcelQty: widget.qty,
+                                          parcelITEMS: widget.parcelItems,
+                                          senderunitIdBlockID:
+                                              widget.senderunitIdBlockId,
+                                          pickTimeFROM: widget.pickTimeFrom!,
+                                          pickTimeTO: widget.pickTimeTo!,
+                                          pickTimeListFROM:
+                                              widget.pickTimeListFrom,
+                                          pickTimeListTO: widget.pickTimeListTo,
+                                          senderNAME: widget.sendername,
+                                          phoneNUMBER: widget.phonenumber,
+                                          arpinCODE: widget.arpincode,
+                                          doorNAME: homeController.doornames,
+                                          receiverNAME:
+                                              homeController.receiverNameList,
+                                          receiverPHONE:
+                                              homeController.receiverNumberList,
+                                          receiverUnitIdBlockID: homeController
+                                              .receiverBlockIdUnitIDs,
+                                          deliveyDate: formatDateTime.isEmpty
+                                              ? (widget.deliverytype ==
+                                                      "Next day delivery"
+                                                  ? formatDate(
+                                                      DateTime.now().add(
+                                                          Duration(days: 1)),
+                                                      [dd, '-', mm, '-', yyyy])
+                                                  : formatDate(DateTime.now(),
+                                                      [dd, '-', mm, '-', yyyy]))
+                                              : formatDateTime,
+                                          deliveryTimeFROM:
+                                              widget.deliverytype ==
+                                                      "Specific Time"
+                                                  ? _formatTime(spselectedTime)
+                                                  : _getFromTimeDisplayText(),
+                                          deliveryTimeTO: widget.deliverytype ==
+                                                  "Specific Time"
                                               ? _formatTime(spselectedT0Time)
                                               : _getToTimeDisplayText(),
-                                      //  "${_formatTime(widget.deliveryTimeTos)}",
+                                          imagePath:
+                                              imagePath == "" ? "" : imagePath,
+                                          notes: notesController.text,
+                                          selectedDeliveryTypes:
+                                              widget.selectedDeliveryTypes,
+                                        ));
+                                  },
+                                );
+                                // await parcelController.getKiloMeterApi(
+                                //   lat1: double.parse(widget.pickuplatitude),
+                                //   lon1: double.parse(widget.pickuplogitude),
+                                //   lat2:
+                                //       double.parse(widget.droppingLatitude[0]),
+                                //   lon2:
+                                //       double.parse(widget.droppingLogitude[0]),
+                                //   unit: "k",
+                                // );
+                                // totalDistance += parcelController.distance;
+                                // print(
+                                //     "pick to drop loction distance =${totalDistance}");
 
-                                      //  _formatTime(
-                                      //     _addMinutesToTimeOfDay(
-                                      //         widget.pickupTimeTos, 120)),
+                                // if (widget.droppingLatitude.length > 1) {
+                                //   for (int i = 0;
+                                //       i < widget.droppingLatitude.length - 1;
+                                //       i++) {
+                                //     await parcelController.getKiloMeterApi(
+                                //       lat1: double.parse(
+                                //           widget.droppingLatitude[i]),
+                                //       lon1: double.parse(
+                                //           widget.droppingLogitude[i]),
+                                //       lat2: double.parse(
+                                //           widget.droppingLatitude[i + 1]),
+                                //       lon2: double.parse(
+                                //           widget.droppingLogitude[i + 1]),
+                                //       unit: "k",
+                                //     );
+                                //     totalDistance += parcelController.distance;
+                                //     print(
+                                //         "drop to 2drop location distance =${totalDistance}");
+                                //   }
+                                // }
 
-                                      imagePath:
-                                          imagePath == "" ? " " : imagePath,
-                                      notes: notesController.text,
-                                      selectedDeliveryTypes:
-                                          widget.selectedDeliveryTypes,
-                                    ));
+                                // for (int i = 0;
+                                //     i < widget.droppingLatitude.length - 1;
+                                //     i++) {
+                                //   await parcelController.getKiloMeterApi(
+                                //     lat1: double.parse(
+                                //         widget.droppingLatitude[i]),
+                                //     lon1: double.parse(
+                                //         widget.droppingLogitude[i]),
+                                //     lat2: double.parse(
+                                //         widget.droppingLatitude[i + 1]),
+                                //     lon2: double.parse(
+                                //         widget.droppingLogitude[i + 1]),
+                                //     unit: "k",
+                                //   );
+                                //   totalDistance += parcelController.distance;
+                                //   print(
+                                //       "drop to 2drop loction distance =${totalDistance}");
+                                // }
+
+                                print(widget.pickupPincode);
+                                print(widget.dropPincode);
                               } else {
                                 Get.snackbar(
                                   "Fill all Fields",
@@ -1297,225 +1337,43 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
     );
   }
 
-  // List<int> selectedId = [];
+  Future<void> calculateDistance() async {
+    // Check if the distance has already been calculated
+    if (storedTotalDistance == null) {
+      double totalDistance = 0.0;
 
-  // void showListViewDialog(BuildContext context) {
-  //   List<String> list = [
-  //     "Manpower Service",
-  //     "Post Invoice (Ex, Stamp)",
-  //     "Staircase",
-  //     "OTP Verification",
-  //     "Fragile Item",
-  //     "Access restricted area"
-  //   ];
+      // Calculate distance from pickup to the first dropping location
 
-  //   final ParcelController parcelController1 = Get.find<ParcelController>();
-  //   List<bool> isCheck = List<bool>.filled(
-  //       parcelController1.additionalServiceData.length, false);
-  //   initializeIsCheckList();
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return StatefulBuilder(
-  //         builder: (BuildContext context, StateSetter setState) {
-  //           return Center(
-  //             child: Dialog(
-  //               insetPadding: EdgeInsets.symmetric(horizontal: 25),
-  //               shape: RoundedRectangleBorder(
-  //                 borderRadius: BorderRadius.circular(20.0),
-  //               ),
-  //               child: Container(
-  //                 padding: EdgeInsets.all(15.0),
-  //                 child: Column(
-  //                   mainAxisSize: MainAxisSize.min,
-  //                   children: [
-  //                     Row(
-  //                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                       children: [
-  //                         Row(
-  //                           children: [
-  //                             Text(
-  //                               'Additional Services',
-  //                               style: primaryfont.copyWith(
-  //                                   fontSize: 16.sp,
-  //                                   color: AppColors.kblue,
-  //                                   fontWeight: FontWeight.w600),
-  //                             ),
-  //                             Padding(
-  //                               padding: const EdgeInsets.only(left: 2),
-  //                               child: Image.asset(
-  //                                 'assets/icons/support_icon.png',
-  //                               ),
-  //                             )
-  //                           ],
-  //                         ),
-  //                         GestureDetector(
-  //                           onTap: () {
-  //                             Get.back();
-  //                           },
-  //                           child: const Icon(
-  //                             Icons.cancel_outlined,
-  //                             color: Colors.red,
-  //                           ),
-  //                         ),
-  //                       ],
-  //                     ),
-  //                     ksizedbox15,
-  //                     Padding(
-  //                       padding: const EdgeInsets.only(bottom: 10),
-  //                       child: Column(
-  //                         mainAxisSize: MainAxisSize.min,
-  //                         children: [
-  //                           GetBuilder<ParcelController>(builder: (controller) {
-  //                             return ListView.builder(
-  //                                 itemCount:
-  //                                     controller.additionalServiceData.length,
-  //                                 shrinkWrap: true,
-  //                                 itemBuilder: ((context, index) {
-  //                                   AdditionalServiceData serviceData =
-  //                                       controller.additionalServiceData[index];
-  //                                   return Padding(
-  //                                     padding: const EdgeInsets.all(5.0),
-  //                                     child: GestureDetector(
-  //                                       onTap: () {
-  //                                         setState(
-  //                                           () {
-  //                                             isCheck[index] = !isCheck[index];
+      await parcelController.getKiloMeterApi(
+        lat1: double.parse(widget.pickuplatitude),
+        lon1: double.parse(widget.pickuplogitude),
+        lat2: double.parse(widget.droppingLatitude[0]),
+        lon2: double.parse(widget.droppingLogitude[0]),
+        unit: "k",
+      );
+      totalDistance += parcelController.distance;
+      print("Pick to drop location distance = $totalDistance");
 
-  //                                             if (isCheck[index] == true) {
-  //                                               selectedId.add(serviceData.id);
-  //                                             } else {
-  //                                               selectedId
-  //                                                   .remove(serviceData.id);
-  //                                             }
-  //                                           },
-  //                                         );
-  //                                       },
-  //                                       child: Container(
-  //                                         child: Row(
-  //                                           mainAxisAlignment:
-  //                                               MainAxisAlignment.spaceBetween,
-  //                                           children: [
-  //                                             Row(
-  //                                               children: [
-  //                                                 GestureDetector(
-  //                                                   onTap: () {
-  //                                                     setState(
-  //                                                       () {
-  //                                                         isCheck[index] =
-  //                                                             !isCheck[index];
+      // Calculate distance for multiple dropping locations
+      if (widget.droppingLatitude.length > 1) {
+        for (int i = 0; i < widget.droppingLatitude.length - 1; i++) {
+          await parcelController.getKiloMeterApi(
+            lat1: double.parse(widget.droppingLatitude[i]),
+            lon1: double.parse(widget.droppingLogitude[i]),
+            lat2: double.parse(widget.droppingLatitude[i + 1]),
+            lon2: double.parse(widget.droppingLogitude[i + 1]),
+            unit: "k",
+          );
+          totalDistance += parcelController.distance;
+          print("Drop to next drop location distance = $totalDistance");
+        }
+      }
 
-  //                                                         if (isCheck[index] ==
-  //                                                             true) {
-  //                                                           selectedId.add(
-  //                                                               serviceData.id);
-  //                                                         } else {
-  //                                                           selectedId.remove(
-  //                                                               serviceData.id);
-  //                                                         }
-  //                                                       },
-  //                                                     );
-  //                                                   },
-  //                                                   child: Container(
-  //                                                     height: 20.h,
-  //                                                     width: 20.w,
-  //                                                     decoration: BoxDecoration(
-  //                                                         border: Border.all(
-  //                                                             width: 1,
-  //                                                             color: AppColors
-  //                                                                 .kblue),
-  //                                                         borderRadius:
-  //                                                             BorderRadius
-  //                                                                 .circular(5)),
-  //                                                     child: isCheck[index]
-  //                                                         ? Image.asset(
-  //                                                             "assets/icons/7-Check.png")
-  //                                                         : Text(""),
-  //                                                   ),
-  //                                                 ),
-  //                                                 SizedBox(width: 10),
-  //                                                 Text(
-  //                                                   controller
-  //                                                       .additionalServiceData[
-  //                                                           index]
-  //                                                       .name,
-  //                                                   style: primaryfont.copyWith(
-  //                                                     fontSize: 15.sp,
-  //                                                     fontWeight:
-  //                                                         FontWeight.w600,
-  //                                                   ),
-  //                                                 ),
-  //                                               ],
-  //                                             ),
-  //                                             Row(
-  //                                               children: [
-  //                                                 Text(
-  //                                                     "+\$${controller.additionalServiceData[index].amount}",
-  //                                                     style:
-  //                                                         primaryfont.copyWith(
-  //                                                       fontSize: 15.sp,
-  //                                                       fontWeight:
-  //                                                           FontWeight.w600,
-  //                                                     ))
-  //                                               ],
-  //                                             ),
-  //                                           ],
-  //                                         ),
-  //                                       ),
-  //                                     ),
-  //                                   );
-  //                                 }));
-  //                           }),
-  //                         ],
-  //                       ),
-  //                     ),
-  //                     TextButton(
-  //                         onPressed: () {
-  //                           setState(() {
-  //                             savedSelectItem = selectedId;
-  //                           });
-  //                           Navigator.of(context).pop(savedSelectItem);
-  //                         },
-  //                         child: CommonContainer(
-  //                           name: 'Confirm',
-  //                         )),
-  //                   ],
-  //                 ),
-  //               ),
-  //             ),
-  //           );
-  //         },
-  //       );
-  //     },
-  //   );
-  // }
-
-  // void showPickerDialog(BuildContext context) {
-  //   showModalBottomSheet(
-  //       context: context,
-  //       builder: (BuildContext bc) {
-  //         return SafeArea(
-  //           child: Wrap(
-  //             children: <Widget>[
-  //               // ListTile(
-  //               //   leading: Icon(Icons.photo_library),
-  //               //   title: Text('Photo Library'),
-  //               //   onTap: () {
-  //               //     pickImage(ImageSource.gallery);
-  //               //     Navigator.of(context).pop();
-  //               //   },
-  //               // ),
-  //               ListTile(
-  //                 leading: Icon(Icons.photo_camera),
-  //                 title: Text('Camera'),
-  //                 onTap: () {
-  //                   pickImage(ImageSource.camera);
-  //                   Navigator.of(context).pop();
-  //                 },
-  //               ),
-  //             ],
-  //           ),
-  //         );
-  //       });
-  // }
+      // Store the calculated distance
+      storedTotalDistance = totalDistance;
+    } else {
+      // Use the stored distance
+      print("Using stored distance = $storedTotalDistance");
+    }
+  }
 }

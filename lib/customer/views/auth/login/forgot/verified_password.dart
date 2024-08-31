@@ -22,7 +22,7 @@ class VerifiedPasswordScreen extends StatefulWidget {
 class _VerifiedPasswordScreenState extends State<VerifiedPasswordScreen> {
   var mobileController = TextEditingController();
   // late StreamController<ErrorAnimationType> errorController;
-  AuthController authController = Get.find<AuthController>();
+  AuthController authController = Get.put(AuthController());
   TextEditingController otpController = TextEditingController();
 
   final formKey = GlobalKey<FormState>();

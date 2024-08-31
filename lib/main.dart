@@ -1,4 +1,5 @@
 import 'dart:collection';
+// import 'package:carousel_slider/carousel_controller.dart';
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'package:v_export/customer/controller/home_controller.dart';
 import 'package:v_export/customer/controller/home_screen_controller.dart';
 import 'package:v_export/customer/controller/my_list_controller.dart';
 import 'package:v_export/customer/controller/parcel_controller.dart';
+import 'package:v_export/customer/controller/wallet_controller.dart';
 import 'package:v_export/customer/splash/splash_screen.dart';
 import 'package:v_export/customer/views/auth/login/login_screen.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/account/account.dart';
@@ -28,13 +30,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-    //  runApp(const MyApp());
-  runApp(
-    DevicePreview(
-      enabled: !kReleaseMode,
-      builder: (context) => MyApp(),
-    ),
-  );
+  runApp(const MyApp());
 
   Get.put(AuthController());
   Get.put(HomeController());
@@ -44,8 +40,7 @@ void main() {
   Get.put(ParcelController());
   Get.put(MyListController());
   Get.put(CarouselController());
-
-  
+  Get.put(WalletController());
 }
 
 class MyApp extends StatelessWidget {

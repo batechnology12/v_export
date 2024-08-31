@@ -22,7 +22,7 @@ class RegisterBusinessOtpScreen extends StatefulWidget {
 class _VerifiedPasswordScreenState extends State<RegisterBusinessOtpScreen> {
   var mobileController = TextEditingController();
 
-  final authController = Get.find<AuthController>();
+  final authController = Get.put(AuthController());
 
   TextEditingController otpController = TextEditingController();
 

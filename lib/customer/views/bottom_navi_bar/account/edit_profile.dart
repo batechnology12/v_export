@@ -20,11 +20,12 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile> {
-  AccountController accountController = Get.find<AccountController>();
+  AccountController accountController = Get.put(AccountController());
   var nameController = TextEditingController();
   var mobileController = TextEditingController();
   var emailController = TextEditingController();
   var addressController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -41,12 +42,14 @@ class _EditProfileState extends State<EditProfile> {
   // }
 
   getProfileData() async {
-    await accountController.getProfile();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await accountController.getProfile();
+    });
     setState(() {
       nameController.text = accountController.getUserData!.data.firstName;
       mobileController.text = accountController.getUserData!.data.phone;
       emailController.text = accountController.getUserData!.data.email;
-      //  addressController.text = accountController.getUserData!.addresses;
+      addressController.text = accountController.getUserData!.data.address;
     });
   }
 
@@ -88,7 +91,6 @@ class _EditProfileState extends State<EditProfile> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      //backgroundColor: AppColors.kblue,
       appBar: AppBar(
         backgroundColor: AppColors.kblue,
         centerTitle: true,
@@ -108,6 +110,19 @@ class _EditProfileState extends State<EditProfile> {
               color: AppColors.kwhite,
               fontWeight: FontWeight.w600),
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 18),
+            child: GestureDetector(
+              onTap: () {},
+              child: Image.asset(
+                "assets/icons/pen1.png",
+                height: 33.h,
+                width: 33.w,
+              ),
+            ),
+          ),
+        ],
       ),
       body: Container(
         width: double.infinity,
@@ -412,7 +427,7 @@ class _EditProfileState extends State<EditProfile> {
                           width: size.width,
                           decoration: BoxDecoration(color: AppColors.kwhite),
                           child: TextFormField(
-                            //   controller: addressController,
+                            controller: addressController,
                             validator: (value) {
                               if (value == null) {
                                 return 'Please Enter Address';
@@ -477,7 +492,8 @@ class _EditProfileState extends State<EditProfile> {
                     accountController.updateProfileUser(
                         name: nameController.text,
                         mail: emailController.text,
-                        phone: mobileController.text);
+                        phone: mobileController.text,
+                        address: addressController.text);
                   },
                   child: CommonContainer(
                     name: "Complete Profile",

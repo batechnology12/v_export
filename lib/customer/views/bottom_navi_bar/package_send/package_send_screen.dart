@@ -9,7 +9,6 @@ import 'package:v_export/customer/model/delivery_type_model.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/bottomn_navi_bar.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/droping_address_details.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/droping_address_details.dart';
-import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/dropping_address_details_screen.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/pickup_address_details.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/schedule_delivery.dart';
 import 'package:intl/intl.dart';
@@ -23,17 +22,19 @@ class PackageSendScreen extends StatefulWidget {
   String long;
   String unitIdBlockID;
   String sendername;
-   String unitId;
+  String unitId;
   String mobilenumber;
+  String pickUpPostalCode;
 
   PackageSendScreen(
       {super.key,
+      required this.pickUpPostalCode,
       required this.pickupAdress,
       required this.lat,
       required this.long,
       required this.unitIdBlockID,
       required this.sendername,
-     required this.unitId,
+      required this.unitId,
       required this.mobilenumber});
 
   @override
@@ -50,32 +51,22 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
   getData() async {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await parcelController.getDeliveryTypes();
-    await  parcelController.getAdditionalServices("booking_parcel");
+      await parcelController.getAdditionalServices("booking_parcel");
       parcelController.update();
+      //  homeController.parceldroplocationclear();
       setState(() {});
     });
   }
 
-  final ParcelController parcelController = Get.find<ParcelController>();
-  final HomeController homeController = Get.find<HomeController>();
+  final ParcelController parcelController = Get.put(ParcelController());
+  final HomeController homeController = Get.put(HomeController());
   DateTime selectedDate = DateTime.now();
-  // TimeOfDay pickTime = TimeOfDay.now();
-  // TimeOfDay dropTime = TimeOfDay.now();
   double containerHeight = 100.0;
 
-//  HomeController homeController = Get.find<HomeController>();
   var datebookingController = TextEditingController();
   var delivarytypeController = TextEditingController();
-  // var parcellengthController = TextEditingController();
-  // var parcelwidthController = TextEditingController();
-  // var parcelheightController = TextEditingController();
 
-  // var parcelkgController = TextEditingController();
-  // var numberofparcelController = TextEditingController();
   var parcelitemController = TextEditingController();
-  // var pickuptimeController = TextEditingController();
-  // var droptimeController = TextEditingController();
-  // var quantityController = TextEditingController();
 
   String formatDateTime = "";
   String pickingTime = "";
@@ -103,62 +94,47 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
   TimeOfDay? pickTime;
   TimeOfDay? dropTime;
 
-  // void _selectpickTime(BuildContext context) async {
-  //   final TimeOfDay? picked = await showTimePicker(
-  //     context: context,
-  //     initialTime: pickTime ?? TimeOfDay.now(),
-  //   );
-
-  //   if (picked != null) {
-
-  //     setState(() {
-  //       pickTime = picked;
-  //       _updateDropTime();
-  //     });
-  //   }
-  // }
-
   void _selectpickTime(BuildContext context) async {
-  final TimeOfDay? picked = await showTimePicker(
-    context: context,
-    initialTime: pickTime ?? TimeOfDay.now(),
-  );
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: pickTime ?? TimeOfDay.now(),
+    );
 
-  if (picked != null) {
-    final selectedDeliveryType = selectedDeliveryTypes.first.name;
-    if (selectedDeliveryType == "Same day delivery") {
-      // Convert TimeOfDay to DateTime to compare times
-      final now = DateTime.now();
-      final pickedDateTime = DateTime(
-        now.year,
-        now.month,
-        now.day,
-        picked.hour,
-        picked.minute,
-      );
-
-      final morning8am = DateTime(now.year, now.month, now.day, 8, 0);
-      final afternoon4pm = DateTime(now.year, now.month, now.day, 16, 0);
-
-      if (pickedDateTime.isBefore(morning8am) || pickedDateTime.isAfter(afternoon4pm)) {
-        Get.snackbar(
-          "Invalid time selection",
-          "Please select a time between 8:00 AM and 4:00 PM",
-          colorText: AppColors.kwhite,
-          backgroundColor: Colors.red,
-          snackPosition: SnackPosition.BOTTOM,
+    if (picked != null) {
+      final selectedDeliveryType = selectedDeliveryTypes.first.name;
+      if (selectedDeliveryType == "Same day delivery") {
+        // Convert TimeOfDay to DateTime to compare times
+        final now = DateTime.now();
+        final pickedDateTime = DateTime(
+          now.year,
+          now.month,
+          now.day,
+          picked.hour,
+          picked.minute,
         );
-        return;
+
+        final morning8am = DateTime(now.year, now.month, now.day, 8, 0);
+        final afternoon4pm = DateTime(now.year, now.month, now.day, 16, 0);
+
+        if (pickedDateTime.isBefore(morning8am) ||
+            pickedDateTime.isAfter(afternoon4pm)) {
+          Get.snackbar(
+            "Invalid time selection",
+            "Please select a time between 8:00 AM and 4:00 PM",
+            colorText: AppColors.kwhite,
+            backgroundColor: Colors.red,
+            snackPosition: SnackPosition.BOTTOM,
+          );
+          return;
+        }
       }
+
+      setState(() {
+        pickTime = picked;
+        _updateDropTime();
+      });
     }
-
-    setState(() {
-      pickTime = picked;
-      _updateDropTime();
-    });
   }
-}
-
 
   void _selectdropTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
@@ -188,14 +164,11 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
           return;
         }
       }
-
       setState(() {
         dropTime = picked;
       });
     }
   }
-
-
 
   String _formatTime(TimeOfDay time) {
     final now = DateTime.now();
@@ -220,8 +193,6 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
         hour: updatedDateTime.hour, minute: updatedDateTime.minute);
   }
 
-
-
   void _updateDropTime() {
     if (selectedDeliveryTypes.isNotEmpty) {
       final selectedDeliveryType = selectedDeliveryTypes.first.name;
@@ -229,14 +200,18 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
         _updatedTime = _addMinutes(pickTime!, 120);
         dropTime = _updatedTime;
       } else if (selectedDeliveryType == "4 Hours Delivery") {
+        // if (updatedroptime2!.hour > 20 ||
+        //     (updatedroptime2!.hour == 20 && updatedroptime2!.minute > 0)) {
+        //   dropTime = TimeOfDay(hour: 20, minute: 0);
+        // } else {
+        //   dropTime = updatedroptime2;
+        // }
         updatedroptime2 = _addMinutes(pickTime!, 240);
         dropTime = updatedroptime2;
       } else if (selectedDeliveryType == "Same day delivery") {
-       // pickTime =  TimeOfDay(hour: 8, minute: 0);
         dropTime = TimeOfDay(hour: 20, minute: 0);
       } else if (selectedDeliveryType == "Specific Time") {
-        dropTime =
-            null; 
+        dropTime = null;
       } else if (selectedDeliveryType == "Next day delivery") {
         pickTime = TimeOfDay(hour: 8, minute: 0);
         dropTime = TimeOfDay(hour: 21, minute: 0);
@@ -246,20 +221,6 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
   }
 
   DeliveryTypeData? deliveryItems;
-
-  // DeliveryTypeData? deliveryName;
-
-  // DeliveryTypeData? deliveryItems;
-  // String? deliveryName;
-  // int? deliveryId;
-
-  // List<String> deliveryItemsList = [
-  //   "Express Delvery - 24/7 (1 Hour)",
-  //   "4 Hours Delivery",
-  //   "Specific Time",
-  //   "Same Day Delivery",
-  //   "Next Day Delivery"
-  // ];
 
   bool checkParcelorMulti = false;
   bool hideDeleteButton = false;
@@ -272,6 +233,7 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
   }
 
   final formKey = GlobalKey<FormState>();
+
   String formatTime(String time) {
     DateTime parsedTime = DateFormat("HH:mm:ss").parse(time);
     String formattedTime = DateFormat("h a").format(parsedTime);
@@ -288,10 +250,7 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
 
   double calculateTotalWeight() {
     double totalWeight = 0.0;
-    // for (var controller in homeController.parcelKgControllers) {
-    //   double value = double.tryParse(controller.text) ?? 0.0;
-    //   totalWeight += value;
-    // }
+
     return totalWeight;
   }
 
@@ -313,7 +272,9 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
         centerTitle: true,
         leading: GestureDetector(
           onTap: () {
-            Get.to(BottomNavigationScreen());
+            Get.to(BottomNavigationScreen(
+              indexes: 0,
+            ));
           },
           child: const Padding(
             padding: EdgeInsets.only(left: 10),
@@ -641,34 +602,16 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                           ),
                                                         Row(
                                                           children: [
-                                                            // GestureDetector(
-                                                            //   onTap: () {
-                                                            //     homeController
-                                                            //         .addEntry();
-                                                            //     homeController
-                                                            //         .addParcelList();
-                                                            //     homeController
-                                                            //         .addSecondContainer();
-                                                            //   },
-                                                            //   child: Icon(
-                                                            //     Icons.add,
-                                                            //     color: const Color(
-                                                            //         0xff0072E8),
-                                                            //     size: 17.sp,
-                                                            //   ),
-                                                            // ),
                                                             homeController
                                                                         .entries
                                                                         .length <
                                                                     20
                                                                 ? GestureDetector(
                                                                     onTap: () {
-                                                                      // homeController
-                                                                      //     .addLocation();
                                                                       if (homeController
                                                                               .entries
                                                                               .length <
-                                                                          10) {
+                                                                          20) {
                                                                         homeController
                                                                             .addEntry();
                                                                         homeController
@@ -677,25 +620,27 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                                             .addSecondContainer();
                                                                       } else {
                                                                         // Optionally show a message to the user that the limit has been reached
-                                                                        print(
-                                                                            'Cannot add more locations. The maximum limit is 10.');
+                                                                        Get.snackbar(
+                                                                            "Cannot add more locations",
+                                                                            "The maximum limit is 20",
+                                                                            colorText:
+                                                                                AppColors.kwhite,
+                                                                            backgroundColor: Colors.red,
+                                                                            snackPosition: SnackPosition.BOTTOM);
                                                                       }
-                                                                      // hideDeleteButton =
-                                                                      //     false;
                                                                     },
-                                                                    child: Text(
-                                                                      '+Add Location',
-                                                                      style: primaryfont
-                                                                          .copyWith(
-                                                                        fontSize:
-                                                                            15.sp,
-                                                                        fontWeight:
-                                                                            FontWeight.w500,
-                                                                        color: const Color(
-                                                                            0xff0072E8),
-                                                                      ),
-                                                                    ),
-                                                                  )
+                                                                    child: deliveryItems?.name !=
+                                                                            "Express Delivery"
+                                                                        ? Text(
+                                                                            '+Add Location',
+                                                                            style:
+                                                                                primaryfont.copyWith(
+                                                                              fontSize: 15.sp,
+                                                                              fontWeight: FontWeight.w500,
+                                                                              color: const Color(0xff0072E8),
+                                                                            ),
+                                                                          )
+                                                                        : Container())
                                                                 : Container(),
                                                           ],
                                                         ),
@@ -793,12 +738,15 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                   ksizedbox20,
                                   Row(
                                     children: [
-                                      Text(
-                                        'Select Delivery types',
-                                        style: primaryfont.copyWith(
-                                            fontSize: 16.sp,
-                                            fontWeight: FontWeight.w600,
-                                            color: Color(0xff000000)),
+                                      GestureDetector(
+                                        onTap: () {},
+                                        child: Text(
+                                          'Select Delivery types',
+                                          style: primaryfont.copyWith(
+                                              fontSize: 16.sp,
+                                              fontWeight: FontWeight.w600,
+                                              color: Color(0xff000000)),
+                                        ),
                                       ),
                                       Text(
                                         '*',
@@ -810,72 +758,169 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                     ],
                                   ),
                                   ksizedbox10,
-                                  Container(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 15),
-                                    height: 50,
-                                    width: size.width,
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        width: 1,
-                                        color:
-                                            Color(0xff444444).withOpacity(.32),
-                                      ),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: DropdownButton<DeliveryTypeData>(
-                                      hint: const Text(
-                                        'Select Delivery Item',
-                                        style: TextStyle(
-                                          color: Color(0xff455A64),
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                      elevation: 16,
-                                      isExpanded: true,
-                                      style: TextStyle(
-                                        color:
-                                            Color(0xff444444).withOpacity(.32),
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                      underline: Container(),
-                                      value: parcelController.deliveryTypesData.isEmpty ? null : deliveryItems,
-                                      items: parcelController.deliveryTypesData
-                                          .map((DeliveryTypeData type) {
-                                        return DropdownMenuItem<
-                                            DeliveryTypeData>(
-                                          value: type,
-                                          child: Text(
-                                            type.name,
-                                            style: TextStyle(
-                                              color: Color(0xff455A64),
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500,
+                                  parcelController.deliveryTypesData.isEmpty
+                                      ? Text("")
+                                      : Container(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 15),
+                                          height: 50,
+                                          width: size.width,
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                              width: 1,
+                                              color: Color(0xff444444)
+                                                  .withOpacity(.32),
                                             ),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
                                           ),
-                                        );
-                                      }).toList(),
-                                      onChanged: (DeliveryTypeData? newValue) {
-                                        setState(() {
-                                          deliveryItems = newValue;
-                                          if (newValue != null) {
-                                            selectedDeliveryTypes.clear();
-                                            selectedDeliveryTypes.add(newValue);
-                                            pickTime = TimeOfDay.now();
-                                            _updateDropTime();
-                                          }
-                                          print(
-                                              "-----------------------------eere---------------------------");
-                                          print(selectedDeliveryTypes);
-                                          // deliveryName = newValue!.id;
-                                          pickTime = TimeOfDay.now();
-                                          _updateDropTime();
-                                        });
-                                      },
-                                    ),
-                                  ),
+                                          child: Obx(() {
+                                            return DropdownButton<
+                                                DeliveryTypeData>(
+                                              hint: const Text(
+                                                'Select Delivery Item',
+                                                style: TextStyle(
+                                                  color: Color(0xff455A64),
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                              elevation: 16,
+                                              isExpanded: true,
+                                              style: TextStyle(
+                                                color: Color(0xff444444)
+                                                    .withOpacity(.32),
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                              underline: Container(),
+                                              // Use the existing deliveryItems variable in your state
+                                              value: parcelController
+                                                      .deliveryTypesData.isEmpty
+                                                  ? null
+                                                  : deliveryItems,
+                                              items: parcelController
+                                                  .deliveryTypesData
+                                                  .where((type) {
+                                                // Filter out the "Express Delivery" option if the condition is met
+                                                return !(type.name ==
+                                                        "Express Delivery" &&
+                                                    homeController
+                                                            .entries.length >
+                                                        1);
+                                              }).map((DeliveryTypeData type) {
+                                                return DropdownMenuItem<
+                                                    DeliveryTypeData>(
+                                                  value: type,
+                                                  child: Text(
+                                                    type.name,
+                                                    style: TextStyle(
+                                                      color: Color(0xff455A64),
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                );
+                                              }).toList(),
+                                              onChanged:
+                                                  (DeliveryTypeData? newValue) {
+                                                if (newValue != null) {
+                                                  // Update deliveryItems when a new value is selected
+                                                  deliveryItems = newValue;
+                                                  selectedDeliveryTypes.clear();
+                                                  selectedDeliveryTypes
+                                                      .add(newValue);
+                                                  pickTime = TimeOfDay.now();
+                                                  _updateDropTime();
+                                                }
+                                                print(
+                                                    "Selected Delivery Types: $selectedDeliveryTypes");
+                                              },
+                                            );
+                                          }),
+                                        ),
+
+                                  // Container(
+                                  //   padding:
+                                  //       EdgeInsets.symmetric(horizontal: 15),
+                                  //   height: 50,
+                                  //   width: size.width,
+                                  //   decoration: BoxDecoration(
+                                  //     border: Border.all(
+                                  //       width: 1,
+                                  //       color:
+                                  //           Color(0xff444444).withOpacity(.32),
+                                  //     ),
+                                  //     borderRadius: BorderRadius.circular(10),
+                                  //   ),
+                                  //   child: Obx(() {
+                                  //     var deliveryItemss = parcelController
+                                  //             .deliveryTypesData.isEmpty
+                                  //         ? null
+                                  //         : deliveryItems;
+                                  //     return DropdownButton<DeliveryTypeData>(
+                                  //       hint: const Text(
+                                  //         'Select Delivery Item',
+                                  //         style: TextStyle(
+                                  //           color: Color(0xff455A64),
+                                  //           fontSize: 14,
+                                  //           fontWeight: FontWeight.w500,
+                                  //         ),
+                                  //       ),
+                                  //       elevation: 16,
+                                  //       isExpanded: true,
+                                  //       style: TextStyle(
+                                  //         color: Color(0xff444444)
+                                  //             .withOpacity(.32),
+                                  //         fontSize: 14,
+                                  //         fontWeight: FontWeight.w500,
+                                  //       ),
+                                  //       underline: Container(),
+                                  //       value: parcelController
+                                  //               .deliveryTypesData.isEmpty
+                                  //           ? null
+                                  //           : deliveryItems,
+                                  //       items: parcelController
+                                  //           .deliveryTypesData
+                                  //           .where((type) {
+                                  //         // Filter out the "Express Delivery" option if the condition is met
+                                  //         return !(type.name ==
+                                  //                 "Express Delivery" &&
+                                  //             homeController.entries.length >
+                                  //                 1);
+                                  //       }).map((DeliveryTypeData type) {
+                                  //         return DropdownMenuItem<
+                                  //             DeliveryTypeData>(
+                                  //           value: type,
+                                  //           child: Text(
+                                  //             type.name,
+                                  //             style: TextStyle(
+                                  //               color: Color(0xff455A64),
+                                  //               fontSize: 14,
+                                  //               fontWeight: FontWeight.w500,
+                                  //             ),
+                                  //           ),
+                                  //         );
+                                  //       }).toList(),
+                                  //       onChanged:
+                                  //           (DeliveryTypeData? newValue) {
+                                  //         deliveryItems = newValue;
+                                  //         if (newValue != null) {
+                                  //           selectedDeliveryTypes.clear();
+                                  //           selectedDeliveryTypes.add(newValue);
+                                  //           pickTime = TimeOfDay.now();
+                                  //           _updateDropTime();
+                                  //         }
+                                  //         print(
+                                  //             "-----------------------------eere---------------------------");
+                                  //         print(selectedDeliveryTypes);
+                                  //         pickTime = TimeOfDay.now();
+                                  //         _updateDropTime();
+                                  //       },
+                                  //     );
+                                  //   }),
+                                  // ),
                                   ksizedbox20,
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
@@ -930,7 +975,6 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                           0xff0072E8),
                                                     ),
                                                   ),
-
                                                 Padding(
                                                   padding: EdgeInsets.only(
                                                       bottom: 10),
@@ -1100,7 +1144,6 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                     ],
                                                   ),
                                                 ),
-                                              
                                               ],
                                             ),
                                           );
@@ -1291,8 +1334,6 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                               ),
                                               IconButton(
                                                   onPressed: () {
-                                                    //  dropTimePicker(context);
-                                                    //   _selectdropTime(context);
                                                     if (selectedDeliveryTypes
                                                                 .first.name ==
                                                             "Specific Time" ||
@@ -1331,7 +1372,17 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                               onTap: () {
                                 List<String> droppingAddressList =
                                     homeController.droppingLocations.toList();
+                                print(
+                                    "parcelpickup block iD --- ${widget.unitIdBlockID}");
+                                print(
+                                    "parcelpickup unit id --- ${widget.unitId}");
+                                print(
+                                    "parceldrop block iD --- ${homeController.receiverBlockIdUnitIDs}");
+                                print(
+                                    "parceldrop unit id --- ${homeController.receiverUnitID}");
                                 if (widget.pickupAdress.isNotEmpty &&
+                                    homeController
+                                        .droppingLocations.isNotEmpty &&
                                     widget.lat.isNotEmpty &&
                                     widget.long.isNotEmpty &&
                                     homeController.droppingLats.isNotEmpty &&
@@ -1360,7 +1411,7 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                     homeController.pincodes.isNotEmpty &&
                                     homeController.doornames.isNotEmpty) {
                                   Get.to(ScheduleDeliveryScreen(
-senderUnitId: widget.unitId,
+                                    senderUnitId: widget.unitId,
                                     parcelKg: homeController
                                         .calculateSum()
                                         .toStringAsFixed(2),
@@ -1383,34 +1434,26 @@ senderUnitId: widget.unitId,
                                         selectedDeliveryTypes.first.name,
                                     deliVerytypeID:
                                         selectedDeliveryTypes.first.id,
-                               
                                     length: homeController
                                         .parcelLengthControllers
                                         .map((controller) => controller.text)
                                         .toList(),
-                            
                                     width: homeController
                                         .parcelHeightControllers
                                         .map((controller) => controller.text)
                                         .toList(),
-                                
-
                                     height: homeController
                                         .parcelHeightControllers
                                         .map((controller) => controller.text)
                                         .toList(),
-                              
                                     qty: homeController.quantityControllers
                                         .map((controller) => controller.text)
                                         .toList(),
-                            
                                     kg: homeController.parcelKgControllers
                                         .map((controller) => controller.text)
                                         .toList(),
-                               
                                     parcelItems: parcelitemController.text,
                                     senderunitIdBlockId: widget.unitIdBlockID,
-
                                     pickTimeListFrom: [
                                       _formatTime(pickTime!),
                                     ],
@@ -1427,11 +1470,14 @@ senderUnitId: widget.unitId,
                                         homeController.receiverNameList,
                                     receiverphone:
                                         homeController.receiverNumberList,
-                                    receiverUnitIdBlockId: homeController.receiverUnitID,
-                                    receiverUnitId: homeController.receiverUnitID,
+                                    receiverUnitIdBlockId:
+                                        homeController.receiverBlockIdUnitIDs,
+                                    receiverUnitId:
+                                        homeController.receiverUnitID,
                                     selectedDeliveryTypes:
                                         selectedDeliveryTypes,
-                                    
+                                    pickupPincode: widget.pickUpPostalCode,
+                                    dropPincode: homeController.dropPostalCode,
                                   ));
                                 } else {
                                   Get.snackbar(

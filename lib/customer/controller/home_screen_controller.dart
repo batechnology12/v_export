@@ -92,9 +92,31 @@ class HomeScreenController extends GetxController {
       );
     }
   }
+
+  NotificationReadAllApiServices notificationReadAllApiServices =
+      NotificationReadAllApiServices();
   
-  NotificationReadAllApiServices notificationReadAllApiServices = NotificationReadAllApiServices();
-  notificationReadAll () async{
-   dio.Response<dynamic> response = await notificationReadAllApiServices.notificationReadAllApi();
+  notificationReadAll() async {
+    dio.Response<dynamic> response =
+        await notificationReadAllApiServices.notificationReadAllApi();
+    if (response.data["status"] == true) {
+      update();
+      // Get.rawSnackbar(
+      //   backgroundColor: Colors.green,
+      //   messageText: Text(
+      //     response.data['message'],
+      //     style: TextStyle(color: Colors.white, fontSize: 15.sp),
+      //   ),
+      // );
+      // update();
+    } else {
+      Get.rawSnackbar(
+        backgroundColor: Colors.red,
+        messageText: Text(
+          response.data['message'],
+          style: TextStyle(color: Colors.white, fontSize: 15.sp),
+        ),
+      );
+    }
   }
 }

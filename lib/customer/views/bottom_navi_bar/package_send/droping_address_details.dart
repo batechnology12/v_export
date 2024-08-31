@@ -23,8 +23,8 @@ class DropLocation extends StatefulWidget {
 }
 
 class _DropLocationState extends State<DropLocation> {
-  AccountController accountController = Get.find<AccountController>();
-  HomeController homeController = Get.find<HomeController>();
+  AccountController accountController = Get.put(AccountController());
+  HomeController homeController = Get.put(HomeController());
   GoogleMapController? _controller;
   final Set<Marker> _markers = {};
   loc.LocationData? _currentPosition;
@@ -35,6 +35,7 @@ class _DropLocationState extends State<DropLocation> {
   String fullAddress = "";
   String areapincode = "";
   String doorno = "";
+  String dropingpickuppincode = "";
   List<Placemark> placemarks = [];
 
   // final TextEditingController _addressController = TextEditingController();
@@ -47,7 +48,8 @@ class _DropLocationState extends State<DropLocation> {
   final TextEditingController unitIdController = TextEditingController();
 
   final TextEditingController _searchedController = TextEditingController();
-
+  // List<String> dropPostalCode = [];
+  String dropPostalCode = "";
   bool _isManualSelection = false;
 
   @override
@@ -65,7 +67,10 @@ class _DropLocationState extends State<DropLocation> {
           _searchedController.text =
               "${place.name},${place.subLocality},${place.locality},${place.postalCode}" ??
                   '';
-          //    _blockUnitController.text = place.name ?? place.name!;
+          //  dropPostalCode.add(place.postalCode!);
+          dropPostalCode = "${place.postalCode}";
+          print("dropping postal code-----------------------");
+          print(dropPostalCode);
           print("=============address");
           print(_searchedController.text =
               "${place.name},${place.subLocality},${place.locality},${place.postalCode}" ??
@@ -145,6 +150,20 @@ class _DropLocationState extends State<DropLocation> {
                             debounceTime: 600,
                             isLatLngRequired: true,
                             getPlaceDetailWithLatLng: (Prediction prediction) {
+                              // Extract pincode using a regular expression
+
+                              RegExp regExp = RegExp(
+                                  r'\b\d{6}\b'); // Pattern to match 6-digit pincode
+                              Match? match =
+                                  regExp.firstMatch(prediction.description!);
+
+                              if (match != null) {
+                                dropingpickuppincode =
+                                    match.group(0)!; // Store the pincode
+                              }
+
+                              print(
+                                  'Extracted Pincode: $dropingpickuppincode'); // Debugging line to check pincode
                               if (_controller != null) {
                                 _controller!.animateCamera(
                                     CameraUpdate.newCameraPosition(
@@ -205,10 +224,12 @@ class _DropLocationState extends State<DropLocation> {
                                     child: TextFormField(
                                         controller:
                                             receiverBlockIdUnitIdController,
-                                             inputFormatters: [
-                                        LengthLimitingTextInputFormatter(4),
-                                        //  FilteringTextInputFormatter.digitsOnly,
-                                      ],
+                                        inputFormatters: [
+                                          LengthLimitingTextInputFormatter(4),
+                                          // FilteringTextInputFormatter
+                                          //     .digitsOnly,
+                                        ],
+                                        keyboardType: TextInputType.text,
                                         decoration: InputDecoration(
                                             hintText: 'Enter Block no',
                                             hintStyle: primaryfont.copyWith(
@@ -246,11 +267,12 @@ class _DropLocationState extends State<DropLocation> {
                                     ),
                                     child: TextFormField(
                                         controller: unitIdController,
-                                        
-                                         inputFormatters: [
-                                        LengthLimitingTextInputFormatter(4),
-                                        //  FilteringTextInputFormatter.digitsOnly,
-                                      ],
+                                        inputFormatters: [
+                                          LengthLimitingTextInputFormatter(4),
+                                          // FilteringTextInputFormatter
+                                          //     .digitsOnly,
+                                        ],
+                                        keyboardType: TextInputType.text,
                                         decoration: InputDecoration(
                                             hintText: 'Enter Unit no',
                                             hintStyle: primaryfont.copyWith(
@@ -270,7 +292,6 @@ class _DropLocationState extends State<DropLocation> {
                             ),
                           ],
                         ),
-                       
                         ksizedbox20,
                         Text(
                           "Receiver Name",
@@ -316,7 +337,7 @@ class _DropLocationState extends State<DropLocation> {
                               fontWeight: FontWeight.w600),
                         ),
                         ksizedbox5,
-                         TextFormField(
+                        TextFormField(
                           controller: receiverNumberController,
                           validator: (value) {
                             if (value!.length != 8) {
@@ -331,33 +352,31 @@ class _DropLocationState extends State<DropLocation> {
                             FilteringTextInputFormatter.deny(RegExp(r'\s')),
                           ],
                           decoration: InputDecoration(
-                                  contentPadding: EdgeInsets.only( top: 13),
-                             prefixIcon: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Container(
-                     
-                                    height: 30,
-                                    width: 50,
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                     "+65",
-                                      style: primaryfont.copyWith(
-                                        fontSize: 14, // Adjust font size
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                            contentPadding: EdgeInsets.all(10),
+                            prefixIcon: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(width: 10),
+                                Container(
+                                  // height: 30,
+                                  // width: 50,
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    "+65",
+                                    style: primaryfont.copyWith(
+                                      fontSize: 14.sp, // Adjust font size
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  SizedBox(width: 5),
-                                ],
-                              ),
+                                ),
+                                SizedBox(width: 5),
+                              ],
+                            ),
                             fillColor: AppColors.kwhite,
                             filled: true,
-              
                             hintText: 'Enter Phone Name',
-                                  hintStyle: primaryfont.copyWith(
-                                      fontSize: 14,
-                                                                         fontWeight: FontWeight.w500),
+                            hintStyle: primaryfont.copyWith(
+                                fontSize: 14.sp, fontWeight: FontWeight.w500),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -379,9 +398,70 @@ class _DropLocationState extends State<DropLocation> {
                               ),
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            
                           ),
                         ),
+                        // TextFormField(
+                        //   controller: receiverNumberController,
+                        //   validator: (value) {
+                        //     if (value!.length != 8) {
+                        //       return "Enter 8 digits phone number";
+                        //     }
+                        //     return null;
+                        //   },
+                        //   keyboardType: TextInputType.phone,
+                        //   inputFormatters: [
+                        //     LengthLimitingTextInputFormatter(8),
+                        //     FilteringTextInputFormatter.digitsOnly,
+                        //     FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                        //   ],
+                        //   decoration: InputDecoration(
+                        //     contentPadding: EdgeInsets.only(top: 13),
+                        //     prefixIcon: Row(
+                        //       mainAxisSize: MainAxisSize.min,
+                        //       children: [
+                        //         Container(
+                        //           height: 30,
+                        //           width: 50,
+                        //           alignment: Alignment.center,
+                        //           child: Text(
+                        //             "+65",
+                        //             style: primaryfont.copyWith(
+                        //               fontSize: 14, // Adjust font size
+                        //               fontWeight: FontWeight.bold,
+                        //             ),
+                        //           ),
+                        //         ),
+                        //         SizedBox(width: 5),
+                        //       ],
+                        //     ),
+                        //     fillColor: AppColors.kwhite,
+                        //     filled: true,
+                        //     hintText: 'Enter Phone Name',
+                        //     hintStyle: primaryfont.copyWith(
+                        //         fontSize: 14, fontWeight: FontWeight.w500),
+                        //     border: OutlineInputBorder(
+                        //       borderRadius: BorderRadius.circular(10),
+                        //     ),
+                        //     focusedBorder: OutlineInputBorder(
+                        //       borderSide: BorderSide(
+                        //         color: Color(0xff444444),
+                        //       ),
+                        //       borderRadius: BorderRadius.circular(10),
+                        //     ),
+                        //     focusedErrorBorder: OutlineInputBorder(
+                        //       borderSide: BorderSide(
+                        //         color: Color(0xff444444),
+                        //       ),
+                        //       borderRadius: BorderRadius.circular(10),
+                        //     ),
+                        //     errorBorder: OutlineInputBorder(
+                        //       borderSide: BorderSide(
+                        //         color: Color(0xff444444),
+                        //       ),
+                        //       borderRadius: BorderRadius.circular(10),
+                        //     ),
+                        //   ),
+                        // ),
                         ksizedbox20,
                         InkWell(
                           onTap: () {
@@ -389,6 +469,9 @@ class _DropLocationState extends State<DropLocation> {
                               if (receiverNameController.text.isNotEmpty &&
                                   receiverNumberController.text.isNotEmpty) {
                                 _fetchAddress();
+
+                               
+
                                 homeController.updateDroppingLocation(
                                   _searchedController.text,
                                   _markers.first.position.latitude.toString(),
@@ -399,20 +482,25 @@ class _DropLocationState extends State<DropLocation> {
                                   receiverNameController.text,
                                   receiverNumberController.text,
                                   receiverBlockIdUnitIdController.text,
-                                  unitIdController.text
-                                  );
+                                  unitIdController.text,
+                                  dropingpickuppincode,
+                                );
                                 // Get.back();
                                 Get.offAll(PackageSendScreen(
-                                  unitId: unitIdController.text,
-                                    pickupAdress: homeController.pickupLocation.value,
-                                    lat: homeController.pickuplatitude.value,
-                                    long: homeController.pickuplongitude.value,
-                                    unitIdBlockID:
-                                        homeController.pickupblockUnitId.value,
-                                    sendername:
-                                        homeController.pickupSenderName.value,
-                                    mobilenumber: homeController
-                                        .pickupSenderNumber.value));
+                                  unitId: homeController.pickupunitsId.value,
+                                  pickupAdress:
+                                      homeController.pickupLocation.value,
+                                  lat: homeController.pickuplatitude.value,
+                                  long: homeController.pickuplongitude.value,
+                                  unitIdBlockID:
+                                      homeController.pickupblockUnitId.value,
+                                  sendername:
+                                      homeController.pickupSenderName.value,
+                                  mobilenumber:
+                                      homeController.pickupSenderNumber.value,
+                                  pickUpPostalCode:
+                                      homeController.pickupPostalCode.value,
+                                ));
                               } else {
                                 Get.snackbar(
                                     "Fill all Fields", "Please try again!",
@@ -622,6 +710,11 @@ class _DropLocationState extends State<DropLocation> {
                                   ),
                                   borderRadius: BorderRadius.circular(10)),
                               child: TextFormField(
+                                  inputFormatters: [
+                                    LengthLimitingTextInputFormatter(4),
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
+                                  keyboardType: TextInputType.phone,
                                   controller: receiverBlockIdUnitIdController,
                                   decoration: InputDecoration(
                                       contentPadding: const EdgeInsets.only(
@@ -707,27 +800,35 @@ class _DropLocationState extends State<DropLocation> {
                                 return null;
                               },
                               keyboardType: TextInputType.phone,
+                              enabled: false,
                               inputFormatters: [
                                 LengthLimitingTextInputFormatter(8),
                                 FilteringTextInputFormatter.digitsOnly,
                                 FilteringTextInputFormatter.deny(RegExp(r'\s')),
                               ],
                               decoration: InputDecoration(
-                                prefixIcon: Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 10, right: 5, top: 12),
-                                  child: Text(
-                                    "+65",
-                                    style: primaryfont.copyWith(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w500,
+                                prefixIcon: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    SizedBox(width: 10),
+                                    Container(
+                                      // height: 30,
+                                      // width: 50,
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        "+65",
+                                        style: primaryfont.copyWith(
+                                          fontSize: 14.sp, // Adjust font size
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                                     ),
-                                  ),
+                                    SizedBox(width: 5),
+                                  ],
                                 ),
                                 fillColor: AppColors.kwhite,
                                 filled: true,
-                                contentPadding:
-                                    const EdgeInsets.fromLTRB(10, 4, 4, 4),
+                                contentPadding: const EdgeInsets.all(10),
                                 hintText: "Enter Receiver Number",
                                 hintStyle: primaryfont.copyWith(
                                     color: Colors.grey,
@@ -753,28 +854,87 @@ class _DropLocationState extends State<DropLocation> {
                               ),
                             ),
                           ),
+                          // GestureDetector(
+                          //   onTap: _showFullScreenAddressDetailsInput,
+                          //   child: TextFormField(
+                          //     controller: receiverNumberController,
+                          //     validator: (value) {
+                          //       if (value!.length < 8 || value.length > 8) {
+                          //         return "Enter 8 digits phone number";
+                          //       }
+                          //       return null;
+                          //     },
+                          //     keyboardType: TextInputType.phone,
+                          //     inputFormatters: [
+                          //       LengthLimitingTextInputFormatter(8),
+                          //       FilteringTextInputFormatter.digitsOnly,
+                          //       FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                          //     ],
+                          //     decoration: InputDecoration(
+                          //       prefixIcon: Padding(
+                          //         padding: const EdgeInsets.only(
+                          //             left: 10, right: 5, top: 12),
+                          //         child: Text(
+                          //           "+65",
+                          //           style: primaryfont.copyWith(
+                          //             fontSize: 15,
+                          //             fontWeight: FontWeight.w500,
+                          //           ),
+                          //         ),
+                          //       ),
+                          //       fillColor: AppColors.kwhite,
+                          //       filled: true,
+                          //       contentPadding:
+                          //           const EdgeInsets.fromLTRB(10, 4, 4, 4),
+                          //       hintText: "Enter Receiver Number",
+                          //       hintStyle: primaryfont.copyWith(
+                          //           color: Colors.grey,
+                          //           fontSize: 15,
+                          //           fontWeight: FontWeight.w100),
+                          //       border: OutlineInputBorder(
+                          //         borderRadius: BorderRadius.circular(10),
+                          //       ),
+                          //       focusedBorder: OutlineInputBorder(
+                          //           borderSide: BorderSide(
+                          //             color: Color(0xff444444),
+                          //           ),
+                          //           borderRadius: BorderRadius.circular(10)),
+                          //       focusedErrorBorder: OutlineInputBorder(
+                          //           borderSide: BorderSide(
+                          //             color: Color(0xff444444),
+                          //           ),
+                          //           borderRadius: BorderRadius.circular(10)),
+                          //       errorBorder: OutlineInputBorder(
+                          //           borderSide:
+                          //               BorderSide(color: Color(0xff444444)),
+                          //           borderRadius: BorderRadius.circular(10)),
+                          //     ),
+                          //   ),
+                          // ),
                           ksizedbox20,
                           InkWell(
                             onTap: () {
                               //  if (formKey.currentState!.validate()) {
                               if (receiverNameController.text.isNotEmpty &&
                                   receiverNumberController.text.isNotEmpty) {
-                                _fetchAddress();
                                 homeController.updateDroppingLocation(
-                                  _searchedController.text,
-                                  _markers.first.position.latitude.toString(),
-                                  _markers.first.position.longitude.toString(),
-                                  areapincode,
-                                  doorno,
-                                  widget.index,
-                                  receiverNameController.text,
-                                  receiverNumberController.text,
-                                  receiverBlockIdUnitIdController.text,
-                                  unitIdController.text,
-                                );
+                                    _searchedController.text,
+                                    _markers.first.position.latitude.toString(),
+                                    _markers.first.position.longitude
+                                        .toString(),
+                                    areapincode,
+                                    doorno,
+                                    widget.index,
+                                    receiverNameController.text,
+                                    receiverNumberController.text,
+                                    receiverBlockIdUnitIdController.text,
+                                    unitIdController.text,
+                                    dropingpickuppincode);
                                 // Get.back();
                                 Get.offAll(PackageSendScreen(
-                                  unitId: unitIdController.text,
+                                    pickUpPostalCode:
+                                        homeController.pickupPostalCode.value,
+                                    unitId: unitIdController.text,
                                     pickupAdress:
                                         homeController.pickupLocation.value,
                                     lat: homeController.pickuplatitude.value,

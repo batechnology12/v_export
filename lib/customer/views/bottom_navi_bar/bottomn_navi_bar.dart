@@ -9,15 +9,21 @@ import 'package:v_export/customer/views/bottom_navi_bar/my_list/my_list.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/wallet/wallet.dart';
 
 class BottomNavigationScreen extends StatefulWidget {
-  BottomNavigationScreen({
-    super.key,
-  });
+  int indexes;
+  BottomNavigationScreen({super.key, required this.indexes});
 
   @override
   State<BottomNavigationScreen> createState() => _BottomNavigationScreenState();
 }
 
 class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _selectedIndex = widget.indexes;
+  }
+
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
@@ -32,52 +38,6 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
     Wallet(),
     Account(),
   ];
-
-  // Future<bool> _onWillPop() async {
-  //   return await showDialog(
-  //         barrierColor: Colors.black.withOpacity(.80),
-  //         context: context,
-  //         builder: (context) => AlertDialog(
-  //           backgroundColor: const Color(0xffffffff),
-  //           title: const Text(
-  //             'Exit App',
-  //             style: TextStyle(fontSize: 16, color: Colors.black),
-  //           ),
-  //           content: const Row(
-  //             mainAxisAlignment: MainAxisAlignment.center,
-  //             children: [
-  //               Text(
-  //                 'Are you sure you want to exit?',
-  //                 style: TextStyle(fontSize: 16, color: Colors.black),
-  //               ),
-  //             ],
-  //           ),
-  //           actions: [
-  //             Container(
-  //               height: 40,
-  //               width: 80,
-  //               decoration: BoxDecoration(
-  //                   borderRadius: BorderRadius.circular(20), color: Colors.red),
-  //               child: TextButton(
-  //                 onPressed: () => exit(0),
-  //                 child: Text(
-  //                   'Exit',
-  //                   style: TextStyle(color: Colors.white),
-  //                 ),
-  //               ),
-  //             ),
-  //             TextButton(
-  //               onPressed: () => Navigator.of(context).pop(false),
-  //               child: Text(
-  //                 'Cancel',
-  //                 style: TextStyle(),
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //       ) ??
-  //       false;
-  // }
 
   @override
   Widget build(BuildContext context) {

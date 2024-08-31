@@ -19,7 +19,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
   bool passvisible = false;
   bool confirmvisible = false;
 
-  AuthController authController = Get.find<AuthController>();
+  AuthController authController = Get.put(AuthController());
   var passwordController = TextEditingController();
   var confirmpasswordController = TextEditingController();
 

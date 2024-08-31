@@ -19,12 +19,12 @@ class AddBookingParcelsApiService extends BaseApiServices {
         "payment_mode": "",
         "booking_amount": addBookingParcelModel.totalAmount,
         "gst": "500",
-        "additional_total": "600",
+        "additional_total": addBookingParcelModel.additionalTotal,
         "payment_details": addBookingParcelModel.paymentdetails,
         "total_amount": addBookingParcelModel.totalAmountCost,
         "is_round_trip": addBookingParcelModel.isRoundTrip,
         "sender_unitno_blockno": addBookingParcelModel.senderUnitId,
-        "unitno" : addBookingParcelModel.unitId,
+        "unitno": addBookingParcelModel.unitId,
         "vehicle_type": "Bike",
         "booking_date": addBookingParcelModel.bookingDate,
         "pickuptime_from": addBookingParcelModel.pickupTimeFrom,
@@ -39,7 +39,8 @@ class AddBookingParcelsApiService extends BaseApiServices {
         for (int i = 0; i < addBookingParcelModel.additionalDetails.length; i++)
           "additional_services_id[$i][id]":
               addBookingParcelModel.additionalDetails[i],
-           "additional_services_id[0][qty]" : "",
+        for (int i = 0; i < addBookingParcelModel.additionalDetails.length; i++)
+          "additional_services_id[$i][qty]": "0",
         "notes": addBookingParcelModel.notes,
         "products": addBookingParcelModel.products
             .map((product) => {
@@ -71,7 +72,7 @@ class AddBookingParcelsApiService extends BaseApiServices {
                   "reciver_name": address.reciverName,
                   "reciver_mobile": address.reciverMobile,
                   "sender_unitno_blockno": address.reciverUnitIdBlockId,
-                  "unitno" : address.uintIdList,
+                  "unitno": address.uintIdList,
                 })
             .toList(),
         "parcel_photo": addBookingParcelModel.parcelPhoto.trim().isEmpty

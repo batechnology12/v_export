@@ -5,7 +5,11 @@ import 'package:get/get.dart';
 import 'package:svg_flutter/svg.dart';
 import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
+import 'package:v_export/customer/controller/easebuzz_controller.dart';
+import 'package:v_export/customer/controller/wallet_controller.dart';
+import 'package:v_export/customer/model/wallet_model.dart';
 import 'package:v_export/customer/views/notification/notification_view.dart';
+import 'package:intl/intl.dart';
 
 class Wallet extends StatefulWidget {
   const Wallet({super.key});
@@ -15,6 +19,31 @@ class Wallet extends StatefulWidget {
 }
 
 class _WalletState extends State<Wallet> {
+  final TextEditingController amountController = TextEditingController();
+  WalletController walletController = Get.put(WalletController());
+
+  final easebuzzController = Get.put(EasebuszzController());
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getData();
+  }
+
+  getData() async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await walletController.walletAPi();
+      setState(() {});
+    });
+  }
+
+  void updateAmount(String amount) {
+    setState(() {
+      amountController.text = amount;
+    });
+  }
+
   bool isTopup = false;
 
   isCheck(bool? value) {
@@ -23,9 +52,47 @@ class _WalletState extends State<Wallet> {
     });
   }
 
+  String formatTime(String dateTimeString) {
+    try {
+      DateTime dateTime = DateTime.parse(dateTimeString);
+
+      return DateFormat('hh:mm a').format(dateTime);
+    } catch (e) {
+      return '$e';
+    }
+  }
+
+  String formatingDate(DateTime date) {
+    return DateFormat('dd-MM-yyyy').format(date);
+  }
+
+  String formatingMonth(DateTime date) {
+    return DateFormat('dd-MMMM').format(date);
+  }
+
+  String dateShowing(DateTime dateTime) {
+    final DateFormat formatter = DateFormat('dd MMM yyyy');
+    final today = DateTime.now().toLocal();
+    final yesterday = today.subtract(Duration(days: 1)).toLocal();
+
+    final dateToShow = DateTime(dateTime.year, dateTime.month, dateTime.day);
+    final todayDate = DateTime(today.year, today.month, today.day);
+    final yesterdayDate =
+        DateTime(yesterday.year, yesterday.month, yesterday.day);
+
+    if (dateToShow.isAtSameMomentAs(todayDate)) {
+      return "Today";
+    } else if (dateToShow.isAtSameMomentAs(yesterdayDate)) {
+      return "Yesterday";
+    } else {
+      return formatter.format(dateTime);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    DateTime? lastDateDisplayed;
     return Scaffold(
       backgroundColor: AppColors.kblue,
       appBar: AppBar(
@@ -78,246 +145,177 @@ class _WalletState extends State<Wallet> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  'Today',
-                                  style: primaryfont.copyWith(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                ListView.builder(
-                                    itemCount: 6,
-                                    shrinkWrap: true,
-                                    physics: NeverScrollableScrollPhysics(),
-                                    itemBuilder: (context, index) {
-                                      return Container(
-                                        margin: EdgeInsets.only(top: 10),
-                                        padding: const EdgeInsets.only(
-                                            left: 5,
-                                            right: 5,
-                                            top: 5,
-                                            bottom: 5),
-                                        //  height: 100.h,
-                                        width: size.width,
-                                        decoration: BoxDecoration(
-                                            color: Color(0xffFFFFFF),
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Row(
+                                GetBuilder<WalletController>(builder: (_) {
+                                  return walletController.walletDataList.isEmpty
+                                      ? const Center(
+                                          child: Center(
+                                            child: CircularProgressIndicator(),
+                                          ),
+                                        )
+                                      : ListView.builder(
+                                          itemCount: walletController
+                                              .walletDataList
+                                              .last
+                                              .walletHistory
+                                              .length,
+                                          shrinkWrap: true,
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          itemBuilder: (context, index) {
+                                            WalletHistory walletHistory =
+                                                walletController.walletDataList
+                                                    .last.walletHistory[index];
+
+                                            DateTime walletDate =
+                                                walletHistory.createdAt;
+
+                                            String dateShow =
+                                                dateShowing(walletDate);
+
+                                            // Check if the date is different from the last displayed date
+                                            bool showDate =
+                                                lastDateDisplayed == null ||
+                                                    !isSameDate(
+                                                        lastDateDisplayed!,
+                                                        walletDate);
+
+                                            if (showDate) {
+                                              lastDateDisplayed = walletDate;
+                                            }
+                                            return Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
-                                                Padding(
+                                                ksizedbox15,
+                                                if (showDate)
+                                                  Text(
+                                                    dateShow,
+                                                    style: primaryfont.copyWith(
+                                                        fontSize: 16.sp,
+                                                        fontWeight:
+                                                            FontWeight.w600),
+                                                  ),
+                                                Container(
+                                                  margin: const EdgeInsets.only(
+                                                      top: 3),
                                                   padding:
                                                       const EdgeInsets.only(
-                                                          left: 7, top: 7),
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
+                                                          left: 5,
+                                                          right: 10,
+                                                          top: 5,
+                                                          bottom: 5),
+                                                  //  height: 100.h,
+                                                  width: size.width,
+                                                  decoration: BoxDecoration(
+                                                      color: const Color(
+                                                          0xffFFFFFF),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10)),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
                                                     children: [
-                                                      Text(
-                                                        "Money Added to wallet",
-                                                        style: primaryfont
-                                                            .copyWith(
-                                                                fontSize: 17.sp,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600),
+                                                      Row(
+                                                        children: [
+                                                          Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .only(
+                                                                    left: 7,
+                                                                    top: 7),
+                                                            child: Column(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              children: [
+                                                                Text(
+                                                                  "Money Added to wallet",
+                                                                  style: primaryfont.copyWith(
+                                                                      fontSize:
+                                                                          15.sp,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w600),
+                                                                ),
+                                                                Padding(
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                          .only(
+                                                                          top:
+                                                                              5),
+                                                                  child: Text(
+                                                                    // walletHistory
+                                                                    //     .createdAt
+                                                                    //     .toString(),
+                                                                    '${formatingMonth(walletHistory.createdAt)} | ${formatTime(walletHistory.createdAt.toString())}',
+                                                                    style: primaryfont.copyWith(
+                                                                        color: Color(
+                                                                            0xff939598),
+                                                                        fontSize: 13
+                                                                            .sp,
+                                                                        fontWeight:
+                                                                            FontWeight.w500),
+                                                                  ),
+                                                                ),
+                                                                Text(
+                                                                  'Txn Id :${walletHistory.referenceNumber}',
+                                                                  style: primaryfont.copyWith(
+                                                                      color: Color(
+                                                                          0xff939598),
+                                                                      fontSize:
+                                                                          13.sp,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          )
+                                                        ],
                                                       ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(top: 5),
-                                                        child: Text(
-                                                          '24 September | 7:30 AM',
-                                                          style: primaryfont
-                                                              .copyWith(
-                                                                  color: Color(
-                                                                      0xff939598),
-                                                                  fontSize:
-                                                                      13.sp,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500),
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                        'Txn Id : KB9787987746G',
-                                                        style: primaryfont
-                                                            .copyWith(
-                                                                color: Color(
-                                                                    0xff939598),
-                                                                fontSize: 13.sp,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500),
-                                                      ),
+                                                      Row(
+                                                        children: [
+                                                          Column(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              Text(
+                                                                '+\$${walletHistory.amount}',
+                                                                style: primaryfont.copyWith(
+                                                                    color: walletHistory.transactionType ==
+                                                                            "credit"
+                                                                        ? const Color(
+                                                                            0xff00A8AC)
+                                                                        : Colors
+                                                                            .red,
+                                                                    fontSize:
+                                                                        14.sp,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      )
                                                     ],
                                                   ),
-                                                )
-                                              ],
-                                            ),
-                                            Row(
-                                              children: [
-                                                Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                      '+\$50.00',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                              color: Color(
-                                                                  0xff00A8AC),
-                                                              fontSize: 14.sp,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600),
-                                                    ),
-                                                    Text(
-                                                      'Balance \$ 1200.00',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                              color: Color(
-                                                                  0xff939598),
-                                                              fontSize: 12.sp,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500),
-                                                    ),
-                                                  ],
                                                 ),
                                               ],
-                                            )
-                                          ],
-                                        ),
-                                      );
-                                    }),
-                                ksizedbox10,
-                                Text(
-                                  'Yesterday',
-                                  style: primaryfont.copyWith(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                ListView.builder(
-                                    itemCount: 6,
-                                    shrinkWrap: true,
-                                    physics: NeverScrollableScrollPhysics(),
-                                    itemBuilder: (context, index) {
-                                      return Container(
-                                        margin: EdgeInsets.only(top: 10),
-                                        padding: const EdgeInsets.only(
-                                            left: 5,
-                                            right: 5,
-                                            top: 5,
-                                            bottom: 5),
-                                        //  height: 100.h,
-                                        width: size.width,
-                                        decoration: BoxDecoration(
-                                            color: Color(0xffFFFFFF),
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 7, top: 7),
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        "Money Added to wallet",
-                                                        style: primaryfont
-                                                            .copyWith(
-                                                                fontSize: 17.sp,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600),
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(top: 5),
-                                                        child: Text(
-                                                          '24 September | 7:30 AM',
-                                                          style: primaryfont
-                                                              .copyWith(
-                                                                  color: Color(
-                                                                      0xff939598),
-                                                                  fontSize:
-                                                                      13.sp,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500),
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                        'Txn Id : KB9787987746G',
-                                                        style: primaryfont
-                                                            .copyWith(
-                                                                color: Color(
-                                                                    0xff939598),
-                                                                fontSize: 13.sp,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                            Row(
-                                              children: [
-                                                Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                      '+\$50.00',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                              color: Color(
-                                                                  0xffEA4747),
-                                                              fontSize: 14.sp,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600),
-                                                    ),
-                                                    Text(
-                                                      'Balance \$ 1200.00',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                              color: Color(
-                                                                  0xff939598),
-                                                              fontSize: 12.sp,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            )
-                                          ],
-                                        ),
-                                      );
-                                    }),
+                                            );
+                                          });
+                                }),
                               ],
                             ),
                           ),
                         )
-                      : Padding(
+                      :
+                      //Text("data")
+
+                      Padding(
                           padding: const EdgeInsets.only(
                               left: 10, top: 260, right: 10),
                           child: SingleChildScrollView(
@@ -325,241 +323,177 @@ class _WalletState extends State<Wallet> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  'Today',
-                                  style: primaryfont.copyWith(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                ListView.builder(
-                                    itemCount: 6,
-                                    shrinkWrap: true,
-                                    physics: NeverScrollableScrollPhysics(),
-                                    itemBuilder: (context, index) {
-                                      return Container(
-                                        margin: EdgeInsets.only(top: 10),
-                                        padding: const EdgeInsets.only(
-                                            left: 5,
-                                            right: 5,
-                                            top: 5,
-                                            bottom: 5),
-                                        //  height: 100.h,
-                                        width: size.width,
-                                        decoration: BoxDecoration(
-                                            color: Color(0xffFFFFFF),
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 7, top: 7),
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        "Money Added to wallet",
-                                                        style: primaryfont
-                                                            .copyWith(
-                                                                fontSize: 17.sp,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600),
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(top: 5),
-                                                        child: Text(
-                                                          '24 September | 7:30 AM',
-                                                          style: primaryfont
-                                                              .copyWith(
-                                                                  color: Color(
-                                                                      0xff939598),
-                                                                  fontSize:
-                                                                      13.sp,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500),
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                        'Txn Id : KB9787987746G',
-                                                        style: primaryfont
-                                                            .copyWith(
-                                                                color: Color(
-                                                                    0xff939598),
-                                                                fontSize: 13.sp,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                            Row(
-                                              children: [
-                                                Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                      '+\$50.00',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                              color: Color(
-                                                                  0xff00A8AC),
-                                                              fontSize: 14.sp,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600),
-                                                    ),
-                                                    Text(
-                                                      'Balance \$ 1200.00',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                              color: Color(
-                                                                  0xff939598),
-                                                              fontSize: 12.sp,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            )
-                                          ],
-                                        ),
-                                      );
-                                    }),
                                 ksizedbox10,
-                                Text(
-                                  'Yesterday',
-                                  style: primaryfont.copyWith(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                ListView.builder(
-                                    itemCount: 6,
-                                    shrinkWrap: true,
-                                    physics: NeverScrollableScrollPhysics(),
-                                    itemBuilder: (context, index) {
-                                      return Container(
-                                        margin: EdgeInsets.only(top: 10),
-                                        padding: const EdgeInsets.only(
-                                            left: 5,
-                                            right: 5,
-                                            top: 5,
-                                            bottom: 5),
-                                        //  height: 100.h,
-                                        width: size.width,
-                                        decoration: BoxDecoration(
-                                            color: Color(0xffFFFFFF),
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Row(
+                                GetBuilder<WalletController>(
+                                    builder: (context) {
+                                  return walletController.walletDataList.isEmpty
+                                      ? const Center(
+                                          child: Center(
+                                            child: CircularProgressIndicator(),
+                                          ),
+                                        )
+                                      : ListView.builder(
+                                          itemCount: walletController
+                                              .walletDataList
+                                              .last
+                                              .walletHistory
+                                              .length,
+                                          shrinkWrap: true,
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          itemBuilder: (context, index) {
+                                            WalletHistory walletHistorylist =
+                                                walletController.walletDataList
+                                                    .last.walletHistory[index];
+
+                                            DateTime walletDates =
+                                                walletHistorylist.createdAt;
+
+                                            String dateShows =
+                                                dateShowing(walletDates);
+
+                                            // Check if the date is different from the last displayed date
+                                            bool showDates =
+                                                lastDateDisplayed == null ||
+                                                    !isSameDate(
+                                                        lastDateDisplayed!,
+                                                        walletDates);
+
+                                            if (showDates) {
+                                              lastDateDisplayed = walletDates;
+                                            }
+                                            return Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
-                                                Padding(
+                                                ksizedbox15,
+                                                if (showDates)
+                                                  Text(
+                                                    dateShows,
+                                                    // formatingDate(
+                                                    //     walletHistorylist
+                                                    //         .createdAt),
+                                                    style: primaryfont.copyWith(
+                                                        fontSize: 16.sp,
+                                                        fontWeight:
+                                                            FontWeight.w600),
+                                                  ),
+                                                Container(
+                                                  margin:
+                                                      EdgeInsets.only(top: 3),
                                                   padding:
                                                       const EdgeInsets.only(
-                                                          left: 7, top: 7),
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
+                                                          left: 5,
+                                                          right: 10,
+                                                          top: 5,
+                                                          bottom: 5),
+                                                  //  height: 100.h,
+                                                  width: size.width,
+                                                  decoration: BoxDecoration(
+                                                      color: Color(0xffFFFFFF),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10)),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
                                                     children: [
-                                                      Text(
-                                                        "Money Added to wallet",
-                                                        style: primaryfont
-                                                            .copyWith(
-                                                                fontSize: 17.sp,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600),
+                                                      Row(
+                                                        children: [
+                                                          Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .only(
+                                                                    left: 7,
+                                                                    top: 7),
+                                                            child: Column(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              children: [
+                                                                Text(
+                                                                  "Money Added to wallet",
+                                                                  style: primaryfont.copyWith(
+                                                                      fontSize:
+                                                                          15.sp,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w600),
+                                                                ),
+                                                                Padding(
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                          .only(
+                                                                          top:
+                                                                              5),
+                                                                  child: Text(
+                                                                    '${formatingMonth(walletHistorylist.createdAt)} | ${formatTime(walletHistorylist.createdAt.toString())}',
+                                                                    style: primaryfont.copyWith(
+                                                                        color: Color(
+                                                                            0xff939598),
+                                                                        fontSize: 13
+                                                                            .sp,
+                                                                        fontWeight:
+                                                                            FontWeight.w500),
+                                                                  ),
+                                                                ),
+                                                                Text(
+                                                                  'Txn Id :${walletHistorylist.referenceNumber}',
+                                                                  style: primaryfont.copyWith(
+                                                                      color: Color(
+                                                                          0xff939598),
+                                                                      fontSize:
+                                                                          13.sp,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          )
+                                                        ],
                                                       ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(top: 5),
-                                                        child: Text(
-                                                          '24 September | 7:30 AM',
-                                                          style: primaryfont
-                                                              .copyWith(
-                                                                  color: Color(
-                                                                      0xff939598),
-                                                                  fontSize:
-                                                                      13.sp,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500),
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                        'Txn Id : KB9787987746G',
-                                                        style: primaryfont
-                                                            .copyWith(
-                                                                color: Color(
-                                                                    0xff939598),
-                                                                fontSize: 13.sp,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500),
-                                                      ),
+                                                      Row(
+                                                        children: [
+                                                          Column(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              Text(
+                                                                '+\$${walletHistorylist.amount}',
+                                                                style: primaryfont.copyWith(
+                                                                    color: const Color(
+                                                                        0xff00A8AC),
+                                                                    fontSize:
+                                                                        14.sp,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600),
+                                                              ),
+                                                              // Text(
+                                                              //   'Balance \$ 1200.00',
+                                                              //   style:
+                                                              //       primaryfont.copyWith(
+                                                              //           color: Color(
+                                                              //               0xff939598),
+                                                              //           fontSize: 12.sp,
+                                                              //           fontWeight:
+                                                              //               FontWeight
+                                                              //                   .w500),
+                                                              // ),
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      )
                                                     ],
                                                   ),
-                                                )
-                                              ],
-                                            ),
-                                            Row(
-                                              children: [
-                                                Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                      '+\$50.00',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                              color: Color(
-                                                                  0xffEA4747),
-                                                              fontSize: 14.sp,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600),
-                                                    ),
-                                                    Text(
-                                                      'Balance \$ 1200.00',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                              color: Color(
-                                                                  0xff939598),
-                                                              fontSize: 12.sp,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500),
-                                                    ),
-                                                  ],
                                                 ),
                                               ],
-                                            )
-                                          ],
-                                        ),
-                                      );
-                                    }),
+                                            );
+                                          });
+                                }),
                               ],
                             ),
                           ),
@@ -572,312 +506,368 @@ class _WalletState extends State<Wallet> {
             Positioned(
               top: 5,
               left: 20,
-              child: Container(
-                padding: EdgeInsets.all(20),
-                //height: 250.h,
-                width: 350.w,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    image: const DecorationImage(
-                        image: AssetImage(
-                          "assets/icons/card.png",
-                        ),
-                        fit: BoxFit.cover)),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
+              child: GetBuilder<WalletController>(builder: (_) {
+                return walletController.walletDataList.isEmpty
+                    ? CircularProgressIndicator()
+                    : Container(
+                        padding: EdgeInsets.all(20),
+                        //height: 250.h,
+                        width: 350.w,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            image: const DecorationImage(
+                                image: AssetImage(
+                                  "assets/icons/card.png",
+                                ),
+                                fit: BoxFit.cover)),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  children: [
+                                    Text(
+                                      'Wallet Balance',
+                                      style: primaryfont.copyWith(
+                                          color: Color(0xffffffff),
+                                          fontSize: 14.sp,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                    walletController.walletDataList.last
+                                            .walletBalance.isEmpty
+                                        ? Text("No data")
+                                        : Text(
+                                            // "",
+                                            '\$${walletController.walletDataList.last.walletBalance}',
+                                            style: primaryfont.copyWith(
+                                                color: Color(0xffffffff),
+                                                fontSize: 26.sp,
+                                                fontWeight: FontWeight.w600),
+                                          ),
+                                  ],
+                                ),
+                                Container(
+                                  height: 45.h,
+                                  width: 45.w,
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(15)),
+                                  child: Container(
+                                    height: 35.h,
+                                    width: 35.w,
+                                    child: SvgPicture.asset(
+                                      "assets/icons/Group 56.svg",
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            ksizedbox10,
+                            Container(
+                              height: 45.h,
+                              width: size.width,
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: TextField(
+                                controller: amountController,
+                                keyboardType: TextInputType.number,
+                                decoration: const InputDecoration(
+                                  contentPadding: EdgeInsets.only(
+                                      left: 10, right: 10, bottom: 7),
+                                  border: InputBorder.none,
+                                ),
+                              ),
+                            ),
+                            ksizedbox20,
                             Text(
-                              'Wallet Balance',
+                              'Bonus adding amount \$25',
                               style: primaryfont.copyWith(
                                   color: Color(0xffffffff),
                                   fontSize: 14.sp,
                                   fontWeight: FontWeight.w500),
                             ),
-                            Text(
-                              '\$ 125.00',
-                              style: primaryfont.copyWith(
-                                  color: Color(0xffffffff),
-                                  fontSize: 26.sp,
-                                  fontWeight: FontWeight.w600),
+                            ksizedbox20,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    updateAmount("100");
+                                  },
+                                  child: Container(
+                                    height: 45.h,
+                                    width: 70.w,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            width: 2, color: Colors.white),
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
+                                    child: Text(
+                                      '+100.00',
+                                      style: primaryfont.copyWith(
+                                          color: Color(0xffffffff),
+                                          fontSize: 13.sp,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    updateAmount("200");
+                                  },
+                                  child: Container(
+                                    height: 45.h,
+                                    width: 70.w,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            width: 2, color: Colors.white),
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
+                                    child: Text(
+                                      '+200.00',
+                                      style: primaryfont.copyWith(
+                                          color: Color(0xffffffff),
+                                          fontSize: 13.sp,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    updateAmount("300");
+                                  },
+                                  child: Container(
+                                    height: 45.h,
+                                    width: 70.w,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            width: 2, color: Colors.white),
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
+                                    child: Text(
+                                      '+300.00',
+                                      style: primaryfont.copyWith(
+                                          color: Color(0xffffffff),
+                                          fontSize: 13.sp,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    updateAmount("400");
+                                  },
+                                  child: Container(
+                                    height: 45.h,
+                                    width: 70.w,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            width: 2, color: Colors.white),
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
+                                    child: Text(
+                                      '+400.00',
+                                      style: primaryfont.copyWith(
+                                          color: Color(0xffffffff),
+                                          fontSize: 13.sp,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
+                            ksizedbox20,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    walletController
+                                        .topupApi(amountController.text);
+                                    //  easebuzzController
+                                    //               .tablepayUseingEaseBuzzSubs(
+                                    //                   bookingid: widget.parceID,
+                                    //                   payment_mode1: payment_mode);
+                                  },
+                                  child: Container(
+                                    height: 50.h,
+                                    width: 150.w,
+                                    decoration: BoxDecoration(
+                                        color: Colors.black,
+                                        borderRadius: BorderRadius.circular(8)),
+                                    child: Center(
+                                      child: Text(
+                                        'Top up',
+                                        style: primaryfont.copyWith(
+                                            fontSize: 17.sp,
+                                            fontWeight: FontWeight.w500,
+                                            color: AppColors.kwhite),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    amountController.clear();
+                                    isTopup = false;
+                                    setState(() {});
+                                  },
+                                  child: Container(
+                                    height: 50.h,
+                                    width: 150.w,
+                                    decoration: BoxDecoration(
+                                        color: Colors.black,
+                                        borderRadius: BorderRadius.circular(8)),
+                                    child: Center(
+                                      child: Text(
+                                        'Cancel',
+                                        style: primaryfont.copyWith(
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.w500,
+                                            color: AppColors.kwhite),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
                           ],
                         ),
-                        Container(
-                          height: 50.h,
-                          width: 50.w,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(15)),
-                          child: Center(
-                            child: Container(
-                              height: 35.h,
-                              width: 35.w,
-                              child: SvgPicture.asset(
-                                "assets/icons/Group 56.svg",
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    ksizedbox10,
-                    Container(
-                      height: 45.h,
-                      width: size.width,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10)),
-                      child: const TextField(
-                        decoration: InputDecoration(
-                          contentPadding:
-                              EdgeInsets.only(left: 10, right: 10, bottom: 7),
-                          border: InputBorder.none,
-                        ),
-                      ),
-                    ),
-                    ksizedbox20,
-                    Text(
-                      'Bonus adding amount \$25',
-                      style: primaryfont.copyWith(
-                          color: Color(0xffffffff),
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w500),
-                    ),
-                    ksizedbox20,
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          height: 45.h,
-                          width: 70.w,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                              border: Border.all(width: 2, color: Colors.white),
-                              borderRadius: BorderRadius.circular(20)),
-                          child: Text(
-                            '+100.00',
-                            style: primaryfont.copyWith(
-                                color: Color(0xffffffff),
-                                fontSize: 13.sp,
-                                fontWeight: FontWeight.w500),
-                          ),
-                        ),
-                        Container(
-                          height: 45.h,
-                          width: 70.w,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                              border: Border.all(width: 2, color: Colors.white),
-                              borderRadius: BorderRadius.circular(20)),
-                          child: Text(
-                            '+200.00',
-                            style: primaryfont.copyWith(
-                                color: Color(0xffffffff),
-                                fontSize: 13.sp,
-                                fontWeight: FontWeight.w500),
-                          ),
-                        ),
-                        Container(
-                          height: 45.h,
-                          width: 70.w,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                              border: Border.all(width: 2, color: Colors.white),
-                              borderRadius: BorderRadius.circular(20)),
-                          child: Text(
-                            '+300.00',
-                            style: primaryfont.copyWith(
-                                color: Color(0xffffffff),
-                                fontSize: 13.sp,
-                                fontWeight: FontWeight.w500),
-                          ),
-                        ),
-                        Container(
-                          height: 45.h,
-                          width: 70.w,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                              border: Border.all(width: 2, color: Colors.white),
-                              borderRadius: BorderRadius.circular(20)),
-                          child: Text(
-                            '+400.00',
-                            style: primaryfont.copyWith(
-                                color: Color(0xffffffff),
-                                fontSize: 13.sp,
-                                fontWeight: FontWeight.w500),
-                          ),
-                        ),
-                      ],
-                    ),
-                    ksizedbox20,
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        InkWell(
-                          onTap: () {},
-                          child: Container(
-                            height: 50.h,
-                            width: 150.w,
-                            decoration: BoxDecoration(
-                                color: Colors.black,
-                                borderRadius: BorderRadius.circular(8)),
-                            child: Center(
-                              child: Text(
-                                'Top up',
-                                style: primaryfont.copyWith(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.kwhite),
-                              ),
-                            ),
-                          ),
-                        ),
-                        InkWell(
-                          onTap: () {
-                            isTopup = false;
-                            setState(() {});
-                          },
-                          child: Container(
-                            height: 50.h,
-                            width: 150.w,
-                            decoration: BoxDecoration(
-                                color: Colors.black,
-                                borderRadius: BorderRadius.circular(8)),
-                            child: Center(
-                              child: Text(
-                                'Cancel',
-                                style: primaryfont.copyWith(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.kwhite),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-              ),
+                      );
+              }),
             ),
           if (isTopup == false)
             Positioned(
               top: 5,
               left: 20,
-              child: Container(
-                padding: EdgeInsets.all(20),
-                height: 200.h,
-                width: 350.w,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    image: DecorationImage(
-                        image: AssetImage(
-                          "assets/icons/card.png",
-                        ),
-                        fit: BoxFit.cover)),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
+              child: GetBuilder<WalletController>(builder: (context) {
+                return walletController.walletDataList.isEmpty
+                    ? CircularProgressIndicator()
+                    : Container(
+                        padding: EdgeInsets.all(20),
+                        height: 200.h,
+                        width: 350.w,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            image: DecorationImage(
+                                image: AssetImage(
+                                  "assets/icons/card.png",
+                                ),
+                                fit: BoxFit.cover)),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'Wallet Balance',
-                              style: primaryfont.copyWith(
-                                  color: Color(0xffffffff),
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w500),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  children: [
+                                    Text(
+                                      'Wallet Balance',
+                                      style: primaryfont.copyWith(
+                                          color: Color(0xffffffff),
+                                          fontSize: 14.sp,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                    Text(
+                                      // "",
+                                      walletController.walletDataList.last
+                                              .walletBalance.isNotEmpty
+                                          ? '\$${walletController.walletDataList.last.walletBalance}'
+                                          : "Loading...",
+                                      style: primaryfont.copyWith(
+                                          color: Color(0xffffffff),
+                                          fontSize: 26.sp,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                  ],
+                                ),
+                                Container(
+                                  height: 45.h,
+                                  width: 45.w,
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(15)),
+                                  child: Container(
+                                    height: 35.h,
+                                    width: 35.w,
+                                    child: SvgPicture.asset(
+                                      "assets/icons/Group 56.svg",
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                            Text(
-                              '\$ 00.00',
-                              style: primaryfont.copyWith(
-                                  color: Color(0xffffffff),
-                                  fontSize: 26.sp,
-                                  fontWeight: FontWeight.w600),
-                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      isTopup = true;
+                                    });
+                                  },
+                                  child: Container(
+                                    height: 50.h,
+                                    width: 300.w,
+                                    decoration: BoxDecoration(
+                                        color: Colors.black,
+                                        borderRadius: BorderRadius.circular(8)),
+                                    child: Center(
+                                      child: Text(
+                                        'Top up',
+                                        style: primaryfont.copyWith(
+                                            fontSize: 17.sp,
+                                            fontWeight: FontWeight.w500,
+                                            color: AppColors.kwhite),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                // InkWell(
+                                //   onTap: () {},
+                                //   child: Container(
+                                //     height: 50.h,
+                                //     width: 150.w,
+                                //     decoration: BoxDecoration(
+                                //         color: Colors.black,
+                                //         borderRadius: BorderRadius.circular(8)),
+                                //     child: Center(
+                                //       child: Text(
+                                //         'Withdraw',
+                                //         style: primaryfont.copyWith(
+                                //             fontSize: 17,
+                                //             fontWeight: FontWeight.w500,
+                                //             color: AppColors.kwhite),
+                                //       ),
+                                //     ),
+                                //   ),
+                                // ),
+                              ],
+                            )
                           ],
                         ),
-                        Container(
-                          height: 50.h,
-                          width: 50.w,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(15)),
-                          child: Center(
-                            child: Container(
-                              height: 35.h,
-                              width: 35.w,
-                              child: SvgPicture.asset(
-                                "assets/icons/Group 56.svg",
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              isTopup = true;
-                            });
-                          },
-                          child: Container(
-                            height: 50.h,
-                            width: 150.w,
-                            decoration: BoxDecoration(
-                                color: Colors.black,
-                                borderRadius: BorderRadius.circular(8)),
-                            child: Center(
-                              child: Text(
-                                'Top up',
-                                style: primaryfont.copyWith(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.kwhite),
-                              ),
-                            ),
-                          ),
-                        ),
-                        InkWell(
-                          onTap: () {},
-                          child: Container(
-                            height: 50.h,
-                            width: 150.w,
-                            decoration: BoxDecoration(
-                                color: Colors.black,
-                                borderRadius: BorderRadius.circular(8)),
-                            child: Center(
-                              child: Text(
-                                'Withdraw',
-                                style: primaryfont.copyWith(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.kwhite),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-              ),
+                      );
+              }),
             ),
         ],
       ),
     );
+  }
+
+  bool isSameDate(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
   }
 }

@@ -19,7 +19,6 @@ class LoginApiServices extends BaseApiServices {
           options: Options(
               headers: {
                 'Content-Type': 'application/json',
-                
               },
               followRedirects: false,
               validateStatus: (status) {
@@ -28,6 +27,7 @@ class LoginApiServices extends BaseApiServices {
           data: {
             "email_or_phone": emailOrmobileNmuber,
             "password": password,
+            "role": "client,business"
           });
       print(
           "::::::::<Login Api>::::::${emailOrmobileNmuber}::password :${password}:::::::::");

@@ -17,7 +17,7 @@ class SearchingRideScreen extends StatefulWidget {
 
 class _SearchingRideScreenState extends State<SearchingRideScreen> {
   Timer? _timer;
-  ParcelController parcelController = Get.find<ParcelController>();
+  ParcelController parcelController = Get.put(ParcelController());
   @override
   void initState() {
     super.initState();
@@ -28,7 +28,7 @@ class _SearchingRideScreenState extends State<SearchingRideScreen> {
 
   void _startPolling() {
     _timer = Timer.periodic(Duration(seconds: 5), (timer) async {
-    //  await parcelController.getAcceptBooking(parcelController.driverbookingid);
+      //  await parcelController.getAcceptBooking(parcelController.driverbookingid);
       // if (parcelController.status == true) {
       // } else {
 

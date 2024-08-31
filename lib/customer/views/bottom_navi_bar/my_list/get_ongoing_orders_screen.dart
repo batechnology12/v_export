@@ -12,6 +12,8 @@ import 'package:v_export/customer/controller/parcel_controller.dart';
 import 'package:v_export/customer/model/get_ongoing_orders_model.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/my_list/booking_status.dart';
 import 'package:intl/intl.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/driver_details_screen.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/my_list/ongoing_driver_details_screen.dart';
 
 class GetOngoingScreenData extends StatefulWidget {
   const GetOngoingScreenData({super.key});
@@ -24,40 +26,51 @@ class _GetOngoingScreenDataState extends State<GetOngoingScreenData> {
   @override
   void initState() {
     super.initState();
-    getData();
+    myListController.getOngoingOrdersUser("ongoing");
   }
 
-  getData() async {
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await myListController.getOngoingOrdersUser("ongoing");
-      myListController.update();
-      setState(() {});
-    });
-  }
+  // getData() async {
+  //   WidgetsBinding.instance.addPostFrameCallback((_) async {
+  //     await myListController.getOngoingOrdersUser("ongoing");
+  //     myListController.update();
+  //     setState(() {});
+  //   });
+  // }
 
-  MyListController myListController = Get.find<MyListController>();
-  ParcelController parcelController = Get.find<ParcelController>();
+  MyListController myListController = Get.put(MyListController());
+  ParcelController parcelController = Get.put(ParcelController());
 
-  String formatTime(String time) {
-    DateTime parsedTime = DateFormat("HH:mm:ss").parse(time);
-    String formattedTime = DateFormat("h a").format(parsedTime);
-    return formattedTime;
+  // String formatTime(String time) {
+  //   DateTime parsedTime = DateFormat("HH:mm:ss").parse(time);
+  //   String formattedTime = DateFormat("h a").format(parsedTime);
+  //   return formattedTime;
+  // }
+  String formatTime(String dateTimeString) {
+    try {
+      DateTime dateTime = DateTime.parse(dateTimeString);
+
+      return DateFormat('hh:mm a').format(dateTime);
+    } catch (e) {
+      return '';
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+
     return SingleChildScrollView(
       physics: BouncingScrollPhysics(),
       child: Column(
         children: [
-          //    myListController.getOngoingOrdersModelData[index].bookingProducts.isEmpty ?
-          GetBuilder<AccountController>(builder: (_) {
+          GetBuilder<MyListController>(builder: (_) {
             if (myListController.getOngoingOrdersLoading.isTrue) {
               return Center(
                   child: Padding(
                 padding: const EdgeInsets.only(top: 230),
-                child: CircularProgressIndicator(),
+                child: CircularProgressIndicator(
+                  color: AppColors.kblue,
+                ),
               ));
             }
             if (myListController.getOngoingOrdersModelData.isEmpty) {
@@ -78,18 +91,15 @@ class _GetOngoingScreenDataState extends State<GetOngoingScreenData> {
                 itemCount: myListController.getOngoingOrdersModelData.length,
                 physics: BouncingScrollPhysics(),
                 itemBuilder: ((context, index) {
-                  GetOngoingOrdersModelData getongoingdatas =
+                  GetOngoingOrdersModelData getongoingdatalist =
                       myListController.getOngoingOrdersModelData[index];
-                  // BookingProduct getbookingProducts =
-                  //     getongoingdatas.bookingProducts[index];
 
                   return Padding(
                     padding: const EdgeInsets.only(left: 10, right: 10),
                     child: GestureDetector(
                       onTap: () {
-                        Get.to(BookingStatus(
-                          getOngoingOrderlist: getongoingdatas,
-                        ));
+                        Get.to(OngoingDriverDetailsScreen(
+                            getOngoingOrdersModelDataList: getongoingdatalist));
                       },
                       child: Container(
                         padding: EdgeInsets.all(5),
@@ -97,38 +107,63 @@ class _GetOngoingScreenDataState extends State<GetOngoingScreenData> {
                           color: Colors.grey.withOpacity(.09),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        margin: EdgeInsets.only(bottom: 10, top: 8),
+                        margin: EdgeInsets.only(
+                          bottom: 10,
+                        ),
                         child: Column(
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Booking ID : ${getongoingdatas.bookingId}',
-                                  style: primaryfont.copyWith(
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 15.5),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    Get.to(BookingStatus(
-                                      getOngoingOrderlist: getongoingdatas,
-                                    ));
-                                  },
-                                  child: Container(
-                                    height: 35,
-                                    width: 35,
-                                    decoration: const BoxDecoration(
-                                        color: Color(0xffF5F5F5),
-                                        shape: BoxShape.circle),
-                                    child: const Icon(
-                                      Icons.arrow_forward_ios,
-                                      color: Colors.black,
-                                      size: 15,
-                                    ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 5),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Booking ID : ${getongoingdatalist.bookingId}',
+                                    style: primaryfont.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 13.sp),
                                   ),
-                                ),
-                              ],
+                                  // Row(
+                                  //   children: [
+                                  //     Text(
+                                  //       'Accepted Time : ',
+                                  //       style: primaryfont.copyWith(
+                                  //           fontWeight: FontWeight.w700,
+                                  //           color: Colors.amber,
+                                  //           fontSize: 11.sp),
+                                  //     ),
+                                  //     Text(
+                                  //       '${formatTime(getongoingdatalist.acceptedAt.toString())}',
+                                  //       style: primaryfont.copyWith(
+                                  //           fontWeight: FontWeight.w700,
+                                  //           fontSize: 11.sp),
+                                  //     ),
+                                  //   ],
+                                  // ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Get.to(OngoingDriverDetailsScreen(
+                                          getOngoingOrdersModelDataList:
+                                              getongoingdatalist));
+                                    },
+                                    child: Container(
+                                      height: 35,
+                                      width: 35,
+                                      decoration: const BoxDecoration(
+                                          // color: Colors.amber,
+                                          color: Colors.white,
+                                          shape: BoxShape.circle),
+                                      child: const Icon(
+                                        Icons.arrow_forward_ios,
+                                        color: Colors.black,
+                                        size: 15,
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
                             ),
                             Divider(),
                             ksizedbox10,
@@ -137,24 +172,21 @@ class _GetOngoingScreenDataState extends State<GetOngoingScreenData> {
                               children: [
                                 Row(
                                   children: [
-                                    const Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        Icon(
-                                          Icons.location_on,
-                                          color: Color(0xff038484),
-                                        ),
-                                        Dash(
-                                            direction: Axis.vertical,
-                                            length: 50,
-                                            dashLength: 5,
-                                            dashColor: AppColors.kgrey),
-                                        // Icon(
-                                        //   Icons.location_on,
-                                        //   color: Color(0xffF74354),
-                                        // ),
-                                      ],
+                                    const Padding(
+                                      padding: EdgeInsets.only(top: 0),
+                                      child: Column(
+                                        children: [
+                                          Icon(
+                                            Icons.location_on,
+                                            color: Color(0xff038484),
+                                          ),
+                                          Dash(
+                                              direction: Axis.vertical,
+                                              length: 30,
+                                              dashLength: 5,
+                                              dashColor: AppColors.kgrey),
+                                        ],
+                                      ),
                                     ),
                                     SizedBox(
                                       width: 5.w,
@@ -164,286 +196,149 @@ class _GetOngoingScreenDataState extends State<GetOngoingScreenData> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'Pickup Details',
+                                          'Pickup Address',
                                           style: primaryfont.copyWith(
-                                              fontSize: 15.sp,
+                                              fontSize: 14.sp,
                                               fontWeight: FontWeight.w600,
                                               color: Color(0xff455A64)),
                                         ),
                                         Container(
-                                          width: 200.h,
-                                          child:
-                                              //  Text(
-                                              //   getongoingdatas.pickupAddreess,
-                                              //   style: primaryfont.copyWith(
-                                              //       color: Color(0xff1E1E1E),
-                                              //       fontWeight: FontWeight.w600,
-                                              //       fontSize: 14.sp),
-                                              // ),
-                                              ExpandableText(
-                                            getongoingdatas.pickupAddreess,
+                                          width: 225.h,
+                                          child: ExpandableText(
+                                            getongoingdatalist.pickupAddreess,
                                             expandText: 'show more',
                                             collapseText: 'show less',
-                                            maxLines: 3,
+                                            maxLines: 2,
                                             linkColor: Colors.blue,
                                             style: primaryfont.copyWith(
                                                 color: const Color(0xff1E1E1E),
                                                 fontWeight: FontWeight.w600,
-                                                fontSize: 13.sp),
+                                                fontSize: 12.sp),
                                           ),
                                         ),
                                       ],
-                                    ),
+                                    )
                                   ],
                                 ),
-                                // Column(
-                                //   mainAxisAlignment:
-                                //       MainAxisAlignment.spaceBetween,
-                                //   children: [
-                                //     // Column(
-                                //     //   crossAxisAlignment:
-                                //     //       CrossAxisAlignment.start,
-                                //     //   children: [
-                                //     //     Text(
-                                //     //       'Pickup Details',
-                                //     //       style: primaryfont.copyWith(
-                                //     //           fontSize: 15.sp,
-                                //     //           fontWeight: FontWeight.w600,
-                                //     //           color: Color(0xff455A64)),
-                                //     //     ),
-                                //     //     Container(
-                                //     //       width: 200.h,
-                                //     //       child: Text(
-                                //     //         getongoingdatas.pickupAddreess,
-                                //     //         style: primaryfont.copyWith(
-                                //     //             color: Color(0xff1E1E1E),
-                                //     //             fontWeight: FontWeight.w600,
-                                //     //             fontSize: 14.sp),
-                                //     //       ),
-                                //     //     ),
-                                //     //   ],
-                                //     // ),
-                                //     SizedBox(
-                                //       height: 40.h,
-                                //     ),
-                                //     Column(
-                                //       crossAxisAlignment:
-                                //           CrossAxisAlignment.start,
-                                //       children: [
-                                //         Text(
-                                //           'Delivery details',
-                                //           style: primaryfont.copyWith(
-                                //               fontSize: 15.sp,
-                                //               fontWeight: FontWeight.w600,
-                                //               color: Color(0xff455A64)),
-                                //         ),
-                                //         Container(
-                                //           width: 200.h,
-                                //           child: Text(
-                                //             getongoingdatas
-                                //                 .bookingDeliveryAddresses
-                                //                 .first
-                                //                 .address,
-                                //             style: primaryfont.copyWith(
-                                //                 color: Color(0xff1E1E1E),
-                                //                 fontWeight: FontWeight.w600,
-                                //                 fontSize: 14.sp),
-                                //           ),
-                                //         ),
-                                //       ],
-                                //     )
-                                //   ],
-
                                 Row(
                                   children: [
                                     Text(
-                                      getongoingdatas.bookingType == "parcel"
-                                          ? '${getongoingdatas.bookingProducts.first.pickuptimeFrom ?? "N/a"} \nto \n${getongoingdatas.bookingProducts.first.pickuptimeTo ?? "N/a"}'
-                                          : getongoingdatas
-                                                  .bookingTimeFromVehicle ??
-                                              "N/a",
+                                      formatTime(getongoingdatalist.pickupedAt
+                                          .toString()),
+                                      // myListController
+                                      //             .getOngoingOrdersModelData[
+                                      //                 index]
+                                      //             .bookingType ==
+                                      //         "parcel"
+                                      //     ? '${formatTime(getongoingdatalist.acceptedAt.toString())}'
+                                      //     // '${getongoingdatalist.bookingProducts[0].pickuptimeFrom} to ${getongoingdatalist.bookingProducts[0].pickuptimeTo}'
+                                      //     : getongoingdatalist
+                                      //         .bookingTimeFromVehicle!,
+                                      textAlign: TextAlign.center,
                                       style: primaryfont.copyWith(
-                                          fontSize: 12.sp,
+                                          fontSize: 10.sp,
                                           fontWeight: FontWeight.w600,
-                                          color: Color(0xff455A64)),
+                                          color: const Color(0xff455A64)),
                                     ),
                                   ],
                                 )
-
-                                // Row(
-                                //   children: [
-                                //     Container(
-                                //       height: 150.h,
-                                //       child: Column(
-                                //         mainAxisAlignment:
-                                //             MainAxisAlignment.spaceBetween,
-                                //         children: [
-                                //           Text(
-                                //             getongoingdatas.bookingType ==
-                                //                     "parcel"
-                                //                 ? '${getongoingdatas.bookingProducts.first.pickuptimeFrom} to ${getongoingdatas.bookingProducts.first.pickuptimeTo}'
-                                //                 : getongoingdatas
-                                //                     .bookingTimeFromVehicle,
-                                //             style: primaryfont.copyWith(
-                                //                 fontSize: 12.sp,
-                                //                 fontWeight: FontWeight.w600,
-                                //                 color: Color(0xff455A64)),
-                                //           ),
-                                //           Text(
-                                //             getongoingdatas.bookingType ==
-                                //                     "parcel"
-                                //                 ? '${getongoingdatas.bookingProducts.first.deliverytimeFrom} to ${getongoingdatas.bookingProducts.first.deliverytimeTo}'
-                                //                 : "",
-
-                                //             //'${formatTime(myListController.getOngoingOrdersModelData[index].bookingProducts[index].deliverytimeFrom)} to ${formatTime(myListController.getOngoingOrdersModelData[index].bookingProducts[index].deliverytimeTo)}',
-                                //             style: primaryfont.copyWith(
-                                //                 fontSize: 12.sp,
-                                //                 fontWeight: FontWeight.w600,
-                                //                 color: Color(0xff455A64)),
-                                //           ),
-                                //         ],
-                                //       ),
-                                //     )
-                                //   ],
-                                // )
                               ],
                             ),
                             GetBuilder<MyListController>(builder: (_) {
-                              return myListController
-                                      .getOngoingOrdersModelData.isEmpty
-                                  ? Center(
-                                      child: Container(
-                                          alignment: Alignment.center,
-                                          height: 200.h,
-                                          width: size.width,
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey.withOpacity(.09),
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ),
-                                          child: Image.asset(
-                                            "assets/images/Group 42002.png",
-                                            height: 20,
-                                            width: 20,
-                                          )))
-                                  : ListView.builder(
-                                      shrinkWrap: true,
-                                      physics: NeverScrollableScrollPhysics(),
-                                      itemCount: myListController
-                                          .getOngoingOrdersModelData
-                                          .last
-                                          .bookingDeliveryAddresses
-                                          .length,
-                                      //  parcelController
-                                      //     .ongoingOrdersData
-                                      //     .last
-                                      //     .bookingDeliveryAddresses
-                                      //     .length,
-                                      itemBuilder: ((context, index) {
-                                        GetOngoingOrdersModelData
-                                            getOngoingOrdersModelDataList =
-                                            myListController
-                                                .getOngoingOrdersModelData.last;
-                                        BookingDeliveryAddress
-                                            bookingDeliveryAddressList =
-                                            getOngoingOrdersModelDataList
-                                                    .bookingDeliveryAddresses[
-                                                index];
-
-                                        BookingProduct bookingProductList =
-                                            getOngoingOrdersModelDataList
-                                                .bookingProducts.last;
-                                        return Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
+                              return ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount: getongoingdatalist
+                                      .bookingDeliveryAddresses.length,
+                                  itemBuilder: ((context, index) {
+                                    return Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
-                                            Row(
+                                            Column(
                                               children: [
-                                                Column(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.location_on,
-                                                      color: Color(0xffF74354),
-                                                    ),
-                                                    Dash(
-                                                        direction:
-                                                            Axis.vertical,
-                                                        length: 75,
-                                                        dashLength: 5,
-                                                        dashColor:
-                                                            AppColors.kgrey),
-                                                  ],
+                                                const Icon(
+                                                  Icons.location_on,
+                                                  color: Color(0xffF74354),
                                                 ),
-                                                SizedBox(
-                                                  width: 5.w,
-                                                ),
-                                                Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      'Delivery Address',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                              fontSize: 14.sp,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                              color: Color(
-                                                                  0xff455A64)),
-                                                    ),
-                                                    Container(
-                                                      width: 230.h,
-                                                      padding: EdgeInsets.only(
-                                                          bottom: 0),
-                                                      child: ExpandableText(
-                                                        bookingDeliveryAddressList
-                                                            .address,
-                                                        // bookingDeliveryAddress
-                                                        //     .address,
-                                                        expandText: 'show more',
-                                                        collapseText:
-                                                            'show less',
-                                                        maxLines: 3,
-                                                        linkColor: Colors.blue,
-                                                        style: primaryfont
-                                                            .copyWith(
-                                                                color: const Color(
-                                                                    0xff1E1E1E),
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600,
-                                                                fontSize:
-                                                                    13.sp),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                )
+                                                if (index !=
+                                                    getongoingdatalist
+                                                            .bookingDeliveryAddresses
+                                                            .length -
+                                                        1)
+                                                  const Dash(
+                                                      direction: Axis.vertical,
+                                                      length: 35,
+                                                      dashLength: 5,
+                                                      dashColor:
+                                                          AppColors.kgrey),
                                               ],
                                             ),
-                                            Row(
+                                            SizedBox(
+                                              width: 5.w,
+                                            ),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                  getOngoingOrdersModelDataList
-                                                              .bookingType ==
-                                                          "parcel"
-                                                      ? "${bookingProductList.deliverytimeFrom ?? "N/a"} \nto \n${bookingProductList.deliverytimeTo ?? "N/a"}"
-                                                      : getOngoingOrdersModelDataList
-                                                              .bookingTimeFromVehicle ??
-                                                          "N/a",
-                                                  textAlign: TextAlign.center,
+                                                  'Delivery Address',
                                                   style: primaryfont.copyWith(
-                                                      fontSize: 12.sp,
+                                                      fontSize: 14.sp,
                                                       fontWeight:
                                                           FontWeight.w600,
-                                                      color: const Color(
-                                                          0xff455A64)),
+                                                      color: Color(0xff455A64)),
+                                                ),
+                                                Container(
+                                                  width: 230.h,
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          bottom: 0),
+                                                  child: ExpandableText(
+                                                    getongoingdatalist
+                                                        .bookingDeliveryAddresses[
+                                                            index]
+                                                        .address,
+                                                    expandText: 'show more',
+                                                    collapseText: 'show less',
+                                                    maxLines: 2,
+                                                    linkColor: Colors.blue,
+                                                    style: primaryfont.copyWith(
+                                                        color: const Color(
+                                                            0xff1E1E1E),
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontSize: 12.sp),
+                                                  ),
                                                 ),
                                               ],
                                             )
                                           ],
-                                        );
-                                      }));
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              "",
+                                              // getongoingdatalist.bookingType ==
+                                              //         "parcel"
+                                              //     ? '${getongoingdatalist.bookingProducts[index].deliverytimeFrom} to ${getongoingdatalist.bookingProducts[index].deliverytimeTo}'
+                                              //     : "",
+                                              textAlign: TextAlign.center,
+                                              style: primaryfont.copyWith(
+                                                  fontSize: 10.sp,
+                                                  fontWeight: FontWeight.w600,
+                                                  color:
+                                                      const Color(0xff455A64)),
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    );
+                                  }));
                             }),
                             ksizedbox10,
                             Divider(),
@@ -470,25 +365,19 @@ class _GetOngoingScreenDataState extends State<GetOngoingScreenData> {
                                         height: 2.h,
                                       ),
                                       Text(
-                                        // myListController
-                                        //     .getOngoingOrdersModelData[
-                                        //         index]
-                                        //     .bookingDate
-                                        //     .toString(),
                                         formatDate(
-                                            DateTime.parse(getongoingdatas
+                                            DateTime.parse(getongoingdatalist
                                                 .bookingDate
                                                 .toString()),
                                             [dd, '-', mm, '-', yyyy]),
                                         style: primaryfont.copyWith(
-                                          fontSize: 14.sp,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 12.sp),
+                                      )
                                     ],
                                   ),
                                 ),
-                                getongoingdatas.bookingType == "parcel"
+                                getongoingdatalist.bookingType == "parcel"
                                     ? Container(
                                         height: 65.h,
                                         width: 100.w,
@@ -510,31 +399,9 @@ class _GetOngoingScreenDataState extends State<GetOngoingScreenData> {
                                               height: 2.h,
                                             ),
                                             Text(
-                                              //   "",
-                                              getongoingdatas.bookingType ==
-                                                      "parcel"
-                                                  ? myListController
-                                                      .getOngoingOrdersModelData[
-                                                          index]
-                                                      .bookingProducts[index]
-                                                      .deliveryDate
-                                                      .toString()
-                                                  : "",
-                                              // formatDate(
-                                              //     DateTime.parse(
-                                              //         myListController
-                                              //             .getOngoingOrdersModelData[
-                                              //                 index]
-                                              //             .bookingProducts[index]
-                                              //             .deliveryDate
-                                              //             .toString()),
-                                              //     [
-                                              //       dd,
-                                              //       '-',
-                                              //       mm,
-                                              //       '-',
-                                              //       yyyy
-                                              //     ]),
+                                              getongoingdatalist
+                                                  .bookingProducts[0]
+                                                  .deliveryDate,
                                               style: primaryfont.copyWith(
                                                 fontSize: 12.sp,
                                                 fontWeight: FontWeight.w600,
@@ -549,7 +416,8 @@ class _GetOngoingScreenDataState extends State<GetOngoingScreenData> {
                                   width: 100.w,
                                   decoration: BoxDecoration(
                                       color: Colors.grey.shade200,
-                                      borderRadius: BorderRadius.circular(15)),
+                                      borderRadius:
+                                          BorderRadius.circular(15.sp)),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
@@ -563,12 +431,19 @@ class _GetOngoingScreenDataState extends State<GetOngoingScreenData> {
                                       SizedBox(
                                         height: 2.h,
                                       ),
-                                      Text(
-                                        'PickedUp',
-                                        style: primaryfont.copyWith(
-                                            fontWeight: FontWeight.w600,
-                                            color: AppColors.kblue),
-                                      )
+                                      getongoingdatalist.isConfirmed == "0"
+                                          ? Text(
+                                              'Ongoing',
+                                              style: primaryfont.copyWith(
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Color(0xff0072E8)),
+                                            )
+                                          : Text(
+                                              'Assigned',
+                                              style: primaryfont.copyWith(
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Color(0xff0072E8)),
+                                            )
                                     ],
                                   ),
                                 ),

@@ -20,7 +20,7 @@ class ForgotPasswordScreen extends StatefulWidget {
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   var emailOrmobileController = TextEditingController();
 
-  AuthController authController = Get.find<AuthController>();
+  AuthController authController = Get.put(AuthController());
 
   final formKey = GlobalKey<FormState>();
   @override

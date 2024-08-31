@@ -26,8 +26,8 @@ class PickupVehicleAddressDetails extends StatefulWidget {
 
 class _PickupVehicleAddressDetailsState
     extends State<PickupVehicleAddressDetails> {
-  AccountController accountController = Get.find<AccountController>();
-  HomeController homeController = Get.find<HomeController>();
+  AccountController accountController = Get.put(AccountController());
+  HomeController homeController = Get.put(HomeController());
 
   GoogleMapController? _controller;
   final Set<Marker> _markers = {};
@@ -45,7 +45,7 @@ class _PickupVehicleAddressDetailsState
   final TextEditingController _senderNameController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController searchController = TextEditingController();
-
+  String vehiclepickupincode = "";
   bool _isManualSelection = false; // Flag to track manual selection
 
   @override
@@ -138,34 +138,25 @@ class _PickupVehicleAddressDetailsState
                             inputDecoration: InputDecoration(
                                 contentPadding: EdgeInsets.only(left: 10),
                                 isDense: true,
-                                // prefixIcon: Padding(
-                                //   padding: const EdgeInsets.all(8.0),
-                                //   child: Image.asset(
-                                //     "assets/icons/google-maps.png",
-                                //   ),
-                                // ),
-                                // suffixIcon: Padding(
-                                //   padding: const EdgeInsets.all(5.0),
-                                //   child: Image.asset(
-                                //     "assets/icons/search.png",
-                                //   ),
-                                // ),
                                 hintText: 'Enter Your Address....',
                                 hintStyle: primaryfont.copyWith(
                                     fontSize: 14, fontWeight: FontWeight.w500),
-                                border: InputBorder.none
-                                // border: OutlineInputBorder(
-                                //   borderRadius: BorderRadius.circular(10),
-                                //   borderSide: BorderSide(
-                                //     width: 1,
-                                //     color: Color(0xff444444),
-                                //   ),
-                                // ),
-                                ),
+                                border: InputBorder.none),
                             focusNode: FocusNode(),
                             debounceTime: 600,
                             isLatLngRequired: true,
                             getPlaceDetailWithLatLng: (Prediction prediction) {
+                              RegExp regExp = RegExp(
+                                  r'\b\d{6}\b'); // Pattern to match 6-digit pincode
+                              Match? match =
+                                  regExp.firstMatch(prediction.description!);
+
+                              if (match != null) {
+                                vehiclepickupincode =
+                                    match.group(0)!; // Store the pincode
+                              }
+
+                              print('Extracted Pincode: $vehiclepickupincode');
                               if (_controller != null) {
                                 _controller!.animateCamera(
                                     CameraUpdate.newCameraPosition(
@@ -188,12 +179,6 @@ class _PickupVehicleAddressDetailsState
                                       title: prediction.description!),
                                 ));
                               });
-
-                              // Fetch place name using the coordinates
-                              // _fetchPlaceName(
-                              //   double.parse(prediction.lat!),
-                              //   double.parse(prediction.lng!),
-                              // );
                             },
                             itemClick: (Prediction prediction) {
                               searchController.text = prediction.description!;
@@ -230,6 +215,7 @@ class _PickupVehicleAddressDetailsState
                                         LengthLimitingTextInputFormatter(4),
                                         //  FilteringTextInputFormatter.digitsOnly,
                                       ],
+                                      keyboardType: TextInputType.text,
                                       decoration: InputDecoration(
                                           hintText: 'Enter Block no',
                                           hintStyle: primaryfont.copyWith(
@@ -246,7 +232,8 @@ class _PickupVehicleAddressDetailsState
                                 ),
                               ],
                             ),
-                            Column(crossAxisAlignment: CrossAxisAlignment.start,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   "Enter Unit no",
@@ -266,8 +253,9 @@ class _PickupVehicleAddressDetailsState
                                       controller: _unitIdController,
                                       inputFormatters: [
                                         LengthLimitingTextInputFormatter(4),
-                                        //  FilteringTextInputFormatter.digitsOnly,
+                                        // FilteringTextInputFormatter.digitsOnly,
                                       ],
+                                      keyboardType: TextInputType.text,
                                       decoration: InputDecoration(
                                           hintText: 'Enter Unit no',
                                           hintStyle: primaryfont.copyWith(
@@ -326,7 +314,7 @@ class _PickupVehicleAddressDetailsState
                               fontWeight: FontWeight.w600),
                         ),
                         ksizedbox5,
-                         TextFormField(
+                        TextFormField(
                           controller: _phoneNumberController,
                           validator: (value) {
                             if (value!.length != 8) {
@@ -341,33 +329,30 @@ class _PickupVehicleAddressDetailsState
                             FilteringTextInputFormatter.deny(RegExp(r'\s')),
                           ],
                           decoration: InputDecoration(
-                                  contentPadding: EdgeInsets.only( top: 13),
-                             prefixIcon: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Container(
-                     
-                                    height: 30,
-                                    width: 50,
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                     "+65",
-                                      style: primaryfont.copyWith(
-                                        fontSize: 14, // Adjust font size
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                            contentPadding: EdgeInsets.only(top: 13),
+                            prefixIcon: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  height: 30,
+                                  width: 50,
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    "+65",
+                                    style: primaryfont.copyWith(
+                                      fontSize: 14, // Adjust font size
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  SizedBox(width: 5),
-                                ],
-                              ),
+                                ),
+                                SizedBox(width: 5),
+                              ],
+                            ),
                             fillColor: AppColors.kwhite,
                             filled: true,
-              
                             hintText: 'Enter Phone Name',
-                                  hintStyle: primaryfont.copyWith(
-                                      fontSize: 14,
-                                                                         fontWeight: FontWeight.w500),
+                            hintStyle: primaryfont.copyWith(
+                                fontSize: 14, fontWeight: FontWeight.w500),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -389,28 +374,35 @@ class _PickupVehicleAddressDetailsState
                               ),
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            
                           ),
                         ),
                         ksizedbox20,
                         InkWell(
                             onTap: () async {
+                              print(
+                                  "block iD --- ${_blockUnitController.text}");
+                              print("unit iD --- ${_unitIdController.text}");
+
                               if (formKey.currentState!.validate()) {
                                 if (_senderNameController.text.isNotEmpty &&
                                     _phoneNumberController.text.isNotEmpty) {
                                   await homeController
                                       .updatevehiclePickupLocation(
-                                          searchController.text,
-                                          _markers.first.position.latitude
-                                              .toString(),
-                                          _markers.first.position.longitude
-                                              .toString(),
-                                          _senderNameController.text,
-                                          _phoneNumberController.text,
-                                          _blockUnitController.text,
-                                          _unitIdController.text);
+                                    searchController.text,
+                                    _markers.first.position.latitude.toString(),
+                                    _markers.first.position.longitude
+                                        .toString(),
+                                    _senderNameController.text,
+                                    _phoneNumberController.text,
+                                    _blockUnitController.text,
+                                    _unitIdController.text,
+                                    vehiclepickupincode,
+                                  );
 
                                   Get.offAll(BookVehicleScreen(
+                                    vehiclePickupPincode: vehiclepickupincode,
+                                    vehiclepickupBlockIDs:
+                                        _blockUnitController.text,
                                     vehiclepickupunitId: _unitIdController.text,
                                     vehiclepickupAdress: searchController.text,
                                     vehiclepickuplat: _markers
@@ -419,8 +411,6 @@ class _PickupVehicleAddressDetailsState
                                     vehiclepickuplong: _markers
                                         .first.position.longitude
                                         .toString(),
-                                    vehiclepickupunitIdBlockIDs:
-                                        _blockUnitController.text,
                                     vehiclepickupsendername:
                                         _senderNameController.text,
                                     vehicleSenderMobilenumber:
@@ -645,6 +635,11 @@ class _PickupVehicleAddressDetailsState
                                   borderRadius: BorderRadius.circular(10)),
                               child: TextFormField(
                                   controller: _blockUnitController,
+                                  inputFormatters: [
+                                    LengthLimitingTextInputFormatter(4),
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
+                                  keyboardType: TextInputType.phone,
                                   decoration: InputDecoration(
                                       contentPadding: const EdgeInsets.only(
                                           left: 10,
@@ -782,18 +777,20 @@ class _PickupVehicleAddressDetailsState
                                   if (_senderNameController.text.isNotEmpty &&
                                       _phoneNumberController.text.isNotEmpty) {
                                     homeController.updatevehiclePickupLocation(
-                                      searchController.text,
-                                      _markers.first.position.latitude
-                                          .toString(),
-                                      _markers.first.position.longitude
-                                          .toString(),
-                                      _senderNameController.text,
-                                      _phoneNumberController.text,
-                                      _blockUnitController.text,
-                                            _unitIdController.text,
-                                    );
+                                        searchController.text,
+                                        _markers.first.position.latitude
+                                            .toString(),
+                                        _markers.first.position.longitude
+                                            .toString(),
+                                        _senderNameController.text,
+                                        _phoneNumberController.text,
+                                        _blockUnitController.text,
+                                        _unitIdController.text,
+                                        vehiclepickupincode);
                                     Get.offAll(BookVehicleScreen(
-                                           vehiclepickupunitId: _unitIdController.text,
+                                      vehiclePickupPincode: vehiclepickupincode,
+                                      vehiclepickupunitId:
+                                          _unitIdController.text,
                                       vehiclepickupAdress:
                                           searchController.text,
                                       vehiclepickuplat: _markers
@@ -802,7 +799,7 @@ class _PickupVehicleAddressDetailsState
                                       vehiclepickuplong: _markers
                                           .first.position.longitude
                                           .toString(),
-                                      vehiclepickupunitIdBlockIDs:
+                                      vehiclepickupBlockIDs:
                                           _blockUnitController.text,
                                       vehiclepickupsendername:
                                           _senderNameController.text,

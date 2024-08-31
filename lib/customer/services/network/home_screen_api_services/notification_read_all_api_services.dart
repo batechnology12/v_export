@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:v_export/customer/services/utils/base_url_api.dart';
 
 class NotificationReadAllApiServices extends BaseApiServices {
+  
   Future notificationReadAllApi() async {
     dynamic responseJson;
     try {
@@ -21,7 +22,6 @@ class NotificationReadAllApiServices extends BaseApiServices {
               return status! <= 500;
             }),
       );
-
       responseJson = response;
     } on SocketException {
       print("no internet");

@@ -5,15 +5,21 @@ import 'package:get/get.dart';
 import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
 import 'package:v_export/constant/common_container.dart';
+import 'package:v_export/customer/controller/parcel_controller.dart';
 
 class DriverRating extends StatefulWidget {
-  const DriverRating({super.key});
+  String bookingID;
+  DriverRating({super.key, required this.bookingID});
 
   @override
   State<DriverRating> createState() => _DriverRatingState();
 }
 
 class _DriverRatingState extends State<DriverRating> {
+  ParcelController parcelController = Get.put(ParcelController());
+
+  TextEditingController revewController = TextEditingController();
+
   double _rating = 5.0;
 
   List<String> images = [
@@ -46,7 +52,7 @@ class _DriverRatingState extends State<DriverRating> {
         title: Text(
           'Driver Rate',
           style: primaryfont.copyWith(
-              fontSize: 23.sp,
+              fontSize: 19.sp,
               color: Colors.black,
               fontWeight: FontWeight.w600),
         ),
@@ -54,7 +60,7 @@ class _DriverRatingState extends State<DriverRating> {
           icon: Icon(
             Icons.arrow_back_ios_new_sharp,
             color: Colors.black,
-            size: 20.h,
+            size: 18.h,
           ),
           onPressed: () {
             Get.back();
@@ -76,20 +82,12 @@ class _DriverRatingState extends State<DriverRating> {
             Text(
               '2.4 Van',
               style: primaryfont.copyWith(
-                  fontSize: 22.sp,
+                  fontSize: 18.sp,
                   color: Colors.black,
                   fontWeight: FontWeight.w700),
             ),
             Text(
               'GBL3245N',
-              style: primaryfont.copyWith(
-                  fontSize: 20.sp,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600),
-            ),
-            ksizedbox20,
-            Text(
-              'How was your Booking with Lee Wong',
               style: primaryfont.copyWith(
                   fontSize: 18.sp,
                   color: Colors.black,
@@ -97,26 +95,36 @@ class _DriverRatingState extends State<DriverRating> {
             ),
             ksizedbox20,
             Text(
+              'How was your Booking with Lee Wong',
+              textAlign: TextAlign.center,
+              style: primaryfont.copyWith(
+                  fontSize: 17.sp,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w600),
+            ),
+            ksizedbox15,
+            Text(
               'Your overall raiting',
               style: primaryfont.copyWith(
                   fontSize: 16.sp,
                   color: Color(0xffA6A6A6),
                   fontWeight: FontWeight.w600),
             ),
+            ksizedbox10,
             _rating > 0 ? Image.asset(images[_rating.toInt() - 1]) : Text(""),
             ksizedbox10,
             _rating > 0
                 ? Text(
                     names[_rating.toInt() - 1],
                     style: secondoryfont.copyWith(
-                        fontSize: 18.sp,
+                        fontSize: 17.sp,
                         color: Colors.black,
                         fontWeight: FontWeight.w700),
                   )
                 : Text(
                     "Select a rating",
                     style: secondoryfont.copyWith(
-                        fontSize: 18.sp,
+                        fontSize: 16.sp,
                         color: Colors.black,
                         fontWeight: FontWeight.w700),
                   ),
@@ -141,7 +149,7 @@ class _DriverRatingState extends State<DriverRating> {
                 });
               },
             ),
-            ksizedbox10,
+            ksizedbox20,
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -161,11 +169,11 @@ class _DriverRatingState extends State<DriverRating> {
               width: size.width,
               decoration: BoxDecoration(
                   color: Color(0xffF8F8F8),
-                  borderRadius: BorderRadius.circular(14)),
+                  borderRadius: BorderRadius.circular(19)),
               child: TextFormField(
                 textAlign: TextAlign.start,
                 maxLines: 100,
-                //  controller: reasonController,
+                controller: revewController,
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.only(left: 10, top: 10),
                   hintText: 'Enter here ...',
@@ -179,7 +187,12 @@ class _DriverRatingState extends State<DriverRating> {
             ),
             ksizedbox20,
             GestureDetector(
-              onTap: () {},
+              onTap: () {
+                parcelController.rateDriverApi(
+                    parcelController.bookingIdDriver.toString(),
+                    _rating.toString(),
+                    revewController.text);
+              },
               child: CommonContainer(
                 name: "Submit",
               ),

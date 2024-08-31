@@ -15,7 +15,7 @@ class PasswordManager extends StatefulWidget {
 }
 
 class _PasswordManagerState extends State<PasswordManager> {
-  HomeScreenController homeScreenController = Get.find<HomeScreenController>();
+  HomeScreenController homeScreenController = Get.put(HomeScreenController());
   bool curentPassword = true;
   bool newPassword = true;
   bool confirmPassword = true;

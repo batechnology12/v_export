@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:v_export/customer/services/utils/base_url_api.dart';
 
 class UpdateProfileApiService extends BaseApiServices {
-  Future updateProfile({required String name, required String mail, required String phone}) async {
+  Future updateProfile({required String name, required String mail, required String phone, required String address}) async {
     dynamic responseJson;
     try {
       var dio = Dio();
@@ -36,7 +36,8 @@ final prefs = await SharedPreferences.getInstance();
           "ifs_code": "EXAMP1234",
           "emergency_contact_name": "Jane Doe",
           "emergency_contact_number": "0987654321",
-          "relationship": "Spouse"
+          "relationship": "Spouse",
+          "address" : address,
         },
       );
       responseJson = response;

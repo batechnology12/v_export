@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:v_export/constant/app_colors.dart';
+import 'package:v_export/customer/controller/parcel_controller.dart';
 import 'package:v_export/customer/services/network/easebuzz_api_service.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/booking_sucessfully_screen.dart';
 
@@ -10,8 +11,10 @@ class EasebuszzController extends GetxController {
 
   static MethodChannel _channel = MethodChannel('easebuzz');
   EaseBuzzTokenApiService easeBuzzApi = EaseBuzzTokenApiService();
+  ParcelController parcelController = Get.put(ParcelController());
 
-  tablepayUseingEaseBuzzSubs() async {
+  tablepayUseingEaseBuzzSubs(
+      {required String bookingid, required String payment_mode1}) async {
     var response = await easeBuzzApi.getPaymentToken(
       amount: '1.00',
       email: 'venkat@gmail.com',
@@ -35,8 +38,8 @@ class EasebuszzController extends GetxController {
     isLoading(false);
     if (payment_response["result"] == "payment_successfull") {
       String transactionId = "";
-
-       Get.to(BookingSucessfullyScreen());
+      parcelController.updateBookingSatusApi(bookingid, payment_mode1);
+      Get.to(const BookingSucessfullyScreen());
     } else {
       // Get.to(TabelPaymentFailScreen());
       Get.snackbar(

@@ -37,8 +37,7 @@ class _DriverContainerWidgetState extends State<DriverContainerWidget> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(top: 5, left: 5, right: 5),
-                    child: 
-                    Container(
+                    child: Container(
                       width: size.width,
                       decoration: BoxDecoration(color: AppColors.kwhite),
                       child: Column(
@@ -170,7 +169,7 @@ class _DriverContainerWidgetState extends State<DriverContainerWidget> {
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  Get.to(DriverAboutDetails());
+                                  //  Get.to(DriverAboutDetails());
                                 },
                                 child: Text(
                                   'View Details',

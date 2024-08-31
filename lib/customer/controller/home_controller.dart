@@ -6,8 +6,6 @@ import 'package:geocode/geocode.dart';
 // import 'package:location/location.dart' as loc;
 
 class HomeController extends GetxController {
-//// pickup location
-
   var pickupLocation = ''.obs;
   var pickuplatitude = ''.obs;
   var pickuplongitude = ''.obs;
@@ -15,15 +13,18 @@ class HomeController extends GetxController {
   var pickupSenderNumber = ''.obs;
   var pickupblockUnitId = ''.obs;
   var pickupunitsId = ''.obs;
+  var pickupPostalCode = ''.obs;
+
   updatepickupLocation(
-      String pickuplocation,
-      String pickuplat,
-      String pickuplong,
-      String senderName,
-      String senderNumber,
-      String pickupunitId,
-      String pickupunitids
-      ) {
+    String pickuplocation,
+    String pickuplat,
+    String pickuplong,
+    String senderName,
+    String senderNumber,
+    String pickupunitId,
+    String pickupunitids,
+    String pickUPPostalCode,
+  ) {
     pickupLocation.value = pickuplocation;
     pickuplatitude.value = pickuplat;
     pickuplongitude.value = pickuplong;
@@ -31,8 +32,8 @@ class HomeController extends GetxController {
     pickupSenderNumber.value = senderNumber;
     pickupblockUnitId.value = pickupunitId;
     pickupunitsId.value = pickupunitids;
+    pickupPostalCode.value = pickUPPostalCode;
   }
-
 
   //// dropping location
   var droppingLocations = <String>[].obs;
@@ -47,20 +48,22 @@ class HomeController extends GetxController {
   var receiverNumberList = <String>[].obs;
   var receiverBlockIdUnitIDs = <String>[].obs;
   var receiverUnitID = <String>[].obs;
+  var dropPostalCode = <String>[].obs;
   var secondContainers = <int>[0].obs; // Initialize with one item
 
   void updateDroppingLocation(
-      String location,
-      String lat,
-      String long,
-      String arpincode,
-      String bookingpincode,
-      int index,
-      String reciverName,
-      String reciverNumber,
-      String reciverBlockIdUnitID,
-      String reciverUnitId,
-      ) {
+    String location,
+    String lat,
+    String long,
+    String arpincode,
+    String bookingpincode,
+    int index,
+    String reciverName,
+    String reciverNumber,
+    String reciverBlockIdUnitID,
+    String reciverUnitId,
+    String droppingPostalCode,
+  ) {
     if (index < droppingLocations.length) {
       droppingLocations[index] = location;
       droppingLats[index] = lat;
@@ -71,17 +74,38 @@ class HomeController extends GetxController {
       receiverNumberList[index] = reciverNumber;
       receiverBlockIdUnitIDs[index] = reciverBlockIdUnitID;
       receiverUnitID[index] = reciverUnitId;
+      dropPostalCode[index] = droppingPostalCode;
     } else {
       droppingLocations.add(location);
+
       droppingLats.add(lat);
+
       dropLongs.add(long);
+
       pincodes.add(arpincode);
+
       doornames.add(bookingpincode);
+
       receiverNameList.add(reciverName);
+
       receiverNumberList.add(reciverNumber);
+
       receiverBlockIdUnitIDs.add(reciverBlockIdUnitID);
+
       receiverUnitID.add(reciverUnitId);
+
+      dropPostalCode.add(droppingPostalCode);
     }
+  }
+
+  void parceldroplocationclear() {
+    droppingLocations.clear();
+    // parcelLengthControllers.clear();
+    // parcelWidthControllers.clear();
+    // parcelHeightControllers.clear();
+    // parcelKgControllers.clear();
+    // quantityControllers.clear();
+    update();
   }
 
 ////////////////////////////////////
@@ -91,26 +115,29 @@ class HomeController extends GetxController {
   var pickupVehiclelongitude = ''.obs;
   var pickupVehicleSenderName = ''.obs;
   var pickupVehicleSenderNumber = ''.obs;
-  var pickupVehicleblockUnitId = ''.obs;
+  var pickupVehicleblockId = ''.obs;
   var pickupVehicleunitId = "".obs;
+  var pickupVehiclePincode = "".obs;
 
- Future<void> updatevehiclePickupLocation(
-      String pickuplocationvehicle,
-      String pickuplatvehicle,
-      String pickuplongvehicle,
-      String senderNamevehicle,
-      String senderNumbervehicle,
-      String pickupunitIdvehicle,
-      String pickupunitIDsvehicle,
-      ) async{
-        await Future.delayed(Duration(milliseconds: 100)); 
+  Future<void> updatevehiclePickupLocation(
+    String pickuplocationvehicle,
+    String pickuplatvehicle,
+    String pickuplongvehicle,
+    String senderNamevehicle,
+    String senderNumbervehicle,
+    String pickupBlockIDvehicle,
+    String pickupunitIDsvehicle,
+    String pickUPVehiclepincode,
+  ) async {
+    await Future.delayed(Duration(milliseconds: 100));
     pickupVehicleLocation.value = pickuplocationvehicle;
     pickupVehiclelatitude.value = pickuplatvehicle;
     pickupVehiclelongitude.value = pickuplongvehicle;
     pickupVehicleSenderName.value = senderNamevehicle;
     pickupVehicleSenderNumber.value = senderNumbervehicle;
-    pickupVehicleblockUnitId.value = pickupunitIdvehicle;
+    pickupVehicleblockId.value = pickupBlockIDvehicle;
     pickupVehicleunitId.value = pickupunitIDsvehicle;
+    pickupVehiclePincode.value = pickUPVehiclepincode;
   }
 
   var vehicledroppingLocations = <String>[].obs;
@@ -125,19 +152,21 @@ class HomeController extends GetxController {
   var vehiclereceiverNumberList = <String>[].obs;
   var vehiclereceiverBlockIdUnitIDs = <String>[].obs;
   var vehiclereceiverUnitIDs = <String>[].obs;
+  var vehicledroppincode = <String>[].obs;
 
   void vehicleDroppingLocation(
-      String locationVehicle,
-      String latVehicle,
-      String longVehicle,
-      String arpincodeVehicle,
-      String bookingpincodeVehicle,
-      int indexVehicle,
-      String reciverNameVehicle,
-      String reciverNumberVehicle,
-      String reciverBlockIdUnitIDVehicle,
-      String reciverUnitIDVehicle
-      ) {
+    String locationVehicle,
+    String latVehicle,
+    String longVehicle,
+    String arpincodeVehicle,
+    String bookingpincodeVehicle,
+    int indexVehicle,
+    String reciverNameVehicle,
+    String reciverNumberVehicle,
+    String reciverBlockIdUnitIDVehicle,
+    String reciverUnitIDVehicle,
+    String vehicledroppingpincode,
+  ) {
     if (indexVehicle < vehicledroppingLocations.length) {
       vehicledroppingLocations[indexVehicle] = locationVehicle;
       vehicledroppingLats[indexVehicle] = latVehicle;
@@ -148,6 +177,7 @@ class HomeController extends GetxController {
       vehiclereceiverNumberList[indexVehicle] = reciverNumberVehicle;
       vehiclereceiverBlockIdUnitIDs[indexVehicle] = reciverBlockIdUnitIDVehicle;
       vehiclereceiverUnitIDs[indexVehicle] = reciverUnitIDVehicle;
+      vehicledroppincode[indexVehicle] = vehicledroppingpincode;
     } else {
       vehicledroppingLocations.add(locationVehicle);
       vehicledroppingLats.add(latVehicle);
@@ -158,17 +188,26 @@ class HomeController extends GetxController {
       vehiclereceiverNumberList.add(reciverNumberVehicle);
       vehiclereceiverBlockIdUnitIDs.add(reciverBlockIdUnitIDVehicle);
       vehiclereceiverUnitIDs.add(reciverUnitIDVehicle);
+      vehicledroppincode.add(vehicledroppingpincode);
     }
   }
 
+  void clearDropLocations() {
+    vehicledroppingLocations.clear();
+    update();
+  }
   ////////////////////////
 
+  bool isCheckedparcelLocation = false;
   var isRoundTripVisible = true.obs;
 
   void addEntry() {
     entries.add(entries.length);
     if (entries.length > 1) {
       isRoundTripVisible.value = false;
+      isCheckedparcelLocation = true;
+    } else {
+      isCheckedparcelLocation = false;
     }
   }
 
@@ -225,6 +264,7 @@ class HomeController extends GetxController {
   }
 
   // Lists of TextEditingController
+
   var parcelLengthControllers = <TextEditingController>[].obs;
   var parcelWidthControllers = <TextEditingController>[].obs;
   var parcelHeightControllers = <TextEditingController>[].obs;
@@ -321,15 +361,22 @@ class HomeController extends GetxController {
   var vehicalEntries = <int>[0].obs;
   var vehicalCheck = false.obs;
 
- RxString roundChecked = "0".obs;
+  RxString roundChecked = "0".obs;
 
   roundCheck(bool value) {
     vehicalCheck.value = value;
     roundChecked.value = value ? "1" : "0";
   }
 
+  bool isCheckedVehicleLocation = false;
+
   addVehicalEntry() {
     vehicalEntries.add(vehicalEntries.length);
+    if (vehicalEntries.length > 1) {
+      isCheckedVehicleLocation = true;
+    } else {
+      isCheckedVehicleLocation = false;
+    }
   }
 
   removeVehicalEntry(index) {

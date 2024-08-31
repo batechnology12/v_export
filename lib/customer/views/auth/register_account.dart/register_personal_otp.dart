@@ -21,7 +21,7 @@ class RegisterPersonalOtpScreen extends StatefulWidget {
 
 class _VerifiedPasswordScreenState extends State<RegisterPersonalOtpScreen> {
   var mobileController = TextEditingController();
-  final authController = Get.find<AuthController>();
+  final authController = Get.put(AuthController());
   TextEditingController otpController = TextEditingController();
 
   String currentText = "";

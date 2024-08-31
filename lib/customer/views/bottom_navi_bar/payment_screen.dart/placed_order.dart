@@ -20,7 +20,7 @@ class _PlacedOrderState extends State<PlacedOrder> {
         Duration(
           seconds: 3,
         ), () {
-      Get.offAll(BottomNavigationScreen());
+      Get.offAll(BottomNavigationScreen(indexes: 0,));
     });
   }
 

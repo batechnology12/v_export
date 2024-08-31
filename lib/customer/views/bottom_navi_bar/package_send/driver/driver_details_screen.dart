@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:date_format/date_format.dart';
+import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dash/flutter_dash.dart';
@@ -14,32 +15,36 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:v_export/constant/common_container.dart';
 import 'package:v_export/customer/controller/parcel_controller.dart';
 import 'package:v_export/customer/model/get_accept_booking_details_model.dart';
+import 'package:v_export/customer/model/onGoing_order_model.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/bottomn_navi_bar.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/arrived_destination.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/cancel_booking.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/driver_about_details.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/driver_message.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:whatsapp_unilink/whatsapp_unilink.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 
 class DriverDetailsScreen extends StatefulWidget {
-  
-  GetAcceptBookingdata? getAcceptBookingdata;
+  OngoingOrderData getAcceptBookingdata;
+  final LatLng initialPosition;
 
-  DriverDetailsScreen({
-    super.key,
-    required this.getAcceptBookingdata,
-  });
+  DriverDetailsScreen(
+      {super.key,
+      required this.getAcceptBookingdata,
+      required this.initialPosition});
   @override
   State<DriverDetailsScreen> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<DriverDetailsScreen> {
-  final ParcelController parcelController = Get.find<ParcelController>();
-  
+  final ParcelController parcelController = Get.put(ParcelController());
+
   late GoogleMapController _controller;
   final Set<Marker> _markers = {};
-  late LocationData _currentPosition;
-  
+
+  late Marker _marker;
   Location location = Location();
 
   static const CameraPosition _initialPosition = CameraPosition(
@@ -51,67 +56,74 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
   void initState() {
     super.initState();
     _initLocationAndRedirect();
+    _marker = Marker(
+      markerId: MarkerId('initialPosition'),
+      position: widget.initialPosition,
+      infoWindow: InfoWindow(title: 'Selected Location'),
+    );
   }
 
   void _initLocationAndRedirect() async {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _getLocation();
       //  popUp1();
       // parcelController
       //     .getAcceptBooking(widget.getAcceptBookingdata!.id.toString());
     });
   }
 
-  // redirectToNextScreen() async {
-  //   await Future.delayed(Duration(seconds: 2));
-  //   Get.to(ArrivedDestination());
-  // }
+  void launchCaller(String phoneNumber) async {
+    // Ensure the phone number includes the +65 country code
+    final formattedNumber =
+        phoneNumber.startsWith('+65') ? phoneNumber : '+65$phoneNumber';
 
-  void _getLocation() async {
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
+    final url = 'tel:$formattedNumber';
 
-    _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
-      if (!_serviceEnabled) {
-        return;
-      }
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
     }
-
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
-        return;
-      }
-    }
-
-    _currentPosition = await location.getLocation();
-    location.onLocationChanged.listen((LocationData currentLocation) {
-      _currentPosition = currentLocation;
-      _controller.animateCamera(CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target:
-              LatLng(_currentPosition.latitude!, _currentPosition.longitude!),
-          zoom: 14.0,
-        ),
-      ));
-      setState(() {
-        _markers.add(Marker(
-          markerId: MarkerId('currentLocation'),
-          position:
-              LatLng(_currentPosition.latitude!, _currentPosition.longitude!),
-          infoWindow: InfoWindow(title: 'Your Location'),
-        ));
-      });
-    });
   }
 
-  String formatTime(String time) {
-    DateTime parsedTime = DateFormat("h ma").parse(time);
-    String formattedTime = DateFormat("h ma").format(parsedTime);
-    return formattedTime;
+  void launchWhatsApp(String phoneNumber, String message) async {
+    final formattedNumber =
+        phoneNumber.startsWith('+65') ? phoneNumber : '+65$phoneNumber';
+    final link = WhatsAppUnilink(
+      phoneNumber: formattedNumber,
+      text: message,
+    );
+
+    await launch(link.asUri().toString());
+  }
+
+  _callNumber({required String phonenumber}) async {
+    await FlutterPhoneDirectCaller.callNumber(phonenumber);
+  }
+
+  String formatDateString(String dateString) {
+    // Parse the input date string
+    DateTime dateTime = DateTime.parse(dateString);
+
+    // Format the date into the desired format
+    String formattedDate = DateFormat('dd-MM-yyyy').format(dateTime);
+
+    return formattedDate;
+  }
+
+  // String formatTime(String time) {
+  //   DateTime parsedTime = DateFormat("h ma").parse(time);
+  //   String formattedTime = DateFormat("h ma").format(parsedTime);
+  //   return formattedTime;
+  // }
+
+  String formatTime(String dateTimeString) {
+    try {
+      DateTime dateTime = DateTime.parse(dateTimeString);
+
+      return DateFormat('hh:mm a').format(dateTime);
+    } catch (e) {
+      return '';
+    }
   }
 
   @override
@@ -119,7 +131,7 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
     final size = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () async {
-        Get.offAll(BottomNavigationScreen());
+        Get.offAll(BottomNavigationScreen(indexes: 0));
         return false;
       },
       child: Scaffold(
@@ -130,7 +142,7 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
           centerTitle: true,
           leading: GestureDetector(
             onTap: () {
-              Get.to(BottomNavigationScreen());
+              Get.to(BottomNavigationScreen(indexes: 0,));
             },
             child: const Icon(
               Icons.arrow_back_ios_new_sharp,
@@ -178,8 +190,11 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
                 height: size.height,
                 width: size.width,
                 child: GoogleMap(
-                  initialCameraPosition: _initialPosition,
-                  markers: _markers,
+                  initialCameraPosition: CameraPosition(
+                    target: widget.initialPosition,
+                    zoom: 14,
+                  ),
+                  markers: {_marker},
                   myLocationEnabled: true,
                   onMapCreated: (GoogleMapController controller) {
                     _controller = controller;
@@ -220,86 +235,104 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
                           physics: AlwaysScrollableScrollPhysics(),
                           controller: scrollController,
                           children: [
-                            GestureDetector(
-                              onTap: () {
-                                Get.to(DriverAboutDetails());
-                              },
-                              child: Container(
-                                padding: EdgeInsets.all(7),
-                                width: size.width,
-                                decoration: BoxDecoration(
-                                    color: AppColors.kwhite,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Image.asset(
-                                                'assets/images/driverprofile.png'),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 10, top: 5),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    widget.getAcceptBookingdata!
-                                                        .driver.firstName,
-                                                    style: primaryfont.copyWith(
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        color:
-                                                            Color(0xff000000),
-                                                        fontSize: 17.sp),
-                                                  ),
-                                                  Text(
-                                                    'Vechcle Driver',
-                                                    style: primaryfont.copyWith(
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        fontSize: 13.sp,
-                                                        color:
-                                                            Color(0xff455A64)),
-                                                  ),
-                                                  Row(
-                                                    children: [
-                                                      Text(
-                                                        'Phone Number:',
+                            Container(
+                              padding: EdgeInsets.all(7),
+                              width: size.width,
+                              decoration: BoxDecoration(
+                                  color: AppColors.kwhite,
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Image.asset(
+                                              'assets/images/driverprofile.png'),
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 10, top: 5),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  //  "",
+                                                  widget.getAcceptBookingdata
+                                                      .driver!.fullName,
+                                                  style: primaryfont.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color: Color(0xff000000),
+                                                      fontSize: 14.sp),
+                                                ),
+                                                Text(
+                                                  'Vechcle Driver',
+                                                  style: primaryfont.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontSize: 13.sp,
+                                                      color: Color(0xff455A64)),
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      'Phone Number:',
+                                                      style:
+                                                          primaryfont.copyWith(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                              fontSize: 13.sp,
+                                                              color: Color(
+                                                                  0xff455A64)),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 5.sp,
+                                                    ),
+                                                    InkWell(
+                                                      onTap: () {
+                                                        _callNumber(
+                                                            phonenumber: widget
+                                                                .getAcceptBookingdata
+                                                                .driver!
+                                                                .phone);
+                                                      },
+                                                      child: Text(
+                                                        // "",
+                                                        ' ${widget.getAcceptBookingdata.driver!.phone}',
                                                         style: primaryfont
                                                             .copyWith(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500,
-                                                                fontSize: 13.sp,
-                                                                color: Color(
-                                                                    0xff455A64)),
+                                                          color:
+                                                              AppColors.kblue,
+                                                          fontSize: 13.sp,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          decoration:
+                                                              TextDecoration
+                                                                  .underline,
+                                                        ),
                                                       ),
-                                                      Text(
-                                                        ' ${widget.getAcceptBookingdata!.driver.phone}',
-                                                        style: primaryfont
-                                                            .copyWith(
-                                                                color: AppColors
-                                                                    .kblue,
-                                                                fontSize: 13.sp,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500),
-                                                      )
-                                                    ],
-                                                  )
-                                                ],
-                                              ),
+                                                    )
+                                                  ],
+                                                )
+                                              ],
                                             ),
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Container(
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          GestureDetector(
+                                            onTap: () {
+                                              launchWhatsApp(
+                                                  widget.getAcceptBookingdata
+                                                      .driver!.phone,
+                                                  "Hii captan");
+                                            },
+                                            child: Container(
                                               height: 40.h,
                                               width: 40.w,
                                               child: SvgPicture.asset(
@@ -307,141 +340,145 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
                                                 fit: BoxFit.contain,
                                               ),
                                             ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 10),
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  Get.to(DriverMessage());
-                                                },
-                                                child: Container(
-                                                  height: 40.h,
-                                                  width: 40.w,
-                                                  child: SvgPicture.asset(
-                                                    'assets/icons/Group 50.svg',
-                                                    fit: BoxFit.contain,
-                                                  ),
+                                          ),
+                                          Padding(
+                                            padding:
+                                                const EdgeInsets.only(left: 10),
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                Get.to(DriverMessage());
+                                              },
+                                              child: Container(
+                                                height: 40.h,
+                                                width: 40.w,
+                                                child: SvgPicture.asset(
+                                                  'assets/icons/Group 50.svg',
+                                                  fit: BoxFit.contain,
                                                 ),
                                               ),
-                                            )
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 4),
-                                      child: Divider(),
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Rating Star',
-                                              style: primaryfont.copyWith(
-                                                  fontSize: 14.sp,
-                                                  color: Color(0xff455A64),
-                                                  fontWeight: FontWeight.w500),
                                             ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.only(top: 2),
-                                              child: Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.star,
-                                                    color: Color(0xffFFAB18),
-                                                  ),
-                                                  Text(
-                                                    '3.5',
-                                                    style: primaryfont.copyWith(
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        color:
-                                                            Color(0xff000000),
-                                                        fontSize: 16.sp),
-                                                  )
-                                                ],
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Vechicle No',
-                                              style: primaryfont.copyWith(
-                                                  fontSize: 14.sp,
-                                                  color: Color(0xff455A64),
-                                                  fontWeight: FontWeight.w500),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.only(top: 2),
-                                              child: Text(
-                                                'GBL3245N',
-                                                style: primaryfont.copyWith(
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Color(0xff000000),
-                                                    fontSize: 16.sp),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Vechcle type',
-                                              style: primaryfont.copyWith(
-                                                  fontSize: 14.sp,
-                                                  color: Color(0xff455A64),
-                                                  fontWeight: FontWeight.w500),
-                                            ),
-                                            Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 2),
-                                                child: Text(
-                                                  '2.4 Van',
+                                          )
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 4),
+                                    child: Divider(),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Rating Star',
+                                            style: primaryfont.copyWith(
+                                                fontSize: 13.sp,
+                                                color: Color(0xff455A64),
+                                                fontWeight: FontWeight.w500),
+                                          ),
+                                          Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: 2),
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.star,
+                                                  color: Color(0xffFFAB18),
+                                                ),
+                                                Text(
+                                                  '3.5',
                                                   style: primaryfont.copyWith(
                                                       fontWeight:
                                                           FontWeight.w600,
                                                       color: Color(0xff000000),
-                                                      fontSize: 15.sp),
-                                                ))
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                    ksizedbox20,
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        GestureDetector(
-                                          onTap: () {
-                                            //  Get.to(DriverAboutDetails());
-                                          },
-                                          child: Text(
-                                            'View Details',
+                                                      fontSize: 14.sp),
+                                                )
+                                              ],
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Vechicle No',
                                             style: primaryfont.copyWith(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 14.sp,
-                                                color: AppColors.kblue),
+                                                fontSize: 13.sp,
+                                                color: Color(0xff455A64),
+                                                fontWeight: FontWeight.w500),
                                           ),
-                                        )
-                                      ],
-                                    ),
-                                    ksizedbox10
-                                  ],
-                                ),
+                                          Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: 2),
+                                            child: Text(
+                                              widget
+                                                  .getAcceptBookingdata
+                                                  .vehicleDetails!
+                                                  .vehicleNumber,
+                                              style: primaryfont.copyWith(
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Color(0xff000000),
+                                                  fontSize: 14.sp),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Vechcle type',
+                                            style: primaryfont.copyWith(
+                                                fontSize: 13.sp,
+                                                color: Color(0xff455A64),
+                                                fontWeight: FontWeight.w500),
+                                          ),
+                                          Padding(
+                                              padding:
+                                                  const EdgeInsets.only(top: 2),
+                                              child: Text(
+                                                widget.getAcceptBookingdata
+                                                    .vehicleType,
+                                                style: primaryfont.copyWith(
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Color(0xff000000),
+                                                    fontSize: 14.sp),
+                                              ))
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                  ksizedbox20,
+                                  // Row(
+                                  //   mainAxisAlignment: MainAxisAlignment.center,
+                                  //   children: [
+                                  //     ElevatedButton(
+                                  //       onPressed: () {
+                                  //         // Get.to(DriverAboutDetails(
+                                  //         //   getAcceptBookingdata:
+                                  //         //       widget.getAcceptBookingdata,
+                                  //         // ));
+                                  //       },
+                                  //       child: Text(
+                                  //         'View Details',
+                                  //         style: primaryfont.copyWith(
+                                  //             fontWeight: FontWeight.w600,
+                                  //             fontSize: 14.sp,
+                                  //             color: AppColors.kblue),
+                                  //       ),
+                                  //     )
+                                  //   ],
+                                  // ),
+                                  ksizedbox10
+                                ],
                               ),
                             ),
                             ksizedbox10,
@@ -468,142 +505,230 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
                                           Row(
                                             children: [
                                               Text(
-                                                'Booking ID : ${widget.getAcceptBookingdata!.bookingId}',
+                                                'Booking ID : ${widget.getAcceptBookingdata.bookingId}',
                                                 style: primaryfont.copyWith(
                                                     fontWeight: FontWeight.w700,
-                                                    fontSize: 17.sp,
+                                                    fontSize: 15.sp,
                                                     color: Color(0xff1E1E1E)),
                                               ),
                                             ],
                                           ),
                                           const Divider(),
+                                          Ksizedboxw10,
                                           Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
                                             children: [
-                                              const Column(
+                                              Row(
                                                 children: [
-                                                  Icon(
-                                                    Icons.location_on,
-                                                    color: Color(0xff038484),
-                                                  ),
-                                                  Dash(
-                                                      direction: Axis.vertical,
-                                                      length: 65,
-                                                      dashLength: 5,
-                                                      dashColor:
-                                                          AppColors.kgrey),
-                                                  Icon(
-                                                    Icons.location_on,
-                                                    color: Color(0xffF74354),
-                                                  ),
-                                                ],
-                                              ),
-                                              Ksizedboxw10,
-                                              Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    'Pickup Address',
-                                                    style: primaryfont.copyWith(
-                                                        fontSize: 15.sp,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        color: const Color(
-                                                            0xff455A64)),
-                                                  ),
-                                                  Container(
-                                                    width: size.width * 0.60,
-                                                    child: Text(
-                                                      widget
-                                                          .getAcceptBookingdata!
-                                                          .pickupAddreess,
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                              color: Color(
-                                                                  0xff1E1E1E),
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                              fontSize: 15.sp),
-                                                    ),
+                                                  const Column(
+                                                    children: [
+                                                      Icon(
+                                                        Icons.location_on,
+                                                        color:
+                                                            Color(0xff038484),
+                                                      ),
+                                                      Dash(
+                                                          direction:
+                                                              Axis.vertical,
+                                                          length: 30,
+                                                          dashLength: 5,
+                                                          dashColor:
+                                                              AppColors.kgrey),
+                                                    ],
                                                   ),
                                                   SizedBox(
-                                                    height: 40.h,
+                                                    width: 5.w,
                                                   ),
+                                                  Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        'Pickup Address',
+                                                        style: primaryfont
+                                                            .copyWith(
+                                                                fontSize: 14.sp,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                                color: Color(
+                                                                    0xff455A64)),
+                                                      ),
+                                                      Container(
+                                                        width: 225.h,
+                                                        child: ExpandableText(
+                                                          widget
+                                                              .getAcceptBookingdata
+                                                              .pickupAddreess,
+                                                          expandText:
+                                                              'show more',
+                                                          collapseText:
+                                                              'show less',
+                                                          maxLines: 2,
+                                                          linkColor:
+                                                              Colors.blue,
+                                                          style: primaryfont.copyWith(
+                                                              color: const Color(
+                                                                  0xff1E1E1E),
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              fontSize: 12.sp),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  )
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
                                                   Text(
-                                                    'Delivery details',
+                                                    formatTime(widget
+                                                        .getAcceptBookingdata
+                                                        .acceptedAt),
+                                                    // widget.getAcceptBookingdata
+                                                    //             .bookingType ==
+                                                    //         "parcel"
+                                                    //     ? "${widget.getAcceptBookingdata.bookingProducts.last.pickuptimeFrom}"
+                                                    //     //  \nto \n${order.pickuptimeTo}"
+                                                    //     : widget
+                                                    //         .getAcceptBookingdata
+                                                    //         .bookingTimeFromVehicle,
+                                                    textAlign: TextAlign.center,
                                                     style: primaryfont.copyWith(
-                                                        fontSize: 15.sp,
+                                                        fontSize: 12.sp,
                                                         fontWeight:
                                                             FontWeight.w600,
                                                         color: const Color(
                                                             0xff455A64)),
                                                   ),
-                                                  Container(
-                                                    width: size.width * 0.60,
-                                                    child: Text(
-                                                      widget
-                                                          .getAcceptBookingdata!
-                                                          .bookingDeliveryAddresses
-                                                          .first
-                                                          .address,
-                                                      style:
-                                                          primaryfont.copyWith(
+                                                ],
+                                              )
+                                            ],
+                                          ),
+                                          ListView.builder(
+                                              shrinkWrap: true,
+                                              physics:
+                                                  NeverScrollableScrollPhysics(),
+                                              itemCount: widget
+                                                  .getAcceptBookingdata
+                                                  .bookingDeliveryAddresses
+                                                  .length,
+                                              itemBuilder: ((context, index) {
+                                                var bookingDeliveryAddress = widget
+                                                        .getAcceptBookingdata
+                                                        .bookingDeliveryAddresses[
+                                                    index];
+                                                var bookingProduct = widget
+                                                    .getAcceptBookingdata
+                                                    .bookingProducts
+                                                    .last;
+                                                return Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        Column(
+                                                          children: [
+                                                            const Icon(
+                                                              Icons.location_on,
                                                               color: Color(
-                                                                  0xff1E1E1E),
+                                                                  0xffF74354),
+                                                            ),
+                                                            if (index !=
+                                                                widget
+                                                                        .getAcceptBookingdata
+                                                                        .bookingDeliveryAddresses
+                                                                        .length -
+                                                                    1)
+                                                              const Dash(
+                                                                  direction: Axis
+                                                                      .vertical,
+                                                                  length: 35,
+                                                                  dashLength: 5,
+                                                                  dashColor:
+                                                                      AppColors
+                                                                          .kgrey)
+                                                            else
+                                                              SizedBox(
+                                                                  height: 20.h),
+                                                          ],
+                                                        ),
+                                                        SizedBox(
+                                                          width: 5.w,
+                                                        ),
+                                                        Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Text(
+                                                              'Delivery Address',
+                                                              style: primaryfont.copyWith(
+                                                                  fontSize:
+                                                                      14.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  color: Color(
+                                                                      0xff455A64)),
+                                                            ),
+                                                            Container(
+                                                              width: 225.h,
+                                                              padding: EdgeInsets
+                                                                  .only(
+                                                                      bottom:
+                                                                          0),
+                                                              child:
+                                                                  ExpandableText(
+                                                                bookingDeliveryAddress
+                                                                    .address,
+                                                                expandText:
+                                                                    'show more',
+                                                                collapseText:
+                                                                    'show less',
+                                                                maxLines: 2,
+                                                                linkColor:
+                                                                    Colors.blue,
+                                                                style: primaryfont.copyWith(
+                                                                    color: const Color(
+                                                                        0xff1E1E1E),
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600,
+                                                                    fontSize:
+                                                                        12.sp),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        )
+                                                      ],
+                                                    ),
+                                                    Row(
+                                                      children: [
+                                                        Text(
+                                                          "",
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                          style: primaryfont.copyWith(
+                                                              fontSize: 12.sp,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .w600,
-                                                              fontSize: 15.sp),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              // Column(
-                                              //   children: [
-                                              //     Padding(
-                                              //       padding:
-                                              //           const EdgeInsets.only(
-                                              //               bottom: 30),
-                                              //       child: Text(
-                                              //         "jwj",
-                                              //         //   '${formatTime(widget.getAcceptBookingdata!.bookingProducts.first.pickuptimeFrom)} to ${formatTime(widget.getAcceptBookingdata!.bookingProducts.first.pickuptimeTo)}',
-                                              //         style:
-                                              //             primaryfont.copyWith(
-                                              //                 fontSize: 12.sp,
-                                              //                 fontWeight:
-                                              //                     FontWeight
-                                              //                         .w600,
-                                              //                 color: const Color(
-                                              //                     0xff455A64)),
-                                              //       ),
-                                              //     ),
-                                              //     SizedBox(
-                                              //       height: 40.h,
-                                              //     ),
-                                              //     Padding(
-                                              //       padding:
-                                              //           const EdgeInsets.only(
-                                              //               bottom: 10),
-                                              //       child: Container(
-                                              //         width: 80,
-                                              //         child: Text(
-                                              //           //  "usjhjs",
-                                              //           "${widget.getAcceptBookingdata!.bookingProducts.first.deliverytimeFrom} to ${widget.getAcceptBookingdata!.bookingProducts.first.deliverytimeTo}",
-                                              //           //   '${formatTime(widget.getAcceptBookingdata!.bookingProducts.first.deliverytimeFrom)} to ${formatTime(widget.getAcceptBookingdata!.bookingProducts.first.deliverytimeTo)}',
-                                              //           style: primaryfont.copyWith(
-                                              //               fontSize: 12.sp,
-                                              //               fontWeight:
-                                              //                   FontWeight.w600,
-                                              //               color: const Color(
-                                              //                   0xff455A64)),
-                                              //         ),
-                                              //       ),
-                                              //     ),
-                                              //   ],
-                                              // )
-                                            ],
-                                          ),
+                                                              color: const Color(
+                                                                  0xff455A64)),
+                                                        ),
+                                                      ],
+                                                    )
+                                                  ],
+                                                );
+                                              })),
                                         ],
                                       ),
                                       ksizedbox10,
@@ -614,8 +739,8 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
                                             MainAxisAlignment.spaceEvenly,
                                         children: [
                                           Container(
-                                            height: 75.h,
-                                            width: 140.w,
+                                            height: 70.h,
+                                            width: 130.w,
                                             decoration: BoxDecoration(
                                                 color: Color(0xffF5F5F5),
                                                 borderRadius:
@@ -630,35 +755,27 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
                                                       fontWeight:
                                                           FontWeight.w500,
                                                       color: Color(0xff455A64),
-                                                      fontSize: 14.sp),
+                                                      fontSize: 12.sp),
                                                 ),
                                                 const SizedBox(
                                                   height: 2,
                                                 ),
                                                 Text(
-                                                  //  "sv",
-                                                  // widget.getAcceptBookingdata!
-                                                  //     .bookingDate
-                                                  //     .toString(),
-                                                  '${formatDate(DateTime.parse(widget.getAcceptBookingdata!.bookingDate.toString()), [
-                                                        dd,
-                                                        '-',
-                                                        mm,
-                                                        '-',
-                                                        yyyy
-                                                      ])}',
+                                                  formatDateString(widget
+                                                      .getAcceptBookingdata
+                                                      .bookingDate),
                                                   style: primaryfont.copyWith(
                                                       fontWeight:
                                                           FontWeight.w600,
-                                                      fontSize: 16.sp,
+                                                      fontSize: 14.sp,
                                                       color: Colors.black),
                                                 )
                                               ],
                                             ),
                                           ),
                                           Container(
-                                            height: 75.h,
-                                            width: 140.w,
+                                            height: 70.h,
+                                            width: 130.w,
                                             decoration: BoxDecoration(
                                                 color: Color(0xffF5F5F5),
                                                 borderRadius:
@@ -673,30 +790,21 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
                                                       fontWeight:
                                                           FontWeight.w500,
                                                       color: Color(0xff455A64),
-                                                      fontSize: 14.sp),
+                                                      fontSize: 12.sp),
                                                 ),
                                                 const SizedBox(
                                                   height: 2,
                                                 ),
                                                 Text(
                                                   widget
-                                                      .getAcceptBookingdata!
+                                                      .getAcceptBookingdata
                                                       .bookingProducts
                                                       .first
-                                                      .deliveryDate
-                                                      .toString(),
-                                                  //   "n n", // '${formatDate(DateTime.parse(widget.getAcceptBookingdata!.bookingProducts.first.deliveryDate.toString()), [
-                                                  //       dd,
-                                                  //       '-',
-                                                  //       mm,
-                                                  //       '-',
-                                                  //       yyyy
-                                                  //     ])}',
-
+                                                      .deliveryDate,
                                                   style: primaryfont.copyWith(
                                                       fontWeight:
                                                           FontWeight.w600,
-                                                      fontSize: 16.sp,
+                                                      fontSize: 14.sp,
                                                       color: Colors.black),
                                                 )
                                               ],
@@ -709,91 +817,87 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text(
-                                            'Delivery Type:',
-                                            style: primaryfont.copyWith(
-                                                color: Color(0xff000000),
-                                                fontWeight: FontWeight.w700,
-                                                fontSize: 16.sp),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Delivery Type:',
+                                                style: primaryfont.copyWith(
+                                                    color: Color(0xff000000),
+                                                    fontWeight: FontWeight.w700,
+                                                    fontSize: 14.sp),
+                                              ),
+                                              Text(
+                                                'Parcel Weight:',
+                                                style: primaryfont.copyWith(
+                                                    color: Color(0xff000000),
+                                                    fontWeight: FontWeight.w700,
+                                                    fontSize: 14.sp),
+                                              ),
+                                            ],
                                           ),
-                                          Text(
-                                            widget.getAcceptBookingdata!
-                                                .deliveryType.name,
-                                            style: primaryfont.copyWith(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 16.sp,
-                                                color: Color(0xff455A64)),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                widget.getAcceptBookingdata
+                                                    .deliveryType.name,
+                                                style: primaryfont.copyWith(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 14.sp,
+                                                    color: Color(0xff455A64)),
+                                              ),
+                                              Text(
+                                                widget.getAcceptBookingdata
+                                                    .bookingProducts.first.kg,
+                                                style: primaryfont.copyWith(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 14.sp,
+                                                    color: Color(0xff455A64)),
+                                              ),
+                                            ],
                                           )
                                         ],
                                       ),
-                                      // ksizedbox10,
+                                      // ksizedbox15,
+                                      // Row(
+                                      //   mainAxisAlignment:
+                                      //       MainAxisAlignment.spaceBetween,
+                                      //   children: [
+
+                                      //   ],
+                                      // ),
+                                      ksizedbox10,
+                                      Divider(),
+                                      // ksizedbox15,
                                       // Row(
                                       //   mainAxisAlignment:
                                       //       MainAxisAlignment.spaceBetween,
                                       //   children: [
                                       //     Text(
-                                      //       'Vechicle Mode:',
+                                      //       'Additional Services:',
                                       //       style: primaryfont.copyWith(
                                       //           color: Color(0xff000000),
                                       //           fontWeight: FontWeight.w700,
                                       //           fontSize: 16.sp),
                                       //     ),
                                       //     Text(
-                                      //       'All',
+                                      //       widget.getAcceptBookingdata
+                                      //                   .additionalService ==
+                                      //               ""
+                                      //           ? "NO"
+                                      //           : "sdlk",
                                       //       style: primaryfont.copyWith(
                                       //           fontWeight: FontWeight.w600,
-                                      //           fontSize: 16.sp,
+                                      //           fontSize: 15.sp,
                                       //           color: Color(0xff455A64)),
                                       //     )
                                       //   ],
                                       // ),
-                                      ksizedbox15,
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            'Parcel Weight:',
-                                            style: primaryfont.copyWith(
-                                                color: Color(0xff000000),
-                                                fontWeight: FontWeight.w700,
-                                                fontSize: 16.sp),
-                                          ),
-                                          Text(
-                                            widget.getAcceptBookingdata!
-                                                .bookingProducts.first.kg,
-                                            style: primaryfont.copyWith(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 16.sp,
-                                                color: Color(0xff455A64)),
-                                          ),
-                                        ],
-                                      ),
-                                      ksizedbox10,
-                                      Divider(),
-                                      ksizedbox15,
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            'Additional Services:',
-                                            style: primaryfont.copyWith(
-                                                color: Color(0xff000000),
-                                                fontWeight: FontWeight.w700,
-                                                fontSize: 16.sp),
-                                          ),
-                                          Text(
-                                            'No',
-                                            style: primaryfont.copyWith(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 16.sp,
-                                                color: Color(0xff455A64)),
-                                          )
-                                        ],
-                                      ),
-                                      ksizedbox10,
-                                      Divider(),
+                                      // ksizedbox10,
+                                      // Divider(),
                                     ],
                                   ),
                                 ),
@@ -816,7 +920,6 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
   popUp(BuildContext context) {
     bool isEditDetailsChecked = false;
     bool isCancelBookingChecked = false;
-
     return showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -851,7 +954,7 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
                             Icons.cancel_outlined,
                             size: 30,
                             color: Colors.red,
-                          ))
+                          )),
                     ],
                   ),
                   ksizedbox20,
@@ -927,7 +1030,7 @@ class _MyHomePageState extends State<DriverDetailsScreen> {
                   GestureDetector(
                     onTap: () {
                       if (isCancelBookingChecked == true) {
-                        Get.to(CancelBooking());
+                        Get.to(CancelBooking(bookingCancelId: "",));
                       }
                     },
                     child: Container(

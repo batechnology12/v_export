@@ -25,7 +25,7 @@ class MyOrder extends StatefulWidget {
 }
 
 class _MyListState extends State<MyOrder> {
-  MyListController myListController = Get.find<MyListController>();
+  MyListController myListController = Get.put(MyListController());
   @override
   void initState() {
     super.initState();

@@ -31,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final RoundedLoadingButtonController _btnControllerSucess =
       RoundedLoadingButtonController();
 
-  final authController = Get.find<AuthController>();
+  final authController = Get.put(AuthController());
   bool ishide = true;
   bool isCheck = false;
   bool isRemember = false;

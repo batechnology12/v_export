@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:v_export/customer/model/additional_service_model.dart';
+
 class AddBookingVehicleModel {
   String pickupunitId;
   String pickupAddress;
@@ -11,6 +13,7 @@ class AddBookingVehicleModel {
   String totalAmount;
   String isRoundTrip;
   String pickupDate;
+  String paymentDetails;
   String pickupTimeFrom;
   String pickupTimeTo;
   String latitude;
@@ -18,14 +21,20 @@ class AddBookingVehicleModel {
   String distance;
   String bookingType;
   String bookingTime;
-  List<int> additionalDetails;
-  List<int> additionalDetailsQty;
+  List<AdditionalServiceData> additionalDetails;
+  int totalManpwoerValue;
+  int totalStaircaseValue;
+  // List<int> additionalDetailsQty;
   String notes;
   List<BookingVehicleAddress> bookingVehicleAddress;
   String parcelPhoto;
   String senderUnitId;
+  // String bookingAmount;
   AddBookingVehicleModel({
-    required this.additionalDetailsQty,
+    required this.paymentDetails,
+    required this.totalManpwoerValue,
+    required this.totalStaircaseValue,
+    //  required this.additionalDetailsQty,
     required this.senderUnitId,
     required this.pickupunitId,
     required this.pickupAddress,
@@ -49,29 +58,28 @@ class AddBookingVehicleModel {
     required this.bookingVehicleAddress,
     // required this.productss,
     required this.parcelPhoto,
-
   });
 }
 
 class BookingVehicleAddress {
   String senderName;
   String senderMobile;
-  String unitNoBlockNo;
-  List<String> address;
+  //String unitNoBlockNo;
+  String address;
   List<String> postalCode;
-  List<String> latitude;
-  List<String> longitude;
+  String latitude;
+  String longitude;
   String deliveryStatus;
-  List<String> reciverName;
-  List<String> reciverMobile;
-  List<String> vehiclereciverUnitIdBlockId;
-  List<String> vehicleUnitId;
-  
+  String reciverName;
+  String reciverMobile;
+  String vehiclereciverUnitIdBlockId;
+  String vehicleUnitId;
+
   BookingVehicleAddress({
     required this.vehicleUnitId,
     required this.senderName,
     required this.senderMobile,
-    required this.unitNoBlockNo,
+    //  required this.unitNoBlockNo,
     required this.address,
     required this.postalCode,
     required this.latitude,

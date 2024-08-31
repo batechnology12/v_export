@@ -49,10 +49,10 @@ class AccountController extends GetxController {
   updateProfileUser(
       {required String name,
       required String mail,
-      required String phone}) async {
+      required String phone,required String address}) async {
     profileLoading(true);
     dio.Response<dynamic> response = await updateProfileApiService
-        .updateProfile(name: name, mail: mail, phone: phone);
+        .updateProfile(name: name, mail: mail, phone: phone,address: address);
     profileLoading(false);
     print("update profile response---------");
     print(response.data);

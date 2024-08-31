@@ -1,4 +1,5 @@
 import 'package:date_format/date_format.dart';
+import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dash/flutter_dash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,6 +8,7 @@ import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
 import 'package:v_export/customer/controller/account_controller.dart';
 import 'package:v_export/customer/controller/my_list_controller.dart';
+import 'package:v_export/customer/model/get_cancelled_orders_model.dart';
 import 'package:v_export/customer/model/get_ongoing_orders_model.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/my_list/booking_status.dart';
 import 'package:intl/intl.dart';
@@ -20,7 +22,7 @@ class GetCancelledScreenData extends StatefulWidget {
 }
 
 class _GetCancelledScreenDataState extends State<GetCancelledScreenData> {
-  MyListController myListController = Get.find<MyListController>();
+  MyListController myListController = Get.put(MyListController());
 
   @override
   void initState() {
@@ -41,22 +43,11 @@ class _GetCancelledScreenDataState extends State<GetCancelledScreenData> {
       physics: BouncingScrollPhysics(),
       child: Column(
         children: [
-          // Center(
-          //     child: Container(
-          //         alignment: Alignment.center,
-          //         height: 200.h,
-          //         width: size.width,
-          //         decoration: BoxDecoration(
-          //           color: Colors.grey.withOpacity(.09),`
-          //           borderRadius: BorderRadius.circular(10),
-          //         ),
-          //         child: Image.asset(
-          //             "assets/images/No Data Found.jpeg"))),
-
-          GetBuilder<MyListController>(builder: (context) {
+          GetBuilder<MyListController>(builder: (_) {
             if (myListController.getCancelledOrdersLoading.isTrue) {
-              return Center(child: Padding(
-                padding: const EdgeInsets.only(top:230),
+              return Center(
+                  child: Padding(
+                padding: const EdgeInsets.only(top: 230),
                 child: CircularProgressIndicator(),
               ));
             }
@@ -79,297 +70,333 @@ class _GetCancelledScreenDataState extends State<GetCancelledScreenData> {
                 itemCount: myListController.getCancelledOrdersModelData.length,
                 physics: BouncingScrollPhysics(),
                 itemBuilder: ((context, index) {
+                  GetCancelledOrdersModelData getdatalist =
+                      myListController.getCancelledOrdersModelData[index];
+
                   return Padding(
                     padding: const EdgeInsets.only(left: 10, right: 10),
-                    child: Container(
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(.09),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      margin: EdgeInsets.only(bottom: 10, top: 8),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Booking ID : ${myListController.getCancelledOrdersModelData.first.bookingId}',
-                                style: primaryfont.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 15.5),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  Get.to(CancelDetals());
-                                },
-                                child: Container(
-                                  height: 35,
-                                  width: 35,
-                                  decoration: const BoxDecoration(
-                                      color: Color(0xffF5F5F5),
-                                      shape: BoxShape.circle),
-                                  child: const Icon(
-                                    Icons.arrow_forward_ios,
-                                    color: Colors.black,
-                                    size: 15,
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                          Divider(),
-                          ksizedbox10,
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
+                    child: GestureDetector(
+                      onTap: () {
+                        Get.to(CancelDetails(
+                          getcancelledDataList: getdatalist,
+                        ));
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.withOpacity(.09),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        margin: EdgeInsets.only(
+                          bottom: 10,
+                        ),
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 5),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  const Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Icon(
-                                        Icons.location_on,
-                                        color: Color(0xff038484),
-                                      ),
-                                      Dash(
-                                          direction: Axis.vertical,
-                                          length: 100,
-                                          dashLength: 5,
-                                          dashColor: AppColors.kgrey),
-                                      Icon(
-                                        Icons.location_on,
-                                        color: Color(0xffF74354),
-                                      ),
-                                    ],
+                                  Text(
+                                    'Booking ID : ${getdatalist.bookingId}',
+                                    style: primaryfont.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 15.5),
                                   ),
-                                  SizedBox(
-                                    width: 5.w,
-                                  ),
-                                  Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Pickup Details',
-                                            style: primaryfont.copyWith(
-                                                fontSize: 15.sp,
-                                                fontWeight: FontWeight.w600,
-                                                color: Color(0xff455A64)),
-                                          ),
-                                          Container(
-                                            width: 200.h,
-                                            child: Text(
-                                              myListController
-                                                  .getCancelledOrdersModelData[
-                                                      index]
-                                                  .pickupAddreess!,
-                                              style: primaryfont.copyWith(
-                                                  color: Color(0xff1E1E1E),
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 14.sp),
-                                            ),
-                                          ),
-                                        ],
+                                  GestureDetector(
+                                    onTap: () {
+                                      Get.to(CancelDetails(
+                                        getcancelledDataList: getdatalist,
+                                      ));
+                                    },
+                                    child: Container(
+                                      height: 35,
+                                      width: 35,
+                                      decoration: const BoxDecoration(
+                                          color: Colors.white,
+                                          shape: BoxShape.circle),
+                                      child: const Icon(
+                                        Icons.arrow_forward_ios,
+                                        color: Colors.black,
+                                        size: 15,
                                       ),
-                                      SizedBox(
-                                        height: 40.h,
-                                      ),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            "Delivery Details",
-                                            style: primaryfont.copyWith(
-                                                fontSize: 15.sp,
-                                                fontWeight: FontWeight.w600,
-                                                color: Color(0xff455A64)),
-                                          ),
-                                          Container(
-                                            width: 200.h,
-                                            child: Text(
-                                              myListController
-                                                  .getCancelledOrdersModelData[
-                                                      index]
-                                                  .bookingDeliveryAddresses
-                                                  .first
-                                                  .address
-                                                  .toString(),
-                                              style: primaryfont.copyWith(
-                                                  color: Color(0xff1E1E1E),
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 14.sp),
-                                            ),
-                                          ),
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Container(
-                                    height: 150.h,
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          '${myListController.getCancelledOrdersModelData[index].bookingProducts.first.pickuptimeFrom} \nto \n${myListController.getCancelledOrdersModelData[index].bookingProducts.first.pickuptimeTo}',
-
-                                          // '${formatTime(myListController.getCancelledOrdersModelData[index].bookingProducts[index].pickuptimeFrom)} to ${formatTime(myListController.getCancelledOrdersModelData[index].bookingProducts[index].pickuptimeTo)}',
-                                          textAlign: TextAlign.center,
-                                          style: primaryfont.copyWith(
-                                              fontSize: 11.sp,
-                                              fontWeight: FontWeight.w600,
-                                              color: Color(0xff455A64)),
-                                        ),
-                                        Text(
-                                          '${myListController.getCancelledOrdersModelData[index].bookingProducts.first.deliverytimeFrom} \nto \n${myListController.getCancelledOrdersModelData[index].bookingProducts.first.deliverytimeTo}',
-
-                                          // '${formatTime(myListController.getCancelledOrdersModelData[index].bookingProducts[index].deliverytimeFrom)} to ${formatTime(myListController.getCancelledOrdersModelData[index].bookingProducts[index].deliverytimeTo)}',
-                                          textAlign: TextAlign.center,
-                                          style: primaryfont.copyWith(
-                                              fontSize: 11.sp,
-                                              fontWeight: FontWeight.w600,
-                                              color: Color(0xff455A64)),
-                                        ),
-                                      ],
                                     ),
                                   )
                                 ],
-                              )
-                            ],
-                          ),
-                          ksizedbox10,
-                          Divider(),
-                          ksizedbox10,
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                height: 65.h,
-                                width: 100.w,
-                                decoration: BoxDecoration(
-                                    color: Colors.grey.shade200,
-                                    borderRadius: BorderRadius.circular(15)),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                              ),
+                            ),
+                            Divider(),
+                            ksizedbox10,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
                                   children: [
-                                    Text(
-                                      'Pickup Date',
-                                      style: primaryfont.copyWith(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 12.sp),
-                                    ),
-                                    SizedBox(
-                                      height: 2.h,
-                                    ),
-                                    Text(
-                                      // myListController
-                                      //     .getCancelledOrdersModelData[
-                                      //         index]
-                                      //     .bookingDate
-                                      //     .toString(),
-                                      formatDate(
-                                          DateTime.parse(myListController
-                                              .getCancelledOrdersModelData[
-                                                  index]
-                                              .bookingDate
-                                              .toString()),
-                                          [dd, '-', mm, '-', yyyy]),
-                                      style: primaryfont.copyWith(
-                                        fontWeight: FontWeight.w600,
+                                    const Padding(
+                                      padding: EdgeInsets.only(top: 0),
+                                      child: Column(
+                                        children: [
+                                          Icon(
+                                            Icons.location_on,
+                                            color: Color(0xff038484),
+                                          ),
+                                          Dash(
+                                              direction: Axis.vertical,
+                                              length: 30,
+                                              dashLength: 5,
+                                              dashColor: AppColors.kgrey),
+                                        ],
                                       ),
+                                    ),
+                                    SizedBox(
+                                      width: 5.w,
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Pickup Address',
+                                          style: primaryfont.copyWith(
+                                              fontSize: 14.sp,
+                                              fontWeight: FontWeight.w600,
+                                              color: Color(0xff455A64)),
+                                        ),
+                                        Container(
+                                          width: 230.h,
+                                          child: ExpandableText(
+                                            "${getdatalist.pickupAddreess}",
+                                            expandText: 'show more',
+                                            collapseText: 'show less',
+                                            maxLines: 2,
+                                            linkColor: Colors.blue,
+                                            style: primaryfont.copyWith(
+                                                color: const Color(0xff1E1E1E),
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 12.sp),
+                                          ),
+                                        ),
+                                      ],
                                     )
                                   ],
                                 ),
-                              ),
-                              Container(
-                                height: 65.h,
-                                width: 100.w,
-                                decoration: BoxDecoration(
-                                    color: Colors.grey.shade200,
-                                    borderRadius: BorderRadius.circular(15)),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      'Delivery Date',
-                                      style: primaryfont.copyWith(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 12.sp),
-                                    ),
-                                    SizedBox(
-                                      height: 2.h,
-                                    ),
-                                    Text(
-                                      myListController
-                                          .getCancelledOrdersModelData[index]
-                                          .bookingProducts
-                                          .first
-                                          .deliveryDate
-                                          .toString(),
-                                      // formatDate(
-                                      //     DateTime.parse(
-                                      //         myListController
-                                      //             .getCancelledOrdersModelData[
-                                      //                 index]
-                                      //             .bookingProducts[index]
-                                      //             .deliveryDate
-                                      //             .toString()),
-                                      //     [
-                                      //       dd,
-                                      //       '-',
-                                      //       mm,
-                                      //       '-',
-                                      //       yyyy
-                                      //     ]),
-                                      style: primaryfont.copyWith(
-                                        fontSize: 12.sp,
-                                        fontWeight: FontWeight.w600,
+                                // Row(
+                                //   children: [
+                                //     Text(
+                                //       myListController
+                                //                   .getCancelledOrdersModelData[
+                                //                       index]
+                                //                   .bookingType ==
+                                //               "parcel"
+                                //           ? '${getdatalist.bookingProducts[index].pickuptimeFrom} to ${getdatalist.bookingProducts[index].pickuptimeTo}'
+                                //           : getdatalist.bookingTimeFromVehicle!,
+                                //       textAlign: TextAlign.center,
+                                //       style: primaryfont.copyWith(
+                                //           fontSize: 10.sp,
+                                //           fontWeight: FontWeight.w600,
+                                //           color: const Color(0xff455A64)),
+                                //     ),
+                                //   ],
+                                // )
+                              ],
+                            ),
+                            GetBuilder<MyListController>(builder: (_) {
+                              return ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount: getdatalist
+                                      .bookingDeliveryAddresses.length,
+                                  itemBuilder: ((context, index) {
+                                    return Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Column(
+                                              children: [
+                                                Icon(
+                                                  Icons.location_on,
+                                                  color: Color(0xffF74354),
+                                                ),
+                                                if (index !=
+                                                    getdatalist
+                                                            .bookingDeliveryAddresses
+                                                            .length -
+                                                        1)
+                                                  Dash(
+                                                      direction: Axis.vertical,
+                                                      length: 30,
+                                                      dashLength: 5,
+                                                      dashColor:
+                                                          AppColors.kgrey),
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              width: 5.w,
+                                            ),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'Delivery Address',
+                                                  style: primaryfont.copyWith(
+                                                      fontSize: 14.sp,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color: Color(0xff455A64)),
+                                                ),
+                                                Container(
+                                                  width: 230.h,
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          bottom: 0),
+                                                  child: ExpandableText(
+                                                    "${getdatalist.bookingDeliveryAddresses[index].address}",
+                                                    expandText: 'show more',
+                                                    collapseText: 'show less',
+                                                    maxLines: 2,
+                                                    linkColor: Colors.blue,
+                                                    style: primaryfont.copyWith(
+                                                        color: const Color(
+                                                            0xff1E1E1E),
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontSize: 12.sp),
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                        // Row(
+                                        //   children: [
+                                        //     Text(
+                                        //       getdatalist.bookingType ==
+                                        //               "parcel"
+                                        //           ? '${getdatalist.bookingProducts[index].deliverytimeFrom} \nto \n${getdatalist.bookingProducts[index].deliverytimeTo}'
+                                        //           : "",
+                                        //       textAlign: TextAlign.center,
+                                        //       style: primaryfont.copyWith(
+                                        //           fontSize: 10.sp,
+                                        //           fontWeight: FontWeight.w600,
+                                        //           color:
+                                        //               const Color(0xff455A64)),
+                                        //     ),
+                                        //   ],
+                                        // )
+                                      ],
+                                    );
+                                  }));
+                            }),
+                            ksizedbox10,
+                            Divider(),
+                            ksizedbox10,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  height: 65.h,
+                                  width: 100.w,
+                                  decoration: BoxDecoration(
+                                      color: Colors.grey.shade200,
+                                      borderRadius: BorderRadius.circular(15)),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        'Pickup Date',
+                                        style: primaryfont.copyWith(
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 12.sp),
                                       ),
-                                    )
-                                  ],
+                                      SizedBox(
+                                        height: 2.h,
+                                      ),
+                                      Text(
+                                        formatDate(
+                                            DateTime.parse(getdatalist
+                                                .bookingDate
+                                                .toString()),
+                                            [dd, '-', mm, '-', yyyy]),
+                                        style: primaryfont.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 12.sp),
+                                      )
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              Container(
-                                height: 65.h,
-                                width: 100.w,
-                                decoration: BoxDecoration(
-                                    color: Colors.grey.shade200,
-                                    borderRadius: BorderRadius.circular(15.sp)),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      'Status',
-                                      style: primaryfont.copyWith(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 12,
-                                          color: Color(0xff455A64)),
-                                    ),
-                                    SizedBox(
-                                      height: 2.h,
-                                    ),
-                                    Text(
-                                      'Cancelled',
-                                      style: primaryfont.copyWith(
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.red),
-                                    )
-                                  ],
+                                getdatalist.bookingType == "parcel"
+                                    ? Container(
+                                        height: 65.h,
+                                        width: 100.w,
+                                        decoration: BoxDecoration(
+                                            color: Colors.grey.shade200,
+                                            borderRadius:
+                                                BorderRadius.circular(15)),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              'Delivery Date',
+                                              style: primaryfont.copyWith(
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 12.sp),
+                                            ),
+                                            SizedBox(
+                                              height: 2.h,
+                                            ),
+                                            Text(
+                                              getdatalist.bookingProducts[0]
+                                                  .deliveryDate,
+                                              style: primaryfont.copyWith(
+                                                fontSize: 12.sp,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      )
+                                    : Container(),
+                                Container(
+                                  height: 65.h,
+                                  width: 100.w,
+                                  decoration: BoxDecoration(
+                                      color: Colors.grey.shade200,
+                                      borderRadius:
+                                          BorderRadius.circular(15.sp)),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        'Status',
+                                        style: primaryfont.copyWith(
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 12,
+                                            color: Color(0xff455A64)),
+                                      ),
+                                      SizedBox(
+                                        height: 2.h,
+                                      ),
+                                      Text(
+                                        'Cancelled',
+                                        style: primaryfont.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.red),
+                                      )
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );

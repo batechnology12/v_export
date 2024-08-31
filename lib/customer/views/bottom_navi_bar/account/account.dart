@@ -29,13 +29,25 @@ class Account extends StatefulWidget {
 }
 
 class _AccountState extends State<Account> {
-  AccountController accountController = Get.find<AccountController>();
-  AuthController authController = Get.find<AuthController>();
+  AccountController accountController = Get.put(AccountController());
+  AuthController authController = Get.put(AuthController());
+
+  String corporateName = "";
 
   @override
   void initState() {
     accountController.getProfile();
     super.initState();
+    hideCorporateAccount();
+  }
+
+  void hideCorporateAccount() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? type = prefs.getString('type');
+
+    setState(() {
+      corporateName = type!;
+    });
   }
 
   final List accountList = [
@@ -56,7 +68,7 @@ class _AccountState extends State<Account> {
       "image": "assets/icons/settings.png",
     },
     {
-      "accountNames": "Chat",
+      "accountNames": "Customer Chat",
       "image": "assets/icons/chat.png",
     },
     {
@@ -193,7 +205,14 @@ class _AccountState extends State<Account> {
                                       );
                                       break;
                                     case 2:
-                                      Get.to(CorporateAccount());
+                                      corporateName == "client"
+                                          ? Get.snackbar("Alert",
+                                              "Corporate account not required.",
+                                              colorText: AppColors.kwhite,
+                                              backgroundColor: Colors.red,
+                                              snackPosition:
+                                                  SnackPosition.BOTTOM)
+                                          : Get.to(CorporateAccount());
                                       break;
                                     case 3:
                                       Get.to(Settings());

@@ -4,7 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:v_export/customer/controller/auth_controller.dart';
 import 'package:v_export/customer/model/register_person_business_account_model.dart';
+import 'package:v_export/customer/services/network/auth_api_service/privacy_policy_api_service.dart';
 import 'package:v_export/customer/views/auth/login/login_screen.dart';
+import 'package:v_export/customer/views/auth/register_account.dart/accounts/terms_and_condition.dart';
 import 'package:v_export/customer/views/auth/register_account.dart/register_personal_otp.dart';
 import 'package:v_export/customer/views/auth/register_account.dart/verification_screen.dart';
 
@@ -21,7 +23,7 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final authController = Get.find<AuthController>();
+  final authController = Get.put(AuthController());
   bool isCheck = false;
   bool isBusiness = false;
   bool ischeck = false;
@@ -529,23 +531,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                           ),
                                           Row(
                                             children: [
-                                              Text('Terms & Condition',
-                                                  style: thirdsfont.copyWith(
-                                                      fontSize: 13.sp,
-                                                      color: AppColors.kblue,
-                                                      fontWeight:
-                                                          FontWeight.w500)),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  Get.to(
+                                                      TermsAndConditionsScreen());
+                                                },
+                                                child: Text('Terms & Condition',
+                                                    style: thirdsfont.copyWith(
+                                                        fontSize: 13.sp,
+                                                        color: AppColors.kblue,
+                                                        fontWeight:
+                                                            FontWeight.w500)),
+                                              ),
                                               Text(' and ',
                                                   style: thirdsfont.copyWith(
                                                       fontSize: 13.sp,
                                                       fontWeight:
                                                           FontWeight.w500)),
-                                              Text('Privacy Policy',
-                                                  style: thirdsfont.copyWith(
-                                                      fontSize: 13.sp,
-                                                      color: AppColors.kblue,
-                                                      fontWeight:
-                                                          FontWeight.w500))
+                                              GestureDetector(
+                                                onTap: () {
+                                                  Get.to(PrivacyPolicy());
+                                                },
+                                                child: Text('Privacy Policy',
+                                                    style: thirdsfont.copyWith(
+                                                        fontSize: 13.sp,
+                                                        color: AppColors.kblue,
+                                                        fontWeight:
+                                                            FontWeight.w500)),
+                                              )
                                             ],
                                           ),
                                           Padding(
@@ -862,98 +875,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       ),
                                     ),
                                   ),
-                                  // TextFormField(
-                                  //   keyboardType: TextInputType.phone,
-                                  //   inputFormatters: [
-                                  //     selectedValuess == "+65"
-                                  //         ? LengthLimitingTextInputFormatter(8)
-                                  //         : LengthLimitingTextInputFormatter(
-                                  //             10),
-                                  //     FilteringTextInputFormatter.digitsOnly,
-                                  //   ],
-                                  //   validator: selectedValuess == "+65"
-                                  //       ? (value) {
-                                  //           if (value!.length < 8 ||
-                                  //               value.length > 8) {
-                                  //             return 'Mobile number should be in 8 digits';
-                                  //           } else {
-                                  //             return null;
-                                  //           }
-                                  //         }
-                                  //       : (value) {
-                                  //           if (value!.length < 10 ||
-                                  //               value.length > 10) {
-                                  //             return 'Mobile number should be in 10 digits';
-                                  //           } else {
-                                  //             return null;
-                                  //           }
-                                  //         },
-                                  //   controller: businessphoneController,
-                                  //   decoration: InputDecoration(
-                                  //     prefixIcon: Padding(
-                                  //         padding: const EdgeInsets.only(
-                                  //             left: 10, top: 13),
-                                  //         child: PopupMenuButton(
-                                  //           child: Container(
-                                  //               height: 30,
-                                  //               width: 50,
-                                  //               child: Text(selectedValues)),
-                                  //           onSelected: (value) {
-                                  //             setState(() {
-                                  //               selectedIndexes = value;
-                                  //               selectedValuess =
-                                  //                   value == 0 ? "+65" : "+91";
-                                  //             });
-                                  //           },
-                                  //           itemBuilder: (context) => [
-                                  //             PopupMenuItem<int>(
-                                  //               value: 0,
-                                  //               child: Container(
-                                  //                 height: 30,
-                                  //                 width: 50,
-                                  //                 child: Text("+65"),
-                                  //               ),
-                                  //             ),
-                                  //             PopupMenuItem<int>(
-                                  //               value: 1,
-                                  //               child: Container(
-                                  //                 height: 30,
-                                  //                 width: 50,
-                                  //                 child: Text("+91"),
-                                  //               ),
-                                  //             ),
-                                  //           ],
-                                  //         )),
-                                  //     contentPadding:
-                                  //         EdgeInsets.only(bottom: 5, left: 20),
-                                  //     fillColor: Color(0xffF8F8F8),
-                                  //     filled: true,
-                                  //     border: OutlineInputBorder(
-                                  //       borderSide: BorderSide.none,
-                                  //       borderRadius:
-                                  //           BorderRadius.circular(25.0),
-                                  //     ),
-                                  //     enabledBorder: OutlineInputBorder(
-                                  //       borderSide: BorderSide.none,
-                                  //       borderRadius:
-                                  //           BorderRadius.circular(25.0),
-                                  //     ),
-                                  //     errorBorder: OutlineInputBorder(
-                                  //       borderSide: BorderSide.none,
-                                  //       borderRadius: BorderRadius.circular(25),
-                                  //     ),
-                                  //     focusedBorder: OutlineInputBorder(
-                                  //       borderSide: BorderSide.none,
-                                  //       borderRadius:
-                                  //           BorderRadius.circular(25.0),
-                                  //     ),
-                                  //     focusedErrorBorder: OutlineInputBorder(
-                                  //       borderSide: BorderSide.none,
-                                  //       borderRadius:
-                                  //           BorderRadius.circular(25.0),
-                                  //     ),
-                                  //   ),
-                                  // ),
+
                                   ksizedbox20,
                                   Text(
                                     'Business Email Id * ',
@@ -1344,23 +1266,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                           ),
                                           Row(
                                             children: [
-                                              Text('Terms & Condition',
-                                                  style: thirdsfont.copyWith(
-                                                      fontSize: 13.sp,
-                                                      color: AppColors.kblue,
-                                                      fontWeight:
-                                                          FontWeight.w500)),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  Get.to(
+                                                      TermsAndConditionsScreen());
+                                                },
+                                                child: Text('Terms & Condition',
+                                                    style: thirdsfont.copyWith(
+                                                        fontSize: 13.sp,
+                                                        color: AppColors.kblue,
+                                                        fontWeight:
+                                                            FontWeight.w500)),
+                                              ),
                                               Text(' and ',
                                                   style: thirdsfont.copyWith(
                                                       fontSize: 13.sp,
                                                       fontWeight:
                                                           FontWeight.w500)),
-                                              Text('Privacy Policy',
-                                                  style: thirdsfont.copyWith(
-                                                      fontSize: 13.sp,
-                                                      color: AppColors.kblue,
-                                                      fontWeight:
-                                                          FontWeight.w500))
+                                              GestureDetector(
+                                                onTap: () {
+                                                  Get.to(PrivacyPolicy());
+                                                },
+                                                child: Text('Privacy Policy',
+                                                    style: thirdsfont.copyWith(
+                                                        fontSize: 13.sp,
+                                                        color: AppColors.kblue,
+                                                        fontWeight:
+                                                            FontWeight.w500)),
+                                              )
                                             ],
                                           ),
                                           Padding(

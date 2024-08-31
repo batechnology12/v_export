@@ -22,7 +22,7 @@ class _BookingSucessfullyScreenState extends State<BookingSucessfullyScreen> {
     super.initState();
     // Start a timer that will navigate to the second page after 5 seconds
     Timer(Duration(seconds: 3), () {
-      Get.offAll(BottomNavigationScreen());
+      Get.offAll(BottomNavigationScreen(indexes: 0,));
       // Navigator.of(context).pushReplacement(
       //   MaterialPageRoute(builder: (context) => BottomNavigationScreen()),
       // );

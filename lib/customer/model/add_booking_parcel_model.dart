@@ -92,9 +92,10 @@ class Product {
 
 class BookingAddress {
    List<String> uintIdList;
+     String unitNoBlockNo;
   String customerName;
   String customerMobile;
-  String unitNoBlockNo;
+
   String address;
   String postalCode;
   String latitude;

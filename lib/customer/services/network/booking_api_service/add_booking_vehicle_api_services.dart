@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:date_format/date_format.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:v_export/customer/model/add_booking_parcel_model.dart';
@@ -16,6 +17,28 @@ class AddBookingVehicleApiService extends BaseApiServices {
       var dio = Dio();
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       final String? authtoken = prefs.getString('auth_token');
+
+      print("additional list................");
+      print(addBookingVehicleModel.additionalDetails);
+      List<Map<String, dynamic>> data = [];
+
+      for (int i = 0;
+          i < addBookingVehicleModel.additionalDetails.length;
+          i++) {
+        var detail = addBookingVehicleModel.additionalDetails[i];
+        int manpower = addBookingVehicleModel.totalManpwoerValue;
+        int stcase = addBookingVehicleModel.totalStaircaseValue;
+        data.add({
+          "additional_services_id[$i][id]": detail.id,
+          "additional_services_id[$i][qty]": detail.name == "Manpower (helper)"
+              ? manpower
+              : detail.name == "Staircase (per floor)"
+                  ? stcase
+                  : 0,
+        });
+      }
+      print("object--------------");
+      print(data);
       FormData formData = FormData.fromMap({
         "delivery_type_id": "1",
         "delivery_date": "25-06-2024",
@@ -23,13 +46,14 @@ class AddBookingVehicleApiService extends BaseApiServices {
         "deliverytime_to": "2:30pm",
         "vehicle_type": addBookingVehicleModel.vehicleType,
         "pickup_addreess": addBookingVehicleModel.pickupAddress,
-        "payment_mode": "COD",
-        "booking_amount": "500",
+        "payment_mode": "",
+        "booking_amount": addBookingVehicleModel.bookingAmount,
+        "payment_details": addBookingVehicleModel.paymentDetails,
         "gst": "500",
-        "additional_total": "600",
-        "total_amount": "500",
-        "unitno" : addBookingVehicleModel.pickupunitId,
-        "is_round_trip":addBookingVehicleModel.isRoundTrip,
+        "additional_total": addBookingVehicleModel.additionalTotal,
+        "total_amount": addBookingVehicleModel.totalAmount,
+        "unitno": addBookingVehicleModel.pickupunitId,
+        "is_round_trip": addBookingVehicleModel.isRoundTrip,
         "booking_date": addBookingVehicleModel.pickupDate,
         "pickuptime_from": addBookingVehicleModel.pickupTimeFrom,
         "pickuptime_to": addBookingVehicleModel.pickupTimeTo,
@@ -37,16 +61,8 @@ class AddBookingVehicleApiService extends BaseApiServices {
         "longitude": addBookingVehicleModel.longitude,
         "distance": addBookingVehicleModel.distance,
         "booking_time_from_vehicle": addBookingVehicleModel.bookingTime,
-       "sender_unitno_blockno":  addBookingVehicleModel.senderUnitId,
+        "sender_unitno_blockno": addBookingVehicleModel.senderUnitId,
         "booking_type": "vehicle",
-        for (int i = 0;
-            i < addBookingVehicleModel.additionalDetails.length;
-            i++)
-          "additional_services_id[$i][id]":
-              addBookingVehicleModel.additionalDetails[i],
-
-              for (int j = 0; j < addBookingVehicleModel.additionalDetails.length;j++)
-          "additional_services_id[$j][qty]" : addBookingVehicleModel.additionalDetailsQty[j],
         "notes": addBookingVehicleModel.notes,
         "products": productss
             .map((product) => {
@@ -67,7 +83,8 @@ class AddBookingVehicleApiService extends BaseApiServices {
             .map((address) => {
                   "customer_name": address.senderName,
                   "customer_mobile": address.senderMobile,
-                  "unitno_blockno": address.unitNoBlockNo,
+                  "unitno_blockno": address.vehiclereciverUnitIdBlockId,
+                  "unitno": address.vehicleUnitId,
                   "address": address.address,
                   "postalcode": "78677",
                   "latitude": address.latitude,
@@ -77,8 +94,6 @@ class AddBookingVehicleApiService extends BaseApiServices {
                   "delivery_status": address.deliveryStatus,
                   "reciver_name": address.reciverName,
                   "reciver_mobile": address.reciverMobile,
-             
-                  "unitno" : address.vehicleUnitId 
                 })
             .toList(),
         "parcel_photo": addBookingVehicleModel.parcelPhoto.trim().isEmpty

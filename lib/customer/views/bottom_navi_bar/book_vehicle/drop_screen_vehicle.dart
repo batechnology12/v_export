@@ -24,8 +24,8 @@ class DropVehicleLocation extends StatefulWidget {
 }
 
 class _DropVehicleLocationState extends State<DropVehicleLocation> {
-  AccountController accountController = Get.find<AccountController>();
-  HomeController homeController = Get.find<HomeController>();
+  AccountController accountController = Get.put(AccountController());
+  HomeController homeController = Get.put(HomeController());
   GoogleMapController? _controller;
   final Set<Marker> _markers = {};
   loc.LocationData? _currentPosition;
@@ -47,7 +47,7 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
   final TextEditingController receiverUnitIdController =
       TextEditingController();
   final TextEditingController searchedController = TextEditingController();
-
+  String vehicledropingpickuppincode = "";
   bool _isManualSelection = false;
 
   @override
@@ -131,35 +131,28 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                             inputDecoration: InputDecoration(
                                 contentPadding: EdgeInsets.only(left: 10),
                                 isDense: true,
-                                // prefixIcon: Padding(
-                                //   padding: const EdgeInsets.all(8.0),
-                                //   child: Image.asset(
-                                //     "assets/icons/google-maps.png",
-                                //   ),
-                                // ),
-                                // suffixIcon: Padding(
-                                //   padding: const EdgeInsets.all(5.0),
-                                //   child: Image.asset(
-                                //     "assets/icons/search.png",
-                                //   ),
-                                // ),
                                 hintText: 'Enter Your Address....',
                                 hintStyle: primaryfont.copyWith(
                                     fontSize: 14, fontWeight: FontWeight.w500),
-                                border: InputBorder.none
-                                // border: OutlineInputBorder(
-                                //   borderRadius: BorderRadius.circular(10),
-                                //   borderSide: BorderSide(
-                                //     width: 1,
-                                //     color: Color(0xff444444),
-                                //   ),
-                                // ),
-                                ),
+                                border: InputBorder.none),
                             focusNode: FocusNode(),
                             debounceTime: 600,
                             isLatLngRequired: true,
                             getPlaceDetailWithLatLng: (Prediction prediction) {
                               if (_controller != null) {
+                                RegExp regExp = RegExp(
+                                    r'\b\d{6}\b'); // Pattern to match 6-digit pincode
+                                Match? match =
+                                    regExp.firstMatch(prediction.description!);
+
+                                if (match != null) {
+                                  vehicledropingpickuppincode =
+                                      match.group(0)!; // Store the pincode
+                                }
+                                print(vehicledropingpickuppincode);
+
+                                print(
+                                    'Extracted Pincode: $vehicledropingpickuppincode');
                                 _controller!.animateCamera(
                                     CameraUpdate.newCameraPosition(
                                   CameraPosition(
@@ -201,9 +194,11 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                           ),
                         ),
                         ksizedbox20,
-                        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Column(crossAxisAlignment: CrossAxisAlignment.start,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   "Enter Block no",
@@ -229,8 +224,10 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                                             receiverBlockIdUnitIdController,
                                         inputFormatters: [
                                           LengthLimitingTextInputFormatter(4),
-                                          //  FilteringTextInputFormatter.digitsOnly,
+                                          // FilteringTextInputFormatter
+                                          //     .digitsOnly,
                                         ],
+                                        keyboardType: TextInputType.text,
                                         decoration: InputDecoration(
                                             contentPadding:
                                                 const EdgeInsets.only(
@@ -238,8 +235,7 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                                                     right: 10,
                                                     top: 10,
                                                     bottom: 16),
-                                            hintText:
-                                                'Enter Block no',
+                                            hintText: 'Enter Block no',
                                             hintStyle: primaryfont.copyWith(
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.w500),
@@ -255,7 +251,8 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                                 ),
                               ],
                             ),
-                            Column(crossAxisAlignment: CrossAxisAlignment.start,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   "Enter Unit no",
@@ -280,7 +277,10 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                                         controller: receiverUnitIdController,
                                         inputFormatters: [
                                           LengthLimitingTextInputFormatter(4),
+                                          // FilteringTextInputFormatter
+                                          //     .digitsOnly,
                                         ],
+                                        keyboardType: TextInputType.text,
                                         decoration: InputDecoration(
                                             contentPadding:
                                                 const EdgeInsets.only(
@@ -288,8 +288,7 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                                                     right: 10,
                                                     top: 10,
                                                     bottom: 16),
-                                            hintText:
-                                                'Enter Unit no',
+                                            hintText: 'Enter Unit no',
                                             hintStyle: primaryfont.copyWith(
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.w500),
@@ -321,9 +320,6 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                           width: double.infinity,
                           decoration: BoxDecoration(
                               color: AppColors.kwhite,
-                              // border: Border.all(
-                              //   color: Color(0xff444444),
-                              // ),
                               borderRadius: BorderRadius.circular(10)),
                           child: TextFormField(
                             textCapitalization: TextCapitalization.sentences,
@@ -370,33 +366,30 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                             FilteringTextInputFormatter.deny(RegExp(r'\s')),
                           ],
                           decoration: InputDecoration(
-                                  contentPadding: EdgeInsets.only( top: 13),
-                             prefixIcon: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Container(
-                     
-                                    height: 30,
-                                    width: 50,
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                     "+65",
-                                      style: primaryfont.copyWith(
-                                        fontSize: 14, // Adjust font size
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                            contentPadding: EdgeInsets.only(top: 13),
+                            prefixIcon: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  height: 30,
+                                  width: 50,
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    "+65",
+                                    style: primaryfont.copyWith(
+                                      fontSize: 14, // Adjust font size
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  SizedBox(width: 5),
-                                ],
-                              ),
+                                ),
+                                SizedBox(width: 5),
+                              ],
+                            ),
                             fillColor: AppColors.kwhite,
                             filled: true,
-              
                             hintText: 'Enter Phone Name',
-                                  hintStyle: primaryfont.copyWith(
-                                      fontSize: 14,
-                                                                         fontWeight: FontWeight.w500),
+                            hintStyle: primaryfont.copyWith(
+                                fontSize: 14, fontWeight: FontWeight.w500),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -418,7 +411,6 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                               ),
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            
                           ),
                         ),
                         ksizedbox20,
@@ -428,28 +420,37 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                               if (receiverNameController.text.isNotEmpty &&
                                   receiverNumberController.text.isNotEmpty) {
                                 _fetchAddressVehicle();
+
+                                print(
+                                    "reciver block id ------ ${receiverBlockIdUnitIdController.text}");
+                                print(
+                                    "reciver unit id ------ ${receiverUnitIdController.text}");
                                 homeController.vehicleDroppingLocation(
-                                  searchedController.text,
-                                  _markers.first.position.latitude.toString(),
-                                  _markers.first.position.longitude.toString(),
-                                  areapincode,
-                                  doorno,
-                                  widget.index,
-                                  receiverNameController.text,
-                                  receiverNumberController.text,
-                                  receiverBlockIdUnitIdController.text,
-receiverUnitIdController.text
-                                );
+                                    searchedController.text,
+                                    _markers.first.position.latitude.toString(),
+                                    _markers.first.position.longitude
+                                        .toString(),
+                                    areapincode,
+                                    doorno,
+                                    widget.index,
+                                    receiverNameController.text,
+                                    receiverNumberController.text,
+                                    receiverBlockIdUnitIdController.text,
+                                    receiverUnitIdController.text,
+                                    vehicledropingpickuppincode);
                                 Get.offAll(BookVehicleScreen(
-                                  vehiclepickupunitId: receiverUnitIdController.text,
+                                  vehiclePickupPincode:
+                                      homeController.pickupVehiclePincode.value,
                                   vehiclepickupAdress: homeController
                                       .pickupVehicleLocation.value,
                                   vehiclepickuplat: homeController
                                       .pickupVehiclelatitude.value,
                                   vehiclepickuplong: homeController
                                       .pickupVehiclelongitude.value,
-                                  vehiclepickupunitIdBlockIDs: homeController
-                                      .pickupVehicleblockUnitId.value,
+                                  vehiclepickupBlockIDs:
+                                      homeController.pickupVehicleblockId.value,
+                                  vehiclepickupunitId:
+                                      homeController.pickupVehicleunitId.value,
                                   vehiclepickupsendername: homeController
                                       .pickupVehicleSenderName.value,
                                   vehicleSenderMobilenumber: homeController
@@ -679,6 +680,11 @@ receiverUnitIdController.text
                                   borderRadius: BorderRadius.circular(10)),
                               child: TextFormField(
                                   controller: receiverBlockIdUnitIdController,
+                                  inputFormatters: [
+                                    LengthLimitingTextInputFormatter(4),
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
+                                  keyboardType: TextInputType.phone,
                                   decoration: InputDecoration(
                                       contentPadding: const EdgeInsets.only(
                                           left: 10,
@@ -817,28 +823,32 @@ receiverUnitIdController.text
                                   receiverNumberController.text.isNotEmpty) {
                                 _fetchAddressVehicle();
                                 homeController.vehicleDroppingLocation(
-                                  searchedController.text,
-                                  _markers.first.position.latitude.toString(),
-                                  _markers.first.position.longitude.toString(),
-                                  areapincode,
-                                  doorno,
-                                  widget.index,
-                                  receiverNameController.text,
-                                  receiverNumberController.text,
-                                  receiverBlockIdUnitIdController.text,
-                                receiverUnitIdController.text,
-                                );
+                                    searchedController.text,
+                                    _markers.first.position.latitude.toString(),
+                                    _markers.first.position.longitude
+                                        .toString(),
+                                    areapincode,
+                                    doorno,
+                                    widget.index,
+                                    receiverNameController.text,
+                                    receiverNumberController.text,
+                                    receiverBlockIdUnitIdController.text,
+                                    receiverUnitIdController.text,
+                                    vehicledropingpickuppincode);
                                 // Get.back();
                                 Get.offAll(BookVehicleScreen(
-                                   vehiclepickupunitId: receiverUnitIdController.text,
+                                  vehiclePickupPincode:
+                                      vehicledropingpickuppincode,
+                                  vehiclepickupBlockIDs:
+                                      homeController.pickupVehicleblockId.value,
+                                  vehiclepickupunitId:
+                                      homeController.pickupVehicleunitId.value,
                                   vehiclepickupAdress: homeController
                                       .pickupVehicleLocation.value,
                                   vehiclepickuplat: homeController
                                       .pickupVehiclelatitude.value,
                                   vehiclepickuplong: homeController
                                       .pickupVehiclelongitude.value,
-                                  vehiclepickupunitIdBlockIDs: homeController
-                                      .pickupVehicleblockUnitId.value,
                                   vehiclepickupsendername: homeController
                                       .pickupVehicleSenderName.value,
                                   vehicleSenderMobilenumber: homeController

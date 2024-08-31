@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -13,10 +11,12 @@ import 'package:v_export/customer/model/register_person_business_account_model.d
 import 'package:v_export/customer/services/network/auth_api_service/forget_password_api_service.dart';
 import 'package:v_export/customer/services/network/auth_api_service/login_api_service.dart';
 import 'package:v_export/customer/services/network/auth_api_service/new_password_api_service.dart';
+import 'package:v_export/customer/services/network/auth_api_service/privacy_policy_api_service.dart';
 import 'package:v_export/customer/services/network/auth_api_service/register_business_api_service.dart';
 import 'package:v_export/customer/services/network/auth_api_service/register_business_otp_api_service.dart';
 import 'package:v_export/customer/services/network/auth_api_service/register_personal_otp_service.dart';
 import 'package:v_export/customer/services/network/auth_api_service/register_personal_api_service.dart';
+import 'package:v_export/customer/services/network/auth_api_service/terms_and_conditions_api_service.dart';
 import 'package:v_export/customer/services/network/auth_api_service/verification_otp_api_service.dart';
 // import 'package:v_export/customer/services/network/start_api_services.dart';
 import 'package:v_export/customer/services/utils/base_url_api.dart';
@@ -77,7 +77,7 @@ class AuthController extends GetxController {
         position: SnackPosition.BOTTOM,
       );
 
-      Get.offAll(BottomNavigationScreen());
+      Get.offAll(BottomNavigationScreen(indexes: 0));
 
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString("auth_token", response.data["token"]);
@@ -136,7 +136,9 @@ class AuthController extends GetxController {
         content: "Signing in...",
         position: SnackPosition.BOTTOM,
       );
-      Get.offAll(BottomNavigationScreen());
+      Get.offAll(BottomNavigationScreen(
+        indexes: 0,
+      ));
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString("auth_token", response.data["token"]);
     } else {
@@ -166,15 +168,21 @@ class AuthController extends GetxController {
       LoginModel loginModel = LoginModel.fromJson(response.data);
       loginData = loginModel.user;
       roleName.value = loginModel.user.roles;
-      // AppSnackBar.showSnackbar(
-      //   headText: response.data['message'],
-      //   content: "Signing in...",
-      //   position: SnackPosition.BOTTOM,
-      // );
+
+      print("rolename====");
+      print(roleName.value);
+      final SharedPreferences typeName = await SharedPreferences.getInstance();
+      await typeName.setString("type", roleName.value);
+
       if (loginData!.roles == "client" || loginData!.roles == "business") {
+        print("name--------------");
+        print(typeName);
         print("login type name");
         print(loginData!.roles);
-        Get.offAll(BottomNavigationScreen());
+
+        Get.offAll(BottomNavigationScreen(
+          indexes: 0,
+        ));
       } else {
         Get.rawSnackbar(
           backgroundColor: Colors.red,
@@ -277,6 +285,59 @@ class AuthController extends GetxController {
       );
       Get.offAll(LoginScreen());
     } else {
+      Get.rawSnackbar(
+        backgroundColor: Colors.red,
+        messageText: Text(
+          response.data['message'],
+          style: TextStyle(color: Colors.white, fontSize: 15.sp),
+        ),
+      );
+    }
+  }
+
+  Teamandcondition teamsandconditionservec = Teamandcondition();
+  RxBool teamsLoading = false.obs;
+  var termsAndConditions = "".obs;
+  teamsandcondition() async {
+    teamsLoading.value = true;
+    dio.Response<dynamic> response =
+        await teamsandconditionservec.teamscondition();
+
+    if (response.data["success"] == true) {
+      print(response.data);
+      termsAndConditions.value = response.data["data"];
+      print(termsAndConditions.value);
+      teamsLoading.value = false;
+      update();
+    } else {
+      teamsLoading.value = false;
+      update();
+      Get.rawSnackbar(
+        backgroundColor: Colors.red,
+        messageText: Text(
+          response.data['message'],
+          style: TextStyle(color: Colors.white, fontSize: 15.sp),
+        ),
+      );
+    }
+  }
+
+  PrivacyPolicy privacyPolicy = PrivacyPolicy();
+  RxBool policyLoading = false.obs;
+  var privacy_Policy = "".obs;
+
+  privacyPolicyApi() async {
+    policyLoading.value = true;
+    dio.Response<dynamic> response = await privacyPolicy.privacyPolicy();
+    if (response.data["success"] == true) {
+      print(response.data);
+      privacy_Policy.value = response.data["data"];
+      print(termsAndConditions.value);
+      policyLoading.value = false;
+      update();
+    } else {
+      policyLoading.value = false;
+      update();
       Get.rawSnackbar(
         backgroundColor: Colors.red,
         messageText: Text(

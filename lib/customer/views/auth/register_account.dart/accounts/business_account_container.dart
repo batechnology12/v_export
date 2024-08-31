@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:v_export/customer/views/auth/register_account.dart/accounts/terms_and_condition.dart';
 import 'package:v_export/customer/views/auth/register_account.dart/verification_screen.dart';
 
 import '../../../../../constant/app_colors.dart';
@@ -283,11 +284,16 @@ class _BusinessAccountState extends State<BusinessAccount> {
                 ),
                 Row(
                   children: [
-                    Text('Terms & Condition',
-                        style: thirdsfont.copyWith(
-                            fontSize: 15.sp,
-                            color: AppColors.kblue,
-                            fontWeight: FontWeight.w500)),
+                    GestureDetector(
+                      onTap: () {
+                        Get.to(TermsAndConditionsScreen());
+                      },
+                      child: Text('Terms & Condition',
+                          style: thirdsfont.copyWith(
+                              fontSize: 15.sp,
+                              color: AppColors.kblue,
+                              fontWeight: FontWeight.w500)),
+                    ),
                     Text(' and ',
                         style: thirdsfont.copyWith(
                             fontSize: 15.sp, fontWeight: FontWeight.w500)),

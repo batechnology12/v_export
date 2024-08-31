@@ -24,29 +24,32 @@ class _NotificationViewState extends State<NotificationView> {
     getData();
   }
 
-  getData() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      homeScreenController.getNotification();
+  getData() async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await homeScreenController.getNotification();
       homeScreenController.update();
+      toggleFontWeight();
     });
   }
 
-  HomeScreenController homeScreenController = Get.find<HomeScreenController>();
+  HomeScreenController homeScreenController = Get.put(HomeScreenController());
+
   String formateDate = "";
 
   String dateShowing(DateTime dateTime) {
     final DateFormat formatter = DateFormat('dd MMM yyyy');
     final today = DateTime.now().toLocal();
-    final tomorrow = today.add(Duration(days: 1)).toLocal();
+    final yesterday = today.subtract(Duration(days: 1)).toLocal();
 
-    final todayDateOnly = DateTime(today.year, today.month, today.day);
-    final dateTimeDateOnly =
-        DateTime(dateTime.year, dateTime.month, dateTime.day);
+    final dateToShow = DateTime(dateTime.year, dateTime.month, dateTime.day);
+    final todayDate = DateTime(today.year, today.month, today.day);
+    final yesterdayDate =
+        DateTime(yesterday.year, yesterday.month, yesterday.day);
 
-    if (dateTimeDateOnly.isAtSameMomentAs(todayDateOnly)) {
+    if (dateToShow.isAtSameMomentAs(todayDate)) {
       return "Today";
-    } else if (dateTimeDateOnly.isAtSameMomentAs(tomorrow)) {
-      return "Tomorrow";
+    } else if (dateToShow.isAtSameMomentAs(yesterdayDate)) {
+      return "Yesterday";
     } else {
       return formatter.format(dateTime);
     }
@@ -72,9 +75,22 @@ class _NotificationViewState extends State<NotificationView> {
     }
   }
 
+  bool markAllRead = false;
+  FontWeight fontWeight = FontWeight.bold;
+
+  void toggleFontWeight() {
+    if (fontWeight == FontWeight.bold) {
+      setState(() {
+        fontWeight = FontWeight.normal;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    DateTime? lastDateDisplayed;
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
@@ -82,7 +98,7 @@ class _NotificationViewState extends State<NotificationView> {
         centerTitle: true,
         leading: GestureDetector(
           onTap: () {
-            Get.to(BottomNavigationScreen());
+            Get.to(BottomNavigationScreen(indexes: 0));
           },
           child: const Padding(
             padding: EdgeInsets.only(left: 10),
@@ -138,8 +154,28 @@ class _NotificationViewState extends State<NotificationView> {
                                   return homeScreenController
                                           .notificationList.isEmpty
                                       ? Center(
-                                          child: Text("Nodata"),
-                                        )
+                                          child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 200),
+                                          child: Column(
+                                            children: [
+                                              Image.asset(
+                                                "assets/images/noti.png",
+                                                height: 230,
+                                                width: 230,
+                                              ),
+                                              Text(
+                                                "Notification not available",
+                                                style: primaryfont.copyWith(
+                                                    fontSize: 14.sp,
+                                                    color:
+                                                        const Color(0xff263238),
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                              ),
+                                            ],
+                                          ),
+                                        ))
                                       : ListView.builder(
                                           physics:
                                               NeverScrollableScrollPhysics(),
@@ -147,38 +183,56 @@ class _NotificationViewState extends State<NotificationView> {
                                               .notificationList.length,
                                           shrinkWrap: true,
                                           itemBuilder: (context, index) {
+                                            DateTime notificationDate =
+                                                homeScreenController
+                                                    .notificationList[index]
+                                                    .createdAt;
+
+                                            String dateToShow =
+                                                dateShowing(notificationDate);
+
+                                            // Check if the date is different from the last displayed date
+                                            bool showDate =
+                                                lastDateDisplayed == null ||
+                                                    !isSameDate(
+                                                        lastDateDisplayed!,
+                                                        notificationDate);
+
+                                            if (showDate) {
+                                              lastDateDisplayed =
+                                                  notificationDate;
+                                            }
                                             return Container(
                                               child: Padding(
                                                 padding: const EdgeInsets.only(
                                                     top: 15),
                                                 child: Column(
                                                   children: [
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
-                                                      children: [
-                                                        Text(
-                                                          dateShowing(
-                                                            homeScreenController
-                                                                .notificationList[
-                                                                    index]
-                                                                .createdAt,
+                                                    if (showDate)
+                                                      Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          Text(
+                                                            dateToShow,
+                                                            style: primaryfont.copyWith(
+                                                                color: Color(
+                                                                    0xff263238),
+                                                                fontSize: 14.sp,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600),
                                                           ),
-                                                          style: primaryfont
-                                                              .copyWith(
-                                                                  color: Color(
-                                                                      0xff263238),
-                                                                  fontSize:
-                                                                      14.sp,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600),
-                                                        ),
-                                                        Text(
-                                                          'Mark all as read',
-                                                          style: primaryfont
-                                                              .copyWith(
+                                                          GestureDetector(
+                                                            onTap: () {
+                                                              // homeScreenController
+                                                              //     .notificationReadAll();
+                                                              toggleFontWeight();
+                                                            },
+                                                            child: Text(
+                                                              'Mark all as read',
+                                                              style: primaryfont.copyWith(
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w600,
@@ -186,9 +240,10 @@ class _NotificationViewState extends State<NotificationView> {
                                                                       13.sp,
                                                                   color: AppColors
                                                                       .kblue),
-                                                        )
-                                                      ],
-                                                    ),
+                                                            ),
+                                                          )
+                                                        ],
+                                                      ),
                                                     Row(
                                                       mainAxisAlignment:
                                                           MainAxisAlignment
@@ -228,12 +283,12 @@ class _NotificationViewState extends State<NotificationView> {
                                                                             index]
                                                                         .title,
                                                                     style: primaryfont.copyWith(
-                                                                        fontSize: 14
+                                                                        fontSize: 15
                                                                             .sp,
                                                                         color: const Color(
                                                                             0xff263238),
                                                                         fontWeight:
-                                                                            FontWeight.w600),
+                                                                            fontWeight),
                                                                   ),
                                                                   Padding(
                                                                     padding: const EdgeInsets
@@ -253,7 +308,7 @@ class _NotificationViewState extends State<NotificationView> {
                                                                         style: primaryfont.copyWith(
                                                                             fontSize:
                                                                                 12.sp,
-                                                                            fontWeight: FontWeight.w400),
+                                                                            fontWeight: fontWeight),
                                                                       ),
                                                                     ),
                                                                   )
@@ -263,12 +318,6 @@ class _NotificationViewState extends State<NotificationView> {
                                                           ],
                                                         ),
                                                         Text(
-                                                          // formateTime = formatDate(
-                                                          //     homeScreenController
-                                                          //         .notificationList[
-                                                          //             index]
-                                                          //         .createdAt,
-                                                          //     [HH, ':', nn, " ", am]),
                                                           formatElapsedTime(
                                                               homeScreenController
                                                                   .notificationList[
@@ -279,8 +328,7 @@ class _NotificationViewState extends State<NotificationView> {
                                                                   fontSize:
                                                                       12.sp,
                                                                   fontWeight:
-                                                                      FontWeight
-                                                                          .w500),
+                                                                      fontWeight),
                                                         )
                                                       ],
                                                     ),
@@ -301,5 +349,11 @@ class _NotificationViewState extends State<NotificationView> {
         ),
       ),
     );
+  }
+
+  bool isSameDate(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
   }
 }
