@@ -22,7 +22,6 @@ import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/arri
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/driver_about_details.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/driver_details_screen.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/payment_screen.dart/make_payment_screen.dart';
-
 import 'customer/controller/easebuzz_controller.dart';
 import 'package:device_preview/device_preview.dart';
 
@@ -31,7 +30,6 @@ void main() {
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   runApp(const MyApp());
-
   Get.put(AuthController());
   Get.put(HomeController());
   Get.put(AccountController());

@@ -14,14 +14,13 @@ import 'package:v_export/customer/services/network/booking_api_service/get_ongoi
 class MyListController extends GetxController {
   GetOngongOrderApiServices getOngongOrderApiServices =
       GetOngongOrderApiServices();
-
-  List<GetOngoingOrdersModelData> getOngoingOrdersModelData =
-      <GetOngoingOrdersModelData>[].obs;
-
   RxBool getOngoingOrdersLoading = false.obs;
+  var getOngoingOrdersModelData =
+      <GetOngoingOrdersModelData>[].obs; // Keep this as an observable list
   RxInt iD = 0.obs;
+
   getOngoingOrdersUser(String ongoingOrder) async {
-    getOngoingOrdersLoading(true);
+    getOngoingOrdersLoading(true); // Start loading
 
     dio.Response response =
         await getOngongOrderApiServices.getOngoingOderUser(ongoingOrder);
@@ -29,38 +28,76 @@ class MyListController extends GetxController {
     if (response.data["status"] == true) {
       GetOngoingOrdersModel getOngoingOrdersModel =
           GetOngoingOrdersModel.fromJson(response.data);
-      getOngoingOrdersModelData = getOngoingOrdersModel.data.orders;
 
-      iD.value = getOngoingOrdersModel.data.orders.first.id;
+      if (getOngoingOrdersModel.data.orders.isNotEmpty) {
+        getOngoingOrdersModelData.value = getOngoingOrdersModel.data.orders;
+        iD.value = getOngoingOrdersModel.data.orders.first.id;
 
-      final SharedPreferences typeID = await SharedPreferences.getInstance();
-      await typeID.setString("typeid", iD.value.toString());
+        final SharedPreferences typeID = await SharedPreferences.getInstance();
+        await typeID.setString("typeid", iD.value.toString());
 
-      print("rating for id-------------    ${iD.value}");
-
-      // Get.rawSnackbar(
-      //   backgroundColor: Colors.green,
-      //   messageText: Text(
-      //     response.data['message'],
-      //     style: TextStyle(color: Colors.white, fontSize: 15.sp),
-      //   ),
-      // );
-      // update();
-
+        print("rating for id-------------    ${iD.value}");
+      } else {
+        getOngoingOrdersModelData.clear();
+      }
       getOngoingOrdersLoading(false);
       update();
     } else {
-      // Get.rawSnackbar(
-      //   backgroundColor: Colors.red,
-      //   messageText: Text(
-      //     response.data['message'],
-      //     style: TextStyle(color: Colors.white, fontSize: 15.sp),
-      //   ),
-      // );
+      getOngoingOrdersModelData.clear();
       getOngoingOrdersLoading(false);
       update();
     }
   }
+
+  // GetOngongOrderApiServices getOngongOrderApiServices =
+  //     GetOngongOrderApiServices();
+
+  // List<GetOngoingOrdersModelData> getOngoingOrdersModelData =
+  //     <GetOngoingOrdersModelData>[].obs;
+
+  // RxBool getOngoingOrdersLoading = false.obs;
+  // RxInt iD = 0.obs;
+  // getOngoingOrdersUser(String ongoingOrder) async {
+  //   getOngoingOrdersLoading(true);
+
+  //   dio.Response response =
+  //       await getOngongOrderApiServices.getOngoingOderUser(ongoingOrder);
+
+  //   if (response.data["status"] == true) {
+  //     GetOngoingOrdersModel getOngoingOrdersModel =
+  //         GetOngoingOrdersModel.fromJson(response.data);
+  //     getOngoingOrdersModelData = getOngoingOrdersModel.data.orders;
+
+  //     iD.value = getOngoingOrdersModel.data.orders.first.id;
+
+  //     final SharedPreferences typeID = await SharedPreferences.getInstance();
+  //     await typeID.setString("typeid", iD.value.toString());
+
+  //     print("rating for id-------------    ${iD.value}");
+
+  //     // Get.rawSnackbar(
+  //     //   backgroundColor: Colors.green,
+  //     //   messageText: Text(
+  //     //     response.data['message'],
+  //     //     style: TextStyle(color: Colors.white, fontSize: 15.sp),
+  //     //   ),
+  //     // );
+  //     // update();
+
+  //     getOngoingOrdersLoading(false);
+  //     update();
+  //   } else {
+  //     // Get.rawSnackbar(
+  //     //   backgroundColor: Colors.red,
+  //     //   messageText: Text(
+  //     //     response.data['message'],
+  //     //     style: TextStyle(color: Colors.white, fontSize: 15.sp),
+  //     //   ),
+  //     // );
+  //     getOngoingOrdersLoading(false);
+  //     update();
+  //   }
+  // }
 
   GetCompletedOrderApiServices getCompletedOrderApiServices =
       GetCompletedOrderApiServices();

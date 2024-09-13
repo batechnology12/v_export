@@ -418,6 +418,10 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                           onTap: () {
                             if (formKey.currentState!.validate()) {
                               if (receiverNameController.text.isNotEmpty &&
+                                  receiverBlockIdUnitIdController
+                                      .text.isNotEmpty &&
+                                  receiverUnitIdController.text.isNotEmpty &&
+                                  searchedController.text.isNotEmpty &&
                                   receiverNumberController.text.isNotEmpty) {
                                 _fetchAddressVehicle();
 

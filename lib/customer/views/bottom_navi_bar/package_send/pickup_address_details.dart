@@ -445,7 +445,10 @@ class _PickupAddressDetailsState extends State<PickupAddressDetails> {
                             onTap: () async {
                               if (formKey.currentState!.validate()) {
                                 if (_senderNameController.text.isNotEmpty &&
-                                    _phoneNumberController.text.isNotEmpty) {
+                                    searchController.text.isNotEmpty &&
+                                    _phoneNumberController.text.isNotEmpty &&
+                                    _unitController.text.isNotEmpty &&
+                                    _blockUnitController.text.isNotEmpty) {
                                   homeController.updatepickupLocation(
                                     searchController.text,
                                     _markers.first.position.latitude.toString(),

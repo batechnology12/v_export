@@ -32,7 +32,6 @@ class AddBookingParcelModel {
 
   AddBookingParcelModel({
     required this.unitId,
-
     required this.senderUnitId,
     required this.totalAmountCost,
     required this.pickupAddress,
@@ -92,7 +91,7 @@ class Product {
 
 class BookingAddress {
    List<String> uintIdList;
-     String unitNoBlockNo;
+   String unitNoBlockNo;
   String customerName;
   String customerMobile;
 

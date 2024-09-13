@@ -1,31 +1,33 @@
 // To parse this JSON data, do
 //
-//     final getUserModel = getUserModelFromJson(jsonString);
+//     final getCorporateAccountModel = getCorporateAccountModelFromJson(jsonString);
 
 import 'dart:convert';
 
-GetUserModel getUserModelFromJson(String str) =>
-    GetUserModel.fromJson(json.decode(str));
+GetCorporateAccountModel getCorporateAccountModelFromJson(String str) =>
+    GetCorporateAccountModel.fromJson(json.decode(str));
 
-String getUserModelToJson(GetUserModel data) => json.encode(data.toJson());
+String getCorporateAccountModelToJson(GetCorporateAccountModel data) =>
+    json.encode(data.toJson());
 
-class GetUserModel {
+class GetCorporateAccountModel {
   bool status;
   String message;
-  UserData data;
+  GetCorporateAccountModelData data;
   String role;
 
-  GetUserModel({
+  GetCorporateAccountModel({
     required this.status,
     required this.message,
     required this.data,
     required this.role,
   });
 
-  factory GetUserModel.fromJson(Map<String, dynamic> json) => GetUserModel(
+  factory GetCorporateAccountModel.fromJson(Map<String, dynamic> json) =>
+      GetCorporateAccountModel(
         status: json["status"],
         message: json["message"],
-        data: UserData.fromJson(json["data"]),
+        data: GetCorporateAccountModelData.fromJson(json["data"]),
         role: json["role"],
       );
 
@@ -37,7 +39,7 @@ class GetUserModel {
       };
 }
 
-class UserData {
+class GetCorporateAccountModelData {
   int id;
   String firstName;
   dynamic lastName;
@@ -100,7 +102,7 @@ class UserData {
   List<Role> roles;
   List<dynamic> media;
 
-  UserData({
+  GetCorporateAccountModelData({
     required this.id,
     required this.firstName,
     required this.lastName,
@@ -164,7 +166,8 @@ class UserData {
     required this.media,
   });
 
-  factory UserData.fromJson(Map<String, dynamic> json) => UserData(
+  factory GetCorporateAccountModelData.fromJson(Map<String, dynamic> json) =>
+      GetCorporateAccountModelData(
         id: json["id"] ?? 0,
         firstName: json["first_name"] ?? "",
         lastName: json["last_name"] ?? "",
@@ -350,8 +353,7 @@ class Company {
         city: json["city"] ?? "",
         unitNo: json["unit_no"] ?? "",
         contactPersonName: json["contact_person_name"] ?? "",
-        industryNoOfDeliveryInMonth:
-            json["industry_no_of_delivery_in_month"] ?? "",
+        industryNoOfDeliveryInMonth: json["industry_no_of_delivery_in_month"] ?? "",
         pincode: json["pincode"] ?? "",
         contactPerson: json["contact_person"] ?? "",
         contactNumber: json["contact_number"] ?? "",
@@ -416,7 +418,7 @@ class Role {
         isDefault: json["is_default"] ?? "",
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
-        pivot: json["pivot"] == null ? null : Pivot.fromJson(json["pivot"]),
+        pivot:json["pivot"] == null ? null : Pivot.fromJson(json["pivot"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -444,9 +446,9 @@ class Pivot {
   });
 
   factory Pivot.fromJson(Map<String, dynamic> json) => Pivot(
-        modelId: json["model_id"] ?? "",
-        roleId: json["role_id"] ?? "",
-        modelType: json["model_type"] ?? "",
+        modelId: json["model_id"],
+        roleId: json["role_id"],
+        modelType: json["model_type"],
       );
 
   Map<String, dynamic> toJson() => {

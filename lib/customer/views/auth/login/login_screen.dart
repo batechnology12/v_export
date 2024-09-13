@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:svg_flutter/svg_flutter.dart';
 
 import 'package:v_export/constant/app_colors.dart';
@@ -25,6 +26,12 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  @override
+  void initState() {
+    super.initState();
+    loadUserCredentials();
+  }
+
   final RoundedLoadingButtonController _btnController =
       RoundedLoadingButtonController();
 
@@ -43,7 +50,33 @@ class _LoginScreenState extends State<LoginScreen> {
   final formkey = GlobalKey<FormState>();
 
   int selectedIndex = 0;
-  String selectedValues = "+65";
+  String selectedValues = "+91";
+
+
+  void loadUserCredentials() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool? remember = prefs.getBool('isRemember');
+    if (remember != null && remember) {
+      emailOrmobileController.text = prefs.getString('mobile') ?? '';
+      passwordController.text = prefs.getString('password') ?? '';
+      setState(() {
+        isCheck = true;
+        isRemember = true;
+      });
+    }
+  }
+
+  void saveUserCredentials() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('isRemember', isCheck);
+    if (isCheck) {
+      prefs.setString('mobile', emailOrmobileController.text);
+      prefs.setString('password', passwordController.text);
+    } else {
+      prefs.remove('mobile');
+      prefs.remove('password');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -120,129 +153,27 @@ class _LoginScreenState extends State<LoginScreen> {
                                 color: Color(0xff7C86A2), fontSize: 15.sp),
                           ),
                           ksizedbox5,
-                          // TextFormField(
-                          //   keyboardType: TextInputType.phone,
-                          //   inputFormatters: [
-                          //     selectedValues == "+65"
-                          //         ? LengthLimitingTextInputFormatter(8)
-                          //         : LengthLimitingTextInputFormatter(10),
-                          //     FilteringTextInputFormatter.digitsOnly,
-                          //   ],
-                          //   validator: selectedValues == "+65"
-                          //       ? (value) {
-                          //           if (value!.length < 8 || value.length > 8) {
-                          //             return 'Mobile number should be in 8 digits';
-                          //           } else {
-                          //             return null;
-                          //           }
-                          //         }
-                          //       : (value) {
-                          //           if (value!.length < 10 ||
-                          //               value.length > 10) {
-                          //             return 'Mobile number should be in 10 digits';
-                          //           } else {
-                          //             return null;
-                          //           }
-                          //         },
-                          //   controller: emailOrmobileController,
-                          //   decoration: InputDecoration(
-                          //     prefixIcon: Padding(
-                          //         padding:
-                          //             const EdgeInsets.only(left: 5, top: 13),
-                          //         child: PopupMenuButton(
-                          //           child: Container(
-                          //               height: 30,
-                          //               width: 50,
-                          //               child: Text(
-                          //                 selectedValues,
-                          //                 style: primaryfont.copyWith(
-                          //                   fontSize: 14, // Reduced font size
-                          //                   fontWeight: FontWeight.bold,
-                          //                 ),
-                          //               )),
-                          //           onSelected: (value) {
-                          //             setState(() {
-                          //               selectedIndex = value;
-                          //               selectedValues =
-                          //                   value == 0 ? "+65" : "+91";
-                          //             });
-                          //           },
-                          //           itemBuilder: (context) => [
-                          //             PopupMenuItem<int>(
-                          //               value: 0,
-                          //               child: Container(
-                          //                 height: 30,
-                          //                 width: 50,
-                          //                 child: Text(
-                          //                   "+65",
-                          //                   style: primaryfont.copyWith(
-                          //                     fontSize: 14, // Reduced font size
-                          //                     fontWeight: FontWeight.bold,
-                          //                   ),
-                          //                 ),
-                          //               ),
-                          //             ),
-                          //             PopupMenuItem<int>(
-                          //               value: 1,
-                          //               child: Container(
-                          //                 height: 30,
-                          //                 width: 50,
-                          //                 child: Text(
-                          //                   "+91",
-                          //                   style: primaryfont.copyWith(
-                          //                     fontSize: 14, // Reduced font size
-                          //                     fontWeight: FontWeight.bold,
-                          //                   ),
-                          //                 ),
-                          //               ),
-                          //             ),
-                          //           ],
-                          //         )),
-                          //     contentPadding: EdgeInsets.only(left: 5, top: 13),
-                          //     fillColor: Color(0xffF8F8F8),
-                          //     filled: true,
-                          //     border: OutlineInputBorder(
-                          //       borderSide: BorderSide.none,
-                          //       borderRadius: BorderRadius.circular(25.0),
-                          //     ),
-                          //     enabledBorder: OutlineInputBorder(
-                          //       borderSide: BorderSide.none,
-                          //       borderRadius: BorderRadius.circular(25.0),
-                          //     ),
-                          //     errorBorder: OutlineInputBorder(
-                          //       borderSide: BorderSide.none,
-                          //       borderRadius: BorderRadius.circular(25),
-                          //     ),
-                          //     focusedBorder: OutlineInputBorder(
-                          //       borderSide: BorderSide.none,
-                          //       borderRadius: BorderRadius.circular(25.0),
-                          //     ),
-                          //     focusedErrorBorder: OutlineInputBorder(
-                          //       borderSide: BorderSide.none,
-                          //       borderRadius: BorderRadius.circular(25.0),
-                          //     ),
-                          //   ),
-                          // ),
+
                           TextFormField(
                             keyboardType: TextInputType.phone,
                             inputFormatters: [
-                              selectedValues == "+65"
-                                  ? LengthLimitingTextInputFormatter(8)
-                                  : LengthLimitingTextInputFormatter(10),
+                              selectedValues == "+91"
+                                  ? LengthLimitingTextInputFormatter(10)
+                                  : LengthLimitingTextInputFormatter(8),
                               FilteringTextInputFormatter.digitsOnly,
                             ],
-                            validator: selectedValues == "+65"
+                            validator: selectedValues == "+91"
                                 ? (value) {
-                                    if (value!.length < 8 || value.length > 8) {
-                                      return 'Mobile number should be in 8 digits';
+                                    if (value!.length < 10 ||
+                                        value.length > 10) {
+                                      return 'Mobile number should be in 10 digits';
                                     } else {
                                       return null;
                                     }
                                   }
                                 : (value) {
-                                    if (value!.length < 10 ||
-                                        value.length > 10) {
-                                      return 'Mobile number should be in 10 digits';
+                                    if (value!.length < 8 || value.length > 8) {
+                                      return 'Mobile number should be in 8 digits';
                                     } else {
                                       return null;
                                     }
@@ -270,7 +201,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       setState(() {
                                         selectedIndex = value;
                                         selectedValues =
-                                            value == 0 ? "+65" : "+91";
+                                            value == 0 ? "+91" : "+65";
                                       });
                                     },
                                     itemBuilder: (context) => [
@@ -281,7 +212,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           width: 50,
                                           alignment: Alignment.center,
                                           child: Text(
-                                            "+65",
+                                            "+91",
                                             style: primaryfont.copyWith(
                                               fontSize: 14, // Adjust font size
                                               fontWeight: FontWeight.bold,
@@ -296,7 +227,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           width: 50,
                                           alignment: Alignment.center,
                                           child: Text(
-                                            "+91",
+                                            "+65",
                                             style: primaryfont.copyWith(
                                               fontSize: 14, // Adjust font size
                                               fontWeight: FontWeight.bold,
@@ -477,6 +408,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   : GestureDetector(
                                       onTap: () {
                                         if (formkey.currentState!.validate()) {
+                                          saveUserCredentials();
                                           authController.loginApi(
                                               emailOrmobileNmuber:
                                                   emailOrmobileController.text,

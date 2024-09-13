@@ -29,6 +29,7 @@ class MakePayment2 extends StatefulWidget {
 
 class _MakePayment2State extends State<MakePayment2> {
   WalletController walletController = Get.put(WalletController());
+  EasebuszzController easebuzz_controller = Get.put(EasebuszzController());
 
   String name1 = "";
   List paymentlist1 = [];
@@ -36,7 +37,7 @@ class _MakePayment2State extends State<MakePayment2> {
   bool walletCheck1 = false;
   bool sufficientBalance1 = false;
   String selectedPaymentMode1 = "";
-
+  bool isChecked1 = false;
   @override
   void initState() {
     super.initState();
@@ -53,11 +54,13 @@ class _MakePayment2State extends State<MakePayment2> {
     });
   }
 
+  String type = "";
+
   getstpeed() async {
-    final prefs = await SharedPreferences.getInstance();
-    String? type = prefs.getString('type');
+    // final prefs = await SharedPreferences.getInstance();
+    // String? type = prefs.getString('type');
     setState(() {
-      if (type == "client") {
+      if (accountController.getUserData!.role == "client") {
         paymentlist1 = [
           {
             "image": "assets/images/Vector.svg",
@@ -224,12 +227,10 @@ class _MakePayment2State extends State<MakePayment2> {
                                                           Text(
                                                             paymentlist1[index]
                                                                 ["name"],
-                                                            style: primaryfont
-                                                                .copyWith(
-                                                                    fontSize:
-                                                                        14.sp,
-                                                                    color: Color(
-                                                                        0xff455A64)),
+                                                            style: primaryfont.copyWith(
+                                                                fontSize: 14.sp,
+                                                                color: const Color(
+                                                                    0xff455A64)),
                                                           ),
                                                         ],
                                                       ),
@@ -286,23 +287,7 @@ class _MakePayment2State extends State<MakePayment2> {
                                             ? MainAxisAlignment.end
                                             : MainAxisAlignment.spaceBetween,
                                         children: [
-                                          // walletController.walletDataList
-                                          //             .isNotEmpty &&
-                                          //         walletCheck == true &&
-                                          //         sufficientBalance == true &&
-                                          //         double.parse(walletController
-                                          //                     .walletDataList
-                                          //                     .isNotEmpty
-                                          //                 ? walletController
-                                          //                     .walletDataList
-                                          //                     .last
-                                          //                     .walletBalance
-                                          //                 : "0.00") >=
-                                          //             double.parse(
-                                          //                 widget.totalAmount)
                                           if (sufficientBalance1)
-                                            // ? Container()
-                                            // :
                                             GestureDetector(
                                               onTap: () {},
                                               child: Container(
@@ -339,7 +324,7 @@ class _MakePayment2State extends State<MakePayment2> {
                                                           .symmetric(
                                                           horizontal: 10),
                                                       child: Text(
-                                                        "You do not have Sufficient fund in wallet, Top up your wallet balance${walletController.walletDataList.last.walletBalance}",
+                                                        "You do not have Sufficient fund in wallet, Top up your wallet balance \$${walletController.walletDataList.last.walletBalance}",
                                                         textAlign:
                                                             TextAlign.center,
                                                       ),
@@ -405,9 +390,7 @@ class _MakePayment2State extends State<MakePayment2> {
                                                   : GestureDetector(
                                                       onTap: () {
                                                         if (selectedPaymentMode1 ==
-                                                                "WALLET" ||
-                                                            selectedPaymentMode1 ==
-                                                                "ONLINE") {
+                                                            "WALLET") {
                                                           if (walletCheck1 ==
                                                               true) {
                                                             print(
@@ -433,14 +416,45 @@ class _MakePayment2State extends State<MakePayment2> {
                                                           }
                                                         } else if (isClicked1 ==
                                                                 true &&
+                                                            // isChecked1 ==
+                                                            //     true &&
                                                             selectedPaymentMode1 ==
                                                                 "COD") {
                                                           print("COD - cash");
-                                                          parcelController
-                                                              .updateBookingSatusApi(
-                                                                  widget
+                                                          if (isChecked1 ==
+                                                              true) {
+                                                            print(
+                                                                "selcted code ");
+                                                            parcelController
+                                                                .updateBookingSatusApi(
+                                                                    widget
+                                                                        .vehiclebookingid,
+                                                                    selectedPaymentMode1);
+                                                          } else {
+                                                            Get.snackbar(
+                                                                "Please select the Sender or receiver in COD",
+                                                                "Please try again!",
+                                                                colorText:
+                                                                    AppColors
+                                                                        .kwhite,
+                                                                backgroundColor:
+                                                                    Colors.red,
+                                                                snackPosition:
+                                                                    SnackPosition
+                                                                        .BOTTOM);
+                                                          }
+                                                        } else if (selectedPaymentMode1 ==
+                                                            "ONLINE") {
+                                                          print(
+                                                              "ONLINE PAYMENT---------------");
+                                                          easebuzz_controller
+                                                              .tablepayUseingEaseBuzzSubs(
+                                                                  bookingid: widget
                                                                       .vehiclebookingid,
-                                                                  selectedPaymentMode1);
+                                                                  payment_mode1:
+                                                                      "ONLINE",
+                                                                  amount: widget
+                                                                      .totalAmountVehicle);
                                                         } else {
                                                           Get.snackbar(
                                                               "Please select the Payment Mode",
@@ -508,7 +522,6 @@ class _MakePayment2State extends State<MakePayment2> {
 
   void showListViewDialog(BuildContext context) {
     int isSelected1 = -1;
-    bool isChecked1 = false;
 
     selected(int value) {
       setState(() {
@@ -516,14 +529,6 @@ class _MakePayment2State extends State<MakePayment2> {
         isChecked1 = true;
       });
     }
-
-    // int SelectedCheck = 0;
-    // isCheckselected(int value) {
-    //   setState(() {
-    //     SelectedCheck = value;
-    //   });
-    // }
-    // bool isChecked = false;
 
     showDialog(
       context: context,

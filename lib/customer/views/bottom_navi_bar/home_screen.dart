@@ -70,13 +70,16 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       print('addPostFrameCallback');
       await homeScreenController.getSlider();
-      await parcelController.getonGoingOrders();
+      //    await parcelController.getonGoingOrders();
       await accountController.getProfile();
       //      await parcelController.getAcceptBooking(parcelController.driverbookingid);
       homeScreenController.update();
       parcelController.update();
       homeController.clearDropLocations();
       homeController.parceldroplocationclear();
+      // if (homeController.vehicalEntries.length > 1) {
+      //   homeController.vehicalEntries.clear();
+      // }
       // setState(() {});
     });
   }

@@ -8,6 +8,10 @@ import 'package:v_export/constant/app_constant.dart';
 import 'package:v_export/constant/app_font.dart';
 import 'package:v_export/customer/model/login_model.dart';
 import 'package:v_export/customer/model/register_person_business_account_model.dart';
+import 'package:v_export/customer/services/network/auth_api_service/check_corporate_mail_api_service.dart';
+import 'package:v_export/customer/services/network/auth_api_service/check_corporate_mobile_api_service.dart';
+import 'package:v_export/customer/services/network/auth_api_service/check_mail%20_api_service.dart';
+import 'package:v_export/customer/services/network/auth_api_service/check_mobile_api_service.dart';
 import 'package:v_export/customer/services/network/auth_api_service/forget_password_api_service.dart';
 import 'package:v_export/customer/services/network/auth_api_service/login_api_service.dart';
 import 'package:v_export/customer/services/network/auth_api_service/new_password_api_service.dart';
@@ -29,6 +33,9 @@ import 'package:v_export/customer/views/auth/register_account.dart/register_pers
 import 'package:v_export/customer/views/bottom_navi_bar/bottomn_navi_bar.dart';
 
 class AuthController extends GetxController {
+  RxInt containerindex = 0.obs;
+
+  /////////////////////////////
   RxBool isLoading = false.obs;
   RegisterPersonalApiService registerPersonalApiService =
       RegisterPersonalApiService();
@@ -95,6 +102,7 @@ class AuthController extends GetxController {
   RegisterBusinessApiService registerBusinessApiService =
       RegisterBusinessApiService();
   RxBool businessLoading = false.obs;
+  RxString registerToken = "".obs;
   registerBusiness(RegisterBusinessAccount registerBusinessAccount) async {
     businessLoading(true);
     dio.Response<dynamic> response = await registerBusinessApiService
@@ -108,6 +116,12 @@ class AuthController extends GetxController {
           style: TextStyle(color: Colors.white, fontSize: 15.sp),
         ),
       );
+
+      registerToken.value = response.data["token"];
+      final SharedPreferences typeName = await SharedPreferences.getInstance();
+      await typeName.setString("crAccount", registerToken.value);
+      print("register token ----- $registerToken");
+
       Get.to(RegisterBusinessOtpScreen(
         mobile: registerBusinessAccount.mobile!,
       ));
@@ -156,7 +170,7 @@ class AuthController extends GetxController {
   RxBool loginLoading = false.obs;
   LoginData? loginData;
   RxString roleName = "".obs;
- 
+
   loginApi(
       {required String emailOrmobileNmuber, required String password}) async {
     loginLoading(true);
@@ -169,21 +183,17 @@ class AuthController extends GetxController {
       LoginModel loginModel = LoginModel.fromJson(response.data);
       loginData = loginModel.user;
       roleName.value = loginModel.user.roles;
-    
 
       print("rolename====");
       print(roleName.value);
       final SharedPreferences typeName = await SharedPreferences.getInstance();
       await typeName.setString("type", roleName.value);
 
-
-
       if (loginData!.roles == "client" || loginData!.roles == "business") {
         print("name--------------");
         print(typeName);
         print("login type name");
         print(loginData!.roles);
-
         Get.offAll(BottomNavigationScreen(
           indexes: 0,
         ));
@@ -352,33 +362,81 @@ class AuthController extends GetxController {
     }
   }
 
-  /////////////////////////////
-  RxInt containerindex = 0.obs;
+  CheckEmailExistsApiService checkEmailExistsApiService =
+      CheckEmailExistsApiService();
+  TextEditingController emailcontroller = TextEditingController();
+  // TextEditingController businessemailidController = TextEditingController();
+  RxBool checkmailLoading = false.obs;
+  checkMailApi(String email) async {
+    // checkmailLoading(true);
+    dio.Response<dynamic> response =
+        await checkEmailExistsApiService.checkEmailApi(email: email);
+    if (response.data["status"] == true) {
+      checkmailLoading(true);
+      update();
+    } else {
+      checkmailLoading(false);
+      print('mail Id not avilable');
+    }
+    update();
+  }
 
-  // RxBool isLoading = false.obs;
+  CheckMobileExistApiService checkMobileExistApiService =
+      CheckMobileExistApiService();
 
-  // void personalAccount({
-  //   required String type,
-  //   required String name,
-  //   required String email,
-  //   required String mobile,
-  //   required String password,
-  //   required String confirmPassword,
-  // }) {
-  //   StartupServices.networkProvider!.getCommonnormalcell(AppPath.register, {
-  //     "type": type,
-  //     "name": name,
-  //     "email": email,
-  //     "mobile": mobile,
-  //     "password": password,
-  //     "password_confirmation": confirmPassword
-  //   }).then((value) {
-  //     Get.log("response ${value.body}");
-  //     if (value.statusCode == 200) {
-  //       print("TRUE");
-  //     } else {
-  //       print("FALSE");
-  //     }
-  //   });
-  // }
+  TextEditingController mobileController = TextEditingController();
+
+  RxBool checkMobileLoading = false.obs;
+
+  checkMoobileApi(String mobile) async {
+    dio.Response<dynamic> response =
+        await checkMobileExistApiService.checkMobileApi(mobile: mobile);
+    if (response.data["status"] == true) {
+      checkMobileLoading(true);
+      update();
+    } else {
+      checkMobileLoading(false);
+      print('Mobile Number not avilable');
+    }
+    update();
+  }
+
+  CheckCorporateEmailExistsApiService checkCorporateEmailExistsApiService =
+      CheckCorporateEmailExistsApiService();
+
+  TextEditingController businessemailidController = TextEditingController();
+  RxBool checkcorporatemailLoading = false.obs;
+  checkcorporateMailApi(String email) async {
+    // checkmailLoading(true);
+    dio.Response<dynamic> response = await checkCorporateEmailExistsApiService
+        .checkcorporateEmailApi(email: email);
+    if (response.data["status"] == true) {
+      checkcorporatemailLoading(true);
+      update();
+    } else {
+      checkcorporatemailLoading(false);
+      print('mail Id not avilable');
+    }
+    update();
+  }
+
+  CheckCorporateMobileExistApiService checkCorporateMobileExistApiService =
+      CheckCorporateMobileExistApiService();
+
+  TextEditingController businessphoneController = TextEditingController();
+
+  RxBool checkcorporateMobileLoading = false.obs;
+
+  checkcorporateMobileApi(String mobile) async {
+    dio.Response<dynamic> response = await checkCorporateMobileExistApiService
+        .checkCorporateMobileApi(mobile: mobile);
+    if (response.data["status"] == true) {
+      checkcorporateMobileLoading(true);
+      update();
+    } else {
+      checkcorporateMobileLoading(false);
+      print('Mobile Number not avilable');
+    }
+    update();
+  }
 }

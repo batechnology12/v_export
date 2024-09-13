@@ -26,29 +26,23 @@ class _GetOngoingScreenDataState extends State<GetOngoingScreenData> {
   @override
   void initState() {
     super.initState();
-    myListController.getOngoingOrdersUser("ongoing");
+    getData();
   }
 
-  // getData() async {
-  //   WidgetsBinding.instance.addPostFrameCallback((_) async {
-  //     await myListController.getOngoingOrdersUser("ongoing");
-  //     myListController.update();
-  //     setState(() {});
-  //   });
-  // }
+  getData() async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      myListController.getOngoingOrdersUser("ongoing");
+      myListController.update();
+      setState(() {});
+    });
+  }
 
   MyListController myListController = Get.put(MyListController());
   ParcelController parcelController = Get.put(ParcelController());
 
-  // String formatTime(String time) {
-  //   DateTime parsedTime = DateFormat("HH:mm:ss").parse(time);
-  //   String formattedTime = DateFormat("h a").format(parsedTime);
-  //   return formattedTime;
-  // }
   String formatTime(String dateTimeString) {
     try {
       DateTime dateTime = DateTime.parse(dateTimeString);
-
       return DateFormat('hh:mm a').format(dateTime);
     } catch (e) {
       return '';
@@ -93,7 +87,6 @@ class _GetOngoingScreenDataState extends State<GetOngoingScreenData> {
                 itemBuilder: ((context, index) {
                   GetOngoingOrdersModelData getongoingdatalist =
                       myListController.getOngoingOrdersModelData[index];
-
                   return Padding(
                     padding: const EdgeInsets.only(left: 10, right: 10),
                     child: GestureDetector(
@@ -125,23 +118,6 @@ class _GetOngoingScreenDataState extends State<GetOngoingScreenData> {
                                         fontWeight: FontWeight.w700,
                                         fontSize: 13.sp),
                                   ),
-                                  // Row(
-                                  //   children: [
-                                  //     Text(
-                                  //       'Accepted Time : ',
-                                  //       style: primaryfont.copyWith(
-                                  //           fontWeight: FontWeight.w700,
-                                  //           color: Colors.amber,
-                                  //           fontSize: 11.sp),
-                                  //     ),
-                                  //     Text(
-                                  //       '${formatTime(getongoingdatalist.acceptedAt.toString())}',
-                                  //       style: primaryfont.copyWith(
-                                  //           fontWeight: FontWeight.w700,
-                                  //           fontSize: 11.sp),
-                                  //     ),
-                                  //   ],
-                                  // ),
                                   GestureDetector(
                                     onTap: () {
                                       Get.to(OngoingDriverDetailsScreen(
@@ -225,15 +201,6 @@ class _GetOngoingScreenDataState extends State<GetOngoingScreenData> {
                                     Text(
                                       formatTime(getongoingdatalist.pickupedAt
                                           .toString()),
-                                      // myListController
-                                      //             .getOngoingOrdersModelData[
-                                      //                 index]
-                                      //             .bookingType ==
-                                      //         "parcel"
-                                      //     ? '${formatTime(getongoingdatalist.acceptedAt.toString())}'
-                                      //     // '${getongoingdatalist.bookingProducts[0].pickuptimeFrom} to ${getongoingdatalist.bookingProducts[0].pickuptimeTo}'
-                                      //     : getongoingdatalist
-                                      //         .bookingTimeFromVehicle!,
                                       textAlign: TextAlign.center,
                                       style: primaryfont.copyWith(
                                           fontSize: 10.sp,

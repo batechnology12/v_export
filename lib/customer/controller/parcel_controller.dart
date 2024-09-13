@@ -14,6 +14,7 @@ import 'package:v_export/customer/model/get_booking_details_model.dart';
 import 'package:v_export/customer/model/get_vehicle_booking_details_model.dart';
 import 'package:v_export/customer/model/parcel_ongoing_order_model.dart';
 import 'package:v_export/customer/model/onGoing_order_model.dart';
+import 'package:v_export/customer/model/redmee_coupons_model.dart';
 import 'package:v_export/customer/model/vehicle_type_model.dart';
 import 'package:v_export/customer/services/network/booking_api_service/add_booking_parcel_api_service.dart';
 import 'package:v_export/customer/services/network/booking_api_service/add_booking_vehicle_api_services.dart';
@@ -23,6 +24,8 @@ import 'package:v_export/customer/services/network/booking_api_service/get_accep
 import 'package:v_export/customer/services/network/booking_api_service/get_booking_api_service.dart';
 import 'package:v_export/customer/services/network/booking_api_service/get_booking_calculations_api_service.dart';
 import 'package:v_export/customer/services/network/booking_api_service/get_booking_details_api_services.dart';
+import 'package:v_export/customer/services/network/booking_api_service/get_coupons_parcel_api_service.dart';
+import 'package:v_export/customer/services/network/booking_api_service/get_coupons_vehicle_api_service.dart';
 import 'package:v_export/customer/services/network/booking_api_service/get_delivery_type_api_services.dart';
 import 'package:v_export/customer/services/network/booking_api_service/get_km_api_service.dart';
 import 'package:v_export/customer/services/network/booking_api_service/get_vehicle_calculations_api_service.dart';
@@ -53,7 +56,6 @@ class ParcelController extends GetxController {
     dio.Response<dynamic> response =
         await ongongOrderApiServices.getOngoingOder();
     ongoingorderLoading(false);
-
     update();
     if (response.data["status"] == true) {
       OngoingOrdersModel ongoingOrdersModel =
@@ -76,25 +78,20 @@ class ParcelController extends GetxController {
 
   GetDeliveryTypesApiServices getDeliveryTypesApiServices =
       GetDeliveryTypesApiServices();
-  List<DeliveryTypeData> deliveryTypesData = [];
-
+  List<DeliveryTypeData> deliveryTypesData = <DeliveryTypeData>[].obs;
+  var istypesLoading = false.obs;
   getDeliveryTypes() async {
     dio.Response<dynamic> response =
         await getDeliveryTypesApiServices.getDeliveryTypes();
+    update();
     if (response.data["status"] == true) {
       DeliveyTypesModel deliveyTypesModel =
           DeliveyTypesModel.fromJson(response.data);
-      deliveryTypesData = deliveyTypesModel.data;
-      update();
-      // Get.rawSnackbar(
-      //   backgroundColor: Colors.green,
-      //   messageText: Text(
-      //     response.data['message'],
-      //     style: TextStyle(color: Colors.white, fontSize: 15.sp),
-      //   ),
-      // );
-      // update();
+      // deliveryTypesData = deliveyTypesModel.data;
+      deliveryTypesData.assignAll(deliveyTypesModel.data);
+      istypesLoading.value = false;
     } else {
+      istypesLoading.value = false;
       Get.rawSnackbar(
         backgroundColor: Colors.red,
         messageText: Text(
@@ -108,26 +105,22 @@ class ParcelController extends GetxController {
   GetVehicleTypeApiServices getVehicleTypeApiServices =
       GetVehicleTypeApiServices();
 
-  List<GetVehicleTypeData> vehicleTypesData = [];
+  List<GetVehicleTypeData> vehicleTypesData = <GetVehicleTypeData>[].obs;
 
-  RxBool vehicleTypeLoading = false.obs;
+  var vehicleTypeLoading = false.obs;
   getVehicleTypes() async {
-    vehicleTypeLoading(true);
+    //  vehicleTypeLoading(true);
     dio.Response<dynamic> response =
         await getVehicleTypeApiServices.getVehicleType();
-    vehicleTypeLoading(false);
+
     if (response.data["status"] == true) {
       GetVehicleTypeModel getVehicleTypeModel =
           GetVehicleTypeModel.fromJson(response.data);
-      vehicleTypesData = getVehicleTypeModel.data;
-      // Get.rawSnackbar(
-      //   backgroundColor: Colors.green,
-      //   messageText: Text(
-      //     response.data['message'],
-      //     style: TextStyle(color: Colors.white, fontSize: 15.sp),
-      //   ),
-      // );
+      // vehicleTypesData = getVehicleTypeModel.data;
+      vehicleTypesData.assignAll(getVehicleTypeModel.data);
+      vehicleTypeLoading.value = false;
     } else {
+      vehicleTypeLoading.value = false;
       Get.rawSnackbar(
         backgroundColor: Colors.red,
         messageText: Text(
@@ -180,7 +173,8 @@ class ParcelController extends GetxController {
   BookingData? data;
   int? parcelBookingId;
   String bookingTotalAmount = "";
-  addBookingParcel(AddBookingParcelModel addBookingParcelModel) async {
+  addBookingParcel(AddBookingParcelModel addBookingParcelModel,
+      String parcelTotalAmount) async {
     addBookingLoading(true);
     addBookingLoading1(false);
     update();
@@ -195,7 +189,7 @@ class ParcelController extends GetxController {
 
       Get.to(MakePayment(
         bookingid: parcelBookingId.toString(),
-        totalAmount: bookingTotalAmount,
+        totalAmount: parcelTotalAmount,
       ));
       // Get.rawSnackbar(
       //   backgroundColor: Colors.green,
@@ -232,7 +226,8 @@ class ParcelController extends GetxController {
   int? vehicleBookingId;
   String vehicleTotalAmount = "";
   RxBool addBookingVehicleLoading = false.obs;
-  addBookingVehicleApi(AddBookingVehicleModel addBookingVehicleModel) async {
+  addBookingVehicleApi(AddBookingVehicleModel addBookingVehicleModel,
+      String amountofVehicle) async {
     addBookingVehicleLoading(true);
     dio.Response<dynamic> response = await addBookingVehicleApiService
         .addBookingVehicle(addBookingVehicleModel);
@@ -245,10 +240,11 @@ class ParcelController extends GetxController {
       print("vehicle booking id------");
       print(vehicleBookingId);
       print("vehicle booking amount------");
-      print(vehicleTotalAmount);
+      print(amountofVehicle);
+
       Get.to(MakePayment2(
         vehiclebookingid: vehicleBookingId.toString(),
-        totalAmountVehicle: vehicleTotalAmount,
+        totalAmountVehicle: amountofVehicle,
       ));
       // GetVehicleBookingDetailsModel getVehicleBookingDetailsModel =
       //     GetVehicleBookingDetailsModel.fromJson(response.data);
@@ -437,7 +433,7 @@ class ParcelController extends GetxController {
 
   GetBookingCalculationApiServices getBookingCalculationApiServices =
       GetBookingCalculationApiServices();
-  List<PaymentDetailsData> paymentdatalist = [];
+  List<PaymentDetailsData> paymentdatalist = <PaymentDetailsData>[].obs;
 
   getBookingCalculationApi(
       String deliveryType,
@@ -459,17 +455,9 @@ class ParcelController extends GetxController {
             additionalServiceQty,
             postalcode);
     if (response.data["status"] == "success") {
-      PaymentDetalis paymentData = PaymentDetalis.fromJson(response.data);
+      PaymentDetalis paymentDatas = PaymentDetalis.fromJson(response.data);
       paymentdatalist.clear();
-      paymentdatalist.add(paymentData.paymentDetails);
-
-      // Get.rawSnackbar(
-      //   backgroundColor: Colors.green,
-      //   messageText: Text(
-      //     response.data['message'],
-      //     style: TextStyle(color: Colors.white, fontSize: 15.sp),
-      //   ),
-      // );
+      paymentdatalist.add(paymentDatas.paymentDetails);
       update();
     } else {
       Get.rawSnackbar(
@@ -590,6 +578,74 @@ class ParcelController extends GetxController {
           style: TextStyle(color: Colors.white, fontSize: 15.sp),
         ),
       );
+    }
+  }
+
+  RedeemCouponApiServices redeemCouponApiServices = RedeemCouponApiServices();
+  List<RedeemeCouponData> redmeeCouponsData = <RedeemeCouponData>[].obs;
+  redeemeCouponsApi(String coupon) async {
+    try {
+      dio.Response<dynamic> response =
+          await redeemCouponApiServices.redmeeCoupons(coupon);
+      if (response.data["success"] == true) {
+        GetRedeemeModel getRedeemeModel =
+            GetRedeemeModel.fromJson(response.data);
+
+        redmeeCouponsData.add(getRedeemeModel.data);
+        Get.rawSnackbar(
+          backgroundColor: Colors.green,
+          messageText: Text(
+            response.data['message'],
+            style: TextStyle(color: Colors.white, fontSize: 15.sp),
+          ),
+        );
+      } else {
+        Get.rawSnackbar(
+          backgroundColor: Colors.red,
+          messageText: Text(
+            "Coupon code is Invalid",
+            //  response.data['message'],
+            style: TextStyle(color: Colors.white, fontSize: 15.sp),
+          ),
+        );
+      }
+    } catch (e) {
+      print("---------catch---  $e");
+    }
+  }
+
+  RedeemCouponParcelApiServices redeemCouponParcelApiServices =
+      RedeemCouponParcelApiServices();
+
+  List<RedeemeCouponData> redmeeCouponsParcelData = <RedeemeCouponData>[].obs;
+
+  redmeeCouponParcelApi(String coupon) async {
+    try {
+      dio.Response<dynamic> response =
+          await redeemCouponParcelApiServices.redmeeCouponsParcel(coupon);
+      if (response.data["success"] == true) {
+        GetRedeemeModel getRedeemeModel =
+            GetRedeemeModel.fromJson(response.data);
+        redmeeCouponsParcelData.add(getRedeemeModel.data);
+        Get.rawSnackbar(
+          backgroundColor: Colors.green,
+          messageText: Text(
+            response.data['message'],
+            style: TextStyle(color: Colors.white, fontSize: 15.sp),
+          ),
+        );
+      } else {
+        Get.rawSnackbar(
+          backgroundColor: Colors.red,
+          messageText: Text(
+            "Coupon code is Invalid",
+            //  response.data['message'],
+            style: TextStyle(color: Colors.white, fontSize: 15.sp),
+          ),
+        );
+      }
+    } catch (e) {
+      print(" $e");
     }
   }
 }

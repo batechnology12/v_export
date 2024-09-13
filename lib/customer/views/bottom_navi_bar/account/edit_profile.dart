@@ -110,19 +110,19 @@ class _EditProfileState extends State<EditProfile> {
               color: AppColors.kwhite,
               fontWeight: FontWeight.w600),
         ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 18),
-            child: GestureDetector(
-              onTap: () {},
-              child: Image.asset(
-                "assets/icons/pen1.png",
-                height: 33.h,
-                width: 33.w,
-              ),
-            ),
-          ),
-        ],
+        // actions: [
+        //   Padding(
+        //     padding: const EdgeInsets.only(right: 18),
+        //     child: GestureDetector(
+        //       onTap: () {},
+        //       child: Image.asset(
+        //         "assets/icons/pen1.png",
+        //         height: 33.h,
+        //         width: 33.w,
+        //       ),
+        //     ),
+        //   ),
+        // ],
       ),
       body: Container(
         width: double.infinity,

@@ -467,10 +467,12 @@ class _DropLocationState extends State<DropLocation> {
                           onTap: () {
                             if (formKey.currentState!.validate()) {
                               if (receiverNameController.text.isNotEmpty &&
+                                  receiverBlockIdUnitIdController
+                                      .text.isNotEmpty &&
+                                  unitIdController.text.isNotEmpty &&
+                                  _searchedController.text.isNotEmpty &&
                                   receiverNumberController.text.isNotEmpty) {
                                 _fetchAddress();
-
-                               
 
                                 homeController.updateDroppingLocation(
                                   _searchedController.text,

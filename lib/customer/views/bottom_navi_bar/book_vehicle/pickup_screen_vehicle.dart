@@ -385,6 +385,9 @@ class _PickupVehicleAddressDetailsState
 
                               if (formKey.currentState!.validate()) {
                                 if (_senderNameController.text.isNotEmpty &&
+                                    _blockUnitController.text.isNotEmpty &&
+                                    _unitIdController.text.isNotEmpty &&
+                                    searchController.text.isNotEmpty &&
                                     _phoneNumberController.text.isNotEmpty) {
                                   await homeController
                                       .updatevehiclePickupLocation(

@@ -39,4 +39,7 @@ abstract class BaseApiServices {
   String get topupDetailsUrl => "${baseUrl}topUp";
   String get walletUrl => "${baseUrl}getWalletDetails";
   String get ratedriverUrl => "${baseUrl}rate_driver";
+  String get checkemailUrl => "${baseUrl}checkEmailExists";
+  String get checkemobileUrl => "${baseUrl}checkMobileExists";
+  String get redeemCouponsUrl =>  "${baseUrl}redeemCoupon";
 }

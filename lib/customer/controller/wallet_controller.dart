@@ -9,17 +9,19 @@ import 'package:v_export/customer/services/network/booking_api_service/topup_api
 import 'package:dio/dio.dart' as dio;
 import 'package:v_export/customer/services/network/booking_api_service/wallet_api_service.dart';
 import 'package:v_export/customer/services/network/wallet_api_service/wallet_api_service.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/package_send/booking_sucessfully_screen.dart';
 
 class WalletController extends GetxController {
-  EasebuszzController easebuszzController = Get.put(EasebuszzController());
+  // var amountController = TextEditingController().obs;
   ParcelController parcelController = Get.put(ParcelController());
   TopUpApiServices topUpApiServices = TopUpApiServices();
+  RxBool topupLoading = false.obs;
   topupApi(String amount) async {
+    topupLoading(true);
     dio.Response<dynamic> response = await topUpApiServices.topUpApi(amount);
-
+     
     if (response.data["status"] == true) {
-      easebuszzController.tablepayUseingEaseBuzzSubs(
-          bookingid: "", payment_mode1: "ONLINE");
+      Get.to(const BookingSucessfullyScreen());
       // Get.rawSnackbar(
       //   backgroundColor: Colors.green,
       //   messageText: Text(
@@ -27,6 +29,7 @@ class WalletController extends GetxController {
       //     style: TextStyle(color: Colors.white, fontSize: 15.sp),
       //   ),
       // );
+      topupLoading(false);
       update();
     } else {
       Get.rawSnackbar(
@@ -41,7 +44,7 @@ class WalletController extends GetxController {
 
   WalletApiServices walletApiServices = WalletApiServices();
   List<WalletData> walletDataList = [];
-  
+
   walletAPi() async {
     dio.Response<dynamic> response = await walletApiServices.walletApi();
     if (response.data["status"] == true) {

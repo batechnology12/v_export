@@ -21,6 +21,7 @@ class Wallet extends StatefulWidget {
 class _WalletState extends State<Wallet> {
   final TextEditingController amountController = TextEditingController();
   WalletController walletController = Get.put(WalletController());
+  EasebuszzController easebuszzController = Get.put(EasebuszzController());
 
   final easebuzzController = Get.put(EasebuszzController());
 
@@ -283,7 +284,11 @@ class _WalletState extends State<Wallet> {
                                                                     .center,
                                                             children: [
                                                               Text(
-                                                                '+\$${walletHistory.amount}',
+                                                                walletHistory
+                                                                            .transactionType ==
+                                                                        "credit"
+                                                                    ? '+\$${walletHistory.amount}'
+                                                                    : '-\$${walletHistory.amount}',
                                                                 style: primaryfont.copyWith(
                                                                     color: walletHistory.transactionType ==
                                                                             "credit"
@@ -689,32 +694,48 @@ class _WalletState extends State<Wallet> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                InkWell(
-                                  onTap: () {
-                                    walletController
-                                        .topupApi(amountController.text);
-                                    //  easebuzzController
-                                    //               .tablepayUseingEaseBuzzSubs(
-                                    //                   bookingid: widget.parceID,
-                                    //                   payment_mode1: payment_mode);
-                                  },
-                                  child: Container(
-                                    height: 50.h,
-                                    width: 150.w,
-                                    decoration: BoxDecoration(
-                                        color: Colors.black,
-                                        borderRadius: BorderRadius.circular(8)),
-                                    child: Center(
-                                      child: Text(
-                                        'Top up',
-                                        style: primaryfont.copyWith(
-                                            fontSize: 17.sp,
-                                            fontWeight: FontWeight.w500,
-                                            color: AppColors.kwhite),
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                                Obx(() {
+                                  return walletController.topupLoading.isTrue
+                                      ? Container(
+                                          height: 50.h,
+                                          width: 150.w,
+                                          decoration: BoxDecoration(
+                                              color: Colors.transparent,
+                                              borderRadius:
+                                                  BorderRadius.circular(8)),
+                                          child: const Center(
+                                              child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                          )),
+                                        )
+                                      : InkWell(
+                                          onTap: () {
+                                            easebuszzController
+                                                .tablepayUseingEaseBuzzSubs(
+                                                    bookingid: "",
+                                                    payment_mode1: "off",
+                                                    amount:
+                                                        amountController.text);
+                                          },
+                                          child: Container(
+                                            height: 50.h,
+                                            width: 150.w,
+                                            decoration: BoxDecoration(
+                                                color: Colors.black,
+                                                borderRadius:
+                                                    BorderRadius.circular(8)),
+                                            child: Center(
+                                              child: Text(
+                                                'Top up',
+                                                style: primaryfont.copyWith(
+                                                    fontSize: 17.sp,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: AppColors.kwhite),
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                }),
                                 InkWell(
                                   onTap: () {
                                     amountController.clear();

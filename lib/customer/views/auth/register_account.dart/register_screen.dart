@@ -40,10 +40,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool ishide = true;
   bool confirnhide = true;
   var nameController = TextEditingController();
-  var mobileController = TextEditingController();
+//  var mobileController = TextEditingController();
   var passwordController = TextEditingController();
   var confirmpasswordController = TextEditingController();
-  var emailController = TextEditingController();
+  // var emailController = TextEditingController();
 
   bool ischecked = false;
 
@@ -51,8 +51,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool confirmhide = true;
 
   var companynameController = TextEditingController();
-  var businessphoneController = TextEditingController();
-  var businessemailidController = TextEditingController();
+  // var businessphoneController = TextEditingController();
+  // var businessemailidController = TextEditingController();
   var contactPersonController = TextEditingController();
   var industryController = TextEditingController();
   var parcelController = TextEditingController();
@@ -191,128 +191,208 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         color: Color(0xff7C86A2)),
                                   ),
                                   ksizedbox5,
-                                  TextFormField(
-                                    keyboardType: TextInputType.phone,
-                                    inputFormatters: [
-                                      selectedValues == "+65"
-                                          ? LengthLimitingTextInputFormatter(8)
-                                          : LengthLimitingTextInputFormatter(
-                                              10),
-                                      FilteringTextInputFormatter.digitsOnly,
-                                    ],
-                                    validator: selectedValues == "+65"
-                                        ? (value) {
-                                            if (value!.length < 8 ||
-                                                value.length > 8) {
-                                              return 'Mobile number should be in 8 digits';
-                                            } else {
-                                              return null;
-                                            }
-                                          }
-                                        : (value) {
-                                            if (value!.length < 10 ||
-                                                value.length > 10) {
-                                              return 'Mobile number should be in 10 digits';
-                                            } else {
-                                              return null;
-                                            }
-                                          },
-                                    controller: mobileController,
-                                    decoration: InputDecoration(
-                                      prefixIcon: Row(
-                                        mainAxisSize: MainAxisSize.min,
+                                  GetBuilder<AuthController>(
+                                    builder: (authController) {
+                                      return Column(
                                         children: [
-                                          PopupMenuButton<int>(
-                                            padding: EdgeInsets.zero,
-                                            child: Container(
-                                              height: 30,
-                                              width: 50,
-                                              alignment: Alignment.center,
-                                              child: Text(
-                                                selectedValues,
-                                                style: primaryfont.copyWith(
-                                                  fontSize:
-                                                      14, // Adjust font size
-                                                  fontWeight: FontWeight.bold,
-                                                ),
+                                          TextFormField(
+                                            keyboardType: TextInputType.phone,
+                                            inputFormatters: [
+                                              selectedValues == "+65"
+                                                  ? LengthLimitingTextInputFormatter(
+                                                      8)
+                                                  : LengthLimitingTextInputFormatter(
+                                                      10),
+                                              FilteringTextInputFormatter
+                                                  .digitsOnly,
+                                            ],
+                                            validator: selectedValues == "+65"
+                                                ? (value) {
+                                                    if (value!.length != 8) {
+                                                      return 'Mobile number should be in 8 digits';
+                                                    } else if (!authController
+                                                        .checkMobileLoading
+                                                        .isTrue) {
+                                                      return 'Mobile number is not available';
+                                                    } else {
+                                                      return null;
+                                                    }
+                                                  }
+                                                : (value) {
+                                                    if (value!.length != 10) {
+                                                      return 'Mobile number should be in 10 digits';
+                                                    } else if (!authController
+                                                        .checkMobileLoading
+                                                        .isTrue) {
+                                                      return 'Mobile number is not available';
+                                                    } else {
+                                                      return null;
+                                                    }
+                                                  },
+                                            onChanged: (value) {
+                                              authController
+                                                  .checkMoobileApi(value);
+                                              authController.update();
+                                            },
+                                            controller:
+                                                authController.mobileController,
+                                            decoration: InputDecoration(
+                                              suffixIcon: authController
+                                                      .checkMobileLoading.isTrue
+                                                  ? const Icon(
+                                                      Icons.done,
+                                                      color: Colors.green,
+                                                    )
+                                                  : const Icon(
+                                                      Icons.error,
+                                                      color: Colors.red,
+                                                    ),
+                                              prefixIcon: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  PopupMenuButton<int>(
+                                                    padding: EdgeInsets.zero,
+                                                    child: Container(
+                                                      height: 30,
+                                                      width: 50,
+                                                      alignment:
+                                                          Alignment.center,
+                                                      child: Text(
+                                                        selectedValues,
+                                                        style: primaryfont
+                                                            .copyWith(
+                                                          fontSize:
+                                                              14, // Adjust font size
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    onSelected: (value) {
+                                                      setState(() {
+                                                        selectedIndex = value;
+                                                        selectedValues =
+                                                            value == 0
+                                                                ? "+65"
+                                                                : "+91";
+                                                      });
+                                                      authController
+                                                          .update(); // Call update here as well if needed
+                                                    },
+                                                    itemBuilder: (context) => [
+                                                      PopupMenuItem<int>(
+                                                        value: 0,
+                                                        child: Container(
+                                                          height: 30,
+                                                          width: 50,
+                                                          alignment:
+                                                              Alignment.center,
+                                                          child: Text(
+                                                            "+65",
+                                                            style: primaryfont
+                                                                .copyWith(
+                                                              fontSize:
+                                                                  14, // Adjust font size
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      PopupMenuItem<int>(
+                                                        value: 1,
+                                                        child: Container(
+                                                          height: 30,
+                                                          width: 50,
+                                                          alignment:
+                                                              Alignment.center,
+                                                          child: Text(
+                                                            "+91",
+                                                            style: primaryfont
+                                                                .copyWith(
+                                                              fontSize:
+                                                                  14, // Adjust font size
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  SizedBox(width: 5),
+                                                ],
+                                              ),
+                                              contentPadding:
+                                                  const EdgeInsets.only(
+                                                      left: 5, top: 13),
+                                              fillColor: Color(0xffF8F8F8),
+                                              filled: true,
+                                              border: OutlineInputBorder(
+                                                borderSide: BorderSide.none,
+                                                borderRadius:
+                                                    BorderRadius.circular(25.0),
+                                              ),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderSide: BorderSide.none,
+                                                borderRadius:
+                                                    BorderRadius.circular(25.0),
+                                              ),
+                                              errorBorder: OutlineInputBorder(
+                                                borderSide: BorderSide.none,
+                                                borderRadius:
+                                                    BorderRadius.circular(25),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide.none,
+                                                borderRadius:
+                                                    BorderRadius.circular(25.0),
+                                              ),
+                                              focusedErrorBorder:
+                                                  OutlineInputBorder(
+                                                borderSide: BorderSide.none,
+                                                borderRadius:
+                                                    BorderRadius.circular(25.0),
                                               ),
                                             ),
-                                            onSelected: (value) {
-                                              setState(() {
-                                                selectedIndex = value;
-                                                selectedValues =
-                                                    value == 0 ? "+65" : "+91";
-                                              });
-                                            },
-                                            itemBuilder: (context) => [
-                                              PopupMenuItem<int>(
-                                                value: 0,
-                                                child: Container(
-                                                  height: 30,
-                                                  width: 50,
-                                                  alignment: Alignment.center,
-                                                  child: Text(
-                                                    "+65",
-                                                    style: primaryfont.copyWith(
-                                                      fontSize:
-                                                          14, // Adjust font size
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              PopupMenuItem<int>(
-                                                value: 1,
-                                                child: Container(
-                                                  height: 30,
-                                                  width: 50,
-                                                  alignment: Alignment.center,
-                                                  child: Text(
-                                                    "+91",
-                                                    style: primaryfont.copyWith(
-                                                      fontSize:
-                                                          14, // Adjust font size
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
                                           ),
-                                          SizedBox(width: 5),
+                                          const SizedBox(height: 3),
+                                          if (authController
+                                              .mobileController.text.isNotEmpty)
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                authController
+                                                        .checkMobileLoading
+                                                        .isTrue
+                                                    ? Text(
+                                                        "Available",
+                                                        style: primaryfont
+                                                            .copyWith(
+                                                          color: Colors.green,
+                                                          fontSize: 13.sp,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                        ),
+                                                      )
+                                                    : Text(
+                                                        "Not Available",
+                                                        style: primaryfont
+                                                            .copyWith(
+                                                          color: Colors.red,
+                                                          fontSize: 13.sp,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                        ),
+                                                      ),
+                                              ],
+                                            )
                                         ],
-                                      ),
-                                      contentPadding:
-                                          EdgeInsets.only(left: 5, top: 13),
-                                      fillColor: Color(0xffF8F8F8),
-                                      filled: true,
-                                      border: OutlineInputBorder(
-                                        borderSide: BorderSide.none,
-                                        borderRadius:
-                                            BorderRadius.circular(25.0),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide.none,
-                                        borderRadius:
-                                            BorderRadius.circular(25.0),
-                                      ),
-                                      errorBorder: OutlineInputBorder(
-                                        borderSide: BorderSide.none,
-                                        borderRadius: BorderRadius.circular(25),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide.none,
-                                        borderRadius:
-                                            BorderRadius.circular(25.0),
-                                      ),
-                                      focusedErrorBorder: OutlineInputBorder(
-                                        borderSide: BorderSide.none,
-                                        borderRadius:
-                                            BorderRadius.circular(25.0),
-                                      ),
-                                    ),
+                                      );
+                                    },
                                   ),
                                   ksizedbox20,
                                   Text(
@@ -321,47 +401,109 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         color: Color(0xff7C86A2)),
                                   ),
                                   ksizedbox5,
-                                  TextFormField(
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Please enter the email ID';
-                                      } else {
-                                        return null;
-                                      }
-                                    },
-                                    controller: emailController,
-                                    keyboardType: TextInputType.emailAddress,
-                                    decoration: InputDecoration(
-                                      contentPadding:
-                                          EdgeInsets.only(bottom: 5, left: 20),
-                                      fillColor: Color(0xffF8F8F8),
-                                      filled: true,
-                                      border: OutlineInputBorder(
-                                        borderSide: BorderSide.none,
-                                        borderRadius:
-                                            BorderRadius.circular(25.0),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide.none,
-                                        borderRadius:
-                                            BorderRadius.circular(25.0),
-                                      ),
-                                      errorBorder: OutlineInputBorder(
-                                        borderSide: BorderSide.none,
-                                        borderRadius: BorderRadius.circular(25),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide.none,
-                                        borderRadius:
-                                            BorderRadius.circular(25.0),
-                                      ),
-                                      focusedErrorBorder: OutlineInputBorder(
-                                        borderSide: BorderSide.none,
-                                        borderRadius:
-                                            BorderRadius.circular(25.0),
-                                      ),
-                                    ),
-                                  ),
+                                  GetBuilder<AuthController>(
+                                      builder: (context) {
+                                    return Column(
+                                      children: [
+                                        TextFormField(
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'Please enter the email ID';
+                                            } else if (!authController
+                                                .checkmailLoading.isTrue) {
+                                              return 'Email Id is not available';
+                                            } else {
+                                              return null;
+                                            }
+                                          },
+                                          onChanged: (value) {
+                                            authController.checkMailApi(value);
+                                          },
+                                          controller:
+                                              authController.emailcontroller,
+                                          keyboardType:
+                                              TextInputType.emailAddress,
+                                          decoration: InputDecoration(
+                                            suffixIcon: authController
+                                                    .checkmailLoading.isTrue
+                                                ? const Icon(
+                                                    Icons.done,
+                                                    color: Colors.green,
+                                                  )
+                                                : const Icon(
+                                                    Icons.error,
+                                                    color: Colors.red,
+                                                  ),
+                                            contentPadding: EdgeInsets.only(
+                                                bottom: 5, left: 20, right: 10),
+                                            fillColor: Color(0xffF8F8F8),
+                                            filled: true,
+                                            border: OutlineInputBorder(
+                                              borderSide: BorderSide.none,
+                                              borderRadius:
+                                                  BorderRadius.circular(25.0),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide.none,
+                                              borderRadius:
+                                                  BorderRadius.circular(25.0),
+                                            ),
+                                            errorBorder: OutlineInputBorder(
+                                              borderSide: BorderSide.none,
+                                              borderRadius:
+                                                  BorderRadius.circular(25),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderSide: BorderSide.none,
+                                              borderRadius:
+                                                  BorderRadius.circular(25.0),
+                                            ),
+                                            focusedErrorBorder:
+                                                OutlineInputBorder(
+                                              borderSide: BorderSide.none,
+                                              borderRadius:
+                                                  BorderRadius.circular(25.0),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 3,
+                                        ),
+                                        if (authController
+                                            .emailcontroller.text.isNotEmpty)
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              authController
+                                                      .checkmailLoading.isTrue
+                                                  ? Text(
+                                                      "Available",
+                                                      style:
+                                                          primaryfont.copyWith(
+                                                              color:
+                                                                  Colors.green,
+                                                              fontSize: 13.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600),
+                                                    )
+                                                  : Text(
+                                                      " Not Available",
+                                                      style:
+                                                          primaryfont.copyWith(
+                                                              color: Colors.red,
+                                                              fontSize: 13.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600),
+                                                    )
+                                            ],
+                                          )
+                                      ],
+                                    );
+                                  }),
                                   ksizedbox20,
                                   Text(
                                     'Password*',
@@ -602,9 +744,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                     RegisterPersonalAccount(
                                                         name:
                                                             nameController.text,
-                                                        email: emailController
+                                                        email: authController
+                                                            .emailcontroller
                                                             .text,
-                                                        phone: mobileController
+                                                        phone: authController
+                                                            .mobileController
                                                             .text,
                                                         password:
                                                             passwordController
@@ -752,129 +896,203 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         color: Color(0xff7C86A2)),
                                   ),
                                   ksizedbox5,
-                                  TextFormField(
-                                    keyboardType: TextInputType.phone,
-                                    inputFormatters: [
-                                      selectedValues == "+65"
-                                          ? LengthLimitingTextInputFormatter(8)
-                                          : LengthLimitingTextInputFormatter(
-                                              10),
-                                      FilteringTextInputFormatter.digitsOnly,
-                                    ],
-                                    validator: selectedValues == "+65"
-                                        ? (value) {
-                                            if (value!.length < 8 ||
-                                                value.length > 8) {
-                                              return 'Mobile number should be in 8 digits';
-                                            } else {
-                                              return null;
-                                            }
-                                          }
-                                        : (value) {
-                                            if (value!.length < 10 ||
-                                                value.length > 10) {
-                                              return 'Mobile number should be in 10 digits';
-                                            } else {
-                                              return null;
-                                            }
+
+                                  ///
+                                  GetBuilder<AuthController>(
+                                      builder: (context) {
+                                    return Column(
+                                      children: [
+                                        TextFormField(
+                                          keyboardType: TextInputType.phone,
+                                          inputFormatters: [
+                                            selectedValuess == "+65"
+                                                ? LengthLimitingTextInputFormatter(
+                                                    8)
+                                                : LengthLimitingTextInputFormatter(
+                                                    10),
+                                            FilteringTextInputFormatter
+                                                .digitsOnly,
+                                          ],
+                                          validator: selectedValuess == "+65"
+                                              ? (value) {
+                                                  if (value!.length < 8 ||
+                                                      value.length > 8) {
+                                                    return 'Mobile number should be in 8 digits';
+                                                  } else if (!authController
+                                                      .checkcorporateMobileLoading
+                                                      .isTrue) {
+                                                    return 'Mobile number is not available';
+                                                  } else {
+                                                    return null;
+                                                  }
+                                                }
+                                              : (value) {
+                                                  if (value!.length < 10 ||
+                                                      value.length > 10) {
+                                                    return 'Mobile number should be in 10 digits';
+                                                  } else if (!authController
+                                                      .checkcorporateMobileLoading
+                                                      .isTrue) {
+                                                    return 'Mobile number is not available';
+                                                  } else {
+                                                    return null;
+                                                  }
+                                                },
+                                          controller: authController
+                                              .businessphoneController,
+                                          onChanged: (value) {
+                                            authController
+                                                .checkcorporateMobileApi(value);
+                                            authController.update();
                                           },
-                                    controller: businessphoneController,
-                                    decoration: InputDecoration(
-                                      prefixIcon: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          PopupMenuButton<int>(
-                                            padding: EdgeInsets.zero,
-                                            child: Container(
-                                              height: 30,
-                                              width: 50,
-                                              alignment: Alignment.center,
-                                              child: Text(
-                                                selectedValues,
-                                                style: primaryfont.copyWith(
-                                                  fontSize:
-                                                      14, // Adjust font size
-                                                  fontWeight: FontWeight.bold,
+                                          decoration: InputDecoration(
+                                            prefixIcon: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                PopupMenuButton<int>(
+                                                  padding: EdgeInsets.zero,
+                                                  child: Container(
+                                                    height: 30,
+                                                    width: 50,
+                                                    alignment: Alignment.center,
+                                                    child: Text(
+                                                      selectedValuess,
+                                                      style:
+                                                          primaryfont.copyWith(
+                                                        fontSize:
+                                                            14, // Adjust font size
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  onSelected: (value) {
+                                                    setState(() {
+                                                      selectedIndexes = value;
+                                                      selectedValuess =
+                                                          value == 0
+                                                              ? "+65"
+                                                              : "+91";
+                                                    });
+                                                    authController.update();
+                                                  },
+                                                  itemBuilder: (context) => [
+                                                    PopupMenuItem<int>(
+                                                      value: 0,
+                                                      child: Container(
+                                                        height: 30,
+                                                        width: 50,
+                                                        alignment:
+                                                            Alignment.center,
+                                                        child: Text(
+                                                          "+65",
+                                                          style: primaryfont
+                                                              .copyWith(
+                                                            fontSize:
+                                                                14, // Adjust font size
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    PopupMenuItem<int>(
+                                                      value: 1,
+                                                      child: Container(
+                                                        height: 30,
+                                                        width: 50,
+                                                        alignment:
+                                                            Alignment.center,
+                                                        child: Text(
+                                                          "+91",
+                                                          style: primaryfont
+                                                              .copyWith(
+                                                            fontSize:
+                                                                14, // Adjust font size
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
-                                              ),
+                                                SizedBox(width: 5),
+                                              ],
                                             ),
-                                            onSelected: (value) {
-                                              setState(() {
-                                                selectedIndex = value;
-                                                selectedValues =
-                                                    value == 0 ? "+65" : "+91";
-                                              });
-                                            },
-                                            itemBuilder: (context) => [
-                                              PopupMenuItem<int>(
-                                                value: 0,
-                                                child: Container(
-                                                  height: 30,
-                                                  width: 50,
-                                                  alignment: Alignment.center,
-                                                  child: Text(
-                                                    "+65",
-                                                    style: primaryfont.copyWith(
-                                                      fontSize:
-                                                          14, // Adjust font size
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
+                                            contentPadding:
+                                                const EdgeInsets.only(
+                                                    left: 5, top: 13),
+                                            fillColor: Color(0xffF8F8F8),
+                                            filled: true,
+                                            suffixIcon: authController
+                                                    .checkcorporateMobileLoading
+                                                    .isTrue
+                                                ? const Icon(
+                                                    Icons.done,
+                                                    color: Colors.green,
+                                                  )
+                                                : const Icon(
+                                                    Icons.error,
+                                                    color: Colors.red,
                                                   ),
-                                                ),
-                                              ),
-                                              PopupMenuItem<int>(
-                                                value: 1,
-                                                child: Container(
-                                                  height: 30,
-                                                  width: 50,
-                                                  alignment: Alignment.center,
-                                                  child: Text(
-                                                    "+91",
-                                                    style: primaryfont.copyWith(
-                                                      fontSize:
-                                                          14, // Adjust font size
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
+                                            border: OutlineInputBorder(
+                                              borderSide: BorderSide.none,
+                                              borderRadius:
+                                                  BorderRadius.circular(25.0),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide.none,
+                                              borderRadius:
+                                                  BorderRadius.circular(25.0),
+                                            ),
+                                            errorBorder: OutlineInputBorder(
+                                              borderSide: BorderSide.none,
+                                              borderRadius:
+                                                  BorderRadius.circular(25),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderSide: BorderSide.none,
+                                              borderRadius:
+                                                  BorderRadius.circular(25.0),
+                                            ),
+                                            focusedErrorBorder:
+                                                OutlineInputBorder(
+                                              borderSide: BorderSide.none,
+                                              borderRadius:
+                                                  BorderRadius.circular(25.0),
+                                            ),
+                                          ),
+                                        ),
+                                        if (authController
+                                            .businessphoneController
+                                            .text
+                                            .isNotEmpty)
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              Text(
+                                                authController
+                                                        .checkcorporateMobileLoading
+                                                        .isTrue
+                                                    ? "Available"
+                                                    : "Not Available",
+                                                style: primaryfont.copyWith(
+                                                  color: authController
+                                                          .checkcorporateMobileLoading
+                                                          .isTrue
+                                                      ? Colors.green
+                                                      : Colors.red,
+                                                  fontSize: 13.sp,
+                                                  fontWeight: FontWeight.w600,
                                                 ),
                                               ),
                                             ],
-                                          ),
-                                          SizedBox(width: 5),
-                                        ],
-                                      ),
-                                      contentPadding:
-                                          EdgeInsets.only(left: 5, top: 13),
-                                      fillColor: Color(0xffF8F8F8),
-                                      filled: true,
-                                      border: OutlineInputBorder(
-                                        borderSide: BorderSide.none,
-                                        borderRadius:
-                                            BorderRadius.circular(25.0),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide.none,
-                                        borderRadius:
-                                            BorderRadius.circular(25.0),
-                                      ),
-                                      errorBorder: OutlineInputBorder(
-                                        borderSide: BorderSide.none,
-                                        borderRadius: BorderRadius.circular(25),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide.none,
-                                        borderRadius:
-                                            BorderRadius.circular(25.0),
-                                      ),
-                                      focusedErrorBorder: OutlineInputBorder(
-                                        borderSide: BorderSide.none,
-                                        borderRadius:
-                                            BorderRadius.circular(25.0),
-                                      ),
-                                    ),
-                                  ),
+                                          )
+                                      ],
+                                    );
+                                  }),
 
                                   ksizedbox20,
                                   Text(
@@ -883,47 +1101,118 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         color: Color(0xff7C86A2)),
                                   ),
                                   ksizedbox5,
-                                  TextFormField(
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Please enter the company name';
-                                      } else {
-                                        return null;
-                                      }
-                                    },
-                                    controller: businessemailidController,
-                                    keyboardType: TextInputType.emailAddress,
-                                    decoration: InputDecoration(
-                                      contentPadding:
-                                          EdgeInsets.only(bottom: 5, left: 20),
-                                      fillColor: Color(0xffF8F8F8),
-                                      filled: true,
-                                      border: OutlineInputBorder(
-                                        borderSide: BorderSide.none,
-                                        borderRadius:
-                                            BorderRadius.circular(25.0),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide.none,
-                                        borderRadius:
-                                            BorderRadius.circular(25.0),
-                                      ),
-                                      errorBorder: OutlineInputBorder(
-                                        borderSide: BorderSide.none,
-                                        borderRadius: BorderRadius.circular(25),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide.none,
-                                        borderRadius:
-                                            BorderRadius.circular(25.0),
-                                      ),
-                                      focusedErrorBorder: OutlineInputBorder(
-                                        borderSide: BorderSide.none,
-                                        borderRadius:
-                                            BorderRadius.circular(25.0),
-                                      ),
-                                    ),
-                                  ),
+                                  GetBuilder<AuthController>(
+                                      builder: (context) {
+                                    return Column(
+                                      children: [
+                                        TextFormField(
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'Please enter the email ID';
+                                            } else if (!authController
+                                                .checkcorporatemailLoading
+                                                .isTrue) {
+                                              return 'Email Id is not available';
+                                            } else {
+                                              return null;
+                                            }
+                                          },
+                                          onChanged: (value) {
+                                            authController
+                                                .checkcorporateMailApi(value);
+                                          },
+                                          controller: authController
+                                              .businessemailidController,
+                                          keyboardType:
+                                              TextInputType.emailAddress,
+                                          decoration: InputDecoration(
+                                            suffixIcon: authController
+                                                    .checkcorporatemailLoading
+                                                    .isTrue
+                                                ? const Icon(
+                                                    Icons.done,
+                                                    color: Colors.green,
+                                                  )
+                                                : const Icon(
+                                                    Icons.error,
+                                                    color: Colors.red,
+                                                  ),
+                                            contentPadding:
+                                                const EdgeInsets.only(
+                                                    bottom: 5,
+                                                    left: 20,
+                                                    right: 10),
+                                            fillColor: Color(0xffF8F8F8),
+                                            filled: true,
+                                            border: OutlineInputBorder(
+                                              borderSide: BorderSide.none,
+                                              borderRadius:
+                                                  BorderRadius.circular(25.0),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide.none,
+                                              borderRadius:
+                                                  BorderRadius.circular(25.0),
+                                            ),
+                                            errorBorder: OutlineInputBorder(
+                                              borderSide: BorderSide.none,
+                                              borderRadius:
+                                                  BorderRadius.circular(25),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderSide: BorderSide.none,
+                                              borderRadius:
+                                                  BorderRadius.circular(25.0),
+                                            ),
+                                            focusedErrorBorder:
+                                                OutlineInputBorder(
+                                              borderSide: BorderSide.none,
+                                              borderRadius:
+                                                  BorderRadius.circular(25.0),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 3,
+                                        ),
+                                        if (authController
+                                            .businessemailidController
+                                            .text
+                                            .isNotEmpty)
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              authController
+                                                      .checkcorporatemailLoading
+                                                      .isTrue
+                                                  ? Text(
+                                                      "Available",
+                                                      style:
+                                                          primaryfont.copyWith(
+                                                              color:
+                                                                  Colors.green,
+                                                              fontSize: 13.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600),
+                                                    )
+                                                  : Text(
+                                                      " Not Available",
+                                                      style:
+                                                          primaryfont.copyWith(
+                                                              color: Colors.red,
+                                                              fontSize: 13.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600),
+                                                    )
+                                            ],
+                                          )
+                                      ],
+                                    );
+                                  }),
                                   ksizedbox20,
                                   Text(
                                     'Contact Person Name (NRIC Full Name)**',
@@ -1337,12 +1626,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                       companyName:
                                                           companynameController
                                                               .text,
-                                                      mobile:
-                                                          businessphoneController
-                                                              .text,
-                                                      emailId:
-                                                          businessemailidController
-                                                              .text,
+                                                      mobile: authController
+                                                          .businessphoneController
+                                                          .text,
+                                                      emailId: authController
+                                                          .businessemailidController
+                                                          .text,
                                                       contactPerson:
                                                           contactPersonController
                                                               .text,

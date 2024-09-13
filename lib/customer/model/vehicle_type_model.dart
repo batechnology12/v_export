@@ -25,7 +25,8 @@ class GetVehicleTypeModel {
       GetVehicleTypeModel(
         status: json["status"],
         message: json["message"],
-        data: List<GetVehicleTypeData>.from(json["data"].map((x) => GetVehicleTypeData.fromJson(x))),
+        data: List<GetVehicleTypeData>.from(
+            json["data"].map((x) => GetVehicleTypeData.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -39,6 +40,13 @@ class GetVehicleTypeData {
   int id;
   String name;
   String description;
+  String baseFees;
+  String perkm;
+  String roundTrip;
+  String additionalStop;
+  String driverHelp;
+  String helper;
+  String weekendFriSatSun;
   DateTime createdAt;
   DateTime updatedAt;
 
@@ -46,22 +54,44 @@ class GetVehicleTypeData {
     required this.id,
     required this.name,
     required this.description,
+    required this.baseFees,
+    required this.perkm,
+    required this.roundTrip,
+    required this.additionalStop,
+    required this.driverHelp,
+    required this.helper,
+    required this.weekendFriSatSun,
     required this.createdAt,
     required this.updatedAt,
   });
 
-  factory GetVehicleTypeData.fromJson(Map<String, dynamic> json) => GetVehicleTypeData(
+  factory GetVehicleTypeData.fromJson(Map<String, dynamic> json) =>
+      GetVehicleTypeData(
         id: json["id"],
         name: json["name"],
         description: json["description"],
+        baseFees: json["base_fees"],
+        perkm: json["perkm"],
+        roundTrip: json["round_trip"],
+        additionalStop: json["additional_stop"],
+        driverHelp: json["driver_help"],
+        helper: json["helper"],
+        weekendFriSatSun: json["weekend_fri_sat_sun"],
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
       );
-      
+
   Map<String, dynamic> toJson() => {
         "id": id,
         "name": name,
         "description": description,
+        "base_fees": baseFees,
+        "perkm": perkm,
+        "round_trip": roundTrip,
+        "additional_stop": additionalStop,
+        "driver_help": driverHelp,
+        "helper": helper,
+        "weekend_fri_sat_sun": weekendFriSatSun,
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
       };

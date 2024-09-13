@@ -62,12 +62,14 @@ class _AccountState extends State<Account> {
     });
   }
 
+  String type = "";
+
   void hideCorporateAccount() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? type = prefs.getString('type');
+    // final SharedPreferences prefs = await SharedPreferences.getInstance();
+    // String? type = prefs.getString('crAccount');
 
     setState(() {
-      corporateName = type!;
+      type = accountController.getUserData!.role;
     });
   }
 
@@ -204,10 +206,14 @@ class _AccountState extends State<Account> {
                             shrinkWrap: true,
                             itemCount: accountList.length,
                             itemBuilder: (context, index) {
+                              //   type == "client"
+
+                              // ? Container()
+                              // : Get.to(CorporateAccount());
                               if (accountList[index]["accountNames"] ==
                                       "Corporate account" &&
                                   authController.roleName.value == "client") {
-                                return Container(); // Hide "Corporate account" if the condition is met
+                                return Container();
                               }
                               return GestureDetector(
                                 onTap: () {
@@ -226,13 +232,14 @@ class _AccountState extends State<Account> {
                                       );
                                       break;
                                     case 2:
-                                      corporateName == "client"
-                                          ? Get.snackbar("Alert",
-                                              "Corporate account not required.",
-                                              colorText: AppColors.kwhite,
-                                              backgroundColor: Colors.red,
-                                              snackPosition:
-                                                  SnackPosition.BOTTOM)
+                                      type == "client"
+                                          ? Container()
+                                          // Get.snackbar("Alert",
+                                          //     "Corporate account not required.",
+                                          //     colorText: AppColors.kwhite,
+                                          //     backgroundColor: Colors.red,
+                                          //     snackPosition:
+                                          //         SnackPosition.BOTTOM)
                                           : Get.to(CorporateAccount());
                                       break;
                                     case 3:
@@ -481,7 +488,10 @@ class _AccountState extends State<Account> {
                           onTap: () async {
                             final SharedPreferences prefs =
                                 await SharedPreferences.getInstance();
+                            //  await prefs.clear();
                             await prefs.setString('auth_token', "null");
+                            print("token clear--------------");
+                            print(prefs);
                             Get.offAll(LoginScreen());
                           },
                           child: Container(

@@ -357,7 +357,7 @@ class _CancelBookingState extends State<CancelBooking> {
                       Get.to(BottomNavigationScreen(indexes: 0));
                     },
                     child: CommonContainer(
-                      name: "Go It",
+                      name: "Got It",
                     ),
                   )
                 ],

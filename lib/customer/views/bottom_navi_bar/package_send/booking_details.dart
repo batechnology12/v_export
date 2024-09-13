@@ -41,7 +41,6 @@ class BookingDetailsScreen extends StatefulWidget {
   List<String> parcelKg;
   List<String> parcelQty;
   String parcelITEMS;
-
   String? pickTimeFROM;
   String? pickTimeTO;
   List<String> pickTimeListFROM;
@@ -52,7 +51,6 @@ class BookingDetailsScreen extends StatefulWidget {
   List<String> doorNAME;
   List<String> receiverNAME;
   List<String> receiverPHONE;
-
   List<String> receiverUnitIdBlockID;
   List<String> receiverunitId;
   String deliveyDate;
@@ -129,6 +127,34 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
   @override
   void initState() {
     super.initState();
+    //  redeemecoupon();
+  }
+
+  double totalAmountOfParcel = 0;
+  double totalAmountParcelOfPercentageorFixed = 0;
+
+  bool amountCheckParcel = false;
+  void coupondiscount() {
+    if (parcelController.redmeeCouponsData.first.type == "percentage") {
+      totalAmountParcelOfPercentageorFixed =
+          double.parse(parcelController.paymentdatalist.last.total.value) -
+              (double.parse(parcelController.paymentdatalist.last.total.value) *
+                  (int.parse(parcelController.redmeeCouponsData.first.value) /
+                      100));
+    } else if (parcelController.redmeeCouponsData.first.type == "fixed") {
+      totalAmountParcelOfPercentageorFixed =
+          double.parse(parcelController.paymentdatalist.last.total.value) -
+              double.parse(parcelController.redmeeCouponsData.first.value);
+    }
+    setState(() {
+      totalAmountOfParcel = totalAmountParcelOfPercentageorFixed;
+      amountCheckParcel = true;
+    });
+  }
+
+  void applyCoupon() async {
+    await parcelController.redeemeCouponsApi(couponParcelController.text);
+    coupondiscount();
   }
 
   List<String> getID() {
@@ -140,7 +166,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
     return additinalServiceID;
   }
 
-  var couponController = TextEditingController();
+  var couponParcelController = TextEditingController();
 
   ParcelController parcelController = Get.put(ParcelController());
   final HomeController homeController = Get.put(HomeController());
@@ -224,17 +250,6 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
 
     jsonString = jsonEncode(data);
     print("JSON Data: $jsonString");
-    setState(() {});
-    print("amount =${amount.toStringAsFixed(2)}");
-    print("DISTANCE COST---");
-    print(distanceCost);
-    print("total distance------");
-    print(totalDistance);
-    print("toatalpriceamount-----");
-    print(totalParcelAmount);
-    print("total amount-----");
-    print(amount);
-    print("----------kg");
   }
 
   final formKey = GlobalKey<FormState>();
@@ -798,9 +813,6 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                                     children: [
                                                       Text(
                                                         widget.deliveryTYPE,
-                                                        // widget.bookingdatalist
-                                                        //     .deliveryTypeName,
-                                                        //   textAlign: TextAlign.right,
                                                         style: primaryfont
                                                             .copyWith(
                                                                 fontSize: 15.sp,
@@ -896,40 +908,59 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                                       ),
                                                     ],
                                                   ),
-                                                  Container(
-                                                    width: 150,
-                                                    child: ListView.builder(
-                                                      shrinkWrap: true,
-                                                      scrollDirection:
-                                                          Axis.vertical,
-                                                      physics:
-                                                          NeverScrollableScrollPhysics(),
-                                                      // itemCount: 2,
-                                                      itemCount: widget
-                                                          .selectedParcelservice
-                                                          .length,
-                                                      itemBuilder:
-                                                          (context, index) {
-                                                        AdditionalServiceData
-                                                            additionalparcelServiceData =
-                                                            widget.selectedParcelservice[
-                                                                index];
-                                                        return Text(
-                                                          additionalparcelServiceData
-                                                              .name,
-                                                          style: primaryfont
-                                                              .copyWith(
-                                                                  fontSize:
-                                                                      15.sp,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500,
-                                                                  color: Color(
-                                                                      0xff455A64)),
-                                                        );
-                                                      },
-                                                    ),
-                                                  ),
+                                                  widget.selectedParcelservice
+                                                          .isEmpty
+                                                      ? Container(
+                                                          width: 140,
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  right: 20),
+                                                          child: Text(
+                                                            "No",
+                                                            style: primaryfont.copyWith(
+                                                                fontSize: 15.sp,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                color: const Color(
+                                                                    0xff455A64)),
+                                                          ),
+                                                        )
+                                                      : Container(
+                                                          width: 150,
+                                                          child:
+                                                              ListView.builder(
+                                                            shrinkWrap: true,
+                                                            scrollDirection:
+                                                                Axis.vertical,
+                                                            physics:
+                                                                NeverScrollableScrollPhysics(),
+                                                            // itemCount: 2,
+                                                            itemCount: widget
+                                                                .selectedParcelservice
+                                                                .length,
+                                                            itemBuilder:
+                                                                (context,
+                                                                    index) {
+                                                              AdditionalServiceData
+                                                                  additionalparcelServiceData =
+                                                                  widget.selectedParcelservice[
+                                                                      index];
+                                                              return Text(
+                                                                additionalparcelServiceData
+                                                                    .name,
+                                                                style: primaryfont.copyWith(
+                                                                    fontSize:
+                                                                        15.sp,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w500,
+                                                                    color: Color(
+                                                                        0xff455A64)),
+                                                              );
+                                                            },
+                                                          ),
+                                                        ),
                                                 ],
                                               ),
                                               ksizedbox5,
@@ -1032,56 +1063,74 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                                     fontSize: 16.sp),
                                               ),
                                               ksizedbox15,
-                                              Container(
-                                                height: 50.h,
-                                                width: size.width,
-                                                decoration: BoxDecoration(
-                                                    color: Colors.grey.shade200,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10)),
-                                                child: TextField(
-                                                  controller: couponController,
-                                                  decoration: InputDecoration(
-                                                      suffix: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(
-                                                                bottom: 12),
-                                                        child: Container(
-                                                          height: 38.h,
-                                                          width: 80.w,
-                                                          decoration: BoxDecoration(
-                                                              color: AppColors
-                                                                  .kblue,
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          12)),
-                                                          child: Center(
-                                                            child: Text(
-                                                              'Apply',
-                                                              style: primaryfont.copyWith(
-                                                                  color: AppColors
-                                                                      .kwhite,
-                                                                  fontSize:
-                                                                      14.sp,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600),
+                                              GestureDetector(
+                                                onTap: () {},
+                                                child: Container(
+                                                  height: 50.h,
+                                                  width: size.width,
+                                                  decoration: BoxDecoration(
+                                                      color:
+                                                          Colors.grey.shade200,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10)),
+                                                  child: TextField(
+                                                    controller:
+                                                        couponParcelController,
+                                                    decoration: InputDecoration(
+                                                        contentPadding:
+                                                            EdgeInsets.only(
+                                                          left: 10,
+                                                        ),
+                                                        suffixIcon:
+                                                            GestureDetector(
+                                                          onTap: () {
+                                                            // setState(() {
+                                                            applyCoupon();
+                                                            amountCheckParcel =
+                                                                true;
+                                                            print(
+                                                                "totalcostofvehicle------ ${parcelController.getvehicleCalculationDatas.last.totalCost.value}");
+                                                            print(
+                                                                "totalamountofvehicle------ ${totalAmountOfParcel.toStringAsFixed(2)}");
+                                                            // });
+                                                          },
+                                                          child: Container(
+                                                            margin:
+                                                                EdgeInsets.all(
+                                                                    5),
+                                                            height: 40.h,
+                                                            width: 80.w,
+                                                            decoration: BoxDecoration(
+                                                                color: AppColors
+                                                                    .kblue,
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            12)),
+                                                            child: Center(
+                                                              child: Text(
+                                                                'Apply',
+                                                                style: primaryfont.copyWith(
+                                                                    color: AppColors
+                                                                        .kwhite,
+                                                                    fontSize:
+                                                                        14.sp,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600),
+                                                              ),
                                                             ),
                                                           ),
                                                         ),
-                                                      ),
-                                                      border:
-                                                          OutlineInputBorder(
-                                                              borderSide:
-                                                                  BorderSide
-                                                                      .none,
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          5))),
+                                                        border: OutlineInputBorder(
+                                                            borderSide:
+                                                                BorderSide.none,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        5))),
+                                                  ),
                                                 ),
                                               )
                                             ],
@@ -1176,12 +1225,28 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                                                 "0.00",
                                                             "helperCost":
                                                                 "0.00",
+                                                            "weekendCost":
+                                                                "0.00",
                                                             'additional_services':
                                                                 additionalServicesList,
-                                                            "total":
-                                                                paymentDetailsDataList
+                                                            "total": amountCheckParcel ==
+                                                                    true
+                                                                ? totalAmountOfParcel
+                                                                    .toStringAsFixed(
+                                                                        2)
+                                                                : paymentDetailsDataList
                                                                     .total
                                                                     .value,
+                                                            "discount": amountCheckParcel ==
+                                                                    true
+                                                                ? parcelController
+                                                                            .redmeeCouponsData
+                                                                            .first
+                                                                            .type ==
+                                                                        "percentage"
+                                                                    ? "${parcelController.redmeeCouponsData.first.value}%"
+                                                                    : "\$${parcelController.redmeeCouponsData.first.value}"
+                                                                : "0.00",
                                                           };
                                                           jsonString =
                                                               jsonEncode(data);
@@ -1443,7 +1508,66 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                                           );
                                                         });
                                               }),
-                                              ksizedbox20,
+                                              ksizedbox15,
+                                              if (amountCheckParcel == true)
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Text(
+                                                      "Discount",
+                                                      textAlign: TextAlign.left,
+                                                      style:
+                                                          primaryfont.copyWith(
+                                                              fontSize: 15.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              color: Color(
+                                                                  0xff455A64)),
+                                                    ),
+                                                    parcelController
+                                                            .redmeeCouponsData
+                                                            .isEmpty
+                                                        ? CircularProgressIndicator()
+                                                        : parcelController
+                                                                    .redmeeCouponsData
+                                                                    .first
+                                                                    .type ==
+                                                                "percentage"
+                                                            ? Text(
+                                                                "${parcelController.redmeeCouponsData.first.value}%",
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .left,
+                                                                style: primaryfont.copyWith(
+                                                                    fontSize:
+                                                                        15.sp,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600,
+                                                                    color: Color(
+                                                                        0xff455A64)),
+                                                              )
+                                                            : Text(
+                                                                "\$${parcelController.redmeeCouponsData.first.value}",
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .left,
+                                                                style: primaryfont.copyWith(
+                                                                    fontSize:
+                                                                        15.sp,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600,
+                                                                    color: Color(
+                                                                        0xff000000)),
+                                                              )
+                                                  ],
+                                                ),
+                                              if (amountCheckParcel == true)
+                                                ksizedbox10,
                                               GetBuilder<ParcelController>(
                                                   builder: (context) {
                                                 return parcelController
@@ -1487,7 +1611,8 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                                                         0xff000000)),
                                                               ),
                                                               Text(
-                                                                '\$${paymentDetailsDataLists.total.value}',
+                                                                '\$${amountCheckParcel == true ? totalAmountOfParcel.toStringAsFixed(2) : paymentDetailsDataLists.total.value}',
+                                                                //    '\$${paymentDetailsDataLists.total.value}',
                                                                 textAlign:
                                                                     TextAlign
                                                                         .left,
@@ -1524,6 +1649,8 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                         "drop block iD --- ${widget.receiverUnitIdBlockID}");
                                     print(
                                         "drop unit id --- ${widget.receiverunitId}");
+                                    print(
+                                        "total amount ---- ${parcelController.paymentdatalist.first.total.value}");
 
                                     return parcelController
                                             .addBookingLoading.isTrue
@@ -1531,17 +1658,17 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                             height: 50.h,
                                             width: size.width,
                                             decoration: BoxDecoration(
-                                                //  color: Colors.white,
-                                                borderRadius:
-                                                    BorderRadius.circular(30)),
+                                              borderRadius:
+                                                  BorderRadius.circular(30),
+                                            ),
                                             child: Center(
-                                                child:
-                                                    CircularProgressIndicator(
-                                              color: AppColors.kblue,
-                                            )),
+                                              child: CircularProgressIndicator(
+                                                color: AppColors.kblue,
+                                              ),
+                                            ),
                                           )
                                         : InkWell(
-                                            onTap: () {
+                                            onTap: () async {
                                               List<Product> products = [];
 
                                               debugLists();
@@ -1621,64 +1748,74 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                               AddBookingParcelModel
                                                   addBookingParcelModel =
                                                   AddBookingParcelModel(
-                                                      unitId: widget.unitId,
-                                                      senderUnitId: widget
-                                                          .senderunitIdBlockID,
-                                                      totalAmountCost:
-                                                          totalAmount,
-                                                      pickupAddress:
-                                                          widget.pickupADDRESS,
-                                                      deliveryTypeid: widget
-                                                          .deliveryTypeID
-                                                          .toString(),
-                                                      paymentMode: "",
-                                                      isRoundTrip:
-                                                          widget.roundtrip,
-                                                      bookingAmount: amount
-                                                          .toStringAsFixed(2),
-                                                      gst: "0",
-                                                      additionalTotal:
-                                                          additionalServiceAmount
-                                                              .toStringAsFixed(
-                                                                  2),
-                                                      totalAmount: amount
-                                                          .toStringAsFixed(2),
-                                                      bookingDate:
-                                                          widget.bookingDATE,
-                                                      pickupTimeFrom:
-                                                          widget.pickTimeFROM!,
-                                                      pickupTimeTo:
-                                                          widget.pickTimeTO!,
-                                                      deliveryDate:
-                                                          widget.deliveyDate,
-                                                      deliveryTimeFrom: widget
-                                                          .deliveryTimeFROM,
-                                                      deliveryTimeTo:
-                                                          widget.deliveryTimeTO,
-                                                      latitude:
-                                                          widget.pickpLATITUDE,
-                                                      longitude:
-                                                          widget.pickupLOGITUDE,
-                                                      distance: widget.distance,
-                                                      bookingType: "parcel",
-                                                      additionalDetails:
-                                                          additionalServiceParcelIds,
-                                                      notes: widget.notes,
-                                                      products: products,
-                                                      bookingAddress:
-                                                          bookingAddress,
-                                                      parcelPhoto: widget.imagePath,
-                                                      //    imagePath == null ? "" : imagePath!,
-                                                      paymentdetails: jsonString);
-                                              // parcelController.addBookingParcel(
-                                              //     addBookingParcelModel);
+                                                unitId: widget.unitId,
+                                                senderUnitId:
+                                                    widget.senderunitIdBlockID,
+                                                totalAmountCost:
+                                                    parcelController
+                                                        .paymentdatalist
+                                                        .first
+                                                        .total
+                                                        .value,
+                                                pickupAddress:
+                                                    widget.pickupADDRESS,
+                                                deliveryTypeid: widget
+                                                    .deliveryTypeID
+                                                    .toString(),
+                                                paymentMode: "",
+                                                isRoundTrip: widget.roundtrip,
+                                                bookingAmount:
+                                                    amount.toStringAsFixed(2),
+                                                gst: "0",
+                                                additionalTotal:
+                                                    additionalServiceAmount
+                                                        .toStringAsFixed(2),
+                                                totalAmount: parcelController
+                                                    .paymentdatalist
+                                                    .first
+                                                    .total
+                                                    .value,
+                                                bookingDate: widget.bookingDATE,
+                                                pickupTimeFrom:
+                                                    widget.pickTimeFROM!,
+                                                pickupTimeTo:
+                                                    widget.pickTimeTO!,
+                                                deliveryDate:
+                                                    widget.deliveyDate,
+                                                deliveryTimeFrom:
+                                                    widget.deliveryTimeFROM,
+                                                deliveryTimeTo:
+                                                    widget.deliveryTimeTO,
+                                                latitude: widget.pickpLATITUDE,
+                                                longitude:
+                                                    widget.pickupLOGITUDE,
+                                                distance: widget.distance,
+                                                bookingType: "parcel",
+                                                additionalDetails:
+                                                    additionalServiceParcelIds,
+                                                notes: widget.notes,
+                                                products: products,
+                                                bookingAddress: bookingAddress,
+                                                parcelPhoto: widget.imagePath,
+                                                paymentdetails: jsonString,
+                                              );
+
                                               parcelController
                                                   .addBookingLoading1
                                                   .value = true;
                                               try {
-                                                parcelController
-                                                    .addBookingParcel(
-                                                        addBookingParcelModel);
+                                                await parcelController.addBookingParcel(
+                                                    addBookingParcelModel,
+                                                    amountCheckParcel == true
+                                                        ? totalAmountOfParcel
+                                                            .toStringAsFixed(2)
+                                                        : parcelController
+                                                                .paymentdatalist
+                                                                .first
+                                                                .total
+                                                                .value
+                                                                .toString() ??
+                                                            '0');
                                                 // Navigate to the next screen if the booking is successful
                                               } catch (error) {
                                                 // Handle the error here
@@ -1691,8 +1828,10 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                             },
                                             child: CommonContainer(
                                               name: "Confirm Payment",
-                                            ));
+                                            ),
+                                          );
                                   }),
+
                                   ksizedbox20,
                                 ],
                               ),

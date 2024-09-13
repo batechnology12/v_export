@@ -56,18 +56,9 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
   @override
   void initState() {
     super.initState();
-    getData();
-  }
-
-  getData() async {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await parcelController.getVehicleTypes();
-      await parcelController.getAdditionalServices("booking_van");
       initializeIsCheckList();
-
-      parcelController.update();
-
-      setState(() {});
     });
   }
 
@@ -79,7 +70,7 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
     "assets/icons/lorry_0.svg",
     "assets/icons/lorry_0.svg"
   ];
-
+  String modifiedName = "";
   bool ischeck = false;
   double vehicletotalDistance = 0.0;
   bool _isLoading = false;
@@ -102,10 +93,30 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
 
   Future<void> selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        firstDate: DateTime.now(),
-        lastDate: DateTime(2100));
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Colors.blue, // Header background color
+              onPrimary: Colors.white, // Header text color
+              onSurface: Colors.black, // Body text color
+              surface: Colors.white, // Calendar background color
+            ),
+            // textButtonTheme: TextButtonThemeData(
+            //   style: TextButton.styleFrom(
+            //     primary: Colors.red, // Button text color
+            //   ),
+            // ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
@@ -184,35 +195,85 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
     }
   }
 
-  var vehicleItems;
+  GetVehicleTypeData? vehicleItems;
+
   String? vehicleItemsNames;
   int? vehicleItemsID;
+  List<AdditionalServiceData> selectedvehicleservice = [];
+  List<AdditionalServiceData> savedSelectItem = [];
+  bool isDropdownOpen = false;
+
+  List<bool> isCheck = [];
 
   void initializeIsCheckList() {
-    isCheck =
-        List<bool>.filled(parcelController.additionalServiceData.length, false);
-    for (int i = 0; i < parcelController.additionalServiceData.length; i++) {
-      if (savedSelectItem.contains(parcelController.additionalServiceData[i])) {
-        isCheck[i] = true;
+    if (isCheck.isEmpty) {
+      isCheck = List<bool>.filled(
+          parcelController.additionalServiceData.length, false);
+
+      for (int i = 0; i < parcelController.additionalServiceData.length; i++) {
+        if (savedSelectItem
+            .contains(parcelController.additionalServiceData[i])) {
+          isCheck[i] = true;
+        }
       }
     }
-    updateVehicleTotalAmount();
   }
 
   int updateValue = 0;
   int maxValue = 3;
+  int totalManPower = 0;
+
   int count = 0;
   int maxCount = 12;
 
-  List<AdditionalServiceData> selectedvehicleservice = [];
-  List<AdditionalServiceData> savedSelectItem = [];
-
-  List<bool> isCheck = [];
+  bool checkManPower = false;
   bool isItemSelected = false;
-  bool isDropdownOpen = false;
 
   double totalAmountVehicle = 0.0;
   double totalAmount = 0.0;
+  double manPowerHelper = 0;
+
+  void updateManpwerTotalAmount(StateSetter setState) {
+    setState(() {
+      if (updateValue == 1 &&
+          (vehicleItems?.name == "1.7m Van" ||
+              vehicleItems?.name == "2.4m Van")) {
+        manPowerHelper = double.parse(vehicleItems!.driverHelp);
+      } else if (updateValue == 2 &&
+          (vehicleItems?.name == "1.7m Van" ||
+              vehicleItems?.name == "2.4m Van")) {
+        manPowerHelper = double.parse(vehicleItems!.driverHelp) +
+            double.parse(vehicleItems!.helper);
+      } else if (updateValue == 3 &&
+          (vehicleItems?.name == "1.7m Van" ||
+              vehicleItems?.name == "2.4m Van")) {
+        manPowerHelper = double.parse(vehicleItems!.driverHelp) +
+            double.parse(vehicleItems!.helper) +
+            double.parse(vehicleItems!.helper);
+      } else if (updateValue == 1 &&
+          (vehicleItems?.name == "10ft Lorry" ||
+              vehicleItems?.name == "14ft Lorry" ||
+              vehicleItems?.name == "24ft Lorry")) {
+        manPowerHelper = double.parse(vehicleItems!.driverHelp);
+      } else if (updateValue == 2 &&
+          (vehicleItems?.name == "10ft Lorry" ||
+              vehicleItems?.name == "14ft Lorry" ||
+              vehicleItems?.name == "24ft Lorry")) {
+        manPowerHelper = double.parse(vehicleItems!.driverHelp) +
+            double.parse(vehicleItems!.helper);
+      } else if (updateValue == 3 &&
+          (vehicleItems?.name == "10ft Lorry" ||
+              vehicleItems?.name == "14ft Lorry" ||
+              vehicleItems?.name == "24ft Lorry")) {
+        manPowerHelper = double.parse(vehicleItems!.driverHelp) +
+            double.parse(vehicleItems!.helper) +
+            double.parse(vehicleItems!.helper);
+        ;
+      } else if (updateValue == 0) {
+        manPowerHelper = 0;
+      }
+    });
+  }
 
   void updateVehicleTotalAmount() {
     totalAmountVehicle = selectedvehicleservice.fold(0.0, (sum, item) {
@@ -223,31 +284,69 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
   }
 
   void updateTotalAmount() {
-    totalAmount = 0.0;
     for (int i = 0; i < isCheck.length; i++) {
       if (isCheck[i]) {
         double serviceAmount =
             double.tryParse(parcelController.additionalServiceData[i].amount) ??
                 0.0;
-        if (i == 0) {
-          // ManPower service
-          totalAmount += calculateManPower(updateValue, serviceAmount);
-        } else if (i == 3) {
-          // StairCase service
+
+        if (i == 2) {
           totalAmount += calculateStairCase(count, serviceAmount);
         } else {
           totalAmount += serviceAmount;
         }
       }
     }
+
+    totalAmount += manPowerHelper;
     totalAmount += totalAmountVehicle;
+  }
+
+  List<String> additionalIdsArray = [];
+  List<String> additionalQtyArray = [];
+
+  void toggleServiceSelection(int index, StateSetter setState) {
+    setState(() {
+      isCheck[index] = !isCheck[index];
+
+      AdditionalServiceData serviceData =
+          parcelController.additionalServiceData[index];
+      var serviceId = serviceData.id;
+
+      if (isCheck[index] == true) {
+        if (!additionalIdsArray.contains(serviceId.toString())) {
+          additionalIdsArray.add(serviceId.toString());
+          additionalQtyArray.add('1');
+        }
+
+        if (!selectedvehicleservice.contains(serviceData)) {
+          selectedvehicleservice.add(serviceData);
+        }
+      } else {
+        if (additionalIdsArray.contains(serviceId.toString())) {
+          int indexArray = additionalIdsArray.indexOf(serviceId.toString());
+          additionalIdsArray.removeAt(indexArray);
+          additionalQtyArray.removeAt(indexArray);
+        }
+
+        selectedvehicleservice
+            .removeWhere((item) => item.name == serviceData.name);
+      }
+
+      updateVehicleTotalAmount();
+      updateTotalAmount();
+    });
   }
 
   void addValue(StateSetter setState) {
     setState(() {
       if (updateValue < maxValue) {
         updateValue++;
-        updateTotalAmount();
+        if (updateValue > 0) {
+          checkManPower = true;
+          showManpower = true;
+        }
+        updateManpwerTotalAmount(setState);
       }
     });
   }
@@ -256,54 +355,101 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
     setState(() {
       if (updateValue > 0) {
         updateValue--;
-        updateTotalAmount();
+        checkManPower = true;
+        showManpower = true;
+        if (updateValue == 0) {
+          checkManPower = false;
+          showManpower = false;
+        }
+        updateManpwerTotalAmount(setState);
       }
     });
-  }
-
-  double calculateManPower(int updateValue, double serviceAmount) {
-    return updateValue * serviceAmount;
   }
 
   double calculateStairCase(int count, double serviceAmount) {
     return count * serviceAmount;
   }
 
-  void addCount(StateSetter setState) {
+  // bool stairCheck = false;
+  void addCount(StateSetter setState, int index) {
     setState(() {
       if (count < maxCount) {
         count++;
-        updateTotalAmount();
+        if (count == 1) {
+          // Automatically add the additional service when count becomes 1
+          toggleServiceSelection(index, setState);
+        }
+        if (count > 0) {
+          isCheck[index] = true;
+        }
       }
+
+      AdditionalServiceData serviceData2 =
+          parcelController.additionalServiceData[index];
+      var serviceId = serviceData2.id;
+
+      if (additionalIdsArray.contains(serviceId.toString())) {
+        int indexArray = additionalIdsArray.indexOf(serviceId.toString());
+        additionalQtyArray[indexArray] = count.toString();
+      }
+      updateTotalAmount();
     });
+
+    print("count----------- $count");
+
+    print("-service stair case add-----$selectedvehicleservice");
   }
 
-  void decrementCount(StateSetter setState) {
+  void decrementCount(StateSetter setState, int index) {
     setState(() {
       if (count > 0) {
         count--;
-        updateTotalAmount();
-        Get.snackbar("Fill all Fileds", "Please try again!",
-            colorText: AppColors.kwhite,
-            backgroundColor: Colors.red,
-            snackPosition: SnackPosition.BOTTOM);
+        if (count == 0) {
+          // Automatically remove the additional service when count becomes 0
+          toggleServiceSelection(index, setState);
+        }
+        isCheck[index] = true;
+
+        if (count == 0) {
+          isCheck[index] = false;
+        }
+
         manPowerCheck = false;
-      } else if (count > 1) {
-        manPowerCheck = true;
       }
+
+      AdditionalServiceData serviceData1 =
+          parcelController.additionalServiceData[index];
+      var serviceId = serviceData1.id;
+
+      if (additionalIdsArray.contains(serviceId.toString())) {
+        int indexArray = additionalIdsArray.indexOf(serviceId.toString());
+        additionalQtyArray[indexArray] = count.toString();
+      }
+
+      updateTotalAmount();
     });
+
+    print("decrement count-------- $count");
+    print("-service stair case remove-----$selectedvehicleservice");
   }
 
   bool manPowerCheck = false;
 
-  void showListViewDialog(BuildContext context) {
+  bool showManpower = false;
+  double totalStairCase = 0.0;
+  void showListViewDialog(BuildContext context, String modifiedName) {
     initializeIsCheckList();
+
+    parcelController.getAdditionalServices(modifiedName);
+
+    List<AdditionalServiceData> filteredServices = [];
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
+            updateTotalAmount();
             return Center(
               child: Dialog(
                 insetPadding: EdgeInsets.symmetric(horizontal: 10),
@@ -328,7 +474,7 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              Get.back();
+                              Navigator.of(context).pop();
                             },
                             child: const Icon(
                               Icons.cancel_outlined,
@@ -337,40 +483,19 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                           ),
                         ],
                       ),
-                      ksizedbox15,
+                      SizedBox(height: 15),
                       Padding(
                         padding: const EdgeInsets.only(bottom: 10),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            GetBuilder<ParcelController>(builder: (controller) {
-                              return ListView.builder(
-                                itemCount:
-                                    controller.additionalServiceData.length,
-                                shrinkWrap: true,
-                                itemBuilder: (context, index) {
-                                  AdditionalServiceData serviceData =
-                                      controller.additionalServiceData[index];
-
-                                  double totalManPower = calculateManPower(
-                                      updateValue,
-                                      double.parse(serviceData.amount));
-                                  double totalStairCase = calculateStairCase(
-                                      count, double.parse(serviceData.amount));
-
-                                  return GestureDetector(
+                            vehicleItems?.name == "Car"
+                                ? Container()
+                                : GestureDetector(
                                     onTap: () {
                                       setState(() {
-                                        isCheck[index] = !isCheck[index];
-                                        manPowerCheck = true;
-                                        if (isCheck[index]) {
-                                          selectedvehicleservice
-                                              .add(serviceData);
-                                        } else {
-                                          selectedvehicleservice
-                                              .remove(serviceData);
-                                        }
-                                        updateTotalAmount();
+                                        checkManPower = !checkManPower;
+                                        showManpower = true;
                                       });
                                     },
                                     child: Container(
@@ -384,19 +509,149 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                               GestureDetector(
                                                 onTap: () {
                                                   setState(() {
-                                                    isCheck[index] =
-                                                        !isCheck[index];
-                                                    manPowerCheck = true;
-                                                    if (isCheck[index]) {
-                                                      selectedvehicleservice
-                                                          .add(serviceData);
-                                                    } else {
-                                                      selectedvehicleservice
-                                                          .remove(serviceData);
-                                                    }
-                                                    updateTotalAmount();
+                                                    checkManPower =
+                                                        !checkManPower;
+                                                    showManpower = true;
                                                   });
                                                 },
+                                                child: Container(
+                                                  height: 18.h,
+                                                  width: 18.w,
+                                                  decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                        width: 1,
+                                                        color: AppColors.kblue),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5),
+                                                  ),
+                                                  child: checkManPower
+                                                      ? Image.asset(
+                                                          "assets/icons/7-Check.png")
+                                                      : Text(""),
+                                                ),
+                                              ),
+                                              SizedBox(width: 8),
+                                              Text(
+                                                "Manpower (helper)",
+                                                style: primaryfont.copyWith(
+                                                  fontSize: 13.sp,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                              SizedBox(width: 10),
+                                              Row(
+                                                children: [
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      setState(() {
+                                                        decrementValue(
+                                                            setState);
+                                                      });
+                                                    },
+                                                    child: Container(
+                                                      height: 25,
+                                                      width: 25,
+                                                      decoration: BoxDecoration(
+                                                          color: Colors.grey,
+                                                          shape:
+                                                              BoxShape.circle),
+                                                      child: const Icon(
+                                                          Icons.remove,
+                                                          size: 16,
+                                                          color: Colors.black),
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 9),
+                                                  Text(
+                                                    "$updateValue",
+                                                    style: primaryfont.copyWith(
+                                                      fontSize: 13.sp,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 9),
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      setState(() {
+                                                        addValue(setState);
+                                                      });
+                                                    },
+                                                    child: Container(
+                                                      height: 25,
+                                                      width: 25,
+                                                      decoration: BoxDecoration(
+                                                          color: Colors.grey,
+                                                          shape:
+                                                              BoxShape.circle),
+                                                      child: const Icon(
+                                                          Icons.add,
+                                                          size: 16,
+                                                          color: Colors.black),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                "+\$${manPowerHelper.toStringAsFixed(2)}",
+                                                style: primaryfont.copyWith(
+                                                  fontSize: 13.sp,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                            GetBuilder<ParcelController>(builder: (controller) {
+                              filteredServices = controller
+                                  .additionalServiceData
+                                  .where((serviceData) =>
+                                      serviceData.type == modifiedName)
+                                  .cast<AdditionalServiceData>()
+                                  .toList();
+                              if (isCheck.length != filteredServices.length) {
+                                isCheck = List<bool>.filled(
+                                    filteredServices.length, false);
+                              }
+                              return ListView.builder(
+                                itemCount: filteredServices.length,
+                                shrinkWrap: true,
+                                itemBuilder: (context, index) {
+                                  if (index >= isCheck.length) {
+                                    return Container(); // Return an empty widget if index is out of range (should not happen after syncing)
+                                  }
+
+                                  AdditionalServiceData serviceData =
+                                      filteredServices[index];
+
+                                  totalStairCase = calculateStairCase(
+                                      count, double.parse(serviceData.amount));
+
+                                  return GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        toggleServiceSelection(index, setState);
+                                        manPowerCheck = true;
+                                      });
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.all(5.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              GestureDetector(
+                                                onTap: () {},
                                                 child: Container(
                                                   height: 18.h,
                                                   width: 18.w,
@@ -416,31 +671,34 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                               ),
                                               SizedBox(width: 8),
                                               Text(
-                                                serviceData.name,
+                                                "${serviceData.name}",
                                                 style: primaryfont.copyWith(
                                                   fontSize: 13.sp,
                                                   fontWeight: FontWeight.w600,
                                                 ),
                                               ),
-                                              Ksizedboxw10,
-                                              if (index == 0 || index == 3)
+                                              SizedBox(width: 10),
+                                              // if (index == 2)
+                                              if (serviceData.name ==
+                                                  "Staircase (per floor)")
                                                 Row(
                                                   children: [
                                                     GestureDetector(
                                                       onTap: () {
-                                                        if (index == 0) {
-                                                          decrementValue(
-                                                              setState);
-                                                        } else if (index == 3) {
-                                                          decrementCount(
-                                                              setState);
+                                                        if (serviceData.name ==
+                                                            "Staircase (per floor)") {
+                                                          setState(() {
+                                                            decrementCount(
+                                                                setState,
+                                                                index);
+                                                          });
                                                         }
                                                       },
                                                       child: Container(
                                                         height: 25,
                                                         width: 25,
                                                         decoration:
-                                                            const BoxDecoration(
+                                                            BoxDecoration(
                                                                 color:
                                                                     Colors.grey,
                                                                 shape: BoxShape
@@ -454,9 +712,7 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                                     ),
                                                     SizedBox(width: 8),
                                                     Text(
-                                                      index == 0
-                                                          ? "$updateValue"
-                                                          : "$count",
+                                                      "$count",
                                                       style:
                                                           primaryfont.copyWith(
                                                         fontSize: 13.sp,
@@ -467,17 +723,19 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                                     SizedBox(width: 8),
                                                     GestureDetector(
                                                       onTap: () {
-                                                        if (index == 0) {
-                                                          addValue(setState);
-                                                        } else if (index == 3) {
-                                                          addCount(setState);
+                                                        if (serviceData.name ==
+                                                            "Staircase (per floor)") {
+                                                          setState(() {
+                                                            addCount(setState,
+                                                                index);
+                                                          });
                                                         }
                                                       },
                                                       child: Container(
                                                         height: 25,
                                                         width: 25,
                                                         decoration:
-                                                            const BoxDecoration(
+                                                            BoxDecoration(
                                                                 color:
                                                                     Colors.grey,
                                                                 shape: BoxShape
@@ -496,7 +754,7 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                           Row(
                                             children: [
                                               Text(
-                                                "+\$${index == 0 ? totalManPower : index == 3 ? totalStairCase : serviceData.amount}",
+                                                "+\$${serviceData.name == "Staircase (per floor)" ? totalStairCase : serviceData.amount}",
                                                 style: primaryfont.copyWith(
                                                   fontSize: 13.sp,
                                                   fontWeight: FontWeight.w600,
@@ -514,29 +772,39 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                           ],
                         ),
                       ),
-                      // Text(
-                      //   "Total: \$${totalAmount.toStringAsFixed(2)}",
-                      //   style: primaryfont.copyWith(
-                      //     fontSize: 16.sp,
-                      //     fontWeight: FontWeight.w600,
-                      //   ),
-                      // ),
+                      ksizedbox20,
                       TextButton(
                         onPressed: () {
-                          if (isCheck[0] && updateValue == 0 ||
-                              isCheck[3] && count == 0) {
-                            Get.snackbar("Alert",
-                                "Please increase the value for the selected service!",
-                                colorText: AppColors.kwhite,
-                                backgroundColor: Colors.red,
-                                snackPosition: SnackPosition.BOTTOM);
+                          print("-----------check2------ $isCheck");
+
+                          bool hasStaircaseService = false;
+                          for (int i = 0; i < filteredServices.length; i++) {
+                            if (filteredServices[i].name ==
+                                    "Staircase (per floor)" &&
+                                isCheck[i]) {
+                              hasStaircaseService = true;
+                              break;
+                            }
+                          }
+
+                          bool shouldShowAlert =
+                              (checkManPower && updateValue == 0) ||
+                                  (hasStaircaseService && count == 0);
+
+                          if (shouldShowAlert) {
+                            Get.snackbar(
+                              "Alert",
+                              "Please increase the value for the selected service!",
+                              colorText: AppColors.kwhite,
+                              backgroundColor: Colors.red,
+                              snackPosition: SnackPosition.BOTTOM,
+                            );
                           } else {
                             setState(() {
                               savedSelectItem =
                                   List.from(selectedvehicleservice);
-                              print("savedSelectItem: $savedSelectItem");
                             });
-
+                            print("object1234-------------- $savedSelectItem");
                             Navigator.of(context).pop(savedSelectItem);
                           }
                         },
@@ -896,43 +1164,43 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                                             ),
                                                           Row(
                                                             children: [
-                                                              GestureDetector(
-                                                                onTap: () {
-                                                                  setState(() {
-                                                                    homeController
-                                                                      ..addVehicalEntry();
-                                                                  });
-                                                                },
-                                                                child: Icon(
-                                                                  Icons.add,
-                                                                  color: const Color(
-                                                                      0xff0072E8),
-                                                                  size: 17.sp,
-                                                                ),
-                                                              ),
-                                                              GestureDetector(
-                                                                onTap: () {
-                                                                  setState(() {
-                                                                    homeController
-                                                                        .addVehicalEntry();
-                                                                    // homeController
-                                                                    //     .addParcelList();
-                                                                  });
-                                                                },
-                                                                child: Text(
-                                                                  'Add Location',
-                                                                  style: primaryfont
-                                                                      .copyWith(
-                                                                    fontSize:
-                                                                        15.sp,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w500,
-                                                                    color: const Color(
-                                                                        0xff0072E8),
-                                                                  ),
-                                                                ),
-                                                              ),
+                                                              // GestureDetector(
+                                                              //   onTap: () {
+                                                              //     setState(() {
+                                                              //       homeController
+                                                              //         ..addVehicalEntry();
+                                                              //     });
+                                                              //   },
+                                                              //   child: Icon(
+                                                              //     Icons.add,
+                                                              //     color: const Color(
+                                                              //         0xff0072E8),
+                                                              //     size: 17.sp,
+                                                              //   ),
+                                                              // ),
+                                                              // GestureDetector(
+                                                              //   onTap: () {
+                                                              //     setState(() {
+                                                              //       homeController
+                                                              //           .addVehicalEntry();
+                                                              //       // homeController
+                                                              //       //     .addParcelList();
+                                                              //     });
+                                                              //   },
+                                                              //   child: Text(
+                                                              //     'Add Location',
+                                                              //     style: primaryfont
+                                                              //         .copyWith(
+                                                              //       fontSize:
+                                                              //           15.sp,
+                                                              //       fontWeight:
+                                                              //           FontWeight
+                                                              //               .w500,
+                                                              //       color: const Color(
+                                                              //           0xff0072E8),
+                                                              //     ),
+                                                              //   ),
+                                                              // ),
                                                             ],
                                                           ),
                                                         ],
@@ -1026,112 +1294,182 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                             color: Color(0xff455A64)),
                                       ),
                                       ksizedbox10,
-                                      Container(
-                                        padding:
-                                            EdgeInsets.symmetric(horizontal: 7),
-                                        height: 50.h,
-                                        width: size.width,
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                            width: 1,
-                                            color: Color(0xff444444)
-                                                .withOpacity(.32),
+                                      Obx(() {
+                                        if (parcelController
+                                            .vehicleTypeLoading.value) {
+                                          return Center(
+                                              child:
+                                                  CircularProgressIndicator());
+                                        } else if (parcelController
+                                            .vehicleTypesData.isEmpty) {
+                                          return Center(
+                                              child: Text(
+                                                  "No Vehicle types available."));
+                                        } else {
+                                          if (!parcelController.vehicleTypesData
+                                              .contains(vehicleItems)) {
+                                            vehicleItems = null;
+                                          }
+                                        }
+                                        return Container(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 7),
+                                          height: 50.h,
+                                          width: size.width,
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                              width: 1,
+                                              color: Color(0xff444444)
+                                                  .withOpacity(.32),
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
                                           ),
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                        child:
-                                            DropdownButton<GetVehicleTypeData>(
-                                          hint: Text(
-                                            'Select Vehicle',
+                                          child: DropdownButton<
+                                              GetVehicleTypeData>(
+                                            hint: Text(
+                                              'Select Vehicle',
+                                              style: TextStyle(
+                                                color: Color(0xff455A64),
+                                                fontSize: 14.sp,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            elevation: 16,
+                                            isExpanded: true,
                                             style: TextStyle(
-                                              color: Color(0xff455A64),
-                                              fontSize: 14.sp,
+                                              color: Color(0xff444444)
+                                                  .withOpacity(.32),
+                                              fontSize: 14,
                                               fontWeight: FontWeight.w500,
                                             ),
-                                          ),
-                                          elevation: 16,
-                                          isExpanded: true,
-                                          style: TextStyle(
-                                            color: Color(0xff444444)
-                                                .withOpacity(.32),
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                          underline: Container(),
-                                          value: vehicleItems,
-                                          items: parcelController
-                                              .vehicleTypesData
-                                              .map((GetVehicleTypeData type) {
-                                            return DropdownMenuItem<
-                                                GetVehicleTypeData>(
-                                              value: type,
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Row(
-                                                    children: [
+                                            underline: Container(),
+                                            value: vehicleItems,
+                                            items: parcelController
+                                                .vehicleTypesData
+                                                .map((GetVehicleTypeData type) {
+                                              return DropdownMenuItem<
+                                                  GetVehicleTypeData>(
+                                                value: type,
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        Container(
+                                                          width: 30.w,
+                                                          child:
+                                                              SvgPicture.asset(
+                                                            vehicleList[
+                                                                parcelController
+                                                                    .vehicleTypesData
+                                                                    .indexOf(
+                                                                        type)],
+                                                            height: 25,
+                                                            width: 25,
+                                                          ),
+                                                        ),
+                                                        Ksizedboxw10,
+                                                        Text(
+                                                          type.name,
+                                                          style: TextStyle(
+                                                            color: Color(
+                                                                0xff455A64),
+                                                            fontSize: 14.sp,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    Text(
+                                                      type.description,
+                                                      style: TextStyle(
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        color:
+                                                            Color(0xff455A64),
+                                                        fontSize: 12.sp,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                    ksizedbox5,
+                                                    if (vehicleItems != type ||
+                                                        isDropdownOpen)
                                                       Container(
-                                                        width: 30.w,
-                                                        child: SvgPicture.asset(
-                                                          vehicleList[
-                                                              parcelController
-                                                                  .vehicleTypesData
-                                                                  .indexOf(
-                                                                      type)],
-                                                          height: 25,
-                                                          width: 25,
-                                                        ),
+                                                        height: 1,
+                                                        width: size.width,
+                                                        color: Colors.black,
                                                       ),
-                                                      Text(
-                                                        type.name,
-                                                        style: TextStyle(
-                                                          color:
-                                                              Color(0xff455A64),
-                                                          fontSize: 14.sp,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  Text(
-                                                    type.description,
-                                                    style: TextStyle(
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      color: Color(0xff455A64),
-                                                      fontSize: 12.sp,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                    ),
-                                                  ),
-                                                  ksizedbox5,
-                                                  if (vehicleItems != type ||
-                                                      isDropdownOpen)
-                                                    Container(
-                                                      height: 1,
-                                                      width: size.width,
-                                                      color: Colors.black,
-                                                    ),
-                                                ],
-                                              ),
-                                            );
-                                          }).toList(),
-                                          onChanged:
-                                              (GetVehicleTypeData? newValue) {
-                                            setState(() {
-                                              vehicleItems = newValue;
-                                              vehicleItemsNames =
-                                                  newValue?.name;
-                                              vehicleItemsID = newValue?.id;
-                                              print("object");
-                                              //  vehicleItems = newValue?.id;
-                                            });
-                                          },
-                                        ),
-                                      ),
+                                                  ],
+                                                ),
+                                              );
+                                            }).toList(),
+                                            onChanged:
+                                                (GetVehicleTypeData? newValue) {
+                                              setState(() {
+                                                vehicleItems = newValue;
+                                                vehicleItemsNames =
+                                                    newValue?.name;
+                                                vehicleItemsID = newValue?.id;
+
+                                                selectedvehicleservice.clear();
+                                                savedSelectItem.clear();
+                                                isCheck = [];
+                                                count = 0;
+                                                checkManPower = false;
+                                                showManpower = false;
+                                                updateValue = 0;
+                                                manPowerHelper = 0.0;
+                                                additionalIdsArray.clear();
+                                                additionalQtyArray.clear();
+                                                List<AdditionalServiceData>
+                                                    filteredServices =
+                                                    parcelController
+                                                        .additionalServiceData
+                                                        .where((serviceData) =>
+                                                            serviceData.type ==
+                                                            modifiedName)
+                                                        .cast<
+                                                            AdditionalServiceData>()
+                                                        .toList();
+
+                                                if (isCheck.length !=
+                                                    filteredServices.length) {
+                                                  isCheck = List<bool>.filled(
+                                                      filteredServices.length,
+                                                      false);
+                                                }
+
+                                                modifiedName = vehicleItemsNames
+                                                        ?.toLowerCase()
+                                                        .trim() ??
+                                                    ""; // Convert to lowercase and trim spaces
+                                                if (modifiedName
+                                                    .contains("car")) {
+                                                  modifiedName = "booking_car";
+                                                } else if (modifiedName
+                                                    .contains("van")) {
+                                                  modifiedName = "booking_van";
+                                                } else if (modifiedName
+                                                    .contains("lorry")) {
+                                                  modifiedName =
+                                                      "booking_lorry";
+                                                }
+
+                                                print(
+                                                    "Vehicle type for API call: $modifiedName");
+
+                                                parcelController
+                                                    .getAdditionalServices(
+                                                        modifiedName);
+                                              });
+                                            },
+                                          ),
+                                        );
+                                      }),
                                       ksizedbox10,
                                       Text(
                                         'Pickup Time',
@@ -1337,31 +1675,55 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                       ksizedbox10,
                                       GestureDetector(
                                         onTap: () {
-                                          showListViewDialog(context);
+                                          showListViewDialog(
+                                              context, modifiedName);
+                                          // if (vehicleItems?.name == "Car") {
+                                          //   Get.snackbar(
+                                          //       "No additional service for car",
+                                          //       "",
+                                          //       colorText: AppColors.kwhite,
+                                          //       backgroundColor: Colors.red,
+                                          //       snackPosition:
+                                          //           SnackPosition.BOTTOM);
+                                          // } else if (vehicleItems?.name ==
+                                          //     null) {
+                                          //   Get.snackbar(
+                                          //       "Please select the Vehicle service",
+                                          //       "",
+                                          //       colorText: AppColors.kwhite,
+                                          //       backgroundColor: Colors.red,
+                                          //       snackPosition:
+                                          //           SnackPosition.BOTTOM);
+                                          // } else {
+
+                                          // }
                                         },
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              'Additional Service',
-                                              style: primaryfont.copyWith(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 16.sp,
-                                                  color: AppColors.kblue),
-                                            ),
-                                            GestureDetector(
-                                              onTap: () async {
-                                                showListViewDialog(context);
-                                              },
-                                              child: Icon(
-                                                Icons
-                                                    .arrow_circle_right_outlined,
-                                                size: 30,
-                                                color: AppColors.kblue,
+                                        child: Container(
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                'Additional Service',
+                                                style: primaryfont.copyWith(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 16.sp,
+                                                    color: AppColors.kblue),
                                               ),
-                                            ),
-                                          ],
+                                              GestureDetector(
+                                                onTap: () async {
+                                                  showListViewDialog(
+                                                      context, modifiedName);
+                                                },
+                                                child: Icon(
+                                                  Icons
+                                                      .arrow_circle_right_outlined,
+                                                  size: 30,
+                                                  color: AppColors.kblue,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                       ksizedbox10,
@@ -1391,6 +1753,9 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                   )
                                 : GestureDetector(
                                     onTap: () async {
+                                      print(
+                                          "staricase------------ $totalStairCase");
+
                                       if (formKey.currentState!.validate()) {
                                         List<String>
                                             droppingvehivleAddressList =
@@ -1398,33 +1763,53 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                                 .vehicledroppingLocations
                                                 .toList();
 
-                                        print("----------------------------s");
-                                        print("droop length");
-                                        print(
-                                            "pickup block iD --- ${widget.vehiclepickupBlockIDs}");
-                                        print(
-                                            "pickup unit id --- ${widget.vehiclepickupunitId}");
-                                        print(
-                                            "drop block iD --- ${homeController.vehiclereceiverBlockIdUnitIDs}");
-                                        print(
-                                            "drop unit id --- ${homeController.vehiclereceiverUnitIDs}");
-
                                         String dropLocationCount =
                                             droppingvehivleAddressList.length
                                                 .toString();
 
-                                        print(widget.vehiclePickupPincode);
-                                        print(
-                                            homeController.vehicledroppincode);
                                         if (widget.vehiclepickupAdress
                                                 .isNotEmpty &&
-                                            _formatTime(pickTime!).isNotEmpty &&
+                                            homeController
+                                                .vehicledroppingLocations
+                                                .isNotEmpty &&
+                                            pickTime != null &&
+                                            vehicleItems?.name != null &&
                                             formatDateTime.isNotEmpty &&
                                             deliveryNotesController
                                                 .text.isNotEmpty) {
+                                          print(
+                                              "Selected Services and Amounts:");
                                           calculateVehicleDistance()
                                               .then((value) {
+                                            List<String> selectedServiceNames =
+                                                [];
+                                            List<String>
+                                                selectedServiceAmounts = [];
+
+                                            Get.find<ParcelController>()
+                                                .additionalServiceData
+                                                .forEach((serviceData) {
+                                              if (selectedvehicleservice
+                                                  .contains(serviceData)) {
+                                                selectedServiceNames
+                                                    .add(serviceData.name);
+                                                selectedServiceAmounts
+                                                    .add(serviceData.amount);
+                                              }
+                                            });
+
                                             Get.to(DriverBookingDetails(
+                                              showingManPower:
+                                                  showManpower == true
+                                                      ? true
+                                                      : false,
+                                              additionalServiceID:
+                                                  additionalIdsArray,
+                                              additionalServicequantity:
+                                                  additionalQtyArray,
+                                              stairCaseTotal: totalStairCase
+                                                  .toStringAsFixed(2),
+
                                               dropLocatiocounts:
                                                   dropLocationCount,
                                               weekEnd: isWeekend(selectedDate),

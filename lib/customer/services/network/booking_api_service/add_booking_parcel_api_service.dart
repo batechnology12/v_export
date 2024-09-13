@@ -20,7 +20,9 @@ class AddBookingParcelsApiService extends BaseApiServices {
         "booking_amount": addBookingParcelModel.totalAmount,
         "gst": "500",
         "additional_total": addBookingParcelModel.additionalTotal,
+
         "payment_details": addBookingParcelModel.paymentdetails,
+        //
         "total_amount": addBookingParcelModel.totalAmountCost,
         "is_round_trip": addBookingParcelModel.isRoundTrip,
         "sender_unitno_blockno": addBookingParcelModel.senderUnitId,
