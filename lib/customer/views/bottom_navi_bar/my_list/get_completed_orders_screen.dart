@@ -13,6 +13,7 @@ import 'package:v_export/customer/model/get_ongoing_orders_model.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/my_list/booking_status.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/my_list/complete_details.dart';
 import 'package:intl/intl.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/driver_rating.dart';
 
 class GetCompletedScreenData extends StatefulWidget {
   const GetCompletedScreenData({super.key});
@@ -86,8 +87,13 @@ class _GetCompletedScreenDataState extends State<GetCompletedScreenData> {
                     padding: const EdgeInsets.only(left: 10, right: 10),
                     child: GestureDetector(
                       onTap: () {
-                        Get.to(CompleteDetails(
-                            getCompletedData: getCompletedDatalist));
+                        //     Get.to(DriverRating(
+                        //   bookingID:
+                        //   getCompletedDatalist.
+                        //      // parcelController.driverRatingBookingID.value ?? "",
+                        // ));
+                        // Get.to(CompleteDetails(
+                        //     getCompletedData: getCompletedDatalist));
                       },
                       child: Container(
                         padding: EdgeInsets.all(5),
@@ -134,75 +140,120 @@ class _GetCompletedScreenDataState extends State<GetCompletedScreenData> {
                             Divider(),
                             ksizedbox10,
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Row(
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-                                    const Padding(
-                                      padding: EdgeInsets.only(top: 0),
-                                      child: Column(
+                                    Icon(
+                                      Icons.location_on,
+                                      color: Color(0xff038484),
+                                    ),
+                                    Dash(
+                                        direction: Axis.vertical,
+                                        length: 50,
+                                        dashLength: 5,
+                                        dashColor: AppColors.kgrey),
+                                  ],
+                                ),
+                                Ksizedboxw10,
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      width: 310.w,
+                                      // color: Colors.amber,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Icon(
-                                            Icons.location_on,
-                                            color: Color(0xff038484),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                'Pickup Address',
+                                                style: primaryfont.copyWith(
+                                                    fontSize: 14.sp,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Color(0xff455A64)),
+                                              ),
+                                            ],
                                           ),
-                                          Dash(
-                                              direction: Axis.vertical,
-                                              length: 30,
-                                              dashLength: 5,
-                                              dashColor: AppColors.kgrey),
+                                          getCompletedDatalist.bookingType ==
+                                                  "vehicle"
+                                              ? Row(
+                                                  children: [
+                                                    Text(
+                                                      getCompletedDatalist
+                                                          .bookingTimeFromVehicle!,
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style:
+                                                          primaryfont.copyWith(
+                                                              fontSize: 10.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              color: const Color(
+                                                                  0xff455A64)),
+                                                    )
+                                                  ],
+                                                )
+                                              : Row(
+                                                  children: [
+                                                    Text(
+                                                      getCompletedDatalist
+                                                          .pickuptimeFrom,
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style:
+                                                          primaryfont.copyWith(
+                                                              fontSize: 10.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              color: const Color(
+                                                                  0xff455A64)),
+                                                    ),
+                                                    Text(
+                                                      " to ",
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style:
+                                                          primaryfont.copyWith(
+                                                              fontSize: 10.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              color: const Color(
+                                                                  0xff455A64)),
+                                                    ),
+                                                    Text(
+                                                      getCompletedDatalist
+                                                          .pickuptimeTo,
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style:
+                                                          primaryfont.copyWith(
+                                                              fontSize: 10.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              color: const Color(
+                                                                  0xff455A64)),
+                                                    ),
+                                                  ],
+                                                )
                                         ],
                                       ),
                                     ),
-                                    SizedBox(
-                                      width: 5.w,
-                                    ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Pickup Address',
-                                          style: primaryfont.copyWith(
-                                              fontSize: 14.sp,
-                                              fontWeight: FontWeight.w600,
-                                              color: Color(0xff455A64)),
-                                        ),
-                                        Container(
-                                          width: 225.h,
-                                          child: ExpandableText(
-                                            "${getCompletedDatalist.pickupAddreess}",
-                                            expandText: 'show more',
-                                            collapseText: 'show less',
-                                            maxLines: 2,
-                                            linkColor: Colors.blue,
-                                            style: primaryfont.copyWith(
-                                                color: const Color(0xff1E1E1E),
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 12.sp),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                    Text(getCompletedDatalist.pickupAddreess,
+                                        style: primaryfont.copyWith(
+                                            color: const Color(0xff1E1E1E),
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 12.sp)),
                                   ],
                                 ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      formatTime(getCompletedDatalist.pickupedAt),
-                                      // getCompletedDatalist.bookingType ==
-                                      //         "parcel"
-                                      //     ? '${getCompletedDatalist.pickuptimeFrom} to ${getCompletedDatalist.pickuptimeTo}'
-                                      //     : getCompletedDatalist
-                                      //         .bookingTimeFromVehicle!,
-                                      textAlign: TextAlign.center,
-                                      style: primaryfont.copyWith(
-                                          fontSize: 10.sp,
-                                          fontWeight: FontWeight.w600,
-                                          color: const Color(0xff455A64)),
-                                    ),
-                                  ],
-                                )
                               ],
                             ),
                             GetBuilder<MyListController>(builder: (_) {
@@ -222,7 +273,7 @@ class _GetCompletedScreenDataState extends State<GetCompletedScreenData> {
                                           children: [
                                             Column(
                                               children: [
-                                                Icon(
+                                                const Icon(
                                                   Icons.location_on,
                                                   color: Color(0xffF74354),
                                                 ),
@@ -231,9 +282,9 @@ class _GetCompletedScreenDataState extends State<GetCompletedScreenData> {
                                                             .bookingDeliveryAddresses
                                                             .length -
                                                         1)
-                                                  Dash(
+                                                  const Dash(
                                                       direction: Axis.vertical,
-                                                      length: 30,
+                                                      length: 50,
                                                       dashLength: 5,
                                                       dashColor:
                                                           AppColors.kgrey),
@@ -246,55 +297,96 @@ class _GetCompletedScreenDataState extends State<GetCompletedScreenData> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
-                                                Text(
-                                                  'Delivery Address',
-                                                  style: primaryfont.copyWith(
-                                                      fontSize: 14.sp,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      color: Color(0xff455A64)),
+                                                Container(
+                                                  width: 315.w,
+                                                  // color: Colors.amber,
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Row(
+                                                        children: [
+                                                          Text(
+                                                            'Delivery Address',
+                                                            style: primaryfont.copyWith(
+                                                                fontSize: 14.sp,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                                color: Color(
+                                                                    0xff455A64)),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      Row(
+                                                        children: [
+                                                          // getCompletedDatalist.bookingType ==
+                                                          //         "parcel"
+                                                          //     ?
+                                                          Text(
+                                                            getCompletedDatalist
+                                                                        .bookingType ==
+                                                                    "parcel"
+                                                                ? '${getCompletedDatalist.bookingProducts[index].deliverytimeFrom} to ${getCompletedDatalist.bookingProducts[index].deliverytimeTo}'
+                                                                : getCompletedDatalist
+                                                                    .bookingDeliveryAddresses[
+                                                                        index]
+                                                                    .deliveryAt,
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                            style: primaryfont.copyWith(
+                                                                fontSize: 10.sp,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                                color: const Color(
+                                                                    0xff455A64)),
+                                                          ),
+                                                          // : Container(),
+                                                        ],
+                                                      )
+                                                    ],
+                                                  ),
                                                 ),
                                                 Container(
                                                   width: 225.h,
+                                                  // color: Colors.amber,
                                                   padding:
                                                       const EdgeInsets.only(
                                                           bottom: 0),
-                                                  child: ExpandableText(
-                                                    "${getCompletedDatalist.bookingDeliveryAddresses[index].address}",
-                                                    expandText: 'show more',
-                                                    collapseText: 'show less',
-                                                    maxLines: 2,
-                                                    linkColor: Colors.blue,
-                                                    style: primaryfont.copyWith(
-                                                        color: const Color(
-                                                            0xff1E1E1E),
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        fontSize: 12.sp),
-                                                  ),
+                                                  child: Text(
+                                                      getCompletedDatalist
+                                                          .bookingDeliveryAddresses[
+                                                              index]
+                                                          .address,
+                                                      style:
+                                                          primaryfont.copyWith(
+                                                              color: const Color(
+                                                                  0xff1E1E1E),
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              fontSize: 12.sp)),
+
+                                                  // ExpandableText(
+                                                  //   "${getCompletedDatalist.bookingDeliveryAddresses[index].address}",
+                                                  //   expandText: 'show more',
+                                                  //   collapseText: 'show less',
+                                                  //   maxLines: 2,
+                                                  //   linkColor: Colors.blue,
+                                                  //   style: primaryfont.copyWith(
+                                                  //       color: const Color(
+                                                  //           0xff1E1E1E),
+                                                  //       fontWeight:
+                                                  //           FontWeight.w600,
+                                                  //       fontSize: 12.sp),
+                                                  // ),
                                                 ),
                                               ],
                                             )
                                           ],
                                         ),
-                                        Row(
-                                          children: [
-                                            // getCompletedDatalist.bookingType ==
-                                            //         "parcel"
-                                            //     ?
-                                            Text(
-                                              formatTime(getCompletedDatalist
-                                                  .completedAt),
-                                              textAlign: TextAlign.center,
-                                              style: primaryfont.copyWith(
-                                                  fontSize: 10.sp,
-                                                  fontWeight: FontWeight.w600,
-                                                  color:
-                                                      const Color(0xff455A64)),
-                                            ),
-                                            // : Container(),
-                                          ],
-                                        )
                                       ],
                                     );
                                   }));
@@ -411,5 +503,5 @@ class _GetCompletedScreenDataState extends State<GetCompletedScreenData> {
         ],
       ),
     );
-      }
+  }
 }

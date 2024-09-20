@@ -57,9 +57,12 @@ class ScheduleDeliveryScreen extends StatefulWidget {
   List<String> receiverUnitId;
   String pickupPincode;
   List<String> dropPincode;
-
+  String dropStopCount;
+  TextEditingController notesController;
   ScheduleDeliveryScreen(
       {super.key,
+      required this.notesController,
+      required this.dropStopCount,
       required this.pickupPincode,
       required this.dropPincode,
       required this.senderUnitId,
@@ -118,12 +121,13 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
   TimeOfDay spselectedTime = TimeOfDay.now();
   TimeOfDay spselectedT0Time = TimeOfDay.now();
   double? storedTotalDistance; // Variable to store the calculated distance
-
+  List<String> dropLocationDistances = [];
+  double totalkmDistance = 0.0;
   void getData() async {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       parcelController.getAdditionalServices("booking_parcel");
       initializeIsCheckList();
-      parcelController.update();
+      // parcelController.update();
       if (widget.deliverytype == "Next day delivery") {
         selectedDate = DateTime.now().add(Duration(days: 1));
       } else {
@@ -134,6 +138,10 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
       // setState(() {});
     });
   }
+
+  List<AdditionalServiceData> selectedparcelServiceItems = [];
+  List<AdditionalServiceData> savedSelectItem1 = [];
+  List<bool> isCheck = [];
 
   void initializeIsCheckList() {
     isCheck =
@@ -146,10 +154,6 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
     }
     updateTotalAmount();
   }
-
-  List<AdditionalServiceData> selectedparcelServiceItems = [];
-  List<AdditionalServiceData> savedSelectItem1 = [];
-  List<bool> isCheck = [];
 
   void updateTotalAmount() {
     totalAmount = selectedparcelServiceItems.fold(0.0, (sum, item) {
@@ -915,25 +919,6 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                                   children: [
                                                     Text(
                                                       _getToTimeDisplayText(),
-                                                      // widget.deliverytype ==
-                                                      //         "4 Hours Delivery"
-                                                      //     ? "${_formatTime(_addMinutesToTimeOfDay(widget.deliveryTimeTos, 60))}"
-                                                      //     : widget.deliverytype ==
-                                                      //             "Express Delivery"
-                                                      //         ? "${_formatTime(_addMinutesToTimeOfDay(widget.deliveryTimeTos, 60))}"
-                                                      //         : widget.deliverytype ==
-                                                      //                 "Same day delivery"
-                                                      //             ? "${_formatTime(widget.deliveryTimeTos = TimeOfDay(hour: 20, minute: 0))}"
-                                                      //             // '${_formatTime(_addMinutesToTimeOfDay(deliveryFromTime!, 180))}'
-                                                      //             : widget.deliverytype ==
-                                                      //                     "Next day delivery"
-                                                      //                 ? "${_formatTime(widget.deliveryTimeTos = TimeOfDay(hour: 21, minute: 0))}"
-                                                      //                 : widget.deliveryTimeTos ==
-                                                      //                         TimeOfDay
-                                                      //                             .now()
-                                                      //                     ? "Select time"
-                                                      //                     : '${_formatTime(widget.deliveryTimeTos)}',
-
                                                       style:
                                                           primaryfont.copyWith(
                                                               fontSize: 13.sp,
@@ -1069,16 +1054,16 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                   ksizedbox10,
                                   Container(
                                     height: 100.h,
-                                    width: size.width,
+                                    width: MediaQuery.of(context).size.width,
                                     decoration:
-                                        BoxDecoration(color: AppColors.kwhite),
+                                        BoxDecoration(color: Colors.white),
                                     child: TextFormField(
                                       textAlign: TextAlign.start,
                                       maxLines: 100,
-                                      controller: notesController,
+                                      controller: widget.notesController,
                                       decoration: InputDecoration(
                                         hintText: 'Type here notes...',
-                                        hintStyle: primaryfont.copyWith(
+                                        hintStyle: TextStyle(
                                             fontSize: 14.h,
                                             fontWeight: FontWeight.w500),
                                         border: OutlineInputBorder(
@@ -1110,7 +1095,6 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                     ),
                                   ),
                                   ksizedbox20,
-
                                   ///
                                   GestureDetector(
                                     onTap: () {
@@ -1170,12 +1154,15 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                             [dd, '-', mm, '-', yyyy]))
                                     : formatDateTime,
                               );
-                              if (notesController.text.isNotEmpty &&
+                              if (widget.notesController.text.isNotEmpty &&
                                   _getFromTimeDisplayText().isNotEmpty &&
                                   _getToTimeDisplayText().isNotEmpty) {
                                 calculateDistance().then(
                                   (value) {
                                     Get.to(() => BookingDetailsScreen(
+                                          kilometers: dropLocationDistances,
+                                          totalKMDistance: totalkmDistance,
+                                          dropStopCounts: widget.dropStopCount,
                                           pickupPOSTALCODE:
                                               widget.pickupPincode,
                                           dropPOSTALCODE: widget.dropPincode,
@@ -1247,64 +1234,12 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
                                               : _getToTimeDisplayText(),
                                           imagePath:
                                               imagePath == "" ? "" : imagePath,
-                                          notes: notesController.text,
+                                          notes: widget.notesController.text,
                                           selectedDeliveryTypes:
                                               widget.selectedDeliveryTypes,
                                         ));
                                   },
                                 );
-                                // await parcelController.getKiloMeterApi(
-                                //   lat1: double.parse(widget.pickuplatitude),
-                                //   lon1: double.parse(widget.pickuplogitude),
-                                //   lat2:
-                                //       double.parse(widget.droppingLatitude[0]),
-                                //   lon2:
-                                //       double.parse(widget.droppingLogitude[0]),
-                                //   unit: "k",
-                                // );
-                                // totalDistance += parcelController.distance;
-                                // print(
-                                //     "pick to drop loction distance =${totalDistance}");
-
-                                // if (widget.droppingLatitude.length > 1) {
-                                //   for (int i = 0;
-                                //       i < widget.droppingLatitude.length - 1;
-                                //       i++) {
-                                //     await parcelController.getKiloMeterApi(
-                                //       lat1: double.parse(
-                                //           widget.droppingLatitude[i]),
-                                //       lon1: double.parse(
-                                //           widget.droppingLogitude[i]),
-                                //       lat2: double.parse(
-                                //           widget.droppingLatitude[i + 1]),
-                                //       lon2: double.parse(
-                                //           widget.droppingLogitude[i + 1]),
-                                //       unit: "k",
-                                //     );
-                                //     totalDistance += parcelController.distance;
-                                //     print(
-                                //         "drop to 2drop location distance =${totalDistance}");
-                                //   }
-                                // }
-
-                                // for (int i = 0;
-                                //     i < widget.droppingLatitude.length - 1;
-                                //     i++) {
-                                //   await parcelController.getKiloMeterApi(
-                                //     lat1: double.parse(
-                                //         widget.droppingLatitude[i]),
-                                //     lon1: double.parse(
-                                //         widget.droppingLogitude[i]),
-                                //     lat2: double.parse(
-                                //         widget.droppingLatitude[i + 1]),
-                                //     lon2: double.parse(
-                                //         widget.droppingLogitude[i + 1]),
-                                //     unit: "k",
-                                //   );
-                                //   totalDistance += parcelController.distance;
-                                //   print(
-                                //       "drop to 2drop loction distance =${totalDistance}");
-                                // }
 
                                 print(widget.pickupPincode);
                                 print(widget.dropPincode);
@@ -1338,12 +1273,13 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
   }
 
   Future<void> calculateDistance() async {
+    // List<String> dropLocationDistances = [];
+
     // Check if the distance has already been calculated
     if (storedTotalDistance == null) {
       double totalDistance = 0.0;
 
       // Calculate distance from pickup to the first dropping location
-
       await parcelController.getKiloMeterApi(
         lat1: double.parse(widget.pickuplatitude),
         lon1: double.parse(widget.pickuplogitude),
@@ -1352,9 +1288,14 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
         unit: "k",
       );
       totalDistance += parcelController.distance;
-      print("Pick to drop location distance = $totalDistance");
 
-      // Calculate distance for multiple dropping locations
+      String firstDistanceString = parcelController.distance.toString();
+      print(
+          "Pickup to first drop location distance = ${parcelController.distance}");
+      print("distancepickupString------ $firstDistanceString");
+      dropLocationDistances.add(firstDistanceString);
+
+      // Calculate distance between each pair of dropping locations
       if (widget.droppingLatitude.length > 1) {
         for (int i = 0; i < widget.droppingLatitude.length - 1; i++) {
           await parcelController.getKiloMeterApi(
@@ -1365,15 +1306,26 @@ class _ScheduleDeliveryScreenState extends State<ScheduleDeliveryScreen> {
             unit: "k",
           );
           totalDistance += parcelController.distance;
-          print("Drop to next drop location distance = $totalDistance");
+
+          String distanceString =
+              "${i + 1} to Drop location ${i + 2} distance = ${parcelController.distance}";
+          distanceString = parcelController.distance.toString();
+          print("distanceDropString----- $distanceString");
+          dropLocationDistances.add(distanceString);
         }
       }
-
-      // Store the calculated distance
+      totalkmDistance = dropLocationDistances
+          .map((distance) => double.parse(distance))
+          .reduce((a, b) => a + b);
+      // Store the calculated total distance
       storedTotalDistance = totalDistance;
+      print("Total distance = $totalDistance");
     } else {
       // Use the stored distance
       print("Using stored distance = $storedTotalDistance");
     }
+
+    // Optional: Print the list of distances between each drop location
+    print("List of drop location distances: $dropLocationDistances");
   }
 }

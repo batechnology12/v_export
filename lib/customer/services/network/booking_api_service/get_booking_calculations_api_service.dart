@@ -11,10 +11,12 @@ class GetBookingCalculationApiServices extends BaseApiServices {
       String deliveryType,
       String distance,
       String roundTrip,
+      String additionalStopCont,
       List<String> locationKg,
       List<String> locationQty,
       List<String> additionServiceId,
       List<String> additionalServiceQty,
+
       String postalcode) async {
     dynamic responseJson;
     try {
@@ -35,6 +37,7 @@ class GetBookingCalculationApiServices extends BaseApiServices {
             "delivery_type": deliveryType,
             "distance": distance,
             "is_round_trip": roundTrip,
+            "addtional_stop_count" :additionalStopCont,
             "location_kg": locationKg,
             "location_qty": locationQty,
             "additional_service_id": additionServiceId,

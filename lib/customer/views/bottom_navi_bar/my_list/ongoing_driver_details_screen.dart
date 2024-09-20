@@ -135,6 +135,16 @@ class _MyHomePageState extends State<OngoingDriverDetailsScreen> {
     }
   }
 
+  String formatTimehour(String dateTimeString) {
+    try {
+      DateTime dateTime1 = DateTime.parse(dateTimeString);
+
+      return DateFormat('hh').format(dateTime1);
+    } catch (e) {
+      return '';
+    }
+  }
+
   bool isChecked = false;
 
   @override
@@ -283,8 +293,30 @@ class _MyHomePageState extends State<OngoingDriverDetailsScreen> {
                                                             children: [
                                                               Row(
                                                                 children: [
-                                                                  Image.asset(
-                                                                      'assets/images/driverprofile.png'),
+                                                                  ClipRRect(
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            60),
+                                                                    child:
+                                                                        Container(
+                                                                      // color: Colors.amber,
+                                                                      height:
+                                                                          60.h,
+                                                                      width:
+                                                                          60.w,
+                                                                      child: Image
+                                                                          .network(
+                                                                        widget
+                                                                            .getOngoingOrdersModelDataList
+                                                                            .driver!
+                                                                            .imageUrl,
+                                                                        fit: BoxFit
+                                                                            .cover,
+                                                                        // height: 50,
+                                                                        // width: 50,
+                                                                      ),
+                                                                    ),
+                                                                  ),
                                                                   Padding(
                                                                     padding: const EdgeInsets
                                                                         .only(
@@ -431,7 +463,11 @@ class _MyHomePageState extends State<OngoingDriverDetailsScreen> {
                                                                               Color(0xffFFAB18),
                                                                         ),
                                                                         Text(
-                                                                          '3.5',
+                                                                          widget
+                                                                              .getOngoingOrdersModelDataList
+                                                                              .ratings!
+                                                                              .rating
+                                                                              .toString(),
                                                                           style: primaryfont.copyWith(
                                                                               fontWeight: FontWeight.w600,
                                                                               color: Color(0xff000000),
@@ -572,9 +608,6 @@ class _MyHomePageState extends State<OngoingDriverDetailsScreen> {
                                                                 .start,
                                                         children: [
                                                           Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceBetween,
                                                             children: [
                                                               Text(
                                                                 // "",
@@ -584,22 +617,22 @@ class _MyHomePageState extends State<OngoingDriverDetailsScreen> {
                                                                         FontWeight
                                                                             .w700,
                                                                     fontSize:
-                                                                        12.sp,
+                                                                        14.sp,
                                                                     color: Color(
                                                                         0xff1E1E1E)),
                                                               ),
-                                                              Text(
-                                                                // "",
-                                                                'Payment: ${widget.getOngoingOrdersModelDataList.paymentMode}',
-                                                                style: primaryfont.copyWith(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w700,
-                                                                    fontSize:
-                                                                        12.sp,
-                                                                    color: const Color(
-                                                                        0xff1E1E1E)),
-                                                              ),
+                                                              // Text(
+                                                              //   // "",
+                                                              //   'Payment: ${widget.getOngoingOrdersModelDataList.paymentMode}',
+                                                              //   style: primaryfont.copyWith(
+                                                              //       fontWeight:
+                                                              //           FontWeight
+                                                              //               .w700,
+                                                              //       fontSize:
+                                                              //           12.sp,
+                                                              //       color: const Color(
+                                                              //           0xff1E1E1E)),
+                                                              // ),
                                                             ],
                                                           ),
                                                           const Divider(),
@@ -647,55 +680,143 @@ class _MyHomePageState extends State<OngoingDriverDetailsScreen> {
                                                                         CrossAxisAlignment
                                                                             .start,
                                                                     children: [
-                                                                      Text(
-                                                                        'Pickup Address',
-                                                                        style: primaryfont.copyWith(
-                                                                            fontSize:
-                                                                                14.sp,
-                                                                            fontWeight: FontWeight.w600,
-                                                                            color: Color(0xff455A64)),
+                                                                      Container(
+                                                                        // color: Colors
+                                                                        //     .amber,
+                                                                        // width:
+                                                                        //     200.w,
+                                                                        child:
+                                                                            Row(
+                                                                          children: [
+                                                                            Row(
+                                                                              children: [
+                                                                                Text(
+                                                                                  'Pickup Address',
+                                                                                  style: primaryfont.copyWith(fontSize: 13.sp, fontWeight: FontWeight.w600, color: Colors.black),
+                                                                                ),
+                                                                              ],
+                                                                            ),
+                                                                            SizedBox(
+                                                                              width: 10,
+                                                                            ),
+                                                                            Row(
+                                                                              children: [
+                                                                                Text(
+                                                                                  '${formatDate(DateTime.parse(widget.getOngoingOrdersModelDataList.bookingDate.toString()), [
+                                                                                        dd,
+                                                                                        '-',
+                                                                                        mm,
+                                                                                        '-',
+                                                                                        yyyy
+                                                                                      ])}',
+                                                                                  style: primaryfont.copyWith(fontWeight: FontWeight.w700, fontSize: 10.sp, color: Color(0xff455A64)),
+                                                                                )
+                                                                              ],
+                                                                            ),
+                                                                            SizedBox(
+                                                                              width: 10,
+                                                                            ),
+                                                                            widget.getOngoingOrdersModelDataList.bookingType == "vehicle"
+                                                                                ? Row(
+                                                                                    children: [
+                                                                                      Text(
+                                                                                        "${widget.getOngoingOrdersModelDataList.bookingTimeFromVehicle}",
+                                                                                        style: primaryfont.copyWith(fontWeight: FontWeight.w700, fontSize: 10.sp, color: Color(0xff455A64)),
+                                                                                      ),
+                                                                                    ],
+                                                                                  )
+                                                                                : Row(
+                                                                                    children: [
+                                                                                      Text(
+                                                                                        "${widget.getOngoingOrdersModelDataList.bookingProducts.first.pickuptimeFrom}",
+                                                                                        style: primaryfont.copyWith(fontWeight: FontWeight.w700, fontSize: 10.sp, color: Color(0xff455A64)),
+                                                                                      ),
+                                                                                      Text(
+                                                                                        " to ",
+                                                                                        style: primaryfont.copyWith(fontWeight: FontWeight.w700, fontSize: 10.sp, color: Color(0xff455A64)),
+                                                                                      ),
+                                                                                      Text(
+                                                                                        "${widget.getOngoingOrdersModelDataList.bookingProducts.first.pickuptimeTo}",
+                                                                                        style: primaryfont.copyWith(fontWeight: FontWeight.w700, fontSize: 10.sp, color: Color(0xff455A64)),
+                                                                                      ),
+                                                                                    ],
+                                                                                  )
+                                                                          ],
+                                                                        ),
                                                                       ),
                                                                       Container(
                                                                         width:
-                                                                            230.h,
+                                                                            300.w,
                                                                         child:
-                                                                            ExpandableText(
-                                                                          // "",
-                                                                          "${widget.getOngoingOrdersModelDataList.senderUnitnoBlockno}, ${widget.getOngoingOrdersModelDataList.pickupAddreess}, ${widget.getOngoingOrdersModelDataList.unitno}",
-                                                                          expandText:
-                                                                              'show more',
-                                                                          collapseText:
-                                                                              'show less',
-                                                                          maxLines:
-                                                                              2,
-                                                                          linkColor:
-                                                                              Colors.blue,
-                                                                          style: primaryfont.copyWith(
-                                                                              color: const Color(0xff1E1E1E),
-                                                                              fontWeight: FontWeight.w600,
-                                                                              fontSize: 12.sp),
+                                                                            Row(
+                                                                          mainAxisAlignment:
+                                                                              MainAxisAlignment.spaceBetween,
+                                                                          children: [
+                                                                            Container(
+                                                                              width: 230.h,
+                                                                              // color: Colors.amber,
+                                                                              child: Column(
+                                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                children: [
+                                                                                  Text(
+                                                                                    "${widget.getOngoingOrdersModelDataList.pickupAddreess}",
+                                                                                    style: primaryfont.copyWith(color: const Color(0xff1E1E1E), fontWeight: FontWeight.w600, fontSize: 12.sp),
+                                                                                  ),
+                                                                                  Text(
+                                                                                    "${widget.getOngoingOrdersModelDataList.senderUnitnoBlockno}, UnitNo: ${widget.getOngoingOrdersModelDataList.unitno}",
+                                                                                    style: primaryfont.copyWith(color: const Color(0xff1E1E1E), fontWeight: FontWeight.w600, fontSize: 12.sp),
+                                                                                  ),
+                                                                                ],
+                                                                              ),
+                                                                              // ExpandableText(
+
+                                                                              //   "${widget.getOngoingOrdersModelDataList.senderUnitnoBlockno}, ${widget.getOngoingOrdersModelDataList.pickupAddreess}, ${widget.getOngoingOrdersModelDataList.unitno}",
+                                                                              //   expandText: 'show more',
+                                                                              //   collapseText: 'show less',
+                                                                              //   maxLines: 2,
+                                                                              //   linkColor: Colors.blue,
+                                                                              //   style: primaryfont.copyWith(color: const Color(0xff1E1E1E), fontWeight: FontWeight.w600, fontSize: 12.sp),
+                                                                              // ),
+                                                                            ),
+                                                                            Text(
+                                                                              widget.getOngoingOrdersModelDataList.payable == "sender" ? "Cash on \nDelivery" : "",
+                                                                              style: primaryfont.copyWith(fontWeight: FontWeight.w700, fontSize: 11.sp, color: Color(0xff455A64)),
+                                                                            )
+                                                                          ],
                                                                         ),
                                                                       ),
                                                                       SizedBox(
-                                                                        width:
-                                                                            3,
+                                                                        height:
+                                                                            5,
                                                                       ),
-                                                                      Text(
-                                                                        // "",
-                                                                        formatTime(widget
-                                                                            .getOngoingOrdersModelDataList
-                                                                            .acceptedAt
-                                                                            .toString()),
-                                                                        style: primaryfont.copyWith(
-                                                                            fontWeight:
-                                                                                FontWeight.w700,
-                                                                            fontSize: 12.sp,
-                                                                            color: Color(0xff455A64)),
-                                                                      ),
-                                                                      SizedBox(
-                                                                        width:
-                                                                            3,
-                                                                      ),
+                                                                      widget.getOngoingOrdersModelDataList.pickupedAt ==
+                                                                              ""
+                                                                          ? Text(
+                                                                              "",
+                                                                              style: primaryfont.copyWith(fontWeight: FontWeight.w700, fontSize: 10.sp, color: Color(0xff455A64)),
+                                                                            )
+                                                                          : RichText(
+                                                                              text: TextSpan(
+                                                                                children: [
+                                                                                  TextSpan(
+                                                                                    text: "Picked: ",
+                                                                                    style: primaryfont.copyWith(
+                                                                                      fontWeight: FontWeight.w700,
+                                                                                      fontSize: 12.sp,
+                                                                                      color: Colors.green[400],
+                                                                                    ),
+                                                                                  ),
+                                                                                  TextSpan(
+                                                                                    text: formatTime(widget.getOngoingOrdersModelDataList.pickupedAt),
+                                                                                    style: primaryfont.copyWith(
+                                                                                      fontWeight: FontWeight.w700,
+                                                                                      fontSize: 12.sp,
+                                                                                      color: Color(0xff455A64),
+                                                                                    ),
+                                                                                  ),
+                                                                                ],
+                                                                              ),
+                                                                            ),
                                                                     ],
                                                                   )
                                                                 ],
@@ -747,20 +868,92 @@ class _MyHomePageState extends State<OngoingDriverDetailsScreen> {
                                                                           crossAxisAlignment:
                                                                               CrossAxisAlignment.start,
                                                                           children: [
-                                                                            Text(
-                                                                              'Delivery Address',
-                                                                              style: primaryfont.copyWith(fontSize: 14.sp, fontWeight: FontWeight.w600, color: Color(0xff455A64)),
+                                                                            Container(
+                                                                              child: Row(
+                                                                                children: [
+                                                                                  Row(
+                                                                                    children: [
+                                                                                      Text(
+                                                                                        'Delivery Address',
+                                                                                        style: primaryfont.copyWith(fontSize: 13.sp, fontWeight: FontWeight.w600, color: Colors.black),
+                                                                                      ),
+                                                                                    ],
+                                                                                  ),
+                                                                                  Ksizedboxw10,
+                                                                                  Row(
+                                                                                    children: [
+                                                                                      Text(
+                                                                                        widget.getOngoingOrdersModelDataList.bookingType == "parcel" ? widget.getOngoingOrdersModelDataList.deliveryDate : "",
+                                                                                        style: primaryfont.copyWith(fontWeight: FontWeight.w700, fontSize: 10.sp, color: Color(0xff455A64)),
+                                                                                      )
+                                                                                    ],
+                                                                                  ),
+                                                                                  Ksizedboxw10,
+                                                                                  widget.getOngoingOrdersModelDataList.bookingType == "vehicle"
+                                                                                      ? Row(
+                                                                                          children: [
+                                                                                            Text(
+                                                                                              "",
+                                                                                              style: primaryfont.copyWith(fontWeight: FontWeight.w700, fontSize: 10.sp, color: Color(0xff455A64)),
+                                                                                            ),
+                                                                                          ],
+                                                                                        )
+                                                                                      : Row(
+                                                                                          children: [
+                                                                                            Text(
+                                                                                              "${widget.getOngoingOrdersModelDataList.bookingProducts.first.deliverytimeFrom}",
+                                                                                              //  "${widget.getOngoingOrdersModelDataList.bookingProducts.first.pickuptimeFrom}",
+                                                                                              style: primaryfont.copyWith(fontWeight: FontWeight.w700, fontSize: 10.sp, color: Color(0xff455A64)),
+                                                                                            ),
+                                                                                            Text(
+                                                                                              " to ",
+                                                                                              style: primaryfont.copyWith(fontWeight: FontWeight.w700, fontSize: 10.sp, color: Color(0xff455A64)),
+                                                                                            ),
+                                                                                            Text(
+                                                                                              "${widget.getOngoingOrdersModelDataList.bookingProducts.first.deliverytimeTo}",
+                                                                                              style: primaryfont.copyWith(fontWeight: FontWeight.w700, fontSize: 10.sp, color: Color(0xff455A64)),
+                                                                                            ),
+                                                                                          ],
+                                                                                        )
+                                                                                ],
+                                                                              ),
                                                                             ),
                                                                             Container(
-                                                                              width: 230.h,
-                                                                              padding: const EdgeInsets.only(bottom: 0),
-                                                                              child: ExpandableText(
-                                                                                "${bookingOngonigDeliveryDatalist.unitnoBlockno}, ${bookingOngonigDeliveryDatalist.address}, ${bookingOngonigDeliveryDatalist.unitno}",
-                                                                                expandText: 'show more',
-                                                                                collapseText: 'show less',
-                                                                                maxLines: 2,
-                                                                                linkColor: Colors.blue,
-                                                                                style: primaryfont.copyWith(color: const Color(0xff1E1E1E), fontWeight: FontWeight.w600, fontSize: 12.sp),
+                                                                              width: 300.w,
+                                                                              child: Row(
+                                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                children: [
+                                                                                  Container(
+                                                                                    width: 230.h,
+                                                                                    padding: const EdgeInsets.only(bottom: 0),
+                                                                                    child: Column(
+                                                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                      children: [
+                                                                                        Text(
+                                                                                          "${bookingOngonigDeliveryDatalist.address}",
+                                                                                          style: primaryfont.copyWith(color: const Color(0xff1E1E1E), fontWeight: FontWeight.w600, fontSize: 12.sp),
+                                                                                        ),
+                                                                                        Text(
+                                                                                          "${bookingOngonigDeliveryDatalist.unitnoBlockno}, UnitNo: ${bookingOngonigDeliveryDatalist.unitno}",
+                                                                                          style: primaryfont.copyWith(color: const Color(0xff1E1E1E), fontWeight: FontWeight.w600, fontSize: 12.sp),
+                                                                                        ),
+                                                                                      ],
+                                                                                    ),
+                                                                                    // ExpandableText(
+                                                                                    //   "${bookingOngonigDeliveryDatalist.unitnoBlockno}, ${bookingOngonigDeliveryDatalist.address}, ${bookingOngonigDeliveryDatalist.unitno}",
+                                                                                    //   expandText: 'show more',
+                                                                                    //   collapseText: 'show less',
+                                                                                    //   maxLines: 2,
+                                                                                    //   linkColor: Colors.blue,
+                                                                                    //   style: primaryfont.copyWith(color: const Color(0xff1E1E1E), fontWeight: FontWeight.w600, fontSize: 12.sp),
+                                                                                    // ),
+                                                                                  ),
+                                                                                  if (index == widget.getOngoingOrdersModelDataList.bookingDeliveryAddresses.length - 1)
+                                                                                    Text(
+                                                                                      widget.getOngoingOrdersModelDataList.payable == "receiver" ? "Cash on \nDelivery" : "",
+                                                                                      style: primaryfont.copyWith(fontWeight: FontWeight.w700, fontSize: 11.sp, color: Color(0xff455A64)),
+                                                                                    )
+                                                                                ],
                                                                               ),
                                                                             ),
                                                                           ],
@@ -774,114 +967,7 @@ class _MyHomePageState extends State<OngoingDriverDetailsScreen> {
                                                       ),
                                                       ksizedbox10,
                                                       const Divider(),
-                                                      ksizedbox10,
-                                                      Row(
-                                                        mainAxisAlignment: widget
-                                                                    .getOngoingOrdersModelDataList
-                                                                    .bookingType ==
-                                                                "parcel"
-                                                            ? MainAxisAlignment
-                                                                .spaceEvenly
-                                                            : MainAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Container(
-                                                            height: 70.h,
-                                                            width: 130.w,
-                                                            decoration: BoxDecoration(
-                                                                color: Color(
-                                                                    0xffF5F5F5),
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            15)),
-                                                            child: Column(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .center,
-                                                              children: [
-                                                                Text(
-                                                                  'Pickup Date',
-                                                                  style: primaryfont.copyWith(
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w500,
-                                                                      color: Color(
-                                                                          0xff455A64),
-                                                                      fontSize:
-                                                                          12.sp),
-                                                                ),
-                                                                const SizedBox(
-                                                                  height: 2,
-                                                                ),
-                                                                Text(
-                                                                  '${formatDate(DateTime.parse(widget.getOngoingOrdersModelDataList.bookingDate.toString()), [
-                                                                        dd,
-                                                                        '-',
-                                                                        mm,
-                                                                        '-',
-                                                                        yyyy
-                                                                      ])}',
-                                                                  style: primaryfont.copyWith(
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w600,
-                                                                      fontSize:
-                                                                          13.sp,
-                                                                      color: Colors
-                                                                          .black),
-                                                                )
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          widget.getOngoingOrdersModelDataList
-                                                                      .bookingType ==
-                                                                  "parcel"
-                                                              ? Container(
-                                                                  height: 70.h,
-                                                                  width: 130.w,
-                                                                  decoration: BoxDecoration(
-                                                                      color: Color(
-                                                                          0xffF5F5F5),
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              15)),
-                                                                  child: Column(
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .center,
-                                                                    children: [
-                                                                      Text(
-                                                                        'Delivery Date',
-                                                                        style: primaryfont.copyWith(
-                                                                            fontWeight:
-                                                                                FontWeight.w500,
-                                                                            color: Color(0xff455A64),
-                                                                            fontSize: 12.sp),
-                                                                      ),
-                                                                      const SizedBox(
-                                                                        height:
-                                                                            2,
-                                                                      ),
-                                                                      Text(
-                                                                        widget
-                                                                            .getOngoingOrdersModelDataList
-                                                                            .bookingProducts
-                                                                            .first
-                                                                            .deliveryDate
-                                                                            .toString(),
-                                                                        style: primaryfont.copyWith(
-                                                                            fontWeight:
-                                                                                FontWeight.w600,
-                                                                            fontSize: 13.sp,
-                                                                            color: Colors.black),
-                                                                      )
-                                                                    ],
-                                                                  ),
-                                                                )
-                                                              : Container(),
-                                                        ],
-                                                      ),
+                                                      // ksizedbox10,
                                                       ksizedbox10,
                                                       Row(
                                                         mainAxisAlignment:
@@ -950,7 +1036,7 @@ class _MyHomePageState extends State<OngoingDriverDetailsScreen> {
                                                                   ? Text(
                                                                       widget
                                                                           .getOngoingOrdersModelDataList
-                                                                          .deliveryType
+                                                                          .deliveryType!
                                                                           .name,
                                                                       style: primaryfont.copyWith(
                                                                           fontWeight: FontWeight
@@ -999,7 +1085,147 @@ class _MyHomePageState extends State<OngoingDriverDetailsScreen> {
                                                       ),
                                                       ksizedbox10,
                                                       Divider(),
-                                                      //
+                                                      Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          Text(
+                                                            'Additional Services:',
+                                                            style: primaryfont.copyWith(
+                                                                color: Color(
+                                                                    0xff000000),
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700,
+                                                                fontSize:
+                                                                    14.sp),
+                                                          ),
+                                                          parcelController
+                                                                  .paymentdata
+                                                                  .first
+                                                                  .paymentDetails
+                                                                  .additionalServices
+                                                                  .isEmpty
+                                                              ? Container(
+                                                                  // color: Colors
+                                                                  //     .amber,
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .centerLeft,
+                                                                  width: 125.w,
+                                                                  child: Text(
+                                                                    "No",
+                                                                    style: primaryfont.copyWith(
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .w600,
+                                                                        fontSize: 14
+                                                                            .sp,
+                                                                        color: Color(
+                                                                            0xff455A64)),
+                                                                  ),
+                                                                )
+                                                              : Container(
+                                                                  width: 140.w,
+                                                                  child: Column(
+                                                                    children: [
+                                                                      ListView
+                                                                          .builder(
+                                                                        shrinkWrap:
+                                                                            true,
+                                                                        itemCount: parcelController
+                                                                            .paymentdata
+                                                                            .first
+                                                                            .paymentDetails
+                                                                            .additionalServices
+                                                                            .length,
+                                                                        physics:
+                                                                            NeverScrollableScrollPhysics(),
+                                                                        itemBuilder:
+                                                                            (context,
+                                                                                index) {
+                                                                          PaymentDetailsAdditionalService addAdditionalservicelists = parcelController
+                                                                              .paymentdata
+                                                                              .first
+                                                                              .paymentDetails
+                                                                              .additionalServices[index];
+                                                                          return Padding(
+                                                                            padding:
+                                                                                const EdgeInsets.symmetric(horizontal: 5),
+                                                                            child:
+                                                                                Row(
+                                                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                              children: [
+                                                                                Container(
+                                                                                  // color: Colors.amber,
+                                                                                  width: 130.w,
+                                                                                  child: Column(
+                                                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                    children: [
+                                                                                      Text(
+                                                                                        addAdditionalservicelists.name,
+                                                                                        style: primaryfont.copyWith(fontWeight: FontWeight.w600, fontSize: 12.sp, color: Color(0xff455A64)),
+                                                                                      ),
+                                                                                    ],
+                                                                                  ),
+                                                                                ),
+                                                                              ],
+                                                                            ),
+                                                                          );
+                                                                        },
+                                                                      ),
+                                                                      parcelController.paymentdata.first.paymentDetails.driverHelpCost ==
+                                                                              "0.00"
+                                                                          ? Container()
+                                                                          : parcelController.paymentdata.first.paymentDetails.driverHelpCost.isEmpty
+                                                                              ? Container()
+                                                                              : Padding(
+                                                                                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                                                                                  child: Row(
+                                                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                    children: [
+                                                                                      Text(
+                                                                                        'ManPower Helper',
+                                                                                        style: primaryfont.copyWith(fontSize: 12.sp, fontWeight: FontWeight.w600, color: Color(0xff455A64)),
+                                                                                      ),
+                                                                                    ],
+                                                                                  ),
+                                                                                ),
+                                                                    ],
+                                                                  ),
+                                                                )
+                                                        ],
+                                                      ),
+                                                      Divider(),
+                                                      Text(
+                                                        'Driver Notes:',
+                                                        style: primaryfont
+                                                            .copyWith(
+                                                                color: Color(
+                                                                    0xff000000),
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700,
+                                                                fontSize:
+                                                                    14.sp),
+                                                      ),
+                                                      ksizedbox5,
+                                                      Text(
+                                                        widget
+                                                            .getOngoingOrdersModelDataList
+                                                            .notes,
+                                                        style: primaryfont
+                                                            .copyWith(
+                                                                color: Color(
+                                                                    0xff1E1E1E),
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700,
+                                                                fontSize:
+                                                                    12.sp),
+                                                      ),
+                                                      ksizedbox10,
                                                       Container(
                                                         width: size.width,
                                                         padding:
@@ -1202,7 +1428,7 @@ class _MyHomePageState extends State<OngoingDriverDetailsScreen> {
                                                                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                                                   children: [
                                                                                     Text(
-                                                                                      'Driver Help Stop',
+                                                                                      'Driver Helper Stop',
                                                                                       style: primaryfont.copyWith(fontSize: 14.sp, fontWeight: FontWeight.w600, color: Color(0xff455A64)),
                                                                                     ),
                                                                                     Text(
@@ -1234,6 +1460,28 @@ class _MyHomePageState extends State<OngoingDriverDetailsScreen> {
                                                                                   ],
                                                                                 ),
                                                                               ),
+                                                                    //
+                                                                    // parcelController.paymentdata.first.paymentDetails.staircasePerFloor ==
+                                                                    //         "0.00"
+                                                                    //     ? Container()
+                                                                    //     : parcelController.paymentdata.first.paymentDetails.staircasePerFloor.isEmpty
+                                                                    //         ? Container()
+                                                                    //         : Padding(
+                                                                    //             padding: const EdgeInsets.symmetric(horizontal: 5),
+                                                                    //             child: Row(
+                                                                    //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                    //               children: [
+                                                                    //                 Text(
+                                                                    //                   'Staircase (per floor)',
+                                                                    //                   style: primaryfont.copyWith(fontSize: 14.sp, fontWeight: FontWeight.w600, color: Color(0xff455A64)),
+                                                                    //                 ),
+                                                                    //                 Text(
+                                                                    //                   "\$${parcelController.paymentdata.first.paymentDetails.staircasePerFloor}",
+                                                                    //                   style: primaryfont.copyWith(fontSize: 14.sp, fontWeight: FontWeight.w600, color: Color(0xff455A64)),
+                                                                    //                 )
+                                                                    //               ],
+                                                                    //             ),
+                                                                    //           ),
                                                                     parcelController.paymentdata.first.paymentDetails.discount ==
                                                                             "0.00"
                                                                         ? Container()

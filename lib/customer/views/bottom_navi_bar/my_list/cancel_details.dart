@@ -254,19 +254,43 @@ class _CancelDetalsState extends State<CancelDetails> {
                                               color: Color(0xff455A64)),
                                         ),
                                         Container(
-                                          width: 230.h,
-                                          child: ExpandableText(
-                                            "${widget.getcancelledDataList.senderUnitnoBlockno} ${widget.getcancelledDataList.pickupAddreess}, ${widget.getcancelledDataList.unitno}",
-                                            expandText: 'show more',
-                                            collapseText: 'show less',
-                                            maxLines: 2,
-                                            linkColor: Colors.blue,
-                                            style: primaryfont.copyWith(
-                                                color: const Color(0xff1E1E1E),
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 12.sp),
-                                          ),
-                                        ),
+                                            width: 230.h,
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  "${widget.getcancelledDataList.pickupAddreess}",
+                                                  style: primaryfont.copyWith(
+                                                      color: const Color(
+                                                          0xff1E1E1E),
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize: 12.sp),
+                                                ),
+                                                Text(
+                                                  "${widget.getcancelledDataList.senderUnitnoBlockno}, UnitNo: ${widget.getcancelledDataList.unitno}",
+                                                  style: primaryfont.copyWith(
+                                                      color: const Color(
+                                                          0xff1E1E1E),
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize: 12.sp),
+                                                ),
+                                              ],
+                                            )
+                                            //  ExpandableText(
+                                            //   "${widget.getcancelledDataList.senderUnitnoBlockno} ${widget.getcancelledDataList.pickupAddreess}, ${widget.getcancelledDataList.unitno}",
+                                            //   expandText: 'show more',
+                                            //   collapseText: 'show less',
+                                            //   maxLines: 2,
+                                            //   linkColor: Colors.blue,
+                                            //   style: primaryfont.copyWith(
+                                            //       color: const Color(0xff1E1E1E),
+                                            //       fontWeight: FontWeight.w600,
+                                            //       fontSize: 12.sp),
+                                            // ),
+                                            ),
                                         // ksizedbox5,
                                         // Text(
                                         //   widget.getcancelledDataList
@@ -338,19 +362,47 @@ class _CancelDetalsState extends State<CancelDetails> {
                                                 width: 230.h,
                                                 padding: const EdgeInsets.only(
                                                     bottom: 0),
-                                                child: ExpandableText(
-                                                  "${bookingdatalist.unitnoBlockno}, ${bookingdatalist.address}, ${bookingdatalist.unitno}",
-                                                  expandText: 'show more',
-                                                  collapseText: 'show less',
-                                                  maxLines: 2,
-                                                  linkColor: Colors.blue,
-                                                  style: primaryfont.copyWith(
-                                                      color: const Color(
-                                                          0xff1E1E1E),
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      fontSize: 12.sp),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      "${bookingdatalist.address}",
+                                                      style:
+                                                          primaryfont.copyWith(
+                                                              color: const Color(
+                                                                  0xff1E1E1E),
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              fontSize: 12.sp),
+                                                    ),
+                                                    Text(
+                                                      "${bookingdatalist.unitnoBlockno}, UnitNo: ${bookingdatalist.unitno}",
+                                                      style:
+                                                          primaryfont.copyWith(
+                                                              color: const Color(
+                                                                  0xff1E1E1E),
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              fontSize: 12.sp),
+                                                    ),
+                                                  ],
                                                 ),
+                                                //  ExpandableText(
+                                                //   "${bookingdatalist.unitnoBlockno}, ${bookingdatalist.address}, ${bookingdatalist.unitno}",
+                                                //   expandText: 'show more',
+                                                //   collapseText: 'show less',
+                                                //   maxLines: 2,
+                                                //   linkColor: Colors.blue,
+                                                //   style: primaryfont.copyWith(
+                                                //       color: const Color(
+                                                //           0xff1E1E1E),
+                                                //       fontWeight:
+                                                //           FontWeight.w600,
+                                                //       fontSize: 12.sp),
+                                                // ),
                                               ),
                                               // ksizedbox5,
                                               // widget.getcancelledDataList

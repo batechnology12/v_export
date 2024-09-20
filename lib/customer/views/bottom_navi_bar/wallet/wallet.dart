@@ -131,6 +131,7 @@ class _WalletState extends State<Wallet> {
                   height: size.height,
                   width: size.width,
                   decoration: const BoxDecoration(
+                    // color: Colors.amber,
                     color: Color(0xffF4F8FF),
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(20),
@@ -150,168 +151,196 @@ class _WalletState extends State<Wallet> {
                                   return walletController.walletDataList.isEmpty
                                       ? const Center(
                                           child: Center(
-                                            child: CircularProgressIndicator(),
+                                            child: CircularProgressIndicator(
+                                              color: Colors.black,
+                                            ),
                                           ),
                                         )
-                                      : ListView.builder(
-                                          itemCount: walletController
-                                              .walletDataList
-                                              .last
-                                              .walletHistory
-                                              .length,
-                                          shrinkWrap: true,
-                                          physics:
-                                              NeverScrollableScrollPhysics(),
-                                          itemBuilder: (context, index) {
-                                            WalletHistory walletHistory =
-                                                walletController.walletDataList
-                                                    .last.walletHistory[index];
+                                      : walletController.walletDataList.last
+                                                  .walletBalance ==
+                                              "0.00"
+                                          ? Center(
+                                              child: Center(
+                                                child: Column(
+                                                  children: [
+                                                    Image.asset(
+                                                      "assets/images/walletempty_processed.png",
+                                                      height: 250.h,
+                                                      width: 250.w,
+                                                    ),
+                                                    Text(
+                                                      "Your Wallet Empty",
+                                                      style:
+                                                          primaryfont.copyWith(
+                                                              fontSize: 15.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            )
+                                          : ListView.builder(
+                                              itemCount: walletController
+                                                  .walletDataList
+                                                  .last
+                                                  .walletHistory
+                                                  .length,
+                                              shrinkWrap: true,
+                                              physics:
+                                                  NeverScrollableScrollPhysics(),
+                                              itemBuilder: (context, index) {
+                                                WalletHistory walletHistory =
+                                                    walletController
+                                                        .walletDataList
+                                                        .last
+                                                        .walletHistory[index];
 
-                                            DateTime walletDate =
-                                                walletHistory.createdAt;
+                                                DateTime walletDate =
+                                                    walletHistory.createdAt;
 
-                                            String dateShow =
-                                                dateShowing(walletDate);
+                                                String dateShow =
+                                                    dateShowing(walletDate);
 
-                                            // Check if the date is different from the last displayed date
-                                            bool showDate =
-                                                lastDateDisplayed == null ||
-                                                    !isSameDate(
-                                                        lastDateDisplayed!,
-                                                        walletDate);
+                                                // Check if the date is different from the last displayed date
+                                                bool showDate =
+                                                    lastDateDisplayed == null ||
+                                                        !isSameDate(
+                                                            lastDateDisplayed!,
+                                                            walletDate);
 
-                                            if (showDate) {
-                                              lastDateDisplayed = walletDate;
-                                            }
-                                            return Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                ksizedbox15,
-                                                if (showDate)
-                                                  Text(
-                                                    dateShow,
-                                                    style: primaryfont.copyWith(
-                                                        fontSize: 16.sp,
-                                                        fontWeight:
-                                                            FontWeight.w600),
-                                                  ),
-                                                Container(
-                                                  margin: const EdgeInsets.only(
-                                                      top: 3),
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 5,
-                                                          right: 10,
-                                                          top: 5,
-                                                          bottom: 5),
-                                                  //  height: 100.h,
-                                                  width: size.width,
-                                                  decoration: BoxDecoration(
-                                                      color: const Color(
-                                                          0xffFFFFFF),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10)),
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      Row(
+                                                if (showDate) {
+                                                  lastDateDisplayed =
+                                                      walletDate;
+                                                }
+                                                return Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    ksizedbox15,
+                                                    if (showDate)
+                                                      Text(
+                                                        dateShow,
+                                                        style: primaryfont
+                                                            .copyWith(
+                                                                fontSize: 16.sp,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600),
+                                                      ),
+                                                    Container(
+                                                      margin:
+                                                          const EdgeInsets.only(
+                                                              top: 3),
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 5,
+                                                              right: 10,
+                                                              top: 5,
+                                                              bottom: 5),
+                                                      //  height: 100.h,
+                                                      width: size.width,
+                                                      decoration: BoxDecoration(
+                                                          color: const Color(
+                                                              0xffFFFFFF),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      10)),
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
                                                         children: [
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .only(
-                                                                    left: 7,
-                                                                    top: 7),
-                                                            child: Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                Text(
-                                                                  "Money Added to wallet",
-                                                                  style: primaryfont.copyWith(
-                                                                      fontSize:
-                                                                          15.sp,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w600),
-                                                                ),
-                                                                Padding(
-                                                                  padding:
-                                                                      const EdgeInsets
+                                                          Row(
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .only(
+                                                                        left: 7,
+                                                                        top: 7),
+                                                                child: Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    Text(
+                                                                      "Money Added to wallet",
+                                                                      style: primaryfont.copyWith(
+                                                                          fontSize: 15
+                                                                              .sp,
+                                                                          fontWeight:
+                                                                              FontWeight.w600),
+                                                                    ),
+                                                                    Padding(
+                                                                      padding: const EdgeInsets
                                                                           .only(
                                                                           top:
                                                                               5),
-                                                                  child: Text(
-                                                                    // walletHistory
-                                                                    //     .createdAt
-                                                                    //     .toString(),
-                                                                    '${formatingMonth(walletHistory.createdAt)} | ${formatTime(walletHistory.createdAt.toString())}',
+                                                                      child:
+                                                                          Text(
+                                                                        // walletHistory
+                                                                        //     .createdAt
+                                                                        //     .toString(),
+                                                                        '${formatingMonth(walletHistory.createdAt)} | ${formatTime(walletHistory.createdAt.toString())}',
+                                                                        style: primaryfont.copyWith(
+                                                                            color:
+                                                                                Color(0xff939598),
+                                                                            fontSize: 13.sp,
+                                                                            fontWeight: FontWeight.w500),
+                                                                      ),
+                                                                    ),
+                                                                    Text(
+                                                                      'Txn Id :${walletHistory.referenceNumber}',
+                                                                      style: primaryfont.copyWith(
+                                                                          color: Color(
+                                                                              0xff939598),
+                                                                          fontSize: 13
+                                                                              .sp,
+                                                                          fontWeight:
+                                                                              FontWeight.w500),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              )
+                                                            ],
+                                                          ),
+                                                          Row(
+                                                            children: [
+                                                              Column(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .center,
+                                                                children: [
+                                                                  Text(
+                                                                    walletHistory.transactionType ==
+                                                                            "credit"
+                                                                        ? '+\$${walletHistory.amount}'
+                                                                        : '-\$${walletHistory.amount}',
                                                                     style: primaryfont.copyWith(
-                                                                        color: Color(
-                                                                            0xff939598),
-                                                                        fontSize: 13
+                                                                        color: walletHistory.transactionType ==
+                                                                                "credit"
+                                                                            ? const Color(
+                                                                                0xff00A8AC)
+                                                                            : Colors
+                                                                                .red,
+                                                                        fontSize: 14
                                                                             .sp,
                                                                         fontWeight:
-                                                                            FontWeight.w500),
+                                                                            FontWeight.w600),
                                                                   ),
-                                                                ),
-                                                                Text(
-                                                                  'Txn Id :${walletHistory.referenceNumber}',
-                                                                  style: primaryfont.copyWith(
-                                                                      color: Color(
-                                                                          0xff939598),
-                                                                      fontSize:
-                                                                          13.sp,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w500),
-                                                                ),
-                                                              ],
-                                                            ),
+                                                                ],
+                                                              ),
+                                                            ],
                                                           )
                                                         ],
                                                       ),
-                                                      Row(
-                                                        children: [
-                                                          Column(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .center,
-                                                            children: [
-                                                              Text(
-                                                                walletHistory
-                                                                            .transactionType ==
-                                                                        "credit"
-                                                                    ? '+\$${walletHistory.amount}'
-                                                                    : '-\$${walletHistory.amount}',
-                                                                style: primaryfont.copyWith(
-                                                                    color: walletHistory.transactionType ==
-                                                                            "credit"
-                                                                        ? const Color(
-                                                                            0xff00A8AC)
-                                                                        : Colors
-                                                                            .red,
-                                                                    fontSize:
-                                                                        14.sp,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w600),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      )
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            );
-                                          });
+                                                    ),
+                                                  ],
+                                                );
+                                              });
                                 }),
                               ],
                             ),
@@ -337,167 +366,195 @@ class _WalletState extends State<Wallet> {
                                             child: CircularProgressIndicator(),
                                           ),
                                         )
-                                      : ListView.builder(
-                                          itemCount: walletController
-                                              .walletDataList
-                                              .last
-                                              .walletHistory
-                                              .length,
-                                          shrinkWrap: true,
-                                          physics:
-                                              NeverScrollableScrollPhysics(),
-                                          itemBuilder: (context, index) {
-                                            WalletHistory walletHistorylist =
-                                                walletController.walletDataList
-                                                    .last.walletHistory[index];
+                                      : walletController.walletDataList.last
+                                                  .walletBalance ==
+                                              "0.00"
+                                          ? Center(
+                                              child: Center(
+                                                child: Column(
+                                                  children: [
+                                                    Image.asset(
+                                                      "assets/images/walletempty_processed.png",
+                                                      height: 250.h,
+                                                      width: 250.w,
+                                                    ),
+                                                    Text(
+                                                      "Your Wallet Empty",
+                                                      style:
+                                                          primaryfont.copyWith(
+                                                              fontSize: 15.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            )
+                                          : ListView.builder(
+                                              itemCount: walletController
+                                                  .walletDataList
+                                                  .last
+                                                  .walletHistory
+                                                  .length,
+                                              shrinkWrap: true,
+                                              physics:
+                                                  NeverScrollableScrollPhysics(),
+                                              itemBuilder: (context, index) {
+                                                WalletHistory
+                                                    walletHistorylist =
+                                                    walletController
+                                                        .walletDataList
+                                                        .last
+                                                        .walletHistory[index];
 
-                                            DateTime walletDates =
-                                                walletHistorylist.createdAt;
+                                                DateTime walletDates =
+                                                    walletHistorylist.createdAt;
 
-                                            String dateShows =
-                                                dateShowing(walletDates);
+                                                String dateShows =
+                                                    dateShowing(walletDates);
 
-                                            // Check if the date is different from the last displayed date
-                                            bool showDates =
-                                                lastDateDisplayed == null ||
-                                                    !isSameDate(
-                                                        lastDateDisplayed!,
-                                                        walletDates);
+                                                // Check if the date is different from the last displayed date
+                                                bool showDates =
+                                                    lastDateDisplayed == null ||
+                                                        !isSameDate(
+                                                            lastDateDisplayed!,
+                                                            walletDates);
 
-                                            if (showDates) {
-                                              lastDateDisplayed = walletDates;
-                                            }
-                                            return Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                ksizedbox15,
-                                                if (showDates)
-                                                  Text(
-                                                    dateShows,
-                                                    // formatingDate(
-                                                    //     walletHistorylist
-                                                    //         .createdAt),
-                                                    style: primaryfont.copyWith(
-                                                        fontSize: 16.sp,
-                                                        fontWeight:
-                                                            FontWeight.w600),
-                                                  ),
-                                                Container(
-                                                  margin:
-                                                      EdgeInsets.only(top: 3),
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 5,
-                                                          right: 10,
-                                                          top: 5,
-                                                          bottom: 5),
-                                                  //  height: 100.h,
-                                                  width: size.width,
-                                                  decoration: BoxDecoration(
-                                                      color: Color(0xffFFFFFF),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10)),
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      Row(
+                                                if (showDates) {
+                                                  lastDateDisplayed =
+                                                      walletDates;
+                                                }
+                                                return Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    ksizedbox15,
+                                                    if (showDates)
+                                                      Text(
+                                                        dateShows,
+                                                        // formatingDate(
+                                                        //     walletHistorylist
+                                                        //         .createdAt),
+                                                        style: primaryfont
+                                                            .copyWith(
+                                                                fontSize: 16.sp,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600),
+                                                      ),
+                                                    Container(
+                                                      margin: EdgeInsets.only(
+                                                          top: 3),
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 5,
+                                                              right: 10,
+                                                              top: 5,
+                                                              bottom: 5),
+                                                      //  height: 100.h,
+                                                      width: size.width,
+                                                      decoration: BoxDecoration(
+                                                          color:
+                                                              Color(0xffFFFFFF),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      10)),
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
                                                         children: [
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .only(
-                                                                    left: 7,
-                                                                    top: 7),
-                                                            child: Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                Text(
-                                                                  "Money Added to wallet",
-                                                                  style: primaryfont.copyWith(
-                                                                      fontSize:
-                                                                          15.sp,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w600),
-                                                                ),
-                                                                Padding(
-                                                                  padding:
-                                                                      const EdgeInsets
+                                                          Row(
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .only(
+                                                                        left: 7,
+                                                                        top: 7),
+                                                                child: Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    Text(
+                                                                      "Money Added to wallet",
+                                                                      style: primaryfont.copyWith(
+                                                                          fontSize: 15
+                                                                              .sp,
+                                                                          fontWeight:
+                                                                              FontWeight.w600),
+                                                                    ),
+                                                                    Padding(
+                                                                      padding: const EdgeInsets
                                                                           .only(
                                                                           top:
                                                                               5),
-                                                                  child: Text(
-                                                                    '${formatingMonth(walletHistorylist.createdAt)} | ${formatTime(walletHistorylist.createdAt.toString())}',
+                                                                      child:
+                                                                          Text(
+                                                                        '${formatingMonth(walletHistorylist.createdAt)} | ${formatTime(walletHistorylist.createdAt.toString())}',
+                                                                        style: primaryfont.copyWith(
+                                                                            color:
+                                                                                Color(0xff939598),
+                                                                            fontSize: 13.sp,
+                                                                            fontWeight: FontWeight.w500),
+                                                                      ),
+                                                                    ),
+                                                                    Text(
+                                                                      'Txn Id :${walletHistorylist.referenceNumber}',
+                                                                      style: primaryfont.copyWith(
+                                                                          color: Color(
+                                                                              0xff939598),
+                                                                          fontSize: 13
+                                                                              .sp,
+                                                                          fontWeight:
+                                                                              FontWeight.w500),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              )
+                                                            ],
+                                                          ),
+                                                          Row(
+                                                            children: [
+                                                              Column(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .center,
+                                                                children: [
+                                                                  Text(
+                                                                    '+\$${walletHistorylist.amount}',
                                                                     style: primaryfont.copyWith(
-                                                                        color: Color(
-                                                                            0xff939598),
-                                                                        fontSize: 13
+                                                                        color: const Color(
+                                                                            0xff00A8AC),
+                                                                        fontSize: 14
                                                                             .sp,
                                                                         fontWeight:
-                                                                            FontWeight.w500),
+                                                                            FontWeight.w600),
                                                                   ),
-                                                                ),
-                                                                Text(
-                                                                  'Txn Id :${walletHistorylist.referenceNumber}',
-                                                                  style: primaryfont.copyWith(
-                                                                      color: Color(
-                                                                          0xff939598),
-                                                                      fontSize:
-                                                                          13.sp,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w500),
-                                                                ),
-                                                              ],
-                                                            ),
+                                                                  // Text(
+                                                                  //   'Balance \$ 1200.00',
+                                                                  //   style:
+                                                                  //       primaryfont.copyWith(
+                                                                  //           color: Color(
+                                                                  //               0xff939598),
+                                                                  //           fontSize: 12.sp,
+                                                                  //           fontWeight:
+                                                                  //               FontWeight
+                                                                  //                   .w500),
+                                                                  // ),
+                                                                ],
+                                                              ),
+                                                            ],
                                                           )
                                                         ],
                                                       ),
-                                                      Row(
-                                                        children: [
-                                                          Column(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .center,
-                                                            children: [
-                                                              Text(
-                                                                '+\$${walletHistorylist.amount}',
-                                                                style: primaryfont.copyWith(
-                                                                    color: const Color(
-                                                                        0xff00A8AC),
-                                                                    fontSize:
-                                                                        14.sp,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w600),
-                                                              ),
-                                                              // Text(
-                                                              //   'Balance \$ 1200.00',
-                                                              //   style:
-                                                              //       primaryfont.copyWith(
-                                                              //           color: Color(
-                                                              //               0xff939598),
-                                                              //           fontSize: 12.sp,
-                                                              //           fontWeight:
-                                                              //               FontWeight
-                                                              //                   .w500),
-                                                              // ),
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      )
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            );
-                                          });
+                                                    ),
+                                                  ],
+                                                );
+                                              });
                                 }),
                               ],
                             ),
@@ -535,7 +592,7 @@ class _WalletState extends State<Wallet> {
                                 Column(
                                   children: [
                                     Text(
-                                      'Wallet Balance',
+                                      'Wallet Balasnce',
                                       style: primaryfont.copyWith(
                                           color: Color(0xffffffff),
                                           fontSize: 14.sp,

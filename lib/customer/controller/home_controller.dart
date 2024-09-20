@@ -202,10 +202,41 @@ class HomeController extends GetxController {
     }
   }
 
-  void clearDropLocations() {
-    vehicledroppingLocations.clear();
-    update();
+  void clearDropEntries() {
+    if (droppingLocations.length > 1) {
+      droppingLocations.removeRange(1, droppingLocations.length);
+    }
+
+    if (entries.length > 1) {
+      entries.removeRange(1, entries.length);
+    }
+
+    if (addParcels.length > 1) {
+      addParcels.removeRange(1, addParcels.length);
+    }
+    if (secondContainers.length > 1) {
+      // Remove all but the first container
+      secondContainers.removeRange(1, secondContainers.length);
+
+      // Remove all controllers associated with second containers
+      if (parcelLengthControllers.length > 1) {
+        parcelLengthControllers.removeRange(1, parcelLengthControllers.length);
+      }
+      if (parcelWidthControllers.length > 1) {
+        parcelWidthControllers.removeRange(1, parcelWidthControllers.length);
+      }
+      if (parcelHeightControllers.length > 1) {
+        parcelHeightControllers.removeRange(1, parcelHeightControllers.length);
+      }
+      if (parcelKgControllers.length > 1) {
+        parcelKgControllers.removeRange(1, parcelKgControllers.length);
+      }
+      if (quantityControllers.length > 1) {
+        quantityControllers.removeRange(1, quantityControllers.length);
+      }
+    }
   }
+
   ////////////////////////
 
   bool isCheckedparcelLocation = false;
@@ -299,14 +330,20 @@ class HomeController extends GetxController {
   //   super.onClose();
   // }
 
-  int calculateSum() {
-    int sum = 0;
+  var totalKg = 0.0.obs; // Observable for the total Kg
+
+  void updateSum() {
+    totalKg.value = calculateSum(); // Update the observable value
+  }
+
+  double calculateSum() {
+    var sum = 0.0; // Regular double, not an observable
     for (var controller in parcelKgControllers) {
       if (controller.text.isNotEmpty) {
-        sum += int.tryParse(controller.text) ?? 0;
+        sum += double.tryParse(controller.text) ?? 0.0; // Parse as double
       }
     }
-    return sum;
+    return sum; // Return the calculated sum
   }
 
   @override
@@ -392,6 +429,12 @@ class HomeController extends GetxController {
   removeVehicalEntry(index) {
     if (vehicalEntries.length > 1) {
       vehicalEntries.removeAt(index);
+    }
+  }
+
+  void clearVehicleDrop() {
+    if (vehicalEntries.length > 1) {
+      vehicalEntries.removeRange(1, vehicalEntries.length);
     }
   }
 }

@@ -13,6 +13,7 @@ class MainMenuServices extends BaseApiServices {
     }
     try {
       print(token);
+
       final response = await dio.post(getBookingDetailsUrl,
           options: Options(
               headers: {'Authorization': 'Bearer $token'},

@@ -106,7 +106,7 @@ class GetCancelledOrdersModelData {
   dynamic additionalService;
   List<dynamic> fromAddress;
   List<BookingDeliveryVehicleAddress> bookingDeliveryAddresses;
-  DeliveryType deliveryType;
+  DeliveryType? deliveryType;
 
   GetCancelledOrdersModelData({
     required this.id,
@@ -227,7 +227,9 @@ class GetCancelledOrdersModelData {
         bookingDeliveryAddresses: List<BookingDeliveryVehicleAddress>.from(
             json["booking_delivery_addresses"]
                 .map((x) => BookingDeliveryVehicleAddress.fromJson(x))),
-        deliveryType: DeliveryType.fromJson(json["delivery_type"]),
+        deliveryType: json["delivery_type"] == null
+            ? null
+            : DeliveryType.fromJson(json["delivery_type"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -287,7 +289,7 @@ class GetCancelledOrdersModelData {
         "from_address": List<dynamic>.from(fromAddress.map((x) => x)),
         "booking_delivery_addresses":
             List<dynamic>.from(bookingDeliveryAddresses.map((x) => x.toJson())),
-        "delivery_type": deliveryType.toJson(),
+        "delivery_type": deliveryType!.toJson(),
       };
 }
 

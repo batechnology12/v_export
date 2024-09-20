@@ -162,6 +162,7 @@ class ParcelController extends GetxController {
           style: TextStyle(color: Colors.white, fontSize: 15.sp),
         ),
       );
+      update();
     }
   }
 
@@ -278,6 +279,7 @@ class ParcelController extends GetxController {
   GetAcceptBookingdata? getAcceptBookingdata;
   RxBool getacceptBookingLoading = false.obs;
   bool status = false;
+  RxString driverRatingBookingID = "".obs;
   getAcceptBooking(String bookingId) async {
     getacceptBookingLoading(true);
     dio.Response<dynamic> response = await getAcceptBookingDetailsApiServices
@@ -287,6 +289,11 @@ class ParcelController extends GetxController {
       GetAcceptBookingModeldata getAcceptBookingModeldata =
           GetAcceptBookingModeldata.fromJson(response.data);
       getAcceptBookingdata = getAcceptBookingModeldata.data;
+
+      driverRatingBookingID = getAcceptBookingdata!.id.toString().obs;
+
+      print("driver rating id------ $driverRatingBookingID");
+
       // Get.to(DriverDetailsScreen(
       //   //getAcceptBookingdata: getAcceptBookingdata,
       // ));
@@ -439,6 +446,7 @@ class ParcelController extends GetxController {
       String deliveryType,
       String distance,
       String roundTrip,
+      String additionalStopCount,
       List<String> locationKg,
       List<String> locationQty,
       List<String> additionServiceId,
@@ -449,6 +457,7 @@ class ParcelController extends GetxController {
             deliveryType,
             distance,
             roundTrip,
+            additionalStopCount,
             locationKg,
             locationQty,
             additionServiceId,

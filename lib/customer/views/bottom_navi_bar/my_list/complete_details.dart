@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dotted_border/dotted_border.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
@@ -118,10 +120,21 @@ class _CompleteDetailsState extends State<CompleteDetails> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Image.asset(
-                                                "assets/icons/Ellipse 26 (1).png",
-                                                height: 50,
-                                                width: 50,
+                                              ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(60),
+                                                child: Container(
+                                                  // color: Colors.amber,
+                                                  height: 60.h,
+                                                  width: 60.w,
+                                                  child: Image.network(
+                                                    widget.getCompletedData
+                                                        .driver.imageUrl,
+                                                    fit: BoxFit.cover,
+                                                    // height: 50,
+                                                    // width: 50,
+                                                  ),
+                                                ),
                                               ),
                                               SizedBox(
                                                 width: 20.h,
@@ -156,7 +169,9 @@ class _CompleteDetailsState extends State<CompleteDetails> {
                                                       ),
                                                       Ksizedboxw10,
                                                       Text(
-                                                        "3.5",
+                                                        widget.getCompletedData
+                                                            .ratings.rating
+                                                            .toString(),
                                                         style: primaryfont
                                                             .copyWith(
                                                                 fontWeight:
@@ -296,39 +311,128 @@ class _CompleteDetailsState extends State<CompleteDetails> {
                                                                     0xff455A64)),
                                                       ),
                                                       Container(
-                                                        width: 225.h,
-                                                        child: ExpandableText(
-                                                          "${widget.getCompletedData.senderUnitnoBlockno}, ${widget.getCompletedData.pickupAddreess}, ${widget.getCompletedData.unitno}",
-                                                          expandText:
-                                                              'show more',
-                                                          collapseText:
-                                                              'show less',
-                                                          maxLines: 2,
-                                                          linkColor:
-                                                              Colors.blue,
-                                                          style: primaryfont.copyWith(
-                                                              color: const Color(
-                                                                  0xff1E1E1E),
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                              fontSize: 12.sp),
+                                                        width: 300.w,
+                                                        child: Row(
+                                                          children: [
+                                                            Container(
+                                                              width: 225.h,
+                                                              child: Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Text(
+                                                                    "${widget.getCompletedData.pickupAddreess}",
+                                                                    style: primaryfont.copyWith(
+                                                                        color: const Color(
+                                                                            0xff1E1E1E),
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .w600,
+                                                                        fontSize:
+                                                                            12.sp),
+                                                                  ),
+                                                                  Text(
+                                                                    "${widget.getCompletedData.senderUnitnoBlockno}, UnitNo: ${widget.getCompletedData.unitno}",
+                                                                    style: primaryfont.copyWith(
+                                                                        color: const Color(
+                                                                            0xff1E1E1E),
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .w600,
+                                                                        fontSize:
+                                                                            12.sp),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              //   ExpandableText(
+                                                              // "${widget.getCompletedData.senderUnitnoBlockno}, ${widget.getCompletedData.pickupAddreess}, ${widget.getCompletedData.unitno}",
+                                                              // expandText:
+                                                              //     'show more',
+                                                              // collapseText:
+                                                              //     'show less',
+                                                              // maxLines: 2,
+                                                              // linkColor:
+                                                              //     Colors.blue,
+                                                              // style: primaryfont.copyWith(
+                                                              //     color: const Color(
+                                                              //         0xff1E1E1E),
+                                                              //     fontWeight:
+                                                              //         FontWeight
+                                                              //             .w600,
+                                                              //     fontSize:
+                                                              //         12.sp),
+                                                              //   ),
+                                                            ),
+                                                            Text(
+                                                              widget.getCompletedData
+                                                                          .payable ==
+                                                                      "sender"
+                                                                  ? "Cash on \nDelivery"
+                                                                  : "",
+                                                              style: primaryfont.copyWith(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w700,
+                                                                  fontSize:
+                                                                      11.sp,
+                                                                  color: Color(
+                                                                      0xff455A64)),
+                                                            )
+                                                          ],
                                                         ),
                                                       ),
                                                       ksizedbox5,
-                                                      Text(
-                                                        formatTime(widget
-                                                            .getCompletedData
-                                                            .pickupedAt),
-                                                        style: primaryfont
-                                                            .copyWith(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w700,
-                                                                fontSize: 12.sp,
-                                                                color: Color(
-                                                                    0xff455A64)),
-                                                      ),
+                                                      widget.getCompletedData
+                                                                  .pickupedAt ==
+                                                              ""
+                                                          ? Text(
+                                                              "",
+                                                              style: primaryfont.copyWith(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w700,
+                                                                  fontSize:
+                                                                      10.sp,
+                                                                  color: Color(
+                                                                      0xff455A64)),
+                                                            )
+                                                          : RichText(
+                                                              text: TextSpan(
+                                                                children: [
+                                                                  TextSpan(
+                                                                    text:
+                                                                        "Picked: ",
+                                                                    style: primaryfont
+                                                                        .copyWith(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w700,
+                                                                      fontSize:
+                                                                          12.sp,
+                                                                      color: Colors
+                                                                              .green[
+                                                                          400],
+                                                                    ),
+                                                                  ),
+                                                                  TextSpan(
+                                                                    text: formatTime(widget
+                                                                        .getCompletedData
+                                                                        .pickupedAt),
+                                                                    style: primaryfont
+                                                                        .copyWith(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w700,
+                                                                      fontSize:
+                                                                          12.sp,
+                                                                      color: Color(
+                                                                          0xff455A64),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
                                                       ksizedbox5,
                                                     ],
                                                   )
@@ -403,50 +507,159 @@ class _CompleteDetailsState extends State<CompleteDetails> {
                                                                       0xff455A64)),
                                                             ),
                                                             Container(
-                                                              width: 230.h,
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .only(
-                                                                      bottom:
-                                                                          0),
-                                                              child:
-                                                                  ExpandableText(
-                                                                "${bookingcompleteddeliveryDatalist.unitnoBlockno}, ${bookingcompleteddeliveryDatalist.address}, ${bookingcompleteddeliveryDatalist.unitno}",
-                                                                expandText:
-                                                                    'show more',
-                                                                collapseText:
-                                                                    'show less',
-                                                                maxLines: 2,
-                                                                linkColor:
-                                                                    Colors.blue,
-                                                                style: primaryfont.copyWith(
-                                                                    color: const Color(
-                                                                        0xff1E1E1E),
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w600,
-                                                                    fontSize:
-                                                                        12.sp),
+                                                              width: 300.w,
+                                                              child: Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceBetween,
+                                                                children: [
+                                                                  Container(
+                                                                    width:
+                                                                        230.h,
+                                                                    padding: const EdgeInsets
+                                                                        .only(
+                                                                        bottom:
+                                                                            0),
+                                                                    child:
+                                                                        Column(
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .start,
+                                                                      children: [
+                                                                        Text(
+                                                                          "${bookingcompleteddeliveryDatalist.address}",
+                                                                          style: primaryfont.copyWith(
+                                                                              color: const Color(0xff1E1E1E),
+                                                                              fontWeight: FontWeight.w600,
+                                                                              fontSize: 12.sp),
+                                                                        ),
+                                                                        Text(
+                                                                          "${bookingcompleteddeliveryDatalist.unitnoBlockno}, UnitNo: ${bookingcompleteddeliveryDatalist.unitno}",
+                                                                          style: primaryfont.copyWith(
+                                                                              color: const Color(0xff1E1E1E),
+                                                                              fontWeight: FontWeight.w600,
+                                                                              fontSize: 12.sp),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                    //     ExpandableText(
+                                                                    //   "${bookingcompleteddeliveryDatalist.unitnoBlockno}, ${bookingcompleteddeliveryDatalist.address}, ${bookingcompleteddeliveryDatalist.unitno}",
+                                                                    //   expandText:
+                                                                    //       'show more',
+                                                                    //   collapseText:
+                                                                    //       'show less',
+                                                                    //   maxLines:
+                                                                    //       2,
+                                                                    //   linkColor:
+                                                                    //       Colors
+                                                                    //           .blue,
+                                                                    //   style: primaryfont.copyWith(
+                                                                    //       color: const Color(
+                                                                    //           0xff1E1E1E),
+                                                                    //       fontWeight: FontWeight
+                                                                    //           .w600,
+                                                                    //       fontSize:
+                                                                    //           12.sp),
+                                                                    // ),
+                                                                  ),
+                                                                  if (index ==
+                                                                      widget.getCompletedData.bookingDeliveryAddresses
+                                                                              .length -
+                                                                          1)
+                                                                    Text(
+                                                                      widget.getCompletedData.payable ==
+                                                                              "receiver"
+                                                                          ? "Cash on \nDelivery"
+                                                                          : "",
+                                                                      style: primaryfont.copyWith(
+                                                                          fontWeight: FontWeight
+                                                                              .w700,
+                                                                          fontSize: 11
+                                                                              .sp,
+                                                                          color:
+                                                                              Color(0xff455A64)),
+                                                                    )
+                                                                ],
                                                               ),
                                                             ),
                                                             ksizedbox5,
-                                                            // widget.getCompletedData
-                                                            //             .bookingType ==
-                                                            //         "parcel"
-                                                            //     ?
-                                                            Text(
-                                                              formatTime(widget
-                                                                  .getCompletedData
-                                                                  .completedAt),
-                                                              style: primaryfont.copyWith(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w700,
-                                                                  fontSize:
-                                                                      12.sp,
-                                                                  color: Color(
-                                                                      0xff455A64)),
-                                                            )
+                                                            widget
+                                                                    .getCompletedData
+                                                                    .bookingDeliveryAddresses
+                                                                    .isEmpty
+                                                                ? Text(
+                                                                    "",
+                                                                    style: primaryfont.copyWith(
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .w700,
+                                                                        fontSize: 10
+                                                                            .sp,
+                                                                        color: Color(
+                                                                            0xff455A64)),
+                                                                  )
+                                                                : RichText(
+                                                                    text:
+                                                                        TextSpan(
+                                                                      children: [
+                                                                        TextSpan(
+                                                                          text:
+                                                                              "Delivered: ",
+                                                                          style:
+                                                                              primaryfont.copyWith(
+                                                                            fontWeight:
+                                                                                FontWeight.w700,
+                                                                            fontSize:
+                                                                                12.sp,
+                                                                            color:
+                                                                                Colors.red[400],
+                                                                          ),
+                                                                        ),
+                                                                        TextSpan(
+                                                                          text: formatTime(widget
+                                                                              .getCompletedData
+                                                                              .bookingDeliveryAddresses[index]
+                                                                              .deliveryAt),
+                                                                          style:
+                                                                              primaryfont.copyWith(
+                                                                            fontWeight:
+                                                                                FontWeight.w700,
+                                                                            fontSize:
+                                                                                12.sp,
+                                                                            color:
+                                                                                Color(0xff455A64),
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+
+                                                            //  Text(
+                                                            //     "Delivered: ${formatTime(widget.getCompletedData.bookingDeliveryAddresses[index].deliveryAt)}",
+                                                            //     style: primaryfont.copyWith(
+                                                            //         fontWeight:
+                                                            //             FontWeight
+                                                            //                 .w700,
+                                                            //         fontSize: 12
+                                                            //             .sp,
+                                                            //         color: Color(
+                                                            //             0xff455A64)),
+                                                            //   ),
+                                                            // Text(
+                                                            //   formatTime(widget
+                                                            //       .getCompletedData
+                                                            //       .bookingDeliveryAddresses[
+                                                            //           index]
+                                                            //       .deliveryAt),
+                                                            //   style: primaryfont.copyWith(
+                                                            //       fontWeight:
+                                                            //           FontWeight
+                                                            //               .w700,
+                                                            //       fontSize:
+                                                            //           12.sp,
+                                                            //       color: Color(
+                                                            //           0xff455A64)),
+                                                            // )
                                                             // : Container(),
                                                           ],
                                                         )
@@ -744,7 +957,7 @@ class _CompleteDetailsState extends State<CompleteDetails> {
                                                                               fontSize: 14.sp,
                                                                               fontWeight: FontWeight.w600,
                                                                               color: Color(0xff455A64)),
-                                                                        )
+                                                                        ),
                                                                       ],
                                                                     ),
                                                                   ),

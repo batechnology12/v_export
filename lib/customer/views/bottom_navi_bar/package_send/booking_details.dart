@@ -64,12 +64,16 @@ class BookingDetailsScreen extends StatefulWidget {
   String roundtrip;
   String parcelofKg;
   String parcelofQty;
-
+  String dropStopCounts;
   String pickupPOSTALCODE;
   List<String> dropPOSTALCODE;
-
+  List<String> kilometers;
+  double totalKMDistance;
   BookingDetailsScreen(
       {super.key,
+      required this.totalKMDistance,
+      required this.kilometers,
+      required this.dropStopCounts,
       required this.pickupPOSTALCODE,
       required this.dropPOSTALCODE,
       required this.unitId,
@@ -274,6 +278,27 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
         widget.deliveryTypeID.toString(),
         widget.distance,
         widget.roundtrip == "1" ? "yes" : "no",
+        widget.dropStopCounts == "1"
+            ? "0"
+            : widget.dropStopCounts == "2"
+                ? "1"
+                : widget.dropStopCounts == "3"
+                    ? "2"
+                    : widget.dropStopCounts == "4"
+                        ? "3"
+                        : widget.dropStopCounts == "5"
+                            ? "4"
+                            : widget.dropStopCounts == "6"
+                                ? "5"
+                                : widget.dropStopCounts == "7"
+                                    ? "6"
+                                    : widget.dropStopCounts == "8"
+                                        ? "7"
+                                        : widget.dropStopCounts == "9"
+                                            ? "8"
+                                            : widget.dropStopCounts == "10"
+                                                ? "9"
+                                                : "0",
         widget.parcelKg,
         widget.parcelQty,
         additionalServiceParcelIdsString,
@@ -389,6 +414,9 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
                                                 children: [
                                                   Text(
                                                     'Booking Details',
@@ -396,6 +424,14 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                                         fontWeight:
                                                             FontWeight.w700,
                                                         fontSize: 19.sp),
+                                                  ),
+                                                  Text(
+                                                    'TotalKm: ${widget.totalKMDistance.toStringAsFixed(2)}',
+                                                    style: primaryfont.copyWith(
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                        color: AppColors.kblue,
+                                                        fontSize: 13.sp),
                                                   ),
                                                 ],
                                               ),
@@ -439,45 +475,100 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                                     top: 4),
                                                 child: Container(
                                                   width: size.width,
-                                                  child: RichText(
-                                                    text: TextSpan(
-                                                      text:
-                                                          'Address           : ',
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                              color:
-                                                                  Colors.black,
-                                                              fontSize: 16.sp,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold),
-                                                      children: <TextSpan>[
-                                                        TextSpan(
-                                                          text:
-                                                              "${widget.senderunitIdBlockID}, ${widget.pickupADDRESS}, ${widget.unitId}",
-                                                          //  '${widget.bookingdatalist.pickupAddreess}',
-                                                          style: primaryfont
-                                                              .copyWith(
+                                                  child: Row(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        'Address           : ',
+                                                        style: primaryfont
+                                                            .copyWith(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontSize: 14.sp,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                      ),
+                                                      Container(
+                                                        width: 200.w,
+                                                        alignment: Alignment
+                                                            .centerLeft,
+                                                        // color: Colors.amber,
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Text(
+                                                              widget
+                                                                  .pickupADDRESS,
+                                                              style: primaryfont.copyWith(
                                                                   color: Colors
                                                                       .black,
                                                                   fontSize:
-                                                                      15.sp,
+                                                                      13.sp,
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w500),
+                                                            ),
+                                                            Text(
+                                                              "${widget.senderunitIdBlockID}, UnitNo: ${widget.unitId}",
+                                                              style: primaryfont.copyWith(
+                                                                  color: Colors
+                                                                      .black,
+                                                                  fontSize:
+                                                                      13.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500),
+                                                            )
+                                                          ],
                                                         ),
-                                                      ],
-                                                    ),
+                                                      )
+                                                    ],
                                                   ),
+                                                  //  RichText(
+                                                  //   text: TextSpan(
+                                                  //     text:
+                                                  //         'Address           : ',
+                                                  //     style:
+                                                  //         primaryfont.copyWith(
+                                                  //             color:
+                                                  //                 Colors.black,
+                                                  //             fontSize: 16.sp,
+                                                  //             fontWeight:
+                                                  //                 FontWeight
+                                                  //                     .bold),
+                                                  //     children: <TextSpan>[
+                                                  //       TextSpan(
+                                                  //         text:
+                                                  //             "${widget.senderunitIdBlockID}, ${widget.pickupADDRESS}, ${widget.unitId}",
+                                                  //         //  '${widget.bookingdatalist.pickupAddreess}',
+                                                  //         style: primaryfont
+                                                  //             .copyWith(
+                                                  //                 color: Colors
+                                                  //                     .black,
+                                                  //                 fontSize:
+                                                  //                     15.sp,
+                                                  //                 fontWeight:
+                                                  //                     FontWeight
+                                                  //                         .w500),
+                                                  //       ),
+                                                  //     ],
+                                                  //   ),
+                                                  // ),
                                                 ),
                                               ),
                                               ksizedbox5,
                                               RichText(
                                                 text: TextSpan(
-                                                  text: 'Name               : ',
+                                                  text:
+                                                      'Name                 : ',
                                                   style: primaryfont.copyWith(
                                                       color: Colors.black,
-                                                      fontSize: 16.sp,
+                                                      fontSize: 15.sp,
                                                       fontWeight:
                                                           FontWeight.bold),
                                                   children: <TextSpan>[
@@ -488,7 +579,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                                           primaryfont.copyWith(
                                                               color:
                                                                   Colors.black,
-                                                              fontSize: 15.sp,
+                                                              fontSize: 14.sp,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .w500),
@@ -499,10 +590,11 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                               ksizedbox5,
                                               RichText(
                                                 text: TextSpan(
-                                                  text: 'Phone              : ',
+                                                  text:
+                                                      'Phone                : ',
                                                   style: primaryfont.copyWith(
                                                       color: Colors.black,
-                                                      fontSize: 16.sp,
+                                                      fontSize: 15.sp,
                                                       fontWeight:
                                                           FontWeight.bold),
                                                   children: <TextSpan>[
@@ -513,7 +605,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                                           primaryfont.copyWith(
                                                               color:
                                                                   Colors.black,
-                                                              fontSize: 15.sp,
+                                                              fontSize: 14.sp,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .w500),
@@ -580,41 +672,90 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                                                 CrossAxisAlignment
                                                                     .start,
                                                             children: [
-                                                              RichText(
-                                                                text: TextSpan(
-                                                                  text: homeController
-                                                                          .isCheckedparcelLocation
-                                                                      ? 'Address:- ${index + 1}        : '
-                                                                      : 'Address:-           : ',
-                                                                  style: primaryfont.copyWith(
-                                                                      color: Colors
-                                                                          .black,
-                                                                      fontSize:
-                                                                          16.sp,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold),
-                                                                  children: <TextSpan>[
-                                                                    TextSpan(
-                                                                      text:
-                                                                          "${widget.receiverUnitIdBlockID[index].split('[').last.split("]").first}, ${widget.droppingADDRESS[index]}, ${widget.receiverunitId[index].split('[').last.split("]").first}",
-                                                                      //   '${widget.bookingdatalist.bookingDeliveryAddresses.first.address}',
-                                                                      style: primaryfont.copyWith(
-                                                                          color: Colors
-                                                                              .black,
-                                                                          fontSize: 15
-                                                                              .sp,
-                                                                          fontWeight:
-                                                                              FontWeight.w500),
+                                                              Row(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Text(
+                                                                    homeController
+                                                                            .isCheckedparcelLocation
+                                                                        ? 'Address:- ${index + 1}        : '
+                                                                        : 'Address:-           : ',
+                                                                    style: primaryfont.copyWith(
+                                                                        color: Colors
+                                                                            .black,
+                                                                        fontSize: 14
+                                                                            .sp,
+                                                                        fontWeight:
+                                                                            FontWeight.bold),
+                                                                  ),
+                                                                  Container(
+                                                                    width:
+                                                                        200.w,
+                                                                    alignment:
+                                                                        Alignment
+                                                                            .centerLeft,
+                                                                    child:
+                                                                        Column(
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .start,
+                                                                      children: [
+                                                                        Text(
+                                                                          "${widget.droppingADDRESS[index]}",
+                                                                          style: primaryfont.copyWith(
+                                                                              color: Colors.black,
+                                                                              fontSize: 13.sp,
+                                                                              fontWeight: FontWeight.w500),
+                                                                        ),
+                                                                        Text(
+                                                                          "${widget.receiverUnitIdBlockID[index].split('[').last.split("]").first}, UnitNo: ${widget.receiverunitId[index].split('[').last.split("]").first}",
+                                                                          style: primaryfont.copyWith(
+                                                                              color: Colors.black,
+                                                                              fontSize: 13.sp,
+                                                                              fontWeight: FontWeight.w500),
+                                                                        )
+                                                                      ],
                                                                     ),
-                                                                  ],
-                                                                ),
+                                                                  ),
+                                                                ],
                                                               ),
+                                                              // RichText(
+                                                              //   text: TextSpan(
+                                                              //     text: homeController
+                                                              //             .isCheckedparcelLocation
+                                                              //         ? 'Address:- ${index + 1}        : '
+                                                              //         : 'Address:-           : ',
+                                                              //     style: primaryfont.copyWith(
+                                                              //         color: Colors
+                                                              //             .black,
+                                                              //         fontSize:
+                                                              //             16.sp,
+                                                              //         fontWeight:
+                                                              //             FontWeight
+                                                              //                 .bold),
+                                                              //     children: <TextSpan>[
+                                                              //       TextSpan(
+                                                              //         text:
+                                                              //             "${widget.receiverUnitIdBlockID[index].split('[').last.split("]").first}, ${widget.droppingADDRESS[index]}, ${widget.receiverunitId[index].split('[').last.split("]").first}",
+                                                              //         //   '${widget.bookingdatalist.bookingDeliveryAddresses.first.address}',
+                                                              //         style: primaryfont.copyWith(
+                                                              //             color: Colors
+                                                              //                 .black,
+                                                              //             fontSize: 15
+                                                              //                 .sp,
+                                                              //             fontWeight:
+                                                              //                 FontWeight.w500),
+                                                              //       ),
+                                                              //     ],
+                                                              //   ),
+                                                              // ),
                                                               ksizedbox5,
                                                               RichText(
                                                                 text: TextSpan(
                                                                   text:
-                                                                      'Name                   : ',
+                                                                      'Name                  : ',
                                                                   style: primaryfont.copyWith(
                                                                       color: Colors
                                                                           .black,
@@ -644,7 +785,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                                               RichText(
                                                                 text: TextSpan(
                                                                   text:
-                                                                      'Phone                  : ',
+                                                                      'Phone                 : ',
                                                                   style: primaryfont.copyWith(
                                                                       color: Colors
                                                                           .black,
@@ -911,14 +1052,15 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                                   widget.selectedParcelservice
                                                           .isEmpty
                                                       ? Container(
-                                                          width: 140,
-                                                          margin:
-                                                              EdgeInsets.only(
-                                                                  right: 20),
+                                                          width: 140.w,
+                                                          // color: Colors.amber,
+                                                          // margin:
+                                                          //     EdgeInsets.only(
+                                                          //         right: 20),
                                                           child: Text(
                                                             "No",
                                                             style: primaryfont.copyWith(
-                                                                fontSize: 15.sp,
+                                                                fontSize: 14.sp,
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w500,
@@ -927,7 +1069,8 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                                           ),
                                                         )
                                                       : Container(
-                                                          width: 150,
+                                                          width: 140.w,
+                                                          // color: Colors.amber,
                                                           child:
                                                               ListView.builder(
                                                             shrinkWrap: true,
@@ -951,10 +1094,10 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                                                     .name,
                                                                 style: primaryfont.copyWith(
                                                                     fontSize:
-                                                                        15.sp,
+                                                                        13.sp,
                                                                     fontWeight:
                                                                         FontWeight
-                                                                            .w500,
+                                                                            .w600,
                                                                     color: Color(
                                                                         0xff455A64)),
                                                               );
@@ -1219,8 +1362,10 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                                                 paymentDetailsDataList
                                                                     .roundTripCost
                                                                     .value,
-                                                            "addtionalstopCount":
-                                                                "0.00",
+                                                            "additionalStopCount":
+                                                                paymentDetailsDataList
+                                                                    .additionalStopCost
+                                                                    .value,
                                                             "driverHelpcost":
                                                                 "0.00",
                                                             "helperCost":
@@ -1278,6 +1423,22 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                                                         color: Color(
                                                                             0xff455A64)),
                                                                   ),
+                                                                  paymentDetailsDataList
+                                                                              .additionalStopCost
+                                                                              .value ==
+                                                                          "0.00"
+                                                                      ? Container()
+                                                                      : Text(
+                                                                          paymentDetailsDataList
+                                                                              .additionalStopCost
+                                                                              .name,
+                                                                          textAlign:
+                                                                              TextAlign.left,
+                                                                          style: primaryfont.copyWith(
+                                                                              fontSize: 14.sp,
+                                                                              fontWeight: FontWeight.w600,
+                                                                              color: Color(0xff455A64)),
+                                                                        ),
                                                                   paymentDetailsDataList
                                                                               .roundTripCost
                                                                               .value ==
@@ -1354,6 +1515,20 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                                                       ? Container()
                                                                       : Text(
                                                                           '\$${paymentDetailsDataList.roundTripCost.value}',
+                                                                          textAlign:
+                                                                              TextAlign.left,
+                                                                          style: primaryfont.copyWith(
+                                                                              fontSize: 14,
+                                                                              fontWeight: FontWeight.w600,
+                                                                              color: Color(0xff455A64)),
+                                                                        ),
+                                                                  paymentDetailsDataList
+                                                                              .additionalStopCost
+                                                                              .value ==
+                                                                          "0.00"
+                                                                      ? Container()
+                                                                      : Text(
+                                                                          '\$${paymentDetailsDataList.additionalStopCost.value}',
                                                                           textAlign:
                                                                               TextAlign.left,
                                                                           style: primaryfont.copyWith(
@@ -1741,6 +1916,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                                       .receiverNAME[index],
                                                   reciverMobile: widget
                                                       .receiverPHONE[index],
+                                                  kiloMeter: widget.kilometers,
                                                 ));
                                               }
                                               print(bookingAddress);

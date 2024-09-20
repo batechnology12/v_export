@@ -35,6 +35,14 @@ class _MakePaymentState extends State<MakePayment> {
   bool sufficientBalance = false;
   String selectedPaymentMode = "";
   bool isChecked = false;
+      int isSelected = -1;
+
+    selected(int value) {
+      setState(() {
+        isSelected = value;
+        isChecked = true;
+      });
+    }
   @override
   void initState() {
     accountController.getProfile();
@@ -528,14 +536,7 @@ class _MakePaymentState extends State<MakePayment> {
   }
 
   void showListViewDialog(BuildContext context) {
-    int isSelected = -1;
 
-    selected(int value) {
-      setState(() {
-        isSelected = value;
-        isChecked = true;
-      });
-    }
 
     showDialog(
       context: context,

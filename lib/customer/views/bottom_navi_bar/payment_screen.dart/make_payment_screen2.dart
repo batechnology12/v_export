@@ -38,6 +38,15 @@ class _MakePayment2State extends State<MakePayment2> {
   bool sufficientBalance1 = false;
   String selectedPaymentMode1 = "";
   bool isChecked1 = false;
+  int isSelected1 = -1;
+
+  selected(int value) {
+    setState(() {
+      isSelected1 = value;
+      isChecked1 = true;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -521,15 +530,6 @@ class _MakePayment2State extends State<MakePayment2> {
   }
 
   void showListViewDialog(BuildContext context) {
-    int isSelected1 = -1;
-
-    selected(int value) {
-      setState(() {
-        isSelected1 = value;
-        isChecked1 = true;
-      });
-    }
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -549,16 +549,13 @@ class _MakePayment2State extends State<MakePayment2> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              Text(
-                                'Collect Payment From',
-                                style: primaryfont.copyWith(
-                                    fontSize: 18.sp,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                            ],
+                          Text(
+                            'Collect Payment From',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                           GestureDetector(
                             onTap: () {
@@ -571,7 +568,7 @@ class _MakePayment2State extends State<MakePayment2> {
                           ),
                         ],
                       ),
-                      ksizedbox30,
+                      SizedBox(height: 30),
                       Padding(
                         padding: const EdgeInsets.only(left: 25, right: 30),
                         child: Column(
@@ -591,13 +588,13 @@ class _MakePayment2State extends State<MakePayment2> {
                                     height: 120,
                                     width: 120,
                                     decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: isSelected1 == 0
-                                              ? AppColors.kblue
-                                              : Colors.grey.withOpacity(.30),
-                                        ),
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
+                                      border: Border.all(
+                                        color: isSelected1 == 0
+                                            ? Colors.blue
+                                            : Colors.grey.withOpacity(.30),
+                                      ),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
                                     child: Image.asset(
                                       "assets/images/OBJECTS.png",
                                     ),
@@ -614,21 +611,21 @@ class _MakePayment2State extends State<MakePayment2> {
                                     height: 120,
                                     width: 120,
                                     decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: isSelected1 == 1
-                                              ? AppColors.kblue
-                                              : Colors.grey.withOpacity(.30),
-                                        ),
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
+                                      border: Border.all(
+                                        color: isSelected1 == 1
+                                            ? Colors.blue
+                                            : Colors.grey.withOpacity(.30),
+                                      ),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
                                     child: Image.asset(
                                       "assets/images/Group (3).png",
                                     ),
                                   ),
-                                )
+                                ),
                               ],
                             ),
-                            ksizedbox10,
+                            SizedBox(height: 10),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
@@ -639,35 +636,30 @@ class _MakePayment2State extends State<MakePayment2> {
                                     });
                                   },
                                   child: Container(
-                                      margin: EdgeInsets.only(right: 20),
-                                      width: 25.0,
-                                      height: 25.0,
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
+                                    margin: EdgeInsets.only(right: 20),
+                                    width: 25.0,
+                                    height: 25.0,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      color: isSelected1 == 0
+                                          ? Colors.blue
+                                          : Colors.grey.withOpacity(.30),
+                                      borderRadius: BorderRadius.circular(15.0),
+                                      border: Border.all(
                                         color: isSelected1 == 0
-                                            ? AppColors.kblue
+                                            ? Colors.blue
                                             : Colors.grey.withOpacity(.30),
-                                        borderRadius:
-                                            BorderRadius.circular(15.0),
-                                        border: Border.all(
-                                          color: isSelected1 == 0
-                                              ? AppColors.kblue
-                                              : Colors.grey.withOpacity(.30),
-                                          width: 2.0,
-                                        ),
+                                        width: 2.0,
                                       ),
-                                      child:
-                                          // isSelected == 0
-                                          //     ?
-                                          Icon(
-                                        Icons.check,
-                                        color: isSelected1 == 0
-                                            ? Colors.white
-                                            : Colors.white,
-                                        size: 15.0,
-                                      )
-                                      //  : null,
-                                      ),
+                                    ),
+                                    child: Icon(
+                                      Icons.check,
+                                      color: isSelected1 == 0
+                                          ? Colors.white
+                                          : Colors.white,
+                                      size: 15.0,
+                                    ),
+                                  ),
                                 ),
                                 GestureDetector(
                                   onTap: () {
@@ -676,38 +668,33 @@ class _MakePayment2State extends State<MakePayment2> {
                                     });
                                   },
                                   child: Container(
-                                      width: 25.0,
-                                      height: 25.0,
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
+                                    width: 25.0,
+                                    height: 25.0,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      color: isSelected1 == 1
+                                          ? Colors.blue
+                                          : Colors.grey.withOpacity(.30),
+                                      borderRadius: BorderRadius.circular(15.0),
+                                      border: Border.all(
                                         color: isSelected1 == 1
-                                            ? AppColors.kblue
+                                            ? Colors.blue
                                             : Colors.grey.withOpacity(.30),
-                                        borderRadius:
-                                            BorderRadius.circular(15.0),
-                                        border: Border.all(
-                                          color: isSelected1 == 1
-                                              ? AppColors.kblue
-                                              : Colors.grey.withOpacity(.30),
-                                          width: 2.0,
-                                        ),
+                                        width: 2.0,
                                       ),
-                                      child:
-                                          //  isSelected == 1
-                                          //     ?
-                                          Icon(
-                                        Icons.check,
-                                        color: isSelected1 == 1
-                                            ? Colors.white
-                                            : Colors.white,
-                                        size: 15.0,
-                                      )
-                                      // : null,
-                                      ),
+                                    ),
+                                    child: Icon(
+                                      Icons.check,
+                                      color: isSelected1 == 1
+                                          ? Colors.white
+                                          : Colors.white,
+                                      size: 15.0,
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
-                            ksizedbox10,
+                            SizedBox(height: 10),
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 16),
@@ -717,30 +704,34 @@ class _MakePayment2State extends State<MakePayment2> {
                                 children: [
                                   Padding(
                                     padding: const EdgeInsets.only(left: 20),
-                                    child: Text("Sender",
-                                        style: primaryfont.copyWith(
-                                          fontSize: 16.sp,
-                                          color: isSelected1 == 0
-                                              ? AppColors.kblue
-                                              : Colors.black,
-                                          fontWeight: FontWeight.w600,
-                                        )),
-                                  ),
-                                  Text("Receiver",
-                                      style: primaryfont.copyWith(
-                                        fontSize: 16.sp,
-                                        color: isSelected1 == 1
-                                            ? AppColors.kblue
+                                    child: Text(
+                                      "Sender",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: isSelected1 == 0
+                                            ? Colors.blue
                                             : Colors.black,
                                         fontWeight: FontWeight.w600,
-                                      )),
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    "Receiver",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: isSelected1 == 1
+                                          ? Colors.blue
+                                          : Colors.black,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
                           ],
                         ),
                       ),
-                      ksizedbox30,
+                      SizedBox(height: 30),
                       TextButton(
                           onPressed: () {
                             if (isChecked1 == true) {
@@ -769,4 +760,245 @@ class _MakePayment2State extends State<MakePayment2> {
       },
     );
   }
+
+  // void showListViewDialog(BuildContext context) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return StatefulBuilder(
+  //         builder: (BuildContext context, StateSetter setState) {
+  //           return Center(
+  //             child: Dialog(
+  //               insetPadding: EdgeInsets.symmetric(horizontal: 25),
+  //               shape: RoundedRectangleBorder(
+  //                 borderRadius: BorderRadius.circular(20.0),
+  //               ),
+  //               child: Container(
+  //                 padding: EdgeInsets.all(15.0),
+  //                 child: Column(
+  //                   mainAxisSize: MainAxisSize.min,
+  //                   children: [
+  //                     Row(
+  //                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                       children: [
+  //                         Row(
+  //                           children: [
+  //                             Text(
+  //                               'Collect Payment From',
+  //                               style: primaryfont.copyWith(
+  //                                   fontSize: 18.sp,
+  //                                   color: Colors.black,
+  //                                   fontWeight: FontWeight.w600),
+  //                             ),
+  //                           ],
+  //                         ),
+  //                         GestureDetector(
+  //                           onTap: () {
+  //                             Get.back();
+  //                           },
+  //                           child: const Icon(
+  //                             Icons.cancel_outlined,
+  //                             color: Colors.red,
+  //                           ),
+  //                         ),
+  //                       ],
+  //                     ),
+  //                     ksizedbox30,
+  //                     Padding(
+  //                       padding: const EdgeInsets.only(left: 25, right: 30),
+  //                       child: Column(
+  //                         mainAxisSize: MainAxisSize.min,
+  //                         children: [
+  //                           Row(
+  //                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                             children: [
+  //                               GestureDetector(
+  //                                 onTap: () {
+  //                                   setState(() {
+  //                                     selected(0);
+  //                                   });
+  //                                 },
+  //                                 child: Container(
+  //                                   padding: EdgeInsets.all(20),
+  //                                   height: 120,
+  //                                   width: 120,
+  //                                   decoration: BoxDecoration(
+  //                                       border: Border.all(
+  //                                         color: isSelected1 == 0
+  //                                             ? AppColors.kblue
+  //                                             : Colors.grey.withOpacity(.30),
+  //                                       ),
+  //                                       borderRadius:
+  //                                           BorderRadius.circular(10)),
+  //                                   child: Image.asset(
+  //                                     "assets/images/OBJECTS.png",
+  //                                   ),
+  //                                 ),
+  //                               ),
+  //                               GestureDetector(
+  //                                 onTap: () {
+  //                                   setState(() {
+  //                                     selected(1);
+  //                                   });
+  //                                 },
+  //                                 child: Container(
+  //                                   padding: EdgeInsets.all(20),
+  //                                   height: 120,
+  //                                   width: 120,
+  //                                   decoration: BoxDecoration(
+  //                                       border: Border.all(
+  //                                         color: isSelected1 == 1
+  //                                             ? AppColors.kblue
+  //                                             : Colors.grey.withOpacity(.30),
+  //                                       ),
+  //                                       borderRadius:
+  //                                           BorderRadius.circular(10)),
+  //                                   child: Image.asset(
+  //                                     "assets/images/Group (3).png",
+  //                                   ),
+  //                                 ),
+  //                               )
+  //                             ],
+  //                           ),
+  //                           ksizedbox10,
+  //                           Row(
+  //                             mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //                             children: [
+  //                               GestureDetector(
+  //                                 onTap: () {
+  //                                   setState(() {
+  //                                     selected(0);
+  //                                   });
+  //                                 },
+  //                                 child: Container(
+  //                                     margin: EdgeInsets.only(right: 20),
+  //                                     width: 25.0,
+  //                                     height: 25.0,
+  //                                     alignment: Alignment.center,
+  //                                     decoration: BoxDecoration(
+  //                                       color: isSelected1 == 0
+  //                                           ? AppColors.kblue
+  //                                           : Colors.grey.withOpacity(.30),
+  //                                       borderRadius:
+  //                                           BorderRadius.circular(15.0),
+  //                                       border: Border.all(
+  //                                         color: isSelected1 == 0
+  //                                             ? AppColors.kblue
+  //                                             : Colors.grey.withOpacity(.30),
+  //                                         width: 2.0,
+  //                                       ),
+  //                                     ),
+  //                                     child:
+  //                                         // isSelected == 0
+  //                                         //     ?
+  //                                         Icon(
+  //                                       Icons.check,
+  //                                       color: isSelected1 == 0
+  //                                           ? Colors.white
+  //                                           : Colors.white,
+  //                                       size: 15.0,
+  //                                     )
+  //                                     //  : null,
+  //                                     ),
+  //                               ),
+  //                               GestureDetector(
+  //                                 onTap: () {
+  //                                   setState(() {
+  //                                     selected(1);
+  //                                   });
+  //                                 },
+  //                                 child: Container(
+  //                                     width: 25.0,
+  //                                     height: 25.0,
+  //                                     alignment: Alignment.center,
+  //                                     decoration: BoxDecoration(
+  //                                       color: isSelected1 == 1
+  //                                           ? AppColors.kblue
+  //                                           : Colors.grey.withOpacity(.30),
+  //                                       borderRadius:
+  //                                           BorderRadius.circular(15.0),
+  //                                       border: Border.all(
+  //                                         color: isSelected1 == 1
+  //                                             ? AppColors.kblue
+  //                                             : Colors.grey.withOpacity(.30),
+  //                                         width: 2.0,
+  //                                       ),
+  //                                     ),
+  //                                     child:
+  //                                         //  isSelected == 1
+  //                                         //     ?
+  //                                         Icon(
+  //                                       Icons.check,
+  //                                       color: isSelected1 == 1
+  //                                           ? Colors.white
+  //                                           : Colors.white,
+  //                                       size: 15.0,
+  //                                     )
+  //                                     // : null,
+  //                                     ),
+  //                               ),
+  //                             ],
+  //                           ),
+  //                           ksizedbox10,
+  //                           Padding(
+  //                             padding:
+  //                                 const EdgeInsets.symmetric(horizontal: 16),
+  //                             child: Row(
+  //                               mainAxisAlignment:
+  //                                   MainAxisAlignment.spaceBetween,
+  //                               children: [
+  //                                 Padding(
+  //                                   padding: const EdgeInsets.only(left: 20),
+  //                                   child: Text("Sender",
+  //                                       style: primaryfont.copyWith(
+  //                                         fontSize: 16.sp,
+  //                                         color: isSelected1 == 0
+  //                                             ? AppColors.kblue
+  //                                             : Colors.black,
+  //                                         fontWeight: FontWeight.w600,
+  //                                       )),
+  //                                 ),
+  //                                 Text("Receiver",
+  //                                     style: primaryfont.copyWith(
+  //                                       fontSize: 16.sp,
+  //                                       color: isSelected1 == 1
+  //                                           ? AppColors.kblue
+  //                                           : Colors.black,
+  //                                       fontWeight: FontWeight.w600,
+  //                                     )),
+  //                               ],
+  //                             ),
+  //                           ),
+  //                         ],
+  //                       ),
+  //                     ),
+  //                     ksizedbox30,
+  //                     TextButton(
+  //                         onPressed: () {
+  //                           if (isChecked1 == true) {
+  //                             parcelController.senderReceiverApi(
+  //                                 widget.vehiclebookingid,
+  //                                 isSelected1 == 0 ? "sender" : "receiver");
+  //                             Get.back();
+  //                           } else {
+  //                             Get.snackbar("Please select the Payment Mode",
+  //                                 "Please try again!",
+  //                                 colorText: AppColors.kwhite,
+  //                                 backgroundColor: Colors.red,
+  //                                 snackPosition: SnackPosition.BOTTOM);
+  //                           }
+  //                         },
+  //                         child: CommonContainer(
+  //                           name: 'Submit',
+  //                         )),
+  //                   ],
+  //                 ),
+  //               ),
+  //             ),
+  //           );
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
 }

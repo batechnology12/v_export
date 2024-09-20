@@ -388,7 +388,7 @@ class AuthController extends GetxController {
 
   RxBool checkMobileLoading = false.obs;
 
-  checkMoobileApi(String mobile) async {
+  checkMobileApi(String mobile) async {
     dio.Response<dynamic> response =
         await checkMobileExistApiService.checkMobileApi(mobile: mobile);
     if (response.data["status"] == true) {

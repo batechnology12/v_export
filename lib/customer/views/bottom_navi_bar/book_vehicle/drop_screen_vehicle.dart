@@ -387,7 +387,7 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                             ),
                             fillColor: AppColors.kwhite,
                             filled: true,
-                            hintText: 'Enter Phone Name',
+                            hintText: 'Enter Phone Number',
                             hintStyle: primaryfont.copyWith(
                                 fontSize: 14, fontWeight: FontWeight.w500),
                             border: OutlineInputBorder(
@@ -490,7 +490,7 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: AppColors.kblue,
+      // backgroundColor: AppColors.kblue,
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: AppColors.kblue,
@@ -512,60 +512,144 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
               fontWeight: FontWeight.w600),
         ),
       ),
-      body: Stack(
-        children: <Widget>[
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
+      body:
+          // Stack(
+          //   children: <Widget>[
+          // Container(
+          //   height: size.height,
+          //   width: size.width,
+          //   child: GoogleMap(
+          //     initialCameraPosition: _initialPosition,
+          //     markers: _markers,
+          //     // myLocationEnabled: true,
+          //     onMapCreated: (GoogleMapController controller) {
+          //       _controller = controller;
+          //     },
+          //   ),
+          // ),
+          // DraggableScrollableSheet(
+          //   initialChildSize: 0.3,
+          //   minChildSize: 0.3,
+          //   maxChildSize: 1.0,
+          //   builder: (BuildContext context, ScrollController scrollController) {
+          //     return
+          Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              AppColors.kblue,
+              AppColors.kwhite,
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Color(0xffF4F8FF),
+            borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20),
               topRight: Radius.circular(20),
             ),
-            child: Container(
-              height: size.height,
-              width: size.width,
-              child: GoogleMap(
-                initialCameraPosition: _initialPosition,
-                markers: _markers,
-                // myLocationEnabled: true,
-                onMapCreated: (GoogleMapController controller) {
-                  _controller = controller;
-                },
-              ),
-            ),
           ),
-          DraggableScrollableSheet(
-            initialChildSize: 0.3,
-            minChildSize: 0.3,
-            maxChildSize: 1.0,
-            builder: (BuildContext context, ScrollController scrollController) {
-              return Container(
-                decoration: const BoxDecoration(
-                  color: Color(0xffF4F8FF),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Form(
+              key: formKey,
+              child: ListView(
+                physics: AlwaysScrollableScrollPhysics(),
+                // controller: scrollController,
+                children: [
+                  Text(
+                    "Enter Address",
+                    style: primaryfont.copyWith(
+                        fontSize: 17,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600),
                   ),
-                ),
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 5,
+                  ksizedbox5,
+                  Container(
+                    //   margin: EdgeInsets.only(left: 20),
+                    height: 47.h,
+                    width: double.infinity,
+
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.white,
                     ),
-                    Container(
-                      height: 5,
-                      width: 100,
-                      decoration: BoxDecoration(
-                          color: Colors.grey,
-                          borderRadius: BorderRadius.circular(5)),
+                    child: GooglePlaceAutoCompleteTextField(
+                      textEditingController: searchedController,
+                      googleAPIKey: "AIzaSyAyygarjlqp_t2SPo7vS1oXDq1Yxs-LLNg",
+                      inputDecoration: InputDecoration(
+                          contentPadding: EdgeInsets.only(left: 10),
+                          isDense: true,
+                          hintText: 'Enter Your Address....',
+                          hintStyle: primaryfont.copyWith(
+                              fontSize: 14, fontWeight: FontWeight.w500),
+                          border: InputBorder.none),
+                      focusNode: FocusNode(),
+                      debounceTime: 600,
+                      isLatLngRequired: true,
+                      getPlaceDetailWithLatLng: (Prediction prediction) {
+                        if (_controller != null) {
+                          RegExp regExp = RegExp(
+                              r'\b\d{6}\b'); // Pattern to match 6-digit pincode
+                          Match? match =
+                              regExp.firstMatch(prediction.description!);
+
+                          if (match != null) {
+                            vehicledropingpickuppincode =
+                                match.group(0)!; // Store the pincode
+                          }
+                          print(vehicledropingpickuppincode);
+
+                          print(
+                              'Extracted Pincode: $vehicledropingpickuppincode');
+                          _controller!
+                              .animateCamera(CameraUpdate.newCameraPosition(
+                            CameraPosition(
+                              target: LatLng(double.parse(prediction.lat!),
+                                  double.parse(prediction.lng!)),
+                              zoom: 14.0,
+                            ),
+                          ));
+                        }
+
+                        setState(() {
+                          _markers.add(Marker(
+                            markerId: MarkerId(prediction.placeId!),
+                            position: LatLng(double.parse(prediction.lat!),
+                                double.parse(prediction.lng!)),
+                            infoWindow:
+                                InfoWindow(title: prediction.description!),
+                          ));
+                        });
+
+                        // Fetch place name using the coordinates
+                        // _fetchPlaceName(
+                        //   double.parse(prediction.lat!),
+                        //   double.parse(prediction.lng!),
+                        // );
+                      },
+                      itemClick: (Prediction prediction) {
+                        setState(() {
+                          searchedController.text = prediction.description!;
+                          searchedController.selection =
+                              TextSelection.fromPosition(TextPosition(
+                                  offset: prediction.description!.length));
+                        });
+                      },
                     ),
-                    Expanded(
-                        child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: ListView(
-                        physics: AlwaysScrollableScrollPhysics(),
-                        controller: scrollController,
+                  ),
+                  ksizedbox20,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Enter Address",
+                            "Enter Block no",
                             style: primaryfont.copyWith(
                                 fontSize: 17,
                                 color: Colors.black,
@@ -573,130 +657,30 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                           ),
                           ksizedbox5,
                           GestureDetector(
-                            onTap: _showFullScreenVehicleAddressDetailsInput,
-                            child: Container(
-                              //   margin: EdgeInsets.only(left: 20),
-                              height: 47.h,
-                              width: size.width,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: Colors.white,
-                              ),
-                              child: GooglePlaceAutoCompleteTextField(
-                                textEditingController: searchedController,
-                                googleAPIKey:
-                                    "AIzaSyAyygarjlqp_t2SPo7vS1oXDq1Yxs-LLNg",
-                                inputDecoration: InputDecoration(
-                                    contentPadding: EdgeInsets.only(left: 10),
-                                    enabled: false,
-                                    isDense: true,
-                                    // prefixIcon: Padding(
-                                    //   padding: const EdgeInsets.all(8.0),
-                                    //   child: Image.asset(
-                                    //     "assets/icons/google-maps.png",
-                                    //   ),
-                                    // ),
-                                    // suffixIcon: Padding(
-                                    //   padding: const EdgeInsets.all(5.0),
-                                    //   child: Image.asset(
-                                    //     "assets/icons/search.png",
-                                    //   ),
-                                    // ),
-                                    hintText: 'Enter Your Address....',
-                                    hintStyle: primaryfont.copyWith(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500),
-                                    border: InputBorder.none
-                                    // border: OutlineInputBorder(
-                                    //   borderRadius: BorderRadius.circular(10),
-                                    //   borderSide: BorderSide(
-                                    //     width: 1,
-                                    //     color: Color(0xff444444),
-                                    //   ),
-                                    // ),
-                                    ),
-                                focusNode: FocusNode(),
-                                debounceTime: 600,
-                                isLatLngRequired: true,
-                                getPlaceDetailWithLatLng:
-                                    (Prediction prediction) {
-                                  if (_controller != null) {
-                                    _controller!.animateCamera(
-                                        CameraUpdate.newCameraPosition(
-                                      CameraPosition(
-                                        target: LatLng(
-                                            double.parse(prediction.lat!),
-                                            double.parse(prediction.lng!)),
-                                        zoom: 14.0,
-                                      ),
-                                    ));
-                                  }
-
-                                  setState(() {
-                                    _markers.add(Marker(
-                                      markerId: MarkerId(prediction.placeId!),
-                                      position: LatLng(
-                                          double.parse(prediction.lat!),
-                                          double.parse(prediction.lng!)),
-                                      infoWindow: InfoWindow(
-                                          title: prediction.description!),
-                                    ));
-                                  });
-
-                                  // Fetch place name using the coordinates
-                                  // _fetchPlaceName(
-                                  //   double.parse(prediction.lat!),
-                                  //   double.parse(prediction.lng!),
-                                  // );
-                                },
-                                itemClick: (Prediction prediction) {
-                                  setState(() {
-                                    searchedController.text =
-                                        prediction.description!;
-                                    searchedController.selection =
-                                        TextSelection.fromPosition(TextPosition(
-                                            offset: prediction
-                                                .description!.length));
-                                  });
-                                },
-                              ),
-                            ),
-                          ),
-                          ksizedbox20,
-                          Text(
-                            "Enter Block no / Unit no",
-                            style: primaryfont.copyWith(
-                                fontSize: 17,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w600),
-                          ),
-                          ksizedbox5,
-                          GestureDetector(
-                            onTap: _showFullScreenVehicleAddressDetailsInput,
                             child: Container(
                               height: 47,
-                              width: size.width,
+                              width: 150.w,
                               decoration: BoxDecoration(
                                   color: AppColors.kwhite,
-                                  border: Border.all(
-                                    color: Color(0xff444444),
-                                  ),
+                                  // border: Border.all(
+                                  //   color: Color(0xff444444),
+                                  // ),
                                   borderRadius: BorderRadius.circular(10)),
                               child: TextFormField(
                                   controller: receiverBlockIdUnitIdController,
                                   inputFormatters: [
                                     LengthLimitingTextInputFormatter(4),
-                                    FilteringTextInputFormatter.digitsOnly,
+                                    // FilteringTextInputFormatter
+                                    //     .digitsOnly,
                                   ],
-                                  keyboardType: TextInputType.phone,
+                                  keyboardType: TextInputType.text,
                                   decoration: InputDecoration(
                                       contentPadding: const EdgeInsets.only(
                                           left: 10,
                                           right: 10,
                                           top: 10,
                                           bottom: 16),
-                                      enabled: false,
-                                      hintText: 'Enter Block no / Unit no',
+                                      hintText: 'Enter Block no',
                                       hintStyle: primaryfont.copyWith(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w500),
@@ -709,9 +693,13 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                                       ))),
                             ),
                           ),
-                          ksizedbox20,
+                        ],
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           Text(
-                            "Receiver Name",
+                            "Enter Unit no",
                             style: primaryfont.copyWith(
                                 fontSize: 17,
                                 color: Colors.black,
@@ -719,167 +707,221 @@ class _DropVehicleLocationState extends State<DropVehicleLocation> {
                           ),
                           ksizedbox5,
                           GestureDetector(
-                            onTap: _showFullScreenVehicleAddressDetailsInput,
                             child: Container(
                               height: 47,
-                              width: size.width,
+                              width: 150.w,
                               decoration: BoxDecoration(
                                   color: AppColors.kwhite,
-                                  border: Border.all(
-                                    color: Color(0xff444444),
-                                  ),
+                                  // border: Border.all(
+                                  //   color: Color(0xff444444),
+                                  // ),
                                   borderRadius: BorderRadius.circular(10)),
                               child: TextFormField(
-                                textCapitalization:
-                                    TextCapitalization.sentences,
-                                maxLines: 1,
-                                minLines: 1,
-                                controller: receiverNameController,
-                                decoration: InputDecoration(
-                                  contentPadding: const EdgeInsets.only(
-                                      left: 10, right: 10, top: 10, bottom: 16),
-                                  enabled: false,
-                                  hintText: 'Enter receiver name',
-                                  hintStyle: primaryfont.copyWith(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: const BorderSide(
-                                      width: 1,
-                                      color: Color(0xff444444),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          ksizedbox20,
-                          Text(
-                            "Receiver Number",
-                            style: primaryfont.copyWith(
-                                fontSize: 17,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w600),
-                          ),
-                          ksizedbox5,
-                          GestureDetector(
-                            onTap: _showFullScreenVehicleAddressDetailsInput,
-                            child: TextFormField(
-                              controller: receiverNumberController,
-                              validator: (value) {
-                                if (value!.length < 8 || value.length > 8) {
-                                  return "Enter 8 digits phone number";
-                                }
-                                return null;
-                              },
-                              keyboardType: TextInputType.phone,
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(8),
-                                FilteringTextInputFormatter.digitsOnly,
-                                FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                              ],
-                              decoration: InputDecoration(
-                                prefixIcon: Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 10, right: 5, top: 12),
-                                  child: Text(
-                                    "+65",
-                                    style: primaryfont.copyWith(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                                fillColor: AppColors.kwhite,
-                                filled: true,
-                                contentPadding:
-                                    const EdgeInsets.fromLTRB(10, 4, 4, 4),
-                                hintText: "Enter Receiver Number",
-                                hintStyle: primaryfont.copyWith(
-                                    color: Colors.grey,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w100),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Color(0xff444444),
-                                    ),
-                                    borderRadius: BorderRadius.circular(10)),
-                                focusedErrorBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Color(0xff444444),
-                                    ),
-                                    borderRadius: BorderRadius.circular(10)),
-                                errorBorder: OutlineInputBorder(
-                                    borderSide:
-                                        BorderSide(color: Color(0xff444444)),
-                                    borderRadius: BorderRadius.circular(10)),
-                              ),
-                            ),
-                          ),
-                          ksizedbox20,
-                          InkWell(
-                            onTap: () {
-                              if (receiverNameController.text.isNotEmpty &&
-                                  receiverNumberController.text.isNotEmpty) {
-                                _fetchAddressVehicle();
-                                homeController.vehicleDroppingLocation(
-                                    searchedController.text,
-                                    _markers.first.position.latitude.toString(),
-                                    _markers.first.position.longitude
-                                        .toString(),
-                                    areapincode,
-                                    doorno,
-                                    widget.index,
-                                    receiverNameController.text,
-                                    receiverNumberController.text,
-                                    receiverBlockIdUnitIdController.text,
-                                    receiverUnitIdController.text,
-                                    vehicledropingpickuppincode);
-                                // Get.back();
-                                Get.offAll(BookVehicleScreen(
-                                  vehiclePickupPincode:
-                                      vehicledropingpickuppincode,
-                                  vehiclepickupBlockIDs:
-                                      homeController.pickupVehicleblockId.value,
-                                  vehiclepickupunitId:
-                                      homeController.pickupVehicleunitId.value,
-                                  vehiclepickupAdress: homeController
-                                      .pickupVehicleLocation.value,
-                                  vehiclepickuplat: homeController
-                                      .pickupVehiclelatitude.value,
-                                  vehiclepickuplong: homeController
-                                      .pickupVehiclelongitude.value,
-                                  vehiclepickupsendername: homeController
-                                      .pickupVehicleSenderName.value,
-                                  vehicleSenderMobilenumber: homeController
-                                      .pickupVehicleSenderNumber.value,
-                                ));
-                              } else {
-                                Get.snackbar(
-                                    "Fill all Fields", "Please try again!",
-                                    colorText: AppColors.kwhite,
-                                    backgroundColor: Colors.red,
-                                    snackPosition: SnackPosition.BOTTOM);
-                              }
-                            },
-                            child: CommonContainer(
-                              name: 'Confirm',
+                                  controller: receiverUnitIdController,
+                                  inputFormatters: [
+                                    LengthLimitingTextInputFormatter(8),
+                                    // FilteringTextInputFormatter
+                                    //     .digitsOnly,
+                                  ],
+                                  keyboardType: TextInputType.text,
+                                  decoration: InputDecoration(
+                                      contentPadding: const EdgeInsets.only(
+                                          left: 10,
+                                          right: 10,
+                                          top: 10,
+                                          bottom: 16),
+                                      hintText: 'Enter Unit no',
+                                      hintStyle: primaryfont.copyWith(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: BorderSide(
+                                          width: 1,
+                                          color: Color(0xff444444),
+                                        ),
+                                      ))),
                             ),
                           ),
                         ],
                       ),
-                    )),
-                  ],
-                ),
-              );
-            },
+                    ],
+                  ),
+                  ksizedbox20,
+                  Text(
+                    "Receiver Name",
+                    style: primaryfont.copyWith(
+                        fontSize: 17,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  ksizedbox5,
+                  Container(
+                    height: 47,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                        color: AppColors.kwhite,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: TextFormField(
+                      textCapitalization: TextCapitalization.sentences,
+                      maxLines: 1,
+                      minLines: 1,
+                      controller: receiverNameController,
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.only(
+                            left: 10, right: 10, top: 10, bottom: 16),
+                        hintText: 'Enter receiver name',
+                        hintStyle: primaryfont.copyWith(
+                            fontSize: 14, fontWeight: FontWeight.w500),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            width: 1,
+                            color: Color(0xff444444),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  ksizedbox20,
+                  Text(
+                    "Receiver Number",
+                    style: primaryfont.copyWith(
+                        fontSize: 17,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  ksizedbox5,
+                  TextFormField(
+                    controller: receiverNumberController,
+                    validator: (value) {
+                      if (value!.length != 8) {
+                        return "Enter 8 digits phone number";
+                      }
+                      return null;
+                    },
+                    keyboardType: TextInputType.phone,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(8),
+                      FilteringTextInputFormatter.digitsOnly,
+                      FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                    ],
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.only(top: 13),
+                      prefixIcon: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            height: 30,
+                            width: 50,
+                            alignment: Alignment.center,
+                            child: Text(
+                              "+65",
+                              style: primaryfont.copyWith(
+                                fontSize: 14, // Adjust font size
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 5),
+                        ],
+                      ),
+                      fillColor: AppColors.kwhite,
+                      filled: true,
+                      hintText: 'Enter Phone Number',
+                      hintStyle: primaryfont.copyWith(
+                          fontSize: 14, fontWeight: FontWeight.w500),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Color(0xff444444),
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Color(0xff444444),
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Color(0xff444444),
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                  ksizedbox20,
+                  InkWell(
+                    onTap: () {
+                      if (formKey.currentState!.validate()) {
+                        if (receiverNameController.text.isNotEmpty &&
+                            receiverBlockIdUnitIdController.text.isNotEmpty &&
+                            receiverUnitIdController.text.isNotEmpty &&
+                            searchedController.text.isNotEmpty &&
+                            receiverNumberController.text.isNotEmpty) {
+                          _fetchAddressVehicle();
+
+                          print(
+                              "reciver block id ------ ${receiverBlockIdUnitIdController.text}");
+                          print(
+                              "reciver unit id ------ ${receiverUnitIdController.text}");
+                          homeController.vehicleDroppingLocation(
+                              searchedController.text,
+                              _markers.first.position.latitude.toString(),
+                              _markers.first.position.longitude.toString(),
+                              areapincode,
+                              doorno,
+                              widget.index,
+                              receiverNameController.text,
+                              receiverNumberController.text,
+                              receiverBlockIdUnitIdController.text,
+                              receiverUnitIdController.text,
+                              vehicledropingpickuppincode);
+                          Get.offAll(BookVehicleScreen(
+                            vehiclePickupPincode:
+                                homeController.pickupVehiclePincode.value,
+                            vehiclepickupAdress:
+                                homeController.pickupVehicleLocation.value,
+                            vehiclepickuplat:
+                                homeController.pickupVehiclelatitude.value,
+                            vehiclepickuplong:
+                                homeController.pickupVehiclelongitude.value,
+                            vehiclepickupBlockIDs:
+                                homeController.pickupVehicleblockId.value,
+                            vehiclepickupunitId:
+                                homeController.pickupVehicleunitId.value,
+                            vehiclepickupsendername:
+                                homeController.pickupVehicleSenderName.value,
+                            vehicleSenderMobilenumber:
+                                homeController.pickupVehicleSenderNumber.value,
+                          ));
+                          // Get.back();
+                        } else {
+                          Get.snackbar("Fill all Fields", "Please try again!",
+                              colorText: AppColors.kwhite,
+                              backgroundColor: Colors.red,
+                              snackPosition: SnackPosition.BOTTOM);
+                        }
+                      }
+                    },
+                    child: CommonContainer(
+                      name: 'Confirm',
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        ],
+        ),
       ),
+      //       },
+      //     ),
+      //   ],
+      // ),
     );
   }
 }

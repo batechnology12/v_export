@@ -94,7 +94,7 @@ class BookingAddress {
    String unitNoBlockNo;
   String customerName;
   String customerMobile;
-
+  List<String> kiloMeter;
   String address;
   String postalCode;
   String latitude;
@@ -107,6 +107,7 @@ class BookingAddress {
   String reciverUnitIdBlockId;
 
   BookingAddress({
+    required this.kiloMeter,
 required this.uintIdList,
     required this.customerName,
     required this.customerMobile,

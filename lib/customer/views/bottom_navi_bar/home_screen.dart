@@ -24,6 +24,7 @@ import 'package:v_export/customer/views/bottom_navi_bar/bottomn_navi_bar.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/my_list/booking_status.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/driver_about_details.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/driver_details_screen.dart';
+import 'package:v_export/customer/views/bottom_navi_bar/package_send/driver/driver_rating.dart';
 import 'package:v_export/customer/views/notification/notification_view.dart';
 
 import 'package_send/package_send_screen.dart';
@@ -72,23 +73,31 @@ class _HomeScreenState extends State<HomeScreen> {
       await homeScreenController.getSlider();
       //    await parcelController.getonGoingOrders();
       await accountController.getProfile();
-      //      await parcelController.getAcceptBooking(parcelController.driverbookingid);
+      // await parcelController
+      //     .getAcceptBooking(parcelController.driverRatingBookingID.value);
+      // print("driver rating id");
+      // print(parcelController.driverRatingBookingID.value);
+      // if (parcelController.getAcceptBookingdata!.bookingStatus == "1") {
+      //   Get.snackbar(
+      //     "pls give your Driver rating",
+      //     "",
+      //     colorText: AppColors.kwhite,
+      //     backgroundColor: Colors.green,
+      //     snackPosition: SnackPosition.BOTTOM,
+      //   );
+      // }
       homeScreenController.update();
       parcelController.update();
-      homeController.clearDropLocations();
+      homeController.clearDropEntries();
       homeController.parceldroplocationclear();
-      // if (homeController.vehicalEntries.length > 1) {
-      //   homeController.vehicalEntries.clear();
-      // }
-      // setState(() {});
+      homeController.clearVehicleDrop();
+      clearTotalKg();
     });
   }
 
-  // @override
-  // void dispose() {
-  //   _pageController.dispose();
-  //   super.dispose();
-  // }
+  void clearTotalKg() {
+    homeController.totalKg.value = 0.0;
+  }
 
   String formatTime(String time) {
     DateTime parsedTime = DateFormat("HH:mm:ss").parse(time);
@@ -432,13 +441,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               ksizedbox20,
-              Container(
-                height: 300.h,
-                width: size.width,
-                // color: Colors.amber,
-                child: Image.asset(
-                  "assets/icons/3333449.png",
-                  fit: BoxFit.cover,
+              GestureDetector(
+                onTap: () {
+                  // Get.offAll(DriverRating(
+                  //   bookingID:
+                  //       parcelController.driverRatingBookingID.value ?? "",
+                  // ));
+                },
+                child: Container(
+                  height: 300.h,
+                  width: size.width,
+                  // color: Colors.amber,
+                  child: Image.asset(
+                    "assets/icons/3333449.png",
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               // Row(

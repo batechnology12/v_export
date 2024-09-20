@@ -63,6 +63,15 @@ class AddBookingVehicleApiService extends BaseApiServices {
         "booking_time_from_vehicle": addBookingVehicleModel.bookingTime,
         "sender_unitno_blockno": addBookingVehicleModel.senderUnitId,
         "booking_type": "vehicle",
+        for (int i = 0;
+            i < addBookingVehicleModel.additionalServiceDetails.length;
+            i++)
+          "additional_services_id[$i][id]":
+              addBookingVehicleModel.additionalServiceDetails[i],
+        for (int i = 0;
+            i < addBookingVehicleModel.additionalServiceDetails.length;
+            i++)
+          "additional_services_id[$i][qty]": "0",
         "notes": addBookingVehicleModel.notes,
         "products": productss
             .map((product) => {
@@ -94,6 +103,7 @@ class AddBookingVehicleApiService extends BaseApiServices {
                   "delivery_status": address.deliveryStatus,
                   "reciver_name": address.reciverName,
                   "reciver_mobile": address.reciverMobile,
+                  "km": address.kiloMeter,
                 })
             .toList(),
         "parcel_photo": addBookingVehicleModel.parcelPhoto.trim().isEmpty

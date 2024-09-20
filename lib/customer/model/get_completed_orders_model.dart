@@ -60,6 +60,7 @@ class GetCompletedOrdersModelData {
   dynamic vehicleId;
   DateTime bookingDate;
   dynamic pickupDate;
+  String deliveryDate;
   String pickupOtp;
   String deliveryOtp;
   String bookingType;
@@ -102,6 +103,7 @@ class GetCompletedOrdersModelData {
   DateTime updatedAt;
   List<BookingCompletedProduct> bookingProducts;
   Driver driver;
+  Ratings ratings;
   VehicleDetails vehicleDetails;
   dynamic additionalService;
   List<dynamic> fromAddress;
@@ -115,6 +117,7 @@ class GetCompletedOrdersModelData {
     required this.driverId,
     required this.vehicleId,
     required this.bookingDate,
+    required this.deliveryDate,
     required this.pickupDate,
     required this.pickupOtp,
     required this.deliveryOtp,
@@ -158,6 +161,7 @@ class GetCompletedOrdersModelData {
     required this.updatedAt,
     required this.bookingProducts,
     required this.driver,
+    required this.ratings,
     required this.vehicleDetails,
     required this.additionalService,
     required this.fromAddress,
@@ -174,6 +178,7 @@ class GetCompletedOrdersModelData {
         vehicleId: json["vehicle_id"] ?? "",
         bookingDate: DateTime.parse(json["booking_date"]),
         pickupDate: json["pickup_date"] ?? "",
+        deliveryDate: json["delivery_date"] ?? "",
         pickupOtp: json["pickup_otp"] ?? "",
         deliveryOtp: json["delivery_otp"] ?? "",
         bookingType: json["booking_type"] ?? "",
@@ -220,6 +225,7 @@ class GetCompletedOrdersModelData {
             json["booking_products"]
                 .map((x) => BookingCompletedProduct.fromJson(x))),
         driver: Driver.fromJson(json["driver"]),
+        ratings: Ratings.fromJson(json["ratings"]),
         vehicleDetails: VehicleDetails.fromJson(json["vehicle_details"]),
         additionalService: json["additional_service"] ?? "",
         fromAddress: List<dynamic>.from(json["from_address"].map((x) => x)),
@@ -238,6 +244,7 @@ class GetCompletedOrdersModelData {
         "booking_date":
             "${bookingDate.year.toString().padLeft(4, '0')}-${bookingDate.month.toString().padLeft(2, '0')}-${bookingDate.day.toString().padLeft(2, '0')}",
         "pickup_date": pickupDate,
+        "delivery_date": deliveryDate,
         "pickup_otp": pickupOtp,
         "delivery_otp": deliveryOtp,
         "booking_type": bookingType,
@@ -281,6 +288,7 @@ class GetCompletedOrdersModelData {
         "booking_products":
             List<dynamic>.from(bookingProducts.map((x) => x.toJson())),
         "driver": driver.toJson(),
+        "ratings": ratings.toJson(),
         "vehicle_details": vehicleDetails.toJson(),
         "additional_service": additionalService,
         "from_address": List<dynamic>.from(fromAddress.map((x) => x)),
@@ -304,6 +312,7 @@ class BookingCompletedDeliveryAddress {
   String latitude;
   String longitude;
   String deliveryStatus;
+  String deliveryAt;
   DateTime createdAt;
   DateTime updatedAt;
 
@@ -321,6 +330,7 @@ class BookingCompletedDeliveryAddress {
     required this.latitude,
     required this.longitude,
     required this.deliveryStatus,
+    required this.deliveryAt,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -340,6 +350,7 @@ class BookingCompletedDeliveryAddress {
         latitude: json["latitude"] ?? "",
         longitude: json["longitude"] ?? "",
         deliveryStatus: json["delivery_status"] ?? "",
+        deliveryAt: json["delivery_at"] ?? "",
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
       );
@@ -358,6 +369,7 @@ class BookingCompletedDeliveryAddress {
         "latitude": latitude,
         "longitude": longitude,
         "delivery_status": deliveryStatus,
+        "delivery_at": deliveryAt,
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
       };
@@ -665,8 +677,8 @@ class Driver {
         branch: json["branch"] ?? "",
         ownerId: json["owner_id"] ?? "",
         ownerType: json["owner_type"] ?? "",
-        isEnable: json["is_enable"] ,
-        isAdmin: json["is_admin"] ,
+        isEnable: json["is_enable"],
+        isAdmin: json["is_admin"],
         isVerifyCode: json["is_verify_code"] ?? "",
         isProfilePicture: json["is_profile_picture"] ?? "",
         isVehicleDetails: json["is_vehicle_details"] ?? "",
@@ -850,6 +862,26 @@ class Media {
             List<dynamic>.from(generatedConversions.map((x) => x)),
         "original_url": originalUrl,
         "preview_url": previewUrl,
+      };
+}
+
+class Ratings {
+  String driverId;
+  dynamic rating;
+
+  Ratings({
+    required this.driverId,
+    required this.rating,
+  });
+
+  factory Ratings.fromJson(Map<String, dynamic> json) => Ratings(
+        driverId: json["driver_id"] ?? "",
+        rating: json["rating"] ?? "",
+      );
+
+  Map<String, dynamic> toJson() => {
+        "driver_id": driverId,
+        "rating": rating,
       };
 }
 

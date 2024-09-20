@@ -53,12 +53,13 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
 
   final ParcelController parcelController = Get.put(ParcelController());
   final HomeController homeController = Get.put(HomeController());
+
   DateTime selectedDate = DateTime.now();
   double containerHeight = 100.0;
 
   var datebookingController = TextEditingController();
   var delivarytypeController = TextEditingController();
-
+  TextEditingController notesController = TextEditingController();
   var parcelitemController = TextEditingController();
 
   String formatDateTime = "";
@@ -255,13 +256,13 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
     return totalWeight;
   }
 
-  @override
-  void dispose() {
-    // for (var controller in homeController.parcelKgControllers) {
-    //   controller.removeListener(updateTotalWeight);
-    // }
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   // for (var controller in homeController.parcelKgControllers) {
+  //   //   controller.removeListener(updateTotalWeight);
+  //   // }
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -847,22 +848,52 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                   }),
                                   ksizedbox20,
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(
-                                        "Parcel Size ",
-                                        style: primaryfont.copyWith(
-                                            fontSize: 17.sp,
-                                            fontWeight: FontWeight.w600,
-                                            color: Color(0xff000000)),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Parcel Size ",
+                                            style: primaryfont.copyWith(
+                                                fontSize: 17.sp,
+                                                fontWeight: FontWeight.w600,
+                                                color: Color(0xff000000)),
+                                          ),
+                                          Text(
+                                            "(LxWxH CM)",
+                                            style: primaryfont.copyWith(
+                                              fontSize: 14.sp,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.red,
+                                            ),
+                                          )
+                                        ],
                                       ),
-                                      Text(
-                                        "(LxWxH CM)",
-                                        style: primaryfont.copyWith(
-                                          fontSize: 14.sp,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.red,
-                                        ),
+                                      Row(
+                                        children: [
+                                          Obx(() {
+                                            return Container(
+                                              padding: EdgeInsets.all(2),
+                                              width: 110.w,
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(5),
+                                                  border: Border.all(
+                                                      color: Colors.grey,
+                                                      width: 1)),
+                                              child: Text(
+                                                "Total kg: ${homeController.totalKg.value.toStringAsFixed(2)}",
+                                                style: primaryfont.copyWith(
+                                                    fontSize: 12.sp,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: AppColors.kblue),
+                                              ),
+                                            );
+                                          }),
+                                        ],
                                       )
                                     ],
                                   ),
@@ -987,6 +1018,10 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                                                 FontWeight.w500,
                                                             color: Colors.black,
                                                           ),
+                                                          onChanged: (value) {
+                                                            homeController
+                                                                .updateSum(); // Recalculate sum on change
+                                                          },
                                                           decoration:
                                                               InputDecoration(
                                                             suffixText: "Kg",
@@ -1298,6 +1333,8 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                               onTap: () {
                                 List<String> droppingAddressList =
                                     homeController.droppingLocations.toList();
+                                String dropStopCount =
+                                    droppingAddressList.length.toString();
                                 print(
                                     "Length Controllers: ${homeController.parcelLengthControllers.length}");
                                 print(
@@ -1347,6 +1384,8 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                     //  homeController.pincodes.isNotEmpty &&
                                     homeController.doornames.isNotEmpty) {
                                   Get.to(ScheduleDeliveryScreen(
+                                   notesController: notesController,
+                                    dropStopCount: dropStopCount,
                                     senderUnitId: widget.unitId,
                                     parcelKg: homeController
                                         .calculateSum()

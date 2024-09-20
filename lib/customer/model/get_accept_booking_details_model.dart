@@ -38,40 +38,60 @@ class GetAcceptBookingModeldata {
 class GetAcceptBookingdata {
   int id;
   String bookingId;
+  String invoiceId;
   String userId;
   String driverId;
   dynamic vehicleId;
   DateTime bookingDate;
+  dynamic pickupDate;
+  String deliveryDate;
   String pickupOtp;
   String deliveryOtp;
   String bookingType;
+  String vehicleType;
   String deliveryTypeId;
   String paymentMode;
+  String payable;
   String bookingAmount;
+  String paymentDetails;
   String isRoundTrip;
   dynamic parcelPhoto;
   String gst;
   String additionalTotal;
+  String driverPayable;
+  String veeloCharges;
   String totalAmount;
-  String additionalServicesId;
   String notes;
   String isConfirmed;
+  String isReachedLocation;
   String isPickuped;
   String bookingStatus;
+  dynamic cancelReason;
+  String unitno;
   String senderUnitnoBlockno;
-  dynamic pickupAddreess;
+  String pickupAddreess;
+  dynamic bookingTimeFromVehicle;
+  String pickuptimeFrom;
+  String pickuptimeTo;
+  dynamic deliverytimeFrom;
+  String additionalServicesId;
+  dynamic deliverytimeTo;
   String latitude;
   String longitude;
   String distance;
   dynamic pickupedAt;
   DateTime acceptedAt;
-  dynamic completedAt;
+  DateTime reachedAt;
+  String completedAt;
   dynamic packagePictures;
+  dynamic pickupPicture;
+  dynamic completedPicture;
+  String status;
   DateTime createdAt;
   DateTime updatedAt;
   List<BookingProduct> bookingProducts;
   Driver driver;
-  List<dynamic> vehicleDetails;
+  VehicleDetails vehicleDetails;
   dynamic additionalService;
   List<dynamic> fromAddress;
   List<BookingDeliveryAddress> bookingDeliveryAddresses;
@@ -80,35 +100,55 @@ class GetAcceptBookingdata {
   GetAcceptBookingdata({
     required this.id,
     required this.bookingId,
+    required this.invoiceId,
     required this.userId,
     required this.driverId,
     required this.vehicleId,
     required this.bookingDate,
+    required this.pickupDate,
+    required this.deliveryDate,
     required this.pickupOtp,
     required this.deliveryOtp,
     required this.bookingType,
+    required this.vehicleType,
     required this.deliveryTypeId,
     required this.paymentMode,
+    required this.payable,
     required this.bookingAmount,
+    required this.paymentDetails,
     required this.isRoundTrip,
     required this.parcelPhoto,
     required this.gst,
     required this.additionalTotal,
+    required this.driverPayable,
+    required this.veeloCharges,
     required this.totalAmount,
-    required this.additionalServicesId,
     required this.notes,
     required this.isConfirmed,
+    required this.isReachedLocation,
     required this.isPickuped,
     required this.bookingStatus,
+    required this.cancelReason,
+    required this.unitno,
     required this.senderUnitnoBlockno,
     required this.pickupAddreess,
+    required this.bookingTimeFromVehicle,
+    required this.pickuptimeFrom,
+    required this.pickuptimeTo,
+    required this.deliverytimeFrom,
+    required this.additionalServicesId,
+    required this.deliverytimeTo,
     required this.latitude,
     required this.longitude,
     required this.distance,
     required this.pickupedAt,
     required this.acceptedAt,
+    required this.reachedAt,
     required this.completedAt,
     required this.packagePictures,
+    required this.pickupPicture,
+    required this.completedPicture,
+    required this.status,
     required this.createdAt,
     required this.updatedAt,
     required this.bookingProducts,
@@ -122,45 +162,64 @@ class GetAcceptBookingdata {
 
   factory GetAcceptBookingdata.fromJson(Map<String, dynamic> json) =>
       GetAcceptBookingdata(
-        id: json["id"],
-        bookingId: json["booking_id"],
-        userId: json["user_id"],
-        driverId: json["driver_id"],
-        vehicleId: json["vehicle_id"],
+        id: json["id"] ?? 0,
+        bookingId: json["booking_id"] ?? "",
+        invoiceId: json["invoice_id"] ?? "",
+        userId: json["user_id"] ?? "",
+        driverId: json["driver_id"] ?? "",
+        vehicleId: json["vehicle_id"] ?? "",
         bookingDate: DateTime.parse(json["booking_date"]),
-        pickupOtp: json["pickup_otp"],
-        deliveryOtp: json["delivery_otp"],
-        bookingType: json["booking_type"],
-        deliveryTypeId: json["delivery_type_id"],
-        paymentMode: json["payment_mode"],
-        bookingAmount: json["booking_amount"],
-        isRoundTrip: json["is_round_trip"],
-        parcelPhoto: json["parcel_photo"],
-        gst: json["gst"],
-        additionalTotal: json["additional_total"],
-        totalAmount: json["total_amount"],
-        additionalServicesId: json["additional_services_id"],
-        notes: json["notes"],
-        isConfirmed: json["is_confirmed"],
-        isPickuped: json["is_pickuped"],
-        bookingStatus: json["booking_status"],
-        senderUnitnoBlockno: json["sender_unitno_blockno"],
-        pickupAddreess: json["pickup_addreess"],
-        latitude: json["latitude"],
-        longitude: json["longitude"],
-        distance: json["distance"],
-        pickupedAt: json["pickuped_at"],
+        pickupDate: json["pickup_date"] ?? "",
+        deliveryDate: json["delivery_date"] ?? "",
+        pickupOtp: json["pickup_otp"] ?? "",
+        deliveryOtp: json["delivery_otp"] ?? "",
+        bookingType: json["booking_type"] ?? "",
+        vehicleType: json["vehicle_type"] ?? "",
+        deliveryTypeId: json["delivery_type_id"] ?? "",
+        paymentMode: json["payment_mode"] ?? "",
+        payable: json["payable"] ?? "",
+        bookingAmount: json["booking_amount"] ?? "",
+        paymentDetails: json["payment_details"] ?? "",
+        isRoundTrip: json["is_round_trip"] ?? "",
+        parcelPhoto: json["parcel_photo"] ?? "",
+        gst: json["gst"] ?? "",
+        additionalTotal: json["additional_total"] ?? "",
+        driverPayable: json["driver_payable"] ?? "",
+        veeloCharges: json["veelo_charges"] ?? "",
+        totalAmount: json["total_amount"] ?? "",
+        notes: json["notes"] ?? "",
+        isConfirmed: json["is_confirmed"] ?? "",
+        isReachedLocation: json["is_reached_location"] ?? "",
+        isPickuped: json["is_pickuped"] ?? "",
+        bookingStatus: json["booking_status"] ?? "",
+        cancelReason: json["cancel_reason"] ?? "",
+        unitno: json["unitno"] ?? "",
+        senderUnitnoBlockno: json["sender_unitno_blockno"] ?? "",
+        pickupAddreess: json["pickup_addreess"] ?? "",
+        bookingTimeFromVehicle: json["booking_time_from_vehicle"] ?? "",
+        pickuptimeFrom: json["pickuptime_from"] ?? "",
+        pickuptimeTo: json["pickuptime_to"] ?? "",
+        deliverytimeFrom: json["deliverytime_from"] ?? "",
+        additionalServicesId: json["additional_services_id"] ?? "",
+        deliverytimeTo: json["deliverytime_to"] ?? "",
+        latitude: json["latitude"] ?? "",
+        longitude: json["longitude"] ?? "",
+        distance: json["distance"] ?? "",
+        pickupedAt: json["pickuped_at"] ?? "",
         acceptedAt: DateTime.parse(json["accepted_at"]),
-        completedAt: json["completed_at"],
-        packagePictures: json["package_pictures"],
+        reachedAt: DateTime.parse(json["reached_at"]),
+        completedAt: json["completed_at"] ?? "",
+        packagePictures: json["package_pictures"] ?? "",
+        pickupPicture: json["pickup_picture"] ?? "",
+        completedPicture: json["completed_picture"] ?? "",
+        status: json["status"] ?? "",
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
         bookingProducts: List<BookingProduct>.from(
             json["booking_products"].map((x) => BookingProduct.fromJson(x))),
         driver: Driver.fromJson(json["driver"]),
-        vehicleDetails:
-            List<dynamic>.from(json["vehicle_details"].map((x) => x)),
-        additionalService: json["additional_service"],
+        vehicleDetails: VehicleDetails.fromJson(json["vehicle_details"]),
+        additionalService: json["additional_service"] ?? "",
         fromAddress: List<dynamic>.from(json["from_address"].map((x) => x)),
         bookingDeliveryAddresses: List<BookingDeliveryAddress>.from(
             json["booking_delivery_addresses"]
@@ -171,42 +230,62 @@ class GetAcceptBookingdata {
   Map<String, dynamic> toJson() => {
         "id": id,
         "booking_id": bookingId,
+        "invoice_id": invoiceId,
         "user_id": userId,
         "driver_id": driverId,
         "vehicle_id": vehicleId,
         "booking_date":
             "${bookingDate.year.toString().padLeft(4, '0')}-${bookingDate.month.toString().padLeft(2, '0')}-${bookingDate.day.toString().padLeft(2, '0')}",
+        "pickup_date": pickupDate,
+        "delivery_date": deliveryDate,
         "pickup_otp": pickupOtp,
         "delivery_otp": deliveryOtp,
         "booking_type": bookingType,
+        "vehicle_type": vehicleType,
         "delivery_type_id": deliveryTypeId,
         "payment_mode": paymentMode,
+        "payable": payable,
         "booking_amount": bookingAmount,
+        "payment_details": paymentDetails,
         "is_round_trip": isRoundTrip,
         "parcel_photo": parcelPhoto,
         "gst": gst,
         "additional_total": additionalTotal,
+        "driver_payable": driverPayable,
+        "veelo_charges": veeloCharges,
         "total_amount": totalAmount,
-        "additional_services_id": additionalServicesId,
         "notes": notes,
         "is_confirmed": isConfirmed,
+        "is_reached_location": isReachedLocation,
         "is_pickuped": isPickuped,
         "booking_status": bookingStatus,
+        "cancel_reason": cancelReason,
+        "unitno": unitno,
         "sender_unitno_blockno": senderUnitnoBlockno,
         "pickup_addreess": pickupAddreess,
+        "booking_time_from_vehicle": bookingTimeFromVehicle,
+        "pickuptime_from": pickuptimeFrom,
+        "pickuptime_to": pickuptimeTo,
+        "deliverytime_from": deliverytimeFrom,
+        "additional_services_id": additionalServicesId,
+        "deliverytime_to": deliverytimeTo,
         "latitude": latitude,
         "longitude": longitude,
         "distance": distance,
         "pickuped_at": pickupedAt,
         "accepted_at": acceptedAt.toIso8601String(),
+        "reached_at": reachedAt.toIso8601String(),
         "completed_at": completedAt,
         "package_pictures": packagePictures,
+        "pickup_picture": pickupPicture,
+        "completed_picture": completedPicture,
+        "status": status,
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
         "booking_products":
             List<dynamic>.from(bookingProducts.map((x) => x.toJson())),
         "driver": driver.toJson(),
-        "vehicle_details": List<dynamic>.from(vehicleDetails.map((x) => x)),
+        "vehicle_details": vehicleDetails.toJson(),
         "additional_service": additionalService,
         "from_address": List<dynamic>.from(fromAddress.map((x) => x)),
         "booking_delivery_addresses":
@@ -218,50 +297,65 @@ class GetAcceptBookingdata {
 class BookingDeliveryAddress {
   int id;
   String bookingId;
+  String bookingProductId;
   String customerName;
   String customerMobile;
   String reciverName;
   String reciverMobile;
+  String unitno;
   String unitnoBlockno;
   String address;
   String postalcode;
+  String km;
   String latitude;
   String longitude;
+  dynamic deliveryImage;
   String deliveryStatus;
+  dynamic deliveryAt;
   DateTime createdAt;
   DateTime updatedAt;
 
   BookingDeliveryAddress({
     required this.id,
     required this.bookingId,
+    required this.bookingProductId,
     required this.customerName,
     required this.customerMobile,
     required this.reciverName,
     required this.reciverMobile,
+    required this.unitno,
     required this.unitnoBlockno,
     required this.address,
     required this.postalcode,
+    required this.km,
     required this.latitude,
     required this.longitude,
+    required this.deliveryImage,
     required this.deliveryStatus,
+    required this.deliveryAt,
     required this.createdAt,
     required this.updatedAt,
   });
 
   factory BookingDeliveryAddress.fromJson(Map<String, dynamic> json) =>
       BookingDeliveryAddress(
-        id: json["id"],
-        bookingId: json["booking_id"],
-        customerName: json["customer_name"],
-        customerMobile: json["customer_mobile"],
-        reciverName: json["reciver_name"],
-        reciverMobile: json["reciver_mobile"],
-        unitnoBlockno: json["unitno_blockno"],
-        address: json["address"],
-        postalcode: json["postalcode"],
-        latitude: json["latitude"],
-        longitude: json["longitude"],
-        deliveryStatus: json["delivery_status"],
+        id: json["id"] ?? 0,
+        bookingId: json["booking_id"] ?? "",
+        bookingProductId: json["booking_product_id"] ?? "",
+        customerName: json["customer_name"] ?? "",
+        customerMobile: json["customer_mobile"] ?? "",
+        reciverName: json["reciver_name"] ?? "",
+        reciverMobile: json["reciver_mobile"] ?? "",
+        unitno: json["unitno"] ?? "",
+        unitnoBlockno: json["unitno_blockno"] ?? "",
+        address: json["address"] ?? "",
+        postalcode: json["postalcode"] ?? "",
+        km: json["km"] ?? "",
+        latitude: json["latitude"] ?? "",
+        longitude: json["longitude"] ?? "",
+        deliveryImage: json["delivery_image"] ?? "",
+        deliveryStatus: json["delivery_status"] ?? "",
+        deliveryAt: json["delivery_at"] ?? "",
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
       );
@@ -269,16 +363,21 @@ class BookingDeliveryAddress {
   Map<String, dynamic> toJson() => {
         "id": id,
         "booking_id": bookingId,
+        "booking_product_id": bookingProductId,
         "customer_name": customerName,
         "customer_mobile": customerMobile,
         "reciver_name": reciverName,
         "reciver_mobile": reciverMobile,
+        "unitno": unitno,
         "unitno_blockno": unitnoBlockno,
         "address": address,
         "postalcode": postalcode,
+        "km": km,
         "latitude": latitude,
         "longitude": longitude,
+        "delivery_image": deliveryImage,
         "delivery_status": deliveryStatus,
+        "delivery_at": deliveryAt,
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
       };
@@ -301,6 +400,9 @@ class BookingProduct {
   String deliveryDate;
   String deliverytimeFrom;
   String deliverytimeTo;
+  String isPickuped;
+  dynamic pickupedAt;
+  dynamic cancelReason;
   DateTime createdAt;
   DateTime updatedAt;
 
@@ -321,27 +423,33 @@ class BookingProduct {
     required this.deliveryDate,
     required this.deliverytimeFrom,
     required this.deliverytimeTo,
+    required this.isPickuped,
+    required this.pickupedAt,
+    required this.cancelReason,
     required this.createdAt,
     required this.updatedAt,
   });
 
   factory BookingProduct.fromJson(Map<String, dynamic> json) => BookingProduct(
-        id: json["id"],
-        bookingId: json["booking_id"],
-        bookingProductId: json["booking_product_id"],
-        parcelItems: json["parcel_items"],
-        parcelSize: json["parcel_size"],
-        productPicture: json["product_picture"],
-        length: json["length"],
-        bookingProductWith: json["with"],
-        height: json["height"],
-        qty: json["qty"],
-        kg: json["kg"],
-        pickuptimeFrom: json["pickuptime_from"],
-        pickuptimeTo: json["pickuptime_to"],
-        deliveryDate: json["delivery_date"],
-        deliverytimeFrom: json["deliverytime_from"],
-        deliverytimeTo: json["deliverytime_to"],
+        id: json["id"] ?? 0,
+        bookingId: json["booking_id"] ?? "",
+        bookingProductId: json["booking_product_id"] ?? "",
+        parcelItems: json["parcel_items"] ?? "",
+        parcelSize: json["parcel_size"] ?? "",
+        productPicture: json["product_picture"] ?? "",
+        length: json["length"] ?? "",
+        bookingProductWith: json["with"] ?? "",
+        height: json["height"] ?? "",
+        qty: json["qty"] ?? "",
+        kg: json["kg"] ?? "",
+        pickuptimeFrom: json["pickuptime_from"] ?? "",
+        pickuptimeTo: json["pickuptime_to"] ?? "",
+        deliveryDate: json["delivery_date"] ?? "",
+        deliverytimeFrom: json["deliverytime_from"] ?? "",
+        deliverytimeTo: json["deliverytime_to"] ?? "",
+        isPickuped: json["is_pickuped"] ?? "",
+        pickupedAt: json["pickuped_at"] ?? "",
+        cancelReason: json["cancel_reason"] ?? "",
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
       );
@@ -363,6 +471,9 @@ class BookingProduct {
         "delivery_date": deliveryDate,
         "deliverytime_from": deliverytimeFrom,
         "deliverytime_to": deliverytimeTo,
+        "is_pickuped": isPickuped,
+        "pickuped_at": pickupedAt,
+        "cancel_reason": cancelReason,
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
       };
@@ -371,13 +482,15 @@ class BookingProduct {
 class DeliveryType {
   int id;
   String name;
+  String basePerkm;
+  String roundTrip;
   String description;
-  String price05Km;
-  String price510Km;
-  String price1015Km;
-  String price1520Km;
-  String price2025Km;
-  String priceAbove25Km;
+  String price05Kg;
+  String price510Kg;
+  String price1015Kg;
+  String price1520Kg;
+  String price2025Kg;
+  String priceAbove25Kg;
   String status;
   DateTime createdAt;
   DateTime updatedAt;
@@ -385,29 +498,33 @@ class DeliveryType {
   DeliveryType({
     required this.id,
     required this.name,
+    required this.basePerkm,
+    required this.roundTrip,
     required this.description,
-    required this.price05Km,
-    required this.price510Km,
-    required this.price1015Km,
-    required this.price1520Km,
-    required this.price2025Km,
-    required this.priceAbove25Km,
+    required this.price05Kg,
+    required this.price510Kg,
+    required this.price1015Kg,
+    required this.price1520Kg,
+    required this.price2025Kg,
+    required this.priceAbove25Kg,
     required this.status,
     required this.createdAt,
     required this.updatedAt,
   });
 
   factory DeliveryType.fromJson(Map<String, dynamic> json) => DeliveryType(
-        id: json["id"],
-        name: json["name"],
-        description: json["description"],
-        price05Km: json["price_0_5km"],
-        price510Km: json["price_5_10km"],
-        price1015Km: json["price_10_15km"],
-        price1520Km: json["price_15_20km"],
-        price2025Km: json["price_20_25km"],
-        priceAbove25Km: json["price_above_25km"],
-        status: json["status"],
+        id: json["id"] ?? 0,
+        name: json["name"] ?? "",
+        basePerkm: json["base_perkm"] ?? "",
+        roundTrip: json["round_trip"] ?? "",
+        description: json["description"] ?? "",
+        price05Kg: json["price_0_5kg"] ?? "",
+        price510Kg: json["price_5_10kg"] ?? "",
+        price1015Kg: json["price_10_15kg"] ?? "",
+        price1520Kg: json["price_15_20kg"] ?? "",
+        price2025Kg: json["price_20_25kg"] ?? "",
+        priceAbove25Kg: json["price_above_25kg"] ?? "",
+        status: json["status"] ?? "",
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
       );
@@ -415,13 +532,15 @@ class DeliveryType {
   Map<String, dynamic> toJson() => {
         "id": id,
         "name": name,
+        "base_perkm": basePerkm,
+        "round_trip": roundTrip,
         "description": description,
-        "price_0_5km": price05Km,
-        "price_5_10km": price510Km,
-        "price_10_15km": price1015Km,
-        "price_15_20km": price1520Km,
-        "price_20_25km": price2025Km,
-        "price_above_25km": priceAbove25Km,
+        "price_0_5kg": price05Kg,
+        "price_5_10kg": price510Kg,
+        "price_10_15kg": price1015Kg,
+        "price_15_20kg": price1520Kg,
+        "price_20_25kg": price2025Kg,
+        "price_above_25kg": priceAbove25Kg,
         "status": status,
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
@@ -441,15 +560,15 @@ class Driver {
   dynamic industryNoOfDeliveryInMonth;
   dynamic otp;
   dynamic uenNumber;
-  dynamic aecraFile;
-  dynamic nricPicture;
-  dynamic bankName;
-  dynamic accountNumber;
-  dynamic ifsCode;
-  dynamic bankProof;
-  dynamic emergencyContactName;
-  dynamic emergencyContactNumber;
-  dynamic relationship;
+  dynamic acraFile;
+  String nricPicture;
+  String bankName;
+  String accountNumber;
+  String ifsCode;
+  String bankProof;
+  String emergencyContactName;
+  String emergencyContactNumber;
+  String relationship;
   String referralCode;
   dynamic referredBy;
   dynamic securityToken;
@@ -463,8 +582,15 @@ class Driver {
   String isProfilePicture;
   String isVehicleDetails;
   String isNricPicture;
+  dynamic nricName;
+  String isAcraFile;
   String isAccountDetails;
   String isEmrgencyDetails;
+  dynamic blockNo;
+  dynamic unitNo;
+  dynamic city;
+  dynamic postalCode;
+  String adminCharges;
   dynamic image;
   dynamic facebook;
   dynamic linkedin;
@@ -481,6 +607,8 @@ class Driver {
   dynamic trialEndsAt;
   dynamic apiToken;
   String statusOnOff;
+  String isKycVerify;
+  dynamic address;
   String fullName;
   String imageUrl;
   List<Media> media;
@@ -498,7 +626,7 @@ class Driver {
     required this.industryNoOfDeliveryInMonth,
     required this.otp,
     required this.uenNumber,
-    required this.aecraFile,
+    required this.acraFile,
     required this.nricPicture,
     required this.bankName,
     required this.accountNumber,
@@ -520,8 +648,15 @@ class Driver {
     required this.isProfilePicture,
     required this.isVehicleDetails,
     required this.isNricPicture,
+    required this.nricName,
+    required this.isAcraFile,
     required this.isAccountDetails,
     required this.isEmrgencyDetails,
+    required this.blockNo,
+    required this.unitNo,
+    required this.city,
+    required this.postalCode,
+    required this.adminCharges,
     required this.image,
     required this.facebook,
     required this.linkedin,
@@ -538,66 +673,78 @@ class Driver {
     required this.trialEndsAt,
     required this.apiToken,
     required this.statusOnOff,
+    required this.isKycVerify,
+    required this.address,
     required this.fullName,
     required this.imageUrl,
     required this.media,
   });
 
   factory Driver.fromJson(Map<String, dynamic> json) => Driver(
-        id: json["id"],
-        firstName: json["first_name"],
-        lastName: json["last_name"],
-        email: json["email"],
-        companyId: json["company_id"],
-        phone: json["phone"],
-        latitude: json["latitude"],
-        longitude: json["longitude"],
-        contactPersonName: json["contact_person_name"],
-        industryNoOfDeliveryInMonth: json["industry_no_of_delivery_in_month"],
-        otp: json["otp"],
-        uenNumber: json["UEN_number"],
-        aecraFile: json["aecra_file"],
-        nricPicture: json["nric_picture"],
-        bankName: json["bank_name"],
-        accountNumber: json["account_number"],
-        ifsCode: json["ifs_code"],
-        bankProof: json["bank_proof"],
-        emergencyContactName: json["emergency_contact_name"],
-        emergencyContactNumber: json["emergency_contact_number"],
-        relationship: json["relationship"],
-        referralCode: json["referral_code"],
-        referredBy: json["referred_by"],
-        securityToken: json["security_token"],
-        cssNo: json["css_no"],
-        branch: json["branch"],
-        ownerId: json["owner_id"],
-        ownerType: json["owner_type"],
+        id: json["id"] ?? "",
+        firstName: json["first_name"] ?? "",
+        lastName: json["last_name"] ?? "",
+        email: json["email"] ?? "",
+        companyId: json["company_id"] ?? "",
+        phone: json["phone"] ?? "",
+        latitude: json["latitude"] ?? "",
+        longitude: json["longitude"] ?? "",
+        contactPersonName: json["contact_person_name"] ?? "",
+        industryNoOfDeliveryInMonth:
+            json["industry_no_of_delivery_in_month"] ?? "",
+        otp: json["otp"] ?? "",
+        uenNumber: json["UEN_number"] ?? "",
+        acraFile: json["acra_file"] ?? "",
+        nricPicture: json["nric_picture"] ?? "",
+        bankName: json["bank_name"] ?? "",
+        accountNumber: json["account_number"] ?? "",
+        ifsCode: json["ifs_code"] ?? "",
+        bankProof: json["bank_proof"] ?? "",
+        emergencyContactName: json["emergency_contact_name"] ?? "",
+        emergencyContactNumber: json["emergency_contact_number"] ?? "",
+        relationship: json["relationship"] ?? "",
+        referralCode: json["referral_code"] ?? "",
+        referredBy: json["referred_by"] ?? "",
+        securityToken: json["security_token"] ?? "",
+        cssNo: json["css_no"] ?? "",
+        branch: json["branch"] ?? "",
+        ownerId: json["owner_id"] ?? "",
+        ownerType: json["owner_type"] ?? "",
         isEnable: json["is_enable"],
         isAdmin: json["is_admin"],
-        isVerifyCode: json["is_verify_code"],
-        isProfilePicture: json["is_profile_picture"],
-        isVehicleDetails: json["is_vehicle_details"],
-        isNricPicture: json["is_nric_picture"],
-        isAccountDetails: json["is_account_details"],
-        isEmrgencyDetails: json["is_emrgency_details"],
-        image: json["image"],
-        facebook: json["facebook"],
-        linkedin: json["linkedin"],
-        skype: json["skype"],
-        staffMember: json["staff_member"],
-        sendWelcomeEmail: json["send_welcome_email"],
-        defaultLanguage: json["default_language"],
-        emailVerifiedAt: json["email_verified_at"],
+        isVerifyCode: json["is_verify_code"] ?? "",
+        isProfilePicture: json["is_profile_picture"] ?? "",
+        isVehicleDetails: json["is_vehicle_details"] ?? "",
+        isNricPicture: json["is_nric_picture"] ?? "",
+        nricName: json["nric_name"] ?? "",
+        isAcraFile: json["is_acra_file"] ?? "",
+        isAccountDetails: json["is_account_details"] ?? "",
+        isEmrgencyDetails: json["is_emrgency_details"] ?? "",
+        blockNo: json["block_no"] ?? "",
+        unitNo: json["unit_no"] ?? "",
+        city: json["city"] ?? "",
+        postalCode: json["postal_code"] ?? "",
+        adminCharges: json["admin_charges"] ?? "",
+        image: json["image"] ?? "",
+        facebook: json["facebook"] ?? "",
+        linkedin: json["linkedin"] ?? "",
+        skype: json["skype"] ?? "",
+        staffMember: json["staff_member"] ?? "",
+        sendWelcomeEmail: json["send_welcome_email"] ?? "",
+        defaultLanguage: json["default_language"] ?? "",
+        emailVerifiedAt: json["email_verified_at"] ?? "",
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
-        stripeId: json["stripe_id"],
-        pmType: json["pm_type"],
-        pmLastFour: json["pm_last_four"],
-        trialEndsAt: json["trial_ends_at"],
-        apiToken: json["api_token"],
-        statusOnOff: json["status_on_off"],
-        fullName: json["full_name"],
-        imageUrl: json["image_url"],
+        stripeId: json["stripe_id"] ?? "",
+        pmType: json["pm_type"] ?? "",
+        pmLastFour: json["pm_last_four"] ?? "",
+        trialEndsAt: json["trial_ends_at"] ?? "",
+        apiToken: json["api_token"] ?? "",
+        statusOnOff: json["status_on_off"] ?? "",
+        isKycVerify: json["is_kyc_verify"] ?? "",
+        address: json["address"] ?? "",
+        fullName: json["full_name"] ?? "",
+        imageUrl: json["image_url"] ?? "",
         media: List<Media>.from(json["media"].map((x) => Media.fromJson(x))),
       );
 
@@ -614,7 +761,7 @@ class Driver {
         "industry_no_of_delivery_in_month": industryNoOfDeliveryInMonth,
         "otp": otp,
         "UEN_number": uenNumber,
-        "aecra_file": aecraFile,
+        "acra_file": acraFile,
         "nric_picture": nricPicture,
         "bank_name": bankName,
         "account_number": accountNumber,
@@ -636,8 +783,15 @@ class Driver {
         "is_profile_picture": isProfilePicture,
         "is_vehicle_details": isVehicleDetails,
         "is_nric_picture": isNricPicture,
+        "nric_name": nricName,
+        "is_acra_file": isAcraFile,
         "is_account_details": isAccountDetails,
         "is_emrgency_details": isEmrgencyDetails,
+        "block_no": blockNo,
+        "unit_no": unitNo,
+        "city": city,
+        "postal_code": postalCode,
+        "admin_charges": adminCharges,
         "image": image,
         "facebook": facebook,
         "linkedin": linkedin,
@@ -654,6 +808,8 @@ class Driver {
         "trial_ends_at": trialEndsAt,
         "api_token": apiToken,
         "status_on_off": statusOnOff,
+        "is_kyc_verify": isKycVerify,
+        "address": address,
         "full_name": fullName,
         "image_url": imageUrl,
         "media": List<dynamic>.from(media.map((x) => x.toJson())),
@@ -706,29 +862,29 @@ class Media {
   });
 
   factory Media.fromJson(Map<String, dynamic> json) => Media(
-        id: json["id"],
-        modelType: json["model_type"],
-        modelId: json["model_id"],
-        collectionName: json["collection_name"],
-        name: json["name"],
-        fileName: json["file_name"],
-        mimeType: json["mime_type"],
-        disk: json["disk"],
-        size: json["size"],
+        id: json["id"] ?? 0,
+        modelType: json["model_type"] ?? "",
+        modelId: json["model_id"] ?? "",
+        collectionName: json["collection_name"] ?? "",
+        name: json["name"] ?? "",
+        fileName: json["file_name"] ?? "",
+        mimeType: json["mime_type"] ?? "",
+        disk: json["disk"] ?? "",
+        size: json["size"] ?? "",
         manipulations: List<dynamic>.from(json["manipulations"].map((x) => x)),
         customProperties:
             List<dynamic>.from(json["custom_properties"].map((x) => x)),
         responsiveImages:
             List<dynamic>.from(json["responsive_images"].map((x) => x)),
-        orderColumn: json["order_column"],
+        orderColumn: json["order_column"] ?? "",
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
-        conversionsDisk: json["conversions_disk"],
-        uuid: json["uuid"],
+        conversionsDisk: json["conversions_disk"] ?? "",
+        uuid: json["uuid"] ?? "",
         generatedConversions:
             List<dynamic>.from(json["generated_conversions"].map((x) => x)),
-        originalUrl: json["original_url"],
-        previewUrl: json["preview_url"],
+        originalUrl: json["original_url"] ?? "",
+        previewUrl: json["preview_url"] ?? "",
       );
 
   Map<String, dynamic> toJson() => {
@@ -753,5 +909,69 @@ class Media {
             List<dynamic>.from(generatedConversions.map((x) => x)),
         "original_url": originalUrl,
         "preview_url": previewUrl,
+      };
+}
+
+class VehicleDetails {
+  int id;
+  String userId;
+  String vehicleType;
+  String vehicleModel;
+  String vehicleNumber;
+  String drivingLicenseFront;
+  String drivingLicenseBack;
+  String vehicleFront;
+  String vehicleBack;
+  String status;
+  DateTime createdAt;
+  DateTime updatedAt;
+  String laravelThroughKey;
+
+  VehicleDetails({
+    required this.id,
+    required this.userId,
+    required this.vehicleType,
+    required this.vehicleModel,
+    required this.vehicleNumber,
+    required this.drivingLicenseFront,
+    required this.drivingLicenseBack,
+    required this.vehicleFront,
+    required this.vehicleBack,
+    required this.status,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.laravelThroughKey,
+  });
+
+  factory VehicleDetails.fromJson(Map<String, dynamic> json) => VehicleDetails(
+        id: json["id"] ?? 0,
+        userId: json["user_id"] ?? "",
+        vehicleType: json["vehicle_type"] ?? "",
+        vehicleModel: json["vehicle_model"] ?? "",
+        vehicleNumber: json["vehicle_number"] ?? "",
+        drivingLicenseFront: json["driving_license_front"] ?? "",
+        drivingLicenseBack: json["driving_license_back"] ?? "",
+        vehicleFront: json["vehicle_front"] ?? "",
+        vehicleBack: json["vehicle_back"] ?? "",
+        status: json["status"] ?? "",
+        createdAt: DateTime.parse(json["created_at"]),
+        updatedAt: DateTime.parse(json["updated_at"]),
+        laravelThroughKey: json["laravel_through_key"] ?? "",
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "user_id": userId,
+        "vehicle_type": vehicleType,
+        "vehicle_model": vehicleModel,
+        "vehicle_number": vehicleNumber,
+        "driving_license_front": drivingLicenseFront,
+        "driving_license_back": drivingLicenseBack,
+        "vehicle_front": vehicleFront,
+        "vehicle_back": vehicleBack,
+        "status": status,
+        "created_at": createdAt.toIso8601String(),
+        "updated_at": updatedAt.toIso8601String(),
+        "laravel_through_key": laravelThroughKey,
       };
 }

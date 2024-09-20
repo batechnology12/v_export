@@ -6,9 +6,11 @@ import 'package:v_export/constant/app_colors.dart';
 import 'package:v_export/constant/app_font.dart';
 import 'package:v_export/constant/common_container.dart';
 import 'package:v_export/customer/controller/parcel_controller.dart';
+import 'package:v_export/customer/model/get_completed_orders_model.dart';
 
 class DriverRating extends StatefulWidget {
   String bookingID;
+  // GetCompletedOrdersModelData getCompletedDataList;
   DriverRating({super.key, required this.bookingID});
 
   @override
@@ -16,6 +18,12 @@ class DriverRating extends StatefulWidget {
 }
 
 class _DriverRatingState extends State<DriverRating> {
+  @override
+  void initState() {
+    super.initState();
+    parcelController.getAcceptBooking(widget.bookingID);
+  }
+
   ParcelController parcelController = Get.put(ParcelController());
 
   TextEditingController revewController = TextEditingController();
@@ -66,6 +74,15 @@ class _DriverRatingState extends State<DriverRating> {
             Get.back();
           },
         ),
+        actions: [
+          Text(
+            "Skip",
+            style: primaryfont.copyWith(
+                fontSize: 19.sp,
+                color: AppColors.kblue,
+                fontWeight: FontWeight.w600),
+          )
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.only(top: 15, right: 15, left: 15),
@@ -75,19 +92,20 @@ class _DriverRatingState extends State<DriverRating> {
           children: <Widget>[
             CircleAvatar(
               radius: 50.h,
-              backgroundImage: AssetImage(
-                  'assets/icons/Ellipse 26 (1).png'), // Replace with your image asset
+              backgroundImage: NetworkImage(
+                  parcelController.getAcceptBookingdata!.driver.imageUrl),
             ),
             ksizedbox10,
             Text(
-              '2.4 Van',
+              parcelController.getAcceptBookingdata!.vehicleType,
               style: primaryfont.copyWith(
                   fontSize: 18.sp,
                   color: Colors.black,
                   fontWeight: FontWeight.w700),
             ),
             Text(
-              'GBL3245N',
+              parcelController
+                  .getAcceptBookingdata!.vehicleDetails.vehicleNumber,
               style: primaryfont.copyWith(
                   fontSize: 18.sp,
                   color: Colors.black,
@@ -95,7 +113,7 @@ class _DriverRatingState extends State<DriverRating> {
             ),
             ksizedbox20,
             Text(
-              'How was your Booking with Lee Wong',
+              'How was your Booking with ${parcelController.getAcceptBookingdata!.driver.firstName}',
               textAlign: TextAlign.center,
               style: primaryfont.copyWith(
                   fontSize: 17.sp,
@@ -189,9 +207,7 @@ class _DriverRatingState extends State<DriverRating> {
             GestureDetector(
               onTap: () {
                 parcelController.rateDriverApi(
-                    parcelController.bookingIdDriver.toString(),
-                    _rating.toString(),
-                    revewController.text);
+                    widget.bookingID, _rating.toString(), revewController.text);
               },
               child: CommonContainer(
                 name: "Submit",

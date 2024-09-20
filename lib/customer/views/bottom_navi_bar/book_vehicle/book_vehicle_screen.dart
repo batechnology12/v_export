@@ -75,6 +75,8 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
   double vehicletotalDistance = 0.0;
   bool _isLoading = false;
   double? vehicleStoredTotalDistance;
+  List<String> dropLocationDistances = [];
+  double totalDistance = 0.0;
   final HomeController homeController = Get.put(HomeController());
   final ParcelController parcelController = Get.put(ParcelController());
 
@@ -106,11 +108,6 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
               onSurface: Colors.black, // Body text color
               surface: Colors.white, // Calendar background color
             ),
-            // textButtonTheme: TextButtonThemeData(
-            //   style: TextButton.styleFrom(
-            //     primary: Colors.red, // Button text color
-            //   ),
-            // ),
           ),
           child: child!,
         );
@@ -122,7 +119,7 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
         selectedDate = picked;
         formatDateTime = formatDate(selectedDate, [dd, '-', mm, '-', yyyy]);
 
-        // Determine the weekend date based on the selected date
+        // Handle the logic for determining the weekend date
         if (selectedDate.weekday == DateTime.friday) {
           weekendDate = "Friday: $formatDateTime";
         } else if (selectedDate.weekday == DateTime.saturday) {
@@ -149,11 +146,46 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
   TimeOfDay? pickTime;
 
   void _selectpickTime(BuildContext context) async {
+    final TimeOfDay currentTime = TimeOfDay.now(); // Get the current time
+    final DateTime now = DateTime.now();
+    final bool isToday = selectedDate.year == now.year &&
+        selectedDate.month == now.month &&
+        selectedDate.day == now.day;
+
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: pickTime ?? TimeOfDay.now(),
+      initialTime: pickTime ?? currentTime,
     );
-    if (picked != null && picked != pickTime) {
+
+    if (picked != null) {
+      if (isToday) {
+        // if (picked.hour < 8 || picked.hour >= 18) {
+        //   ScaffoldMessenger.of(context).showSnackBar(
+        //     SnackBar(
+        //       content: Text("Please pick a time between 8 AM and 6 PM today"),
+        //       duration: Duration(seconds: 2),
+        //       backgroundColor: Colors.red,
+        //     ),
+        //   );
+        //   return;
+        // }
+
+        // Restrict picking past time on today's date
+        if ((picked.hour < currentTime.hour) ||
+            (picked.hour == currentTime.hour &&
+                picked.minute < currentTime.minute)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Can't pick a past time"),
+              duration: Duration(seconds: 2),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+      }
+
+      // For future dates or valid current time selection, update pickTime
       setState(() {
         pickTime = picked;
       });
@@ -371,32 +403,106 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
   }
 
   // bool stairCheck = false;
+  // void addCount(StateSetter setState, int index) {
+  //   setState(() {
+  //     if (count < maxCount) {
+  //       count++;
+  //       if (count == 1) {
+  //         // Automatically add the additional service when count becomes 1
+  //         toggleServiceSelection(index, setState);
+  //       }
+  //       if (count > 0) {
+  //         isCheck[index] = true;
+  //       }
+  //     }
+
+  //     AdditionalServiceData serviceData2 =
+  //         parcelController.additionalServiceData[index];
+  //     var serviceId = serviceData2.id;
+
+  //     if (additionalIdsArray.contains(serviceId.toString())) {
+  //       int indexArray = additionalIdsArray.indexOf(serviceId.toString());
+  //       additionalQtyArray[indexArray] = count.toString();
+  //     }
+  //     updateTotalAmount();
+  //   });
+
+  //   print("count----------- $count");
+
+  //   print("-service stair case add-----$selectedvehicleservice");
+  // }
+
+  // void decrementCount(StateSetter setState, int index) {
+  //   setState(() {
+  //     if (count > 0) {
+  //       count--;
+  //       if (count == 0) {
+  //         // Automatically remove the additional service when count becomes 0
+  //         toggleServiceSelection(index, setState);
+  //       }
+  //       isCheck[index] = true;
+
+  //       if (count == 0) {
+  //         isCheck[index] = false;
+  //       }
+
+  //       manPowerCheck = false;
+  //     }
+
+  //     AdditionalServiceData serviceData1 =
+  //         parcelController.additionalServiceData[index];
+  //     var serviceId = serviceData1.id;
+
+  //     if (additionalIdsArray.contains(serviceId.toString())) {
+  //       int indexArray = additionalIdsArray.indexOf(serviceId.toString());
+  //       additionalQtyArray[indexArray] = count.toString();
+  //     }
+
+  //     updateTotalAmount();
+  //   });
+
+  //   print("decrement count-------- $count");
+  //   print("-service stair case remove-----$selectedvehicleservice");
+  // }
   void addCount(StateSetter setState, int index) {
     setState(() {
       if (count < maxCount) {
         count++;
         if (count == 1) {
-          // Automatically add the additional service when count becomes 1
-          toggleServiceSelection(index, setState);
-        }
-        if (count > 0) {
-          isCheck[index] = true;
+          // Add the service when the count becomes 1
+          AdditionalServiceData serviceData =
+              parcelController.additionalServiceData[index];
+          var serviceId = serviceData.id;
+
+          if (!additionalIdsArray.contains(serviceId.toString())) {
+            additionalIdsArray.add(serviceId.toString());
+            additionalQtyArray.add('1');
+          }
+
+          if (!selectedvehicleservice.contains(serviceData)) {
+            selectedvehicleservice.add(serviceData);
+          }
+
+          isCheck[index] = true; // Ensure it's checked
         }
       }
 
-      AdditionalServiceData serviceData2 =
-          parcelController.additionalServiceData[index];
-      var serviceId = serviceData2.id;
+      // Update the quantity if the service is already added
+      if (count > 0) {
+        AdditionalServiceData serviceData =
+            parcelController.additionalServiceData[index];
+        var serviceId = serviceData.id;
 
-      if (additionalIdsArray.contains(serviceId.toString())) {
-        int indexArray = additionalIdsArray.indexOf(serviceId.toString());
-        additionalQtyArray[indexArray] = count.toString();
+        if (additionalIdsArray.contains(serviceId.toString())) {
+          int indexArray = additionalIdsArray.indexOf(serviceId.toString());
+          additionalQtyArray[indexArray] = count.toString();
+        }
       }
+
       updateTotalAmount();
     });
 
-    print("count----------- $count");
-
+    print("Count incremented: $count");
     print("-service stair case add-----$selectedvehicleservice");
   }
 
@@ -405,31 +511,39 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
       if (count > 0) {
         count--;
         if (count == 0) {
-          // Automatically remove the additional service when count becomes 0
-          toggleServiceSelection(index, setState);
-        }
-        isCheck[index] = true;
+          // Remove the service when count becomes 0
+          AdditionalServiceData serviceData =
+              parcelController.additionalServiceData[index];
+          var serviceId = serviceData.id;
 
-        if (count == 0) {
-          isCheck[index] = false;
-        }
+          if (additionalIdsArray.contains(serviceId.toString())) {
+            int indexArray = additionalIdsArray.indexOf(serviceId.toString());
+            additionalIdsArray.removeAt(indexArray);
+            additionalQtyArray.removeAt(indexArray);
+          }
 
-        manPowerCheck = false;
+          selectedvehicleservice
+              .removeWhere((item) => item.name == serviceData.name);
+          isCheck[index] = false; // Uncheck it
+        }
       }
 
-      AdditionalServiceData serviceData1 =
-          parcelController.additionalServiceData[index];
-      var serviceId = serviceData1.id;
+      // Update the quantity if the service is still added
+      if (count > 0) {
+        AdditionalServiceData serviceData =
+            parcelController.additionalServiceData[index];
+        var serviceId = serviceData.id;
 
-      if (additionalIdsArray.contains(serviceId.toString())) {
-        int indexArray = additionalIdsArray.indexOf(serviceId.toString());
-        additionalQtyArray[indexArray] = count.toString();
+        if (additionalIdsArray.contains(serviceId.toString())) {
+          int indexArray = additionalIdsArray.indexOf(serviceId.toString());
+          additionalQtyArray[indexArray] = count.toString();
+        }
       }
 
       updateTotalAmount();
     });
 
-    print("decrement count-------- $count");
+    print("Count decremented: $count");
     print("-service stair case remove-----$selectedvehicleservice");
   }
 
@@ -641,6 +755,8 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                         toggleServiceSelection(index, setState);
                                         manPowerCheck = true;
                                       });
+                                      print(
+                                          "-service----- $selectedvehicleservice");
                                     },
                                     child: Container(
                                       padding: const EdgeInsets.all(5.0),
@@ -651,7 +767,15 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                           Row(
                                             children: [
                                               GestureDetector(
-                                                onTap: () {},
+                                                onTap: () {
+                                                  // setState(() {
+                                                  //   toggleServiceSelection(
+                                                  //       index, setState);
+                                                  //   manPowerCheck = true;
+                                                  // });
+                                                  // print(
+                                                  //     "-service----- $selectedvehicleservice");
+                                                },
                                                 child: Container(
                                                   height: 18.h,
                                                   width: 18.w,
@@ -1164,43 +1288,43 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                                             ),
                                                           Row(
                                                             children: [
-                                                              // GestureDetector(
-                                                              //   onTap: () {
-                                                              //     setState(() {
-                                                              //       homeController
-                                                              //         ..addVehicalEntry();
-                                                              //     });
-                                                              //   },
-                                                              //   child: Icon(
-                                                              //     Icons.add,
-                                                              //     color: const Color(
-                                                              //         0xff0072E8),
-                                                              //     size: 17.sp,
-                                                              //   ),
-                                                              // ),
-                                                              // GestureDetector(
-                                                              //   onTap: () {
-                                                              //     setState(() {
-                                                              //       homeController
-                                                              //           .addVehicalEntry();
-                                                              //       // homeController
-                                                              //       //     .addParcelList();
-                                                              //     });
-                                                              //   },
-                                                              //   child: Text(
-                                                              //     'Add Location',
-                                                              //     style: primaryfont
-                                                              //         .copyWith(
-                                                              //       fontSize:
-                                                              //           15.sp,
-                                                              //       fontWeight:
-                                                              //           FontWeight
-                                                              //               .w500,
-                                                              //       color: const Color(
-                                                              //           0xff0072E8),
-                                                              //     ),
-                                                              //   ),
-                                                              // ),
+                                                              GestureDetector(
+                                                                onTap: () {
+                                                                  setState(() {
+                                                                    homeController
+                                                                      ..addVehicalEntry();
+                                                                  });
+                                                                },
+                                                                child: Icon(
+                                                                  Icons.add,
+                                                                  color: const Color(
+                                                                      0xff0072E8),
+                                                                  size: 17.sp,
+                                                                ),
+                                                              ),
+                                                              GestureDetector(
+                                                                onTap: () {
+                                                                  setState(() {
+                                                                    homeController
+                                                                        .addVehicalEntry();
+                                                                    // homeController
+                                                                    //     .addParcelList();
+                                                                  });
+                                                                },
+                                                                child: Text(
+                                                                  'Add Location',
+                                                                  style: primaryfont
+                                                                      .copyWith(
+                                                                    fontSize:
+                                                                        15.sp,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w500,
+                                                                    color: const Color(
+                                                                        0xff0072E8),
+                                                                  ),
+                                                                ),
+                                                              ),
                                                             ],
                                                           ),
                                                         ],
@@ -1500,8 +1624,6 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
                                               Text(
-                                                // "${pickTime.hour < 10 ? "0${pickTime.hour}" : pickTime.hour}:${pickTime.minute.remainder(60) < 10 ? "0${pickTime.minute.remainder(60)}" : '${pickTime.minute.remainder(60)}'}:00"
-                                                //     .toString(),
                                                 pickTime != null
                                                     ? _formatTime(pickTime!)
                                                     : 'select time',
@@ -1675,28 +1797,20 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                       ksizedbox10,
                                       GestureDetector(
                                         onTap: () {
-                                          showListViewDialog(
-                                              context, modifiedName);
-                                          // if (vehicleItems?.name == "Car") {
-                                          //   Get.snackbar(
-                                          //       "No additional service for car",
-                                          //       "",
-                                          //       colorText: AppColors.kwhite,
-                                          //       backgroundColor: Colors.red,
-                                          //       snackPosition:
-                                          //           SnackPosition.BOTTOM);
-                                          // } else if (vehicleItems?.name ==
-                                          //     null) {
-                                          //   Get.snackbar(
-                                          //       "Please select the Vehicle service",
-                                          //       "",
-                                          //       colorText: AppColors.kwhite,
-                                          //       backgroundColor: Colors.red,
-                                          //       snackPosition:
-                                          //           SnackPosition.BOTTOM);
-                                          // } else {
-
-                                          // }
+                                          if (vehicleItems?.name != null) {
+                                            showListViewDialog(
+                                                context, modifiedName);
+                                            manPowerCheck = true;
+                                          } else {
+                                            Get.snackbar(
+                                              "Alert",
+                                              "Please select the selected Vehicle service!",
+                                              colorText: AppColors.kwhite,
+                                              backgroundColor: Colors.red,
+                                              snackPosition:
+                                                  SnackPosition.BOTTOM,
+                                            );
+                                          }
                                         },
                                         child: Container(
                                           child: Row(
@@ -1712,8 +1826,23 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                               ),
                                               GestureDetector(
                                                 onTap: () async {
-                                                  showListViewDialog(
-                                                      context, modifiedName);
+                                                  if (vehicleItems?.name !=
+                                                      null) {
+                                                    showListViewDialog(
+                                                        context, modifiedName);
+                                                    manPowerCheck = true;
+                                                  } else {
+                                                    Get.snackbar(
+                                                      "Alert",
+                                                      "Please select the selected Vehicle service!",
+                                                      colorText:
+                                                          AppColors.kwhite,
+                                                      backgroundColor:
+                                                          Colors.red,
+                                                      snackPosition:
+                                                          SnackPosition.BOTTOM,
+                                                    );
+                                                  }
                                                 },
                                                 child: Icon(
                                                   Icons
@@ -1799,6 +1928,8 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
                                             });
 
                                             Get.to(DriverBookingDetails(
+                                              totalKmDistance: totalDistance,
+                                              kiloMeters: dropLocationDistances,
                                               showingManPower:
                                                   showManpower == true
                                                       ? true
@@ -1928,7 +2059,12 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
         unit: "k",
       );
       vehicletotalDistance += parcelController.distance;
-      print("Pick to drop location distance = $vehicletotalDistance");
+      String firstDistanceString = parcelController.distance.toString();
+
+      print(
+          "Pickup to first drop location distance = ${parcelController.distance}");
+      print("parceldistancepickupString===== $firstDistanceString");
+      dropLocationDistances.add(firstDistanceString);
 
       // Calculate distance for multiple dropping locations
       if (homeController.vehicledroppingLats.length > 1) {
@@ -1943,17 +2079,22 @@ class _BookVehicleScreenState extends State<BookVehicleScreen> {
             unit: "k",
           );
           vehicletotalDistance += parcelController.distance;
+          String distanceString = "${parcelController.distance}";
           print("Drop to next drop location distance = $vehicletotalDistance");
+          print("parceldistancepickupString=== $distanceString");
+          dropLocationDistances.add(distanceString);
         }
       }
+      totalDistance = dropLocationDistances
+          .map((distance) => double.parse(distance))
+          .reduce((a, b) => a + b);
 
-      // Store the calculated distance
       vehicleStoredTotalDistance = vehicletotalDistance;
     } else {
       // Use the stored distance
       print("Using stored distance = $vehicleStoredTotalDistance");
     }
-
+    print("List of drop location distances: $dropLocationDistances");
     // Send the storedTotalDistance to the next page
     // Pass storedTotalDistance as needed to the next page
   }

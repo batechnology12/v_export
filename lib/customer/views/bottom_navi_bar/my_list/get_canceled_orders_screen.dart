@@ -130,76 +130,41 @@ class _GetCancelledScreenDataState extends State<GetCancelledScreenData> {
                             Divider(),
                             ksizedbox10,
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Row(
+                                const Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-                                    const Padding(
-                                      padding: EdgeInsets.only(top: 0),
-                                      child: Column(
-                                        children: [
-                                          Icon(
-                                            Icons.location_on,
-                                            color: Color(0xff038484),
-                                          ),
-                                          Dash(
-                                              direction: Axis.vertical,
-                                              length: 30,
-                                              dashLength: 5,
-                                              dashColor: AppColors.kgrey),
-                                        ],
-                                      ),
+                                    Icon(
+                                      Icons.location_on,
+                                      color: Color(0xff038484),
                                     ),
-                                    SizedBox(
-                                      width: 5.w,
-                                    ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Pickup Address',
-                                          style: primaryfont.copyWith(
-                                              fontSize: 14.sp,
-                                              fontWeight: FontWeight.w600,
-                                              color: Color(0xff455A64)),
-                                        ),
-                                        Container(
-                                          width: 230.h,
-                                          child: ExpandableText(
-                                            "${getdatalist.pickupAddreess}",
-                                            expandText: 'show more',
-                                            collapseText: 'show less',
-                                            maxLines: 2,
-                                            linkColor: Colors.blue,
-                                            style: primaryfont.copyWith(
-                                                color: const Color(0xff1E1E1E),
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 12.sp),
-                                          ),
-                                        ),
-                                      ],
-                                    )
+                                    Dash(
+                                        direction: Axis.vertical,
+                                        length: 50,
+                                        dashLength: 5,
+                                        dashColor: AppColors.kgrey),
                                   ],
                                 ),
-                                // Row(
-                                //   children: [
-                                //     Text(
-                                //       myListController
-                                //                   .getCancelledOrdersModelData[
-                                //                       index]
-                                //                   .bookingType ==
-                                //               "parcel"
-                                //           ? '${getdatalist.bookingProducts[index].pickuptimeFrom} to ${getdatalist.bookingProducts[index].pickuptimeTo}'
-                                //           : getdatalist.bookingTimeFromVehicle!,
-                                //       textAlign: TextAlign.center,
-                                //       style: primaryfont.copyWith(
-                                //           fontSize: 10.sp,
-                                //           fontWeight: FontWeight.w600,
-                                //           color: const Color(0xff455A64)),
-                                //     ),
-                                //   ],
-                                // )
+                                Ksizedboxw10,
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Pickup Address',
+                                      style: primaryfont.copyWith(
+                                          fontSize: 14.sp,
+                                          fontWeight: FontWeight.w600,
+                                          color: Color(0xff455A64)),
+                                    ),
+                                    Text(getdatalist.pickupAddreess,
+                                        style: primaryfont.copyWith(
+                                            color: const Color(0xff1E1E1E),
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 12.sp)),
+                                  ],
+                                ),
                               ],
                             ),
                             GetBuilder<MyListController>(builder: (_) {
@@ -230,7 +195,7 @@ class _GetCancelledScreenDataState extends State<GetCancelledScreenData> {
                                                         1)
                                                   Dash(
                                                       direction: Axis.vertical,
-                                                      length: 30,
+                                                      length: 50,
                                                       dashLength: 5,
                                                       dashColor:
                                                           AppColors.kgrey),
@@ -256,19 +221,32 @@ class _GetCancelledScreenDataState extends State<GetCancelledScreenData> {
                                                   padding:
                                                       const EdgeInsets.only(
                                                           bottom: 0),
-                                                  child: ExpandableText(
-                                                    "${getdatalist.bookingDeliveryAddresses[index].address}",
-                                                    expandText: 'show more',
-                                                    collapseText: 'show less',
-                                                    maxLines: 2,
-                                                    linkColor: Colors.blue,
-                                                    style: primaryfont.copyWith(
-                                                        color: const Color(
-                                                            0xff1E1E1E),
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        fontSize: 12.sp),
-                                                  ),
+                                                  child: Text(
+                                                      getdatalist
+                                                          .bookingDeliveryAddresses[
+                                                              index]
+                                                          .address,
+                                                      style:
+                                                          primaryfont.copyWith(
+                                                              color: const Color(
+                                                                  0xff1E1E1E),
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              fontSize: 12.sp)),
+                                                  //  ExpandableText(
+                                                  //   "${getdatalist.bookingDeliveryAddresses[index].address}",
+                                                  //   expandText: 'show more',
+                                                  //   collapseText: 'show less',
+                                                  //   maxLines: 2,
+                                                  //   linkColor: Colors.blue,
+                                                  //   style: primaryfont.copyWith(
+                                                  //       color: const Color(
+                                                  //           0xff1E1E1E),
+                                                  //       fontWeight:
+                                                  //           FontWeight.w600,
+                                                  //       fontSize: 12.sp),
+                                                  // ),
                                                 ),
                                               ],
                                             )

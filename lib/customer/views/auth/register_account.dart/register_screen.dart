@@ -186,13 +186,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   ),
                                   ksizedbox20,
                                   Text(
-                                    'Phone Number*',
+                                    'Phone Numbers*',
                                     style: primaryfont.copyWith(
                                         color: Color(0xff7C86A2)),
                                   ),
                                   ksizedbox5,
                                   GetBuilder<AuthController>(
-                                    builder: (authController) {
+                                    builder: (context) {
                                       return Column(
                                         children: [
                                           TextFormField(
@@ -230,23 +230,52 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                     }
                                                   },
                                             onChanged: (value) {
-                                              authController
-                                                  .checkMoobileApi(value);
-                                              authController.update();
+                                              setState(() {
+                                                if (value.length == 8 ||
+                                                    value.length == 10) {
+                                                  authController
+                                                      .checkMobileApi(value);
+                                                } else if (value.isEmpty) {
+                                                  authController
+                                                      .mobileController
+                                                      .text = '';
+                                                }
+                                                authController.update();
+                                              });
                                             },
                                             controller:
                                                 authController.mobileController,
                                             decoration: InputDecoration(
                                               suffixIcon: authController
                                                       .checkMobileLoading.isTrue
-                                                  ? const Icon(
-                                                      Icons.done,
-                                                      color: Colors.green,
-                                                    )
-                                                  : const Icon(
-                                                      Icons.error,
-                                                      color: Colors.red,
-                                                    ),
+                                                  ? (authController
+                                                          .mobileController
+                                                          .text
+                                                          .isNotEmpty
+                                                      ? (authController
+                                                                      .mobileController
+                                                                      .text
+                                                                      .length ==
+                                                                  10 ||
+                                                              authController
+                                                                      .mobileController
+                                                                      .text
+                                                                      .length ==
+                                                                  8
+                                                          ? const Icon(
+                                                              Icons.done,
+                                                              color:
+                                                                  Colors.green,
+                                                            )
+                                                          : const Icon(
+                                                              Icons.error,
+                                                              color: Colors.red,
+                                                            ))
+                                                      : const Icon(
+                                                          Icons.error,
+                                                          color: Colors.red,
+                                                        ))
+                                                  : null,
                                               prefixIcon: Row(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
@@ -498,7 +527,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                               fontWeight:
                                                                   FontWeight
                                                                       .w600),
-                                                    )
+                                                    ),
                                             ],
                                           )
                                       ],
@@ -941,9 +970,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                           controller: authController
                                               .businessphoneController,
                                           onChanged: (value) {
-                                            authController
-                                                .checkcorporateMobileApi(value);
-                                            authController.update();
+                                            setState(() {
+                                              if (value.length == 8 ||
+                                                  value.length == 10) {
+                                                authController
+                                                    .checkcorporateMobileApi(
+                                                        value);
+                                              } else if (value.isEmpty) {
+                                                authController
+                                                    .businessphoneController
+                                                    .text = '';
+                                              }
+                                              authController.update();
+                                            });
                                           },
                                           decoration: InputDecoration(
                                             prefixIcon: Row(
@@ -1028,14 +1067,33 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                             suffixIcon: authController
                                                     .checkcorporateMobileLoading
                                                     .isTrue
-                                                ? const Icon(
-                                                    Icons.done,
-                                                    color: Colors.green,
-                                                  )
-                                                : const Icon(
-                                                    Icons.error,
-                                                    color: Colors.red,
-                                                  ),
+                                                ? (authController
+                                                        .businessphoneController
+                                                        .text
+                                                        .isNotEmpty
+                                                    ? (authController
+                                                                    .businessphoneController
+                                                                    .text
+                                                                    .length ==
+                                                                10 ||
+                                                            authController
+                                                                    .businessphoneController
+                                                                    .text
+                                                                    .length ==
+                                                                8
+                                                        ? const Icon(
+                                                            Icons.done,
+                                                            color: Colors.green,
+                                                          )
+                                                        : const Icon(
+                                                            Icons.error,
+                                                            color: Colors.red,
+                                                          ))
+                                                    : const Icon(
+                                                        Icons.error,
+                                                        color: Colors.red,
+                                                      ))
+                                                : null,
                                             border: OutlineInputBorder(
                                               borderSide: BorderSide.none,
                                               borderRadius:

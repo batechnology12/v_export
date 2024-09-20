@@ -52,7 +52,6 @@ class _LoginScreenState extends State<LoginScreen> {
   int selectedIndex = 0;
   String selectedValues = "+91";
 
-
   void loadUserCredentials() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool? remember = prefs.getBool('isRemember');

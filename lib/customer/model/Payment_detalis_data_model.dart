@@ -36,6 +36,7 @@ class PaymentDetalis {
 class PaymentDetailsData {
   AccessRestrictedArea deliveryType;
   AccessRestrictedArea deliveryFees;
+  AccessRestrictedArea additionalStopCost;
   AccessRestrictedArea accessRestrictedArea;
   AccessRestrictedArea cbdArea;
   AccessRestrictedArea roundTripCost;
@@ -45,6 +46,7 @@ class PaymentDetailsData {
   PaymentDetailsData({
     required this.deliveryType,
     required this.deliveryFees,
+    required this.additionalStopCost,
     required this.accessRestrictedArea,
     required this.cbdArea,
     required this.roundTripCost,
@@ -56,6 +58,8 @@ class PaymentDetailsData {
       PaymentDetailsData(
         deliveryType: AccessRestrictedArea.fromJson(json["delivery_type"]),
         deliveryFees: AccessRestrictedArea.fromJson(json["delivery_fees"]),
+        additionalStopCost:
+            AccessRestrictedArea.fromJson(json["additional_stop_cost"]),
         accessRestrictedArea:
             AccessRestrictedArea.fromJson(json["access_restricted_area"]),
         cbdArea: AccessRestrictedArea.fromJson(json["cbd_area"]),
@@ -69,6 +73,7 @@ class PaymentDetailsData {
   Map<String, dynamic> toJson() => {
         "delivery_type": deliveryType.toJson(),
         "delivery_fees": deliveryFees.toJson(),
+        "additional_stop_cost": additionalStopCost.toJson(),
         "access_restricted_area": accessRestrictedArea.toJson(),
         "cbd_area": cbdArea.toJson(),
         "round_trip_cost": roundTripCost.toJson(),

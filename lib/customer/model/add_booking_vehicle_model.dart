@@ -22,6 +22,7 @@ class AddBookingVehicleModel {
   String bookingType;
   String bookingTime;
   List<AdditionalServiceData> additionalDetails;
+  List<int> additionalServiceDetails;
   int totalManpwoerValue;
   int totalStaircaseValue;
   // List<int> additionalDetailsQty;
@@ -31,6 +32,7 @@ class AddBookingVehicleModel {
   String senderUnitId;
   // String bookingAmount;
   AddBookingVehicleModel({
+    required this.additionalServiceDetails,
     required this.paymentDetails,
     required this.totalManpwoerValue,
     required this.totalStaircaseValue,
@@ -64,7 +66,7 @@ class AddBookingVehicleModel {
 class BookingVehicleAddress {
   String senderName;
   String senderMobile;
-  //String unitNoBlockNo;
+  List<String> kiloMeter;
   String address;
   List<String> postalCode;
   String latitude;
@@ -79,7 +81,7 @@ class BookingVehicleAddress {
     required this.vehicleUnitId,
     required this.senderName,
     required this.senderMobile,
-    //  required this.unitNoBlockNo,
+      required this.kiloMeter,
     required this.address,
     required this.postalCode,
     required this.latitude,

@@ -206,15 +206,12 @@ class _AccountState extends State<Account> {
                             shrinkWrap: true,
                             itemCount: accountList.length,
                             itemBuilder: (context, index) {
-                              //   type == "client"
-
-                              // ? Container()
-                              // : Get.to(CorporateAccount());
-                              if (accountList[index]["accountNames"] ==
-                                      "Corporate account" &&
-                                  authController.roleName.value == "client") {
-                                return Container();
-                              }
+                              // return Obx(() {
+                              // if (accountList[index]["accountNames"] ==
+                              //         "Corporate account" &&
+                              //     authController.roleName.value == "client") {
+                              //   return Container(); // Hide the Corporate Account
+                              // }
                               return GestureDetector(
                                 onTap: () {
                                   switch (index) {
@@ -233,13 +230,14 @@ class _AccountState extends State<Account> {
                                       break;
                                     case 2:
                                       type == "client"
-                                          ? Container()
-                                          // Get.snackbar("Alert",
-                                          //     "Corporate account not required.",
-                                          //     colorText: AppColors.kwhite,
-                                          //     backgroundColor: Colors.red,
-                                          //     snackPosition:
-                                          //         SnackPosition.BOTTOM)
+                                          ?
+                                          // Container()
+                                          Get.snackbar("Alert",
+                                              "Corporate account not required.",
+                                              colorText: AppColors.kwhite,
+                                              backgroundColor: Colors.red,
+                                              snackPosition:
+                                                  SnackPosition.BOTTOM)
                                           : Get.to(CorporateAccount());
                                       break;
                                     case 3:
@@ -313,6 +311,7 @@ class _AccountState extends State<Account> {
                                   ),
                                 ),
                               );
+                              // });
                             },
                           ),
                         ],

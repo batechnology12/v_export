@@ -75,6 +75,7 @@ class AddBookingParcelsApiService extends BaseApiServices {
                   "reciver_mobile": address.reciverMobile,
                   "sender_unitno_blockno": address.reciverUnitIdBlockId,
                   "unitno": address.uintIdList,
+                  "km" : address.kiloMeter,
                 })
             .toList(),
         "parcel_photo": addBookingParcelModel.parcelPhoto.trim().isEmpty
