@@ -21,7 +21,7 @@ class _DriverRatingState extends State<DriverRating> {
   @override
   void initState() {
     super.initState();
-    parcelController.getAcceptBooking(widget.bookingID);
+    // parcelController.getAcceptBooking(widget.bookingID);
   }
 
   ParcelController parcelController = Get.put(ParcelController());
@@ -75,12 +75,17 @@ class _DriverRatingState extends State<DriverRating> {
           },
         ),
         actions: [
-          Text(
-            "Skip",
-            style: primaryfont.copyWith(
-                fontSize: 19.sp,
-                color: AppColors.kblue,
-                fontWeight: FontWeight.w600),
+          GestureDetector(
+            onTap: () {
+              parcelController.skipFeedBackApi(widget.bookingID);
+            },
+            child: Text(
+              "Skip>>",
+              style: primaryfont.copyWith(
+                  fontSize: 19.sp,
+                  color: AppColors.kblue,
+                  fontWeight: FontWeight.w600),
+            ),
           )
         ],
       ),

@@ -41,5 +41,8 @@ abstract class BaseApiServices {
   String get ratedriverUrl => "${baseUrl}rate_driver";
   String get checkemailUrl => "${baseUrl}checkEmailExists";
   String get checkemobileUrl => "${baseUrl}checkMobileExists";
-  String get redeemCouponsUrl =>  "${baseUrl}redeemCoupon";
+  String get redeemCouponsUrl => "${baseUrl}redeemCoupon";
+  String get latestUnratedBookingUrl => "${baseUrl}getLatestUnratedBooking";
+  String get skipFeedbackUrl => "${baseUrl}skip_feedback";
+
 }

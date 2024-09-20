@@ -202,14 +202,40 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
   }
 
   void _updateDropTime() {
+    final now1 = DateTime.now();
+    final pickedDateTime1 = DateTime(
+      now1.year,
+      now1.month,
+      now1.day,
+      pickTime!.hour,
+      pickTime!.minute,
+    );
+    final nightAfter8pm =
+        DateTime(now1.year, now1.month, now1.day, 20, 0); // Updated to 8:00 PM
+    final morning8amNextDay = DateTime(now1.year, now1.month, now1.day, 8, 0)
+        .add(Duration(days: 1)); // 8:00 AM next day
+
     if (selectedDeliveryTypes.isNotEmpty) {
       final selectedDeliveryType = selectedDeliveryTypes.first.name;
       if (selectedDeliveryType == "Express Delivery") {
         _updatedTime = _addMinutes(pickTime!, 120);
         dropTime = _updatedTime;
       } else if (selectedDeliveryType == "4 Hours Delivery") {
+        // if (pickedDateTime1.isAfter(nightAfter8pm) ||
+        //     pickedDateTime1.isBefore(morning8amNextDay)) {
+        //   // Show snackbar when drop time is after 8 PM or before 8 AM
+        //   Get.snackbar(
+        //     "Drop time should be between 8:00 AM and 8:00 PM",
+        //     "Please adjust the delivery time or change the delivery type.",
+        //     colorText: AppColors.kwhite,
+        //     backgroundColor: Colors.red,
+        //     snackPosition: SnackPosition.BOTTOM,
+        //   );
+        //   return; // Prevent further execution if the time is invalid
+        // } else {
         updatedroptime2 = _addMinutes(pickTime!, 240);
         dropTime = updatedroptime2;
+        // }
       } else if (selectedDeliveryType == "Same day delivery") {
         dropTime = TimeOfDay(hour: 20, minute: 0);
       } else if (selectedDeliveryType == "Specific Time") {
@@ -1384,7 +1410,7 @@ class _PackageSendScreenState extends State<PackageSendScreen> {
                                     //  homeController.pincodes.isNotEmpty &&
                                     homeController.doornames.isNotEmpty) {
                                   Get.to(ScheduleDeliveryScreen(
-                                   notesController: notesController,
+                                    notesController: notesController,
                                     dropStopCount: dropStopCount,
                                     senderUnitId: widget.unitId,
                                     parcelKg: homeController

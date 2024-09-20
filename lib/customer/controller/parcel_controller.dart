@@ -9,6 +9,7 @@ import 'package:v_export/customer/model/additional_service_model.dart';
 import 'package:v_export/customer/model/booking_review_detalis_model.dart';
 import 'package:v_export/customer/model/delivery_type_model.dart';
 import 'package:v_export/customer/model/get_accept_booking_details_model.dart';
+import 'package:v_export/customer/model/get_latest_unrated_booking_model.dart';
 import 'package:v_export/customer/model/get_vehicle_calculation_model.dart';
 import 'package:v_export/customer/model/get_booking_details_model.dart';
 import 'package:v_export/customer/model/get_vehicle_booking_details_model.dart';
@@ -30,10 +31,12 @@ import 'package:v_export/customer/services/network/booking_api_service/get_deliv
 import 'package:v_export/customer/services/network/booking_api_service/get_km_api_service.dart';
 import 'package:v_export/customer/services/network/booking_api_service/get_vehicle_calculations_api_service.dart';
 import 'package:v_export/customer/services/network/booking_api_service/get_vehicle_type_api_service.dart';
+import 'package:v_export/customer/services/network/booking_api_service/latest_driver_rate_api_service.dart';
 import 'package:v_export/customer/services/network/booking_api_service/ongoing_orders_api_service.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:v_export/customer/services/network/booking_api_service/rate_driver_api_service.dart';
 import 'package:v_export/customer/services/network/booking_api_service/sender_receiver_api_service.dart';
+import 'package:v_export/customer/services/network/booking_api_service/skip_feedback_api_service.dart';
 import 'package:v_export/customer/services/network/booking_api_service/update_booking_status_api_service.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/bottomn_navi_bar.dart';
 import 'package:v_export/customer/views/bottom_navi_bar/package_send/booking_details.dart';
@@ -655,6 +658,67 @@ class ParcelController extends GetxController {
       }
     } catch (e) {
       print(" $e");
+    }
+  }
+
+  LatestRateDriverApiService latestRateDriverApiService =
+      LatestRateDriverApiService();
+
+  List<GetLatestUnratedBookingData> getLatestUnratedBookingDataList =
+      <GetLatestUnratedBookingData>[].obs;
+
+  latestRateDriverApi() async {
+    dio.Response<dynamic> response =
+        await latestRateDriverApiService.latestRateDriverApi();
+
+    if (response.data["status"] == "success") {
+      GetLatestUnratedBookingModel getLatestUnratedBookingModel =
+          GetLatestUnratedBookingModel.fromJson(response.data);
+      getLatestUnratedBookingDataList.clear();
+      getLatestUnratedBookingDataList.add(getLatestUnratedBookingModel.data);
+
+      Get.to(DriverRating(
+          bookingID: getLatestUnratedBookingDataList.first.id.toString()));
+      // Get.rawSnackbar(
+      //   backgroundColor: Colors.green,
+      //   messageText: Text(
+      //     response.data['message'],
+      //     style: TextStyle(color: Colors.white, fontSize: 15.sp),
+      //   ),
+      // );
+    } else {
+      Get.rawSnackbar(
+        backgroundColor: Colors.red,
+        messageText: Text(
+          response.data['message'],
+          style: TextStyle(color: Colors.white, fontSize: 15.sp),
+        ),
+      );
+    }
+  }
+
+  SkipFeedBackApiServices skipFeedBackApiServices = SkipFeedBackApiServices();
+
+  skipFeedBackApi(String skipFeedbackId) async {
+    dio.Response<dynamic> response =
+        await skipFeedBackApiServices.skipFeedBackApi(skipFeedbackId);
+    if (response.data["status"] == true) {
+   Get.offAll(BottomNavigationScreen(indexes: 0));
+      Get.rawSnackbar(
+        backgroundColor: Colors.green,
+        messageText: Text(
+          response.data['message'],
+          style: TextStyle(color: Colors.white, fontSize: 15.sp),
+        ),
+      );
+    } else {
+      Get.rawSnackbar(
+        backgroundColor: Colors.red,
+        messageText: Text(
+          response.data['message'],
+          style: TextStyle(color: Colors.white, fontSize: 15.sp),
+        ),
+      );
     }
   }
 }

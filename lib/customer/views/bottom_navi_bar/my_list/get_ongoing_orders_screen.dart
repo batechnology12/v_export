@@ -269,170 +269,144 @@ class _GetOngoingScreenDataState extends State<GetOngoingScreenData> {
                                   itemBuilder: ((context, index) {
                                     return Row(
                                       mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Row(
+                                        Column(
+                                          children: [
+                                            const Icon(
+                                              Icons.location_on,
+                                              color: Color(0xffF74354),
+                                            ),
+                                            if (index !=
+                                                getongoingdatalist
+                                                        .bookingDeliveryAddresses
+                                                        .length -
+                                                    1)
+                                              const Dash(
+                                                  direction: Axis.vertical,
+                                                  length: 50,
+                                                  dashLength: 5,
+                                                  dashColor: AppColors.kgrey),
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          width: 10.w,
+                                        ),
+                                        Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            Column(
-                                              children: [
-                                                const Icon(
-                                                  Icons.location_on,
-                                                  color: Color(0xffF74354),
-                                                ),
-                                                if (index !=
-                                                    getongoingdatalist
-                                                            .bookingDeliveryAddresses
-                                                            .length -
-                                                        1)
-                                                  const Dash(
-                                                      direction: Axis.vertical,
-                                                      length: 50,
-                                                      dashLength: 5,
-                                                      dashColor:
-                                                          AppColors.kgrey),
-                                              ],
-                                            ),
-                                            SizedBox(
-                                              width: 5.w,
-                                            ),
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Container(
-                                                  width: 310.w,
-                                                  // color: Colors.amber,
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
+                                            Container(
+                                              width: 310.w,
+                                              // color: Colors.amber,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Row(
                                                     children: [
-                                                      Row(
-                                                        children: [
-                                                          Text(
-                                                            'Delivery Address',
-                                                            style: primaryfont.copyWith(
+                                                      Text(
+                                                        'Delivery Address',
+                                                        style: primaryfont
+                                                            .copyWith(
                                                                 fontSize: 14.sp,
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w600,
                                                                 color: Color(
                                                                     0xff455A64)),
-                                                          ),
-                                                        ],
                                                       ),
-                                                      getongoingdatalist
-                                                                  .bookingType ==
-                                                              "vehicle"
-                                                          ? Row(
-                                                              children: [
-                                                                Text("")
-                                                              ],
-                                                            )
-                                                          : Row(
-                                                              children: [
-                                                                Text(
-                                                                  getongoingdatalist
-                                                                      .bookingProducts
-                                                                      .first
-                                                                      .deliverytimeFrom,
-                                                                  style: primaryfont.copyWith(
-                                                                      fontSize:
-                                                                          12.sp,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w600,
-                                                                      color: Color(
-                                                                          0xff455A64)),
-                                                                ),
-                                                                Text(
-                                                                  " to ",
-                                                                  style: primaryfont.copyWith(
-                                                                      fontSize:
-                                                                          12.sp,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w600,
-                                                                      color: Color(
-                                                                          0xff455A64)),
-                                                                ),
-                                                                Text(
-                                                                  getongoingdatalist
-                                                                      .bookingProducts
-                                                                      .first
-                                                                      .deliverytimeTo,
-                                                                  style: primaryfont.copyWith(
-                                                                      fontSize:
-                                                                          12.sp,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w600,
-                                                                      color: Color(
-                                                                          0xff455A64)),
-                                                                ),
-                                                              ],
-                                                            )
                                                     ],
                                                   ),
-                                                ),
-                                                Container(
-                                                  width: 230.h,
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          bottom: 0),
-                                                  child: Text(
-                                                      getongoingdatalist
-                                                          .bookingDeliveryAddresses[
-                                                              index]
-                                                          .address,
-                                                      style:
-                                                          primaryfont.copyWith(
-                                                              color: const Color(
-                                                                  0xff1E1E1E),
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                              fontSize: 12.sp)),
-                                                  // ExpandableText(
-                                                  //   getongoingdatalist
-                                                  //       .bookingDeliveryAddresses[
-                                                  //           index]
-                                                  //       .address,
-                                                  //   expandText: 'show more',
-                                                  //   collapseText: 'show less',
-                                                  //   maxLines: 2,
-                                                  //   linkColor: Colors.blue,
-                                                  //   style: primaryfont.copyWith(
-                                                  //       color: const Color(
-                                                  //           0xff1E1E1E),
-                                                  //       fontWeight:
-                                                  //           FontWeight.w600,
-                                                  //       fontSize: 12.sp),
-                                                  // ),
-                                                ),
-                                              ],
-                                            )
+                                                  getongoingdatalist
+                                                              .bookingType ==
+                                                          "vehicle"
+                                                      ? Row(
+                                                          children: [Text("")],
+                                                        )
+                                                      : Row(
+                                                          children: [
+                                                            Text(
+                                                              getongoingdatalist
+                                                                  .bookingProducts
+                                                                  .first
+                                                                  .deliverytimeFrom,
+                                                              style: primaryfont.copyWith(
+                                                                  fontSize:
+                                                                      12.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  color: Color(
+                                                                      0xff455A64)),
+                                                            ),
+                                                            Text(
+                                                              " to ",
+                                                              style: primaryfont.copyWith(
+                                                                  fontSize:
+                                                                      12.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  color: Color(
+                                                                      0xff455A64)),
+                                                            ),
+                                                            Text(
+                                                              getongoingdatalist
+                                                                  .bookingProducts
+                                                                  .first
+                                                                  .deliverytimeTo,
+                                                              style: primaryfont.copyWith(
+                                                                  fontSize:
+                                                                      12.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  color: Color(
+                                                                      0xff455A64)),
+                                                            ),
+                                                          ],
+                                                        )
+                                                ],
+                                              ),
+                                            ),
+                                            // Container(
+                                            //   width: 230.h,
+                                            //   padding: const EdgeInsets.only(
+                                            //       bottom: 0),
+                                            //   child:
+                                            Text(
+                                                getongoingdatalist
+                                                    .bookingDeliveryAddresses[
+                                                        index]
+                                                    .address,
+                                                style: primaryfont.copyWith(
+                                                    color:
+                                                        const Color(0xff1E1E1E),
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 12.sp)),
+                                            // ExpandableText(
+                                            //   getongoingdatalist
+                                            //       .bookingDeliveryAddresses[
+                                            //           index]
+                                            //       .address,
+                                            //   expandText: 'show more',
+                                            //   collapseText: 'show less',
+                                            //   maxLines: 2,
+                                            //   linkColor: Colors.blue,
+                                            //   style: primaryfont.copyWith(
+                                            //       color: const Color(
+                                            //           0xff1E1E1E),
+                                            //       fontWeight:
+                                            //           FontWeight.w600,
+                                            //       fontSize: 12.sp),
+                                            // ),
+                                            // ),
                                           ],
-                                        ),
-                                        // Row(
-                                        //   children: [
-                                        //     Text(
-                                        //       "",
-                                        //       // getongoingdatalist.bookingType ==
-                                        //       //         "parcel"
-                                        //       //     ? '${getongoingdatalist.bookingProducts[index].deliverytimeFrom} to ${getongoingdatalist.bookingProducts[index].deliverytimeTo}'
-                                        //       //     : "",
-                                        //       textAlign: TextAlign.center,
-                                        //       style: primaryfont.copyWith(
-                                        //           fontSize: 10.sp,
-                                        //           fontWeight: FontWeight.w600,
-                                        //           color:
-                                        //               const Color(0xff455A64)),
-                                        //     ),
-                                        //   ],
-                                        // )
+                                        )
                                       ],
                                     );
                                   }));

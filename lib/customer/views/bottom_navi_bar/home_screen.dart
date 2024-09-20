@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:date_format/date_format.dart';
 import 'package:expandable_text/expandable_text.dart';
@@ -59,11 +61,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String formateTimePickAddress = "";
   String formateTimeDropAddress = "";
-
+  Timer? _timer;
   @override
   void initState() {
     super.initState();
-    getData();
+     getData();
+    // _timer = Timer.periodic(Duration(seconds: 30), (timer) {
+    //   latestDriverRate();
+    // });
+  }
+
+  void latestDriverRate() {
+    parcelController.latestRateDriverApi();
   }
 
   Future<void> getData() async {
@@ -77,15 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
       //     .getAcceptBooking(parcelController.driverRatingBookingID.value);
       // print("driver rating id");
       // print(parcelController.driverRatingBookingID.value);
-      // if (parcelController.getAcceptBookingdata!.bookingStatus == "1") {
-      //   Get.snackbar(
-      //     "pls give your Driver rating",
-      //     "",
-      //     colorText: AppColors.kwhite,
-      //     backgroundColor: Colors.green,
-      //     snackPosition: SnackPosition.BOTTOM,
-      //   );
-      // }
+      
       homeScreenController.update();
       parcelController.update();
       homeController.clearDropEntries();
@@ -443,10 +444,12 @@ class _HomeScreenState extends State<HomeScreen> {
               ksizedbox20,
               GestureDetector(
                 onTap: () {
-                  // Get.offAll(DriverRating(
-                  //   bookingID:
-                  //       parcelController.driverRatingBookingID.value ?? "",
-                  // ));
+                  Get.offAll(DriverRating(
+                      bookingID: parcelController
+                          .getLatestUnratedBookingDataList.first.id
+                          .toString()));
+                  print(
+                      "id for driver rate-----   ${parcelController.getLatestUnratedBookingDataList.first.id}");
                 },
                 child: Container(
                   height: 300.h,

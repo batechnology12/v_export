@@ -49,6 +49,15 @@ class _ReferFriendsState extends State<ReferFriends> {
             Get.back();
           },
         ),
+        actions: [
+          Text(
+            'Skip',
+            style: primaryfont.copyWith(
+                fontSize: 14.sp,
+                color: AppColors.kblue,
+                fontWeight: FontWeight.w600),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.only(left: 15, right: 15, top: 10),

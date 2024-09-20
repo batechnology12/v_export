@@ -402,7 +402,7 @@ class _CompleteDetailsState extends State<CompleteDetails> {
                                                                 children: [
                                                                   TextSpan(
                                                                     text:
-                                                                        "Picked: ",
+                                                                        "Picked At: ",
                                                                     style: primaryfont
                                                                         .copyWith(
                                                                       fontWeight:
@@ -584,9 +584,11 @@ class _CompleteDetailsState extends State<CompleteDetails> {
                                                             ),
                                                             ksizedbox5,
                                                             widget
-                                                                    .getCompletedData
-                                                                    .bookingDeliveryAddresses
-                                                                    .isEmpty
+                                                                        .getCompletedData
+                                                                        .bookingDeliveryAddresses[
+                                                                            index]
+                                                                        .deliveryAt ==
+                                                                    ""
                                                                 ? Text(
                                                                     "",
                                                                     style: primaryfont.copyWith(
@@ -604,7 +606,7 @@ class _CompleteDetailsState extends State<CompleteDetails> {
                                                                       children: [
                                                                         TextSpan(
                                                                           text:
-                                                                              "Delivered: ",
+                                                                              "Delivered At: ",
                                                                           style:
                                                                               primaryfont.copyWith(
                                                                             fontWeight:

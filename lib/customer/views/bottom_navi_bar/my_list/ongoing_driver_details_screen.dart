@@ -799,7 +799,7 @@ class _MyHomePageState extends State<OngoingDriverDetailsScreen> {
                                                                               text: TextSpan(
                                                                                 children: [
                                                                                   TextSpan(
-                                                                                    text: "Picked: ",
+                                                                                    text: "Picked At: ",
                                                                                     style: primaryfont.copyWith(
                                                                                       fontWeight: FontWeight.w700,
                                                                                       fontSize: 12.sp,
